@@ -29,8 +29,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Domain", "SFA.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Application.UnitTests", "SFA.DAS.EmployerApprenticeshipsService.Application.UnitTests\SFA.DAS.EAS.Application.UnitTests.csproj", "{9DD77DF0-827E-4C14-B14B-B991BF26FD8C}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.Employer_Account.Database", "SFA.DAS.EAS.Employer_Account.Database\SFA.DAS.EAS.Employer_Account.Database.sqlproj", "{927A0BEA-B043-4A03-9311-F49CB60541D5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.TestCommon", "SFA.DAS.EmployerApprenticeshipsService.TestCommon\SFA.DAS.EAS.TestCommon.csproj", "{05D7C094-E2C9-4CCD-B0D7-85D263254B26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Application", "SFA.DAS.EmployerApprenticeshipsService.Application\SFA.DAS.EAS.Application.csproj", "{0226F97A-704E-49B0-A100-B75FEEC9C8AD}"
@@ -198,11 +196,6 @@ Global
 		{9DD77DF0-827E-4C14-B14B-B991BF26FD8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD77DF0-827E-4C14-B14B-B991BF26FD8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DD77DF0-827E-4C14-B14B-B991BF26FD8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{927A0BEA-B043-4A03-9311-F49CB60541D5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
