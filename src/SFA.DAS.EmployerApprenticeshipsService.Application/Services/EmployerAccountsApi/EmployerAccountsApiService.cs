@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EAS.Application.Http;
 using SFA.DAS.EAS.Application.Services.EmployerAccountsApi.Http;
-using SFA.DAS.EmployerAccounts.Api.Types;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EAS.Application.Services.EmployerAccountsApi
