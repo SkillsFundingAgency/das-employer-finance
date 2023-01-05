@@ -19,5 +19,14 @@ namespace SFA.DAS.EmployerFinance.Time
                 _now = now;
             }
         }
+
+        /// <summary>
+        /// For testing use only so a reference date can be supplied instead of using DateTime.UtcNow.
+        /// </summary>
+        /// <param name="referenceDate">Reference date to be used for testing only.</param>
+        public CurrentDateTime(DateTime referenceDate)
+        {
+            _now = referenceDate;
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace SFA.DAS.EmployerFinance.Web.DependencyResolution
                 c.AddRegistry<CachesRegistry>();
                 c.AddRegistry<ConfigurationRegistry>();
                 c.AddRegistry<DateTimeRegistry>();
+                c.AddRegistry<DateTimeStringFormatterRegistry>();
                 c.AddRegistry<DataRegistry>();
                 c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
                 c.AddRegistry<HashingRegistry>();

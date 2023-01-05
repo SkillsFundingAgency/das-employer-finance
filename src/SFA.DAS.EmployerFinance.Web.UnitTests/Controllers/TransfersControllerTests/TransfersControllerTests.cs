@@ -1,4 +1,6 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
+using AutoFixture;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Authorization.EmployerFeatures.Models;
@@ -7,13 +9,12 @@ using SFA.DAS.Authorization.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.HashingService;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerTests
 {
@@ -26,6 +27,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
+        private Mock<IDateTimeStringFormatter> _dateTimeStringFormatter;
         private GetFinancialBreakdownResponse _financialBreakdownResponse;
         private AccountDetailViewModel _accountDetailViewModel;
 
@@ -43,6 +45,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _accountApiClient = new Mock<IAccountApiClient>();
             _featureTogglesService = new Mock<IFeatureTogglesService<EmployerFeatureToggle>>();
             _financialBreakdownResponse = fixture.Create<GetFinancialBreakdownResponse>();
+            _dateTimeStringFormatter = new Mock<IDateTimeStringFormatter>();
 
             _transfersService.Setup(m => m.GetFinancialBreakdown(AccountId)).ReturnsAsync(_financialBreakdownResponse);
 
@@ -50,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _featureTogglesService.Setup(x => x.GetFeatureToggle(It.IsAny<string>())).Returns(new EmployerFeatureToggle { IsEnabled = true });
             _accountDetailViewModel = fixture.Create<AccountDetailViewModel>();
             _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
-            _orchestrator = new Mock<TransfersOrchestrator>(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);
+            _orchestrator = new Mock<TransfersOrchestrator>(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object, _dateTimeStringFormatter.Object);
 
             _controller = new TransfersController(_orchestrator.Object);
         }

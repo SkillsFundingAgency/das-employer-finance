@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using AutoFixture;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Authorization.EmployerFeatures.Models;
@@ -7,10 +8,10 @@ using SFA.DAS.Authorization.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.HashingService;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 {
@@ -23,6 +24,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
+        private Mock<IDateTimeStringFormatter> _dateTimeStringFormatter;
         private GetFinancialBreakdownResponse _financialBreakdownResponse;
 
         private const string HashedAccountId = "123ABC";
@@ -39,6 +41,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             _accountApiClient = new Mock<IAccountApiClient>();
             _featureTogglesService = new Mock<IFeatureTogglesService<EmployerFeatureToggle>>();
             _financialBreakdownResponse = fixture.Create<GetFinancialBreakdownResponse>();
+            _dateTimeStringFormatter = new Mock<IDateTimeStringFormatter>();
 
             _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
             _featureTogglesService.Setup(x => x.GetFeatureToggle(It.IsAny<string>())).Returns(new EmployerFeatureToggle { IsEnabled = true });
@@ -48,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 AccountId = AccountId
             });
 
-            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);
+            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object, _dateTimeStringFormatter.Object);
         }
         [Test]
         public async Task CheckFinancialBreakdownViewModel()
