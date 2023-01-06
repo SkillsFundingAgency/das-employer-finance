@@ -13,7 +13,6 @@ namespace SFA.DAS.EAS.Infrastructure.Mapping.Profiles
         {
             CreateMap<TransactionEntity, TransactionLine>();
             CreateMap<TransactionEntity, PaymentTransactionLine>();
-            CreateMap<TransactionEntity, LevyDeclarationTransactionLine>();
             CreateMap<TransactionEntity, TransferTransactionLine>();
             CreateMap<TransactionEntity, ExpiredFundTransactionLine>();
         }
