@@ -66,7 +66,6 @@
     <Compile Include="Models\Account\AgreementTemplate.cs" />
     <Compile Include="Models\Account\EmployerAgreement.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Data\Repositories\ITransactionRepository.cs" />
     <Compile Include="Models\Account\AccountStats.cs" />
     <Compile Include="Models\ApprenticeshipCourse\Framework.cs" />
     <Compile Include="Models\ApprenticeshipCourse\FrameworksView.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\ExpiredFunds\ExpiredFundTransactionLine.cs" />
     <Compile Include="Models\Role.cs" />
-    <Compile Include="Models\Transaction\AggregationData.cs" />
     <Compile Include="Configuration\AuditApiClientConfiguration.cs" />
     <Compile Include="Configuration\ClaimIdentifierConfiguration.cs" />
     <Compile Include="Configuration\CompaniesHouseConfiguration.cs" />
@@ -93,18 +91,13 @@
     <Compile Include="Models\Account\Account.cs" />
     <Compile Include="Models\Account\AccountBalance.cs" />
     <Compile Include="Models\Account\LegalEntity.cs" />
-    <Compile Include="Models\Transaction\TransactionEntity.cs" />
     <Compile Include="Models\Levy\LevyDeclarationView.cs" />
-    <Compile Include="Models\Transaction\TransactionDownloadLine.cs" />
     <Compile Include="Models\Transaction\TransactionItemType.cs" />
     <Compile Include="Models\AccountTeam\Membership.cs" />
     <Compile Include="Models\AccountTeam\MembershipView.cs" />
     <Compile Include="Models\Levy\LevyDeclarationSourceData.cs" />
     <Compile Include="Models\Levy\LevyDeclarationSourceDataItem.cs" />
-    <Compile Include="Models\Transaction\TransactionDetailSummary.cs" />
     <Compile Include="Models\Transaction\TransactionLine.cs" />
-    <Compile Include="Models\Transaction\TransactionLineDetail.cs" />
-    <Compile Include="Models\Transaction\TransactionSummary.cs" />
     <Compile Include="Models\TransferConnections\TransferConnectionInvitation.cs" />
     <Compile Include="Models\TransferConnections\TransferConnectionInvitationChange.cs" />
     <Compile Include="Models\TransferConnections\TransferConnectionInvitationStatus.cs" />
