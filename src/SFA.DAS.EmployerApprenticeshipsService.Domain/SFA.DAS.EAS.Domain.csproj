@@ -96,9 +96,6 @@
     <Compile Include="Models\Account\LegalEntity.cs" />
     <Compile Include="Models\Transaction\TransactionEntity.cs" />
     <Compile Include="Models\Levy\LevyDeclarationView.cs" />
-    <Compile Include="Models\ReferenceData\Charity.cs" />
-    <Compile Include="Models\ReferenceData\PagedResponse.cs" />
-    <Compile Include="Models\ReferenceData\PublicSectorOrganisation.cs" />
     <Compile Include="Models\Transaction\TransactionDownloadLine.cs" />
     <Compile Include="Models\Transaction\TransactionItemType.cs" />
     <Compile Include="Models\AccountTeam\Membership.cs" />
