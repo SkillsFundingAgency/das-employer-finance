@@ -105,7 +105,6 @@
     <Compile Include="Models\Account\LegalEntity.cs" />
     <Compile Include="Models\Transaction\TransactionEntity.cs" />
     <Compile Include="Models\Levy\LevyDeclarationView.cs" />
-    <Compile Include="Models\Audit\EasAuditMessage.cs" />
     <Compile Include="Models\Levy\LevyDeclarationTransactionLine.cs" />
     <Compile Include="Models\ReferenceData\Charity.cs" />
     <Compile Include="Models\ReferenceData\PagedResponse.cs" />
