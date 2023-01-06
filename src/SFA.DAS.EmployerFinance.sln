@@ -11,10 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PreReqs", "PreReqs", "{15DE
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.Employer_Financial.Database", "SFA.DAS.EAS.Employer_Financial.Database\SFA.DAS.EAS.Employer_Financial.Database.sqlproj", "{6C145D4A-CBA9-439C-984E-0A5953CBE04D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Client", "SFA.DAS.Account.Api.Client\SFA.DAS.EAS.Account.Api.Client.csproj", "{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Types", "SFA.DAS.EAS.Account.Api.Types\SFA.DAS.EAS.Account.Api.Types.csproj", "{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "AzureConfiguration", "{68328FF1-53F2-4737-A983-7E2B67179E17}"
 	ProjectSection(SolutionItems) = preProject
 		AzureTopicConfigurationStrucuture.json = AzureTopicConfigurationStrucuture.json
@@ -70,8 +66,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Types", "SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj", "{77E5F79D-6045-49F0-BF5D-E0A83688C220}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFA.DAS.EAS.Account.Api", "SFA.DAS.EAS.Account.Api", "{B6A25D71-B919-4FB1-8924-A8CDFE256762}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,14 +78,6 @@ Global
 		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -177,8 +163,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464} = {B6A25D71-B919-4FB1-8924-A8CDFE256762}
-		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77} = {B6A25D71-B919-4FB1-8924-A8CDFE256762}
 		{349D11C1-B5E1-49D3-B1E6-EA6DA3510863} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 		{F4F0B32F-B777-43B8-8B8B-7765A3F50EF8} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 		{13D318F4-1848-4236-85D2-CF8965C7D4F0} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
