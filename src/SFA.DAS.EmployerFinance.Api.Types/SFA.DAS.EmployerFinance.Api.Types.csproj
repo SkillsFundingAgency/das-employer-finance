@@ -11,4 +11,8 @@
     <PackageLicense>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice/tree/master/src/SFA.DAS.EmployerFinance.Api.Types</PackageLicense>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj" />
+  </ItemGroup>
+
 </Project>
