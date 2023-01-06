@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 
-namespace SFA.DAS.EAS.TestCommon.Extensions
+namespace SFA.DAS.EmployerFinance.Api.UnitTests
 {
     public static class ObjectExtensions
     {

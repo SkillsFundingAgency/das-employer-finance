@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Domain", "SFA.DAS.EmployerApprenticeshipsService.Domain\SFA.DAS.EAS.Domain.csproj", "{EC415CDA-9294-4967-BD27-AA900985427D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.TestCommon", "SFA.DAS.EmployerApprenticeshipsService.TestCommon\SFA.DAS.EAS.TestCommon.csproj", "{05D7C094-E2C9-4CCD-B0D7-85D263254B26}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PreReqs", "PreReqs", "{15DE899B-AD05-470D-B0F8-E5696141CA9A}"
 	ProjectSection(SolutionItems) = preProject
 		DevInstall.ps1 = DevInstall.ps1
@@ -17,11 +13,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.Employer_Financ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Client", "SFA.DAS.Account.Api.Client\SFA.DAS.EAS.Account.Api.Client.csproj", "{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EAS.Account.Api.Client.UnitTests", "SFA.DAS.Account.Api.Client.UnitTests\SFA.DAS.EAS.Account.Api.Client.UnitTests.csproj", "{47A8FD28-BC68-4938-A508-95482FB98BA5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EAS.Account.Api.Types", "SFA.DAS.EAS.Account.Api.Types\SFA.DAS.EAS.Account.Api.Types.csproj", "{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{BEFF50E9-EED9-4DD2-A5F3-A707DCD99A17}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "AzureConfiguration", "{68328FF1-53F2-4737-A983-7E2B67179E17}"
 	ProjectSection(SolutionItems) = preProject
@@ -29,8 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "Azure
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFA.DAS.EmployerFinance", "SFA.DAS.EmployerFinance", "{8D013ACF-E88D-4941-AE77-765F19C6F4B2}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{19BA54F2-A356-49AF-8062-9D492E8D03D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Host", "SFA.DAS.EmployerFinance.Host\SFA.DAS.EmployerFinance.Host.csproj", "{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1}"
 EndProject
@@ -88,14 +78,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EC415CDA-9294-4967-BD27-AA900985427D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC415CDA-9294-4967-BD27-AA900985427D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC415CDA-9294-4967-BD27-AA900985427D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC415CDA-9294-4967-BD27-AA900985427D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05D7C094-E2C9-4CCD-B0D7-85D263254B26}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C145D4A-CBA9-439C-984E-0A5953CBE04D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -106,10 +88,6 @@ Global
 		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F0122D6-36F6-4D6C-856E-3DAAE1B13464}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47A8FD28-BC68-4938-A508-95482FB98BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47A8FD28-BC68-4938-A508-95482FB98BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47A8FD28-BC68-4938-A508-95482FB98BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47A8FD28-BC68-4938-A508-95482FB98BA5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AFB0BBE-1E53-488C-A971-D236DF9EAA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -199,9 +177,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{05D7C094-E2C9-4CCD-B0D7-85D263254B26} = {19BA54F2-A356-49AF-8062-9D492E8D03D5}
-		{47A8FD28-BC68-4938-A508-95482FB98BA5} = {BEFF50E9-EED9-4DD2-A5F3-A707DCD99A17}
-		{BEFF50E9-EED9-4DD2-A5F3-A707DCD99A17} = {19BA54F2-A356-49AF-8062-9D492E8D03D5}
 		{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1} = {8D013ACF-E88D-4941-AE77-765F19C6F4B2}
 		{079F027D-0794-463F-9D03-92858538CD31} = {8D013ACF-E88D-4941-AE77-765F19C6F4B2}
 		{3B9A7EBE-D126-4082-A395-444E7DB2008B} = {8D013ACF-E88D-4941-AE77-765F19C6F4B2}

@@ -61,12 +61,7 @@
     <Compile Include="Configuration\CommitmentsApiClientConfiguration.cs" />
     <Compile Include="Configuration\GoogleAnalyticsSnippets.cs" />
     <Compile Include="Configuration\ITopicMessageSubscriberConfiguration.cs" />
-    <Compile Include="Models\Account\AccountHistory.cs" />
-    <Compile Include="Models\Account\AccountLegalEntity.cs" />
-    <Compile Include="Models\Account\AgreementTemplate.cs" />
-    <Compile Include="Models\Account\EmployerAgreement.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Models\Account\AccountStats.cs" />
     <Compile Include="Models\ApprenticeshipCourse\Framework.cs" />
     <Compile Include="Models\ApprenticeshipCourse\FrameworksView.cs" />
     <Compile Include="Models\ApprenticeshipCourse\ITrainingProgramme.cs" />
@@ -85,10 +80,6 @@
     <Compile Include="Configuration\PaymentProviderConfiguration.cs" />
     <Compile Include="Configuration\EventsApiClientConfiguration.cs" />
     <Compile Include="Configuration\ReferenceDataApiClientConfiguration.cs" />
-    <Compile Include="Data\Repositories\IUserRepository.cs" />
-    <Compile Include="Models\Account\Account.cs" />
-    <Compile Include="Models\Account\AccountBalance.cs" />
-    <Compile Include="Models\Account\LegalEntity.cs" />
     <Compile Include="Models\Levy\LevyDeclarationView.cs" />
     <Compile Include="Models\Transaction\TransactionItemType.cs" />
     <Compile Include="Models\AccountTeam\Membership.cs" />
