@@ -85,8 +85,6 @@
     <Compile Include="Configuration\PaymentProviderConfiguration.cs" />
     <Compile Include="Configuration\EventsApiClientConfiguration.cs" />
     <Compile Include="Configuration\ReferenceDataApiClientConfiguration.cs" />
-    <Compile Include="Data\Repositories\IDasLevyRepository.cs" />
-    <Compile Include="Data\Repositories\IMembershipRepository.cs" />
     <Compile Include="Data\Repositories\IUserRepository.cs" />
     <Compile Include="Models\Account\Account.cs" />
     <Compile Include="Models\Account\AccountBalance.cs" />
