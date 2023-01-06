@@ -92,8 +92,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Types", "SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj", "{77E5F79D-6045-49F0-BF5D-E0A83688C220}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFA.DAS.EmployerAccounts", "SFA.DAS.EmployerAccounts", "{5A620BDB-368F-47F2-8E06-45A23063737A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
