@@ -77,7 +77,6 @@
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\ExpiredFunds\ExpiredFundTransactionLine.cs" />
     <Compile Include="Models\Role.cs" />
-    <Compile Include="Models\Settings\UserNotificationSetting.cs" />
     <Compile Include="Models\Transaction\AggregationData.cs" />
     <Compile Include="Configuration\AuditApiClientConfiguration.cs" />
     <Compile Include="Configuration\ClaimIdentifierConfiguration.cs" />
