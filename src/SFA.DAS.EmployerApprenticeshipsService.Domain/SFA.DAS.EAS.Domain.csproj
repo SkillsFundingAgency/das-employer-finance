@@ -111,7 +111,6 @@
     <Compile Include="Models\AccountTeam\MembershipView.cs" />
     <Compile Include="Models\Payments\PaymentTransactionLine.cs" />
     <Compile Include="Models\Payments\PaymentDetails.cs" />
-    <Compile Include="Models\HmrcEmployer\EmprefDiscovery.cs" />
     <Compile Include="Models\Levy\DasDeclaration.cs" />
     <Compile Include="Models\Levy\DasDeclarations.cs" />
     <Compile Include="Models\Levy\DasEnglishFraction.cs" />
