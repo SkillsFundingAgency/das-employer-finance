@@ -116,10 +116,6 @@
     <Compile Include="Models\Transaction\TransactionLine.cs" />
     <Compile Include="Models\Transaction\TransactionLineDetail.cs" />
     <Compile Include="Models\Transaction\TransactionSummary.cs" />
-    <Compile Include="Models\Notification\EmailContent.cs" />
-    <Compile Include="Models\Notification\EmailMessage.cs" />
-    <Compile Include="Models\Notification\MessageFormat.cs" />
-    <Compile Include="Models\Notification\NotificationMessage.cs" />
     <Compile Include="Models\TransferConnections\TransferConnectionInvitation.cs" />
     <Compile Include="Models\TransferConnections\TransferConnectionInvitationChange.cs" />
     <Compile Include="Models\TransferConnections\TransferConnectionInvitationStatus.cs" />
