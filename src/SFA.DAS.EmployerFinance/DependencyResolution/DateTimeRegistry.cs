@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFinance.DependencyResolution
     {
         public DateTimeRegistry()
         {
-            For<ICurrentDateTime>().Use(x=> new CurrentDateTime()).Singleton();
+            For<ICurrentDateTime>().Use(x => new CurrentDateTime()).Singleton();
         }
     }
 }
