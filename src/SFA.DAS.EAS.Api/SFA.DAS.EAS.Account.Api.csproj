@@ -66,7 +66,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Mappings\AccountMappings.cs" />
-    <Compile Include="Mappings\UserMappings.cs" />
     <Compile Include="Orchestrators\AccountTransactionsOrchestrator.cs" />
     <Compile Include="Orchestrators\AccountsOrchestrator.cs" />
     <Compile Include="Orchestrators\OrchestratorResponse.cs" />
