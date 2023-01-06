@@ -104,9 +104,6 @@
     <Compile Include="Models\Transfers\TransferAllowance.cs" />
     <Compile Include="Models\UserProfile\User.cs" />
     <Compile Include="Models\UserProfile\UserAccountSetting.cs" />
-    <Compile Include="Models\UserView\MultiVariantView.cs" />
-    <Compile Include="Models\UserView\MultiVariantViewLookup.cs" />
-    <Compile Include="Models\UserView\ViewAccess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
