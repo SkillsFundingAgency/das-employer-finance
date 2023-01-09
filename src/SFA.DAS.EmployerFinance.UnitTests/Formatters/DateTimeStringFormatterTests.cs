@@ -18,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters
         public void FinancialYearStringForReturnsCorrectString(int year, int month, int day, string expected)
         {
             var testDateTime = new DateTime(year, month, day);
-            var referenceDate = new DateTime(year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var referenceDate = new DateTime(year, month, day);
             var formatter = new DateTimeStringFormatter(new CurrentDateTime(referenceDate));
             var result = formatter.FinancialYearStringFor(testDateTime);
             Assert.AreEqual(expected, result);
@@ -31,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters
         public void ToNextFinancialYearStringForReturnsCorrectString(int year, int month, int day, string expected)
         {
             var testDateTime = new DateTime(year, month, day);
-            var referenceDate = new DateTime(year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var referenceDate = new DateTime(year, month, day);
             var formatter = new DateTimeStringFormatter(new CurrentDateTime(referenceDate));
             var result = formatter.FinancialYearStringFor(testDateTime.AddYears(1));
             Assert.AreEqual(expected, result);
@@ -44,7 +44,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters
         public void ToYearAfterFinancialYearStringForReturnsCorrectString(int year, int month, int day, string expected)
         {
             var testDateTime = new DateTime(year, month, day);
-            var referenceDate = new DateTime(year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var referenceDate = new DateTime(year, month, day);
             var formatter = new DateTimeStringFormatter(new CurrentDateTime(referenceDate));
             var result = formatter.FinancialYearStringFor(testDateTime.AddYears(2));
             Assert.AreEqual(expected, result);
