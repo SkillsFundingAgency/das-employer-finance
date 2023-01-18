@@ -83,9 +83,6 @@
             "type": "string",
             "defaultValue": "[subscription().subscriptionId]"
         },
-        "keyVaultResourceGroupName": {
-            "type": "string"
-        },
         "sharedKeyVaultName": {
             "type": "string"
         },
@@ -245,7 +242,7 @@
                         "value": "[parameters('sharedKeyVaultName')]"
                     },
                     "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroupName')]"
+                        "value": "[parameters('sharedManagementResourceGroup')]"
                     }
                 }
             }
@@ -367,7 +364,7 @@
                         "value": "[parameters('sharedKeyVaultName')]"
                     },
                     "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroupName')]"
+                        "value": "[parameters('sharedManagementResourceGroup')]"
                     }
                 }
             }
