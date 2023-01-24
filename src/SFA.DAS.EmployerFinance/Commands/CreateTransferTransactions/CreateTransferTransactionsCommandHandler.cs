@@ -6,11 +6,12 @@ using SFA.DAS.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions
 {
-    public class CreateTransferTransactionsCommandHandler : AsyncRequestHandler<CreateTransferTransactionsCommand>
+    public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTransferTransactionsCommand,Unit>
     {
         private readonly IValidator<CreateTransferTransactionsCommand> _validator;
         private readonly ITransferRepository _transferRepository;
@@ -30,9 +31,9 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions
             _logger = logger;
         }
 
-        protected override async Task HandleCore(CreateTransferTransactionsCommand message)
+        public async Task<Unit> Handle(CreateTransferTransactionsCommand request,CancellationToken cancellationToken)
         {
-            var validationResult = _validator.Validate(message);
+            var validationResult = _validator.Validate(request);
 
             if (!validationResult.IsValid())
             {
@@ -41,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions
 
             try
             {
-                var transfers = await _transferRepository.GetReceiverAccountTransfersByPeriodEnd(message.ReceiverAccountId, message.PeriodEnd);
+                var transfers = await _transferRepository.GetReceiverAccountTransfersByPeriodEnd(request.ReceiverAccountId, request.PeriodEnd);
 
                 var accountTransfers = transfers as AccountTransfer[] ?? transfers.ToArray();
 
@@ -55,9 +56,11 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Failed to create transfer transaction for accountId {message.ReceiverAccountId} and period end {message.PeriodEnd}");
+                _logger.Error(ex, $"Failed to create transfer transaction for accountId {request.ReceiverAccountId} and period end {request.PeriodEnd}");
                 throw;
             }
+
+            return Unit.Value;
         }
 
         private static IEnumerable<TransferTransactionLine> CreateTransactions(IGrouping<long, AccountTransfer> senderTransferGroup)

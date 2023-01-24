@@ -17,16 +17,16 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd
             _dasLevyRepository = dasLevyRepository;
         }
 
-        public async Task<Unit> Handle(CreateNewPeriodEndCommand message, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateNewPeriodEndCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = _validator.Validate(message);
+            var validationResult = _validator.Validate(request);
 
             if (!validationResult.IsValid())
             {
                 throw new InvalidRequestException(validationResult.ValidationDictionary);
             }
 
-            await _dasLevyRepository.CreateNewPeriodEnd(message.NewPeriodEnd);
+            await _dasLevyRepository.CreateNewPeriodEnd(request.NewPeriodEnd);
             
             return Unit.Value;
         }

@@ -18,19 +18,19 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(CreateAccountLegalEntityCommand message,CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateAccountLegalEntityCommand request,CancellationToken cancellationToken)
         {
             try
             {
                 await _accountLegalEntityRepository.CreateAccountLegalEntity(
-                    message.Id,
-                    message.PendingAgreementId,
-                    message.SignedAgreementId,
-                    message.SignedAgreementVersion,
-                    message.AccountId,
-                    message.LegalEntityId
+                    request.Id,
+                    request.PendingAgreementId,
+                    request.SignedAgreementId,
+                    request.SignedAgreementVersion,
+                    request.AccountId,
+                    request.LegalEntityId
                 );
-                _logger.Info($"Account Legal Entity {message.Id} created");
+                _logger.Info($"Account Legal Entity {request.Id} created");
             }
             catch (Exception exception)
             {

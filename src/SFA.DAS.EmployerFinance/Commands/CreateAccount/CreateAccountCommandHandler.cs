@@ -19,13 +19,13 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccount
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(CreateAccountCommand message, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                await _accountRepository.CreateAccount(message.Id, message.Name);
+                await _accountRepository.CreateAccount(request.Id, request.Name);
 
-                _logger.Info($"Account {message.Id} created");
+                _logger.Info($"Account {request.Id} created");
             }
             catch (Exception ex)
             {

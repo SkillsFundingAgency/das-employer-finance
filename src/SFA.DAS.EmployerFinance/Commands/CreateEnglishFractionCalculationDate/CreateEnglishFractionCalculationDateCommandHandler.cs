@@ -20,18 +20,18 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(CreateEnglishFractionCalculationDateCommand message, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateEnglishFractionCalculationDateCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = _validator.Validate(message);
+            var validationResult = _validator.Validate(request);
 
             if (!validationResult.IsValid())
             {
                 throw new InvalidRequestException(validationResult.ValidationDictionary);
             }
 
-            await _englishFractionRepository.SetLastUpdateDate(message.DateCalculated);
+            await _englishFractionRepository.SetLastUpdateDate(request.DateCalculated);
 
-            _logger.Info($"English Fraction CalculationDate updated to {message.DateCalculated.ToString("dd MMM yyyy")}");
+            _logger.Info($"English Fraction CalculationDate updated to {request.DateCalculated.ToString("dd MMM yyyy")}");
 
             return Unit.Value;
         }
