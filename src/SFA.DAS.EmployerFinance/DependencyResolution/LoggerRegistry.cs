@@ -2,7 +2,7 @@
 using NLog.Extensions.Logging;
 using SFA.DAS.NLog.Logger;
 using StructureMap;
-using System.Web;
+using SFA.DAS.EmployerFinance;
 
 namespace SFA.DAS.EmployerFinance.DependencyResolution
 {
@@ -12,7 +12,7 @@ namespace SFA.DAS.EmployerFinance.DependencyResolution
         {
             For<ILog>().Use(c => new NLogLogger(c.ParentType, c.GetInstance<ILoggingContext>(), null)).AlwaysUnique();
             For<ILoggerFactory>().Use(() => new LoggerFactory().AddNLog()).Singleton();
-            For<ILoggingContext>().Use(c => HttpContext.Current == null ? null : new LoggingContext(new HttpContextWrapper(HttpContext.Current)));
+            For<ILoggingContext>().Use(c => HttpContextHelper.Current == null ? null : new LoggingContext(new HttpContextWrapper(HttpContextHelper.Current)));
         }
     }
 

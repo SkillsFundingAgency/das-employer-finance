@@ -274,3 +274,7 @@ src/SFA.DAS.EmployerAccounts.ReadStore/SFA.DAS.EmployerAccounts.ReadStore/SFA.DA
 .sonarqube/
 SonarQube.Analysis.xml
 **/*.slconfig
+
+#Upgrade Assistant files
+*.sarif
+*.clef

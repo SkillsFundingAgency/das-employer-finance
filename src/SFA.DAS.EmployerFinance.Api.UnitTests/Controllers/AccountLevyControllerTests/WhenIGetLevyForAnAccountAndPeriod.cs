@@ -5,7 +5,6 @@ using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountLevyControllerTests
 {

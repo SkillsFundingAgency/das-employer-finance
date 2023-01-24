@@ -1,29 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.6.8" />
     <PackageReference Include="SFA.DAS.Authentication" Version="1.1.2" />
     <PackageReference Include="SFA.DAS.UnitOfWork.EntityFramework" Version="9.0.13" />
     <PackageReference Include="SFA.DAS.UnitOfWork.NServiceBus" Version="9.0.13" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.355802">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Messages\SFA.DAS.EmployerFinance.Messages.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="appsettings.json" />
+  </ItemGroup>
 </Project>
