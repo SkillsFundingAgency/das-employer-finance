@@ -6,7 +6,7 @@ using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccount
 {
-    public class CreateAccountCommandHandler : AsyncRequestHandler<CreateAccountCommand>
+    public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand>
     {
         private readonly IAccountRepository _accountRepository;
         private readonly ILog _logger;
