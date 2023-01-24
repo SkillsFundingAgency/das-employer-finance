@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediatR;
+using MediatR.Pipeline;
+using SFA.DAS.Authorization.ModelBinding;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
 {
-    public class LegalEntitySignAgreementCommand : IAsyncRequest
+    public class LegalEntitySignAgreementCommand : IAuthorizationContextModel,IRequest<Unit>
     {
         public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId,
             long legalEntityId)
@@ -24,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
         public long LegalEntityId { get; set; }
     }
 
-    public class LegalEntitySignAgreementCommandHandler : AsyncRequestHandler<LegalEntitySignAgreementCommand>
+    public class LegalEntitySignAgreementCommandHandler : IRequestExceptionHandler<LegalEntitySignAgreementCommand,Unit>
     {
         private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
         private readonly ILog _logger;
@@ -35,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
             _logger = logger;
         }
 
-        protected override async Task HandleCore(LegalEntitySignAgreementCommand message)
+        public async Task Handle(LegalEntitySignAgreementCommand message)
         {
             try
             {
@@ -48,6 +50,8 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
                 _logger.Error(exception, "Could not sign agreement on legal entity");
                 throw;
             }
+
+            return Unit.Value;
         }
     }
 }

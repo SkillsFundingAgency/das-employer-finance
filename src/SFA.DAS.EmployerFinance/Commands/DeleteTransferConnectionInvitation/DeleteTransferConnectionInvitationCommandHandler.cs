@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation
 {
-    public class DeleteTransferConnectionInvitationCommandHandler : AsyncRequestHandler<DeleteTransferConnectionInvitationCommand>
+    public class DeleteTransferConnectionInvitationCommandHandler : IRequestHandler<DeleteTransferConnectionInvitationCommand,Unit>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -20,13 +21,15 @@ namespace SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitatio
             _userRepository = userRepository;
         }
 
-        protected override async Task HandleCore(DeleteTransferConnectionInvitationCommand message)
+        public async Task<Unit> Handle(DeleteTransferConnectionInvitationCommand request,CancellationToken cancellationToken)
         {
-            var deleterAccount = await _employerAccountRepository.Get(message.AccountId);
-            var deleterUser = await _userRepository.Get(message.UserRef);
-            var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(message.TransferConnectionInvitationId.Value);
+            var deleterAccount = await _employerAccountRepository.Get(request.AccountId);
+            var deleterUser = await _userRepository.Get(request.UserRef);
+            var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(request.TransferConnectionInvitationId.Value);
 
             transferConnectionInvitation.Delete(deleterAccount, deleterUser);
+
+            return Unit.Value;
         }
     }
 }

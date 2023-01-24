@@ -6,7 +6,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation
 {
-    public class DeleteTransferConnectionInvitationCommand : IAuthorizationContextModel, IAsyncRequest
+    public class DeleteTransferConnectionInvitationCommand : IAuthorizationContextModel, IRequest<Unit>
     {
         [IgnoreMap]
         [Required]
