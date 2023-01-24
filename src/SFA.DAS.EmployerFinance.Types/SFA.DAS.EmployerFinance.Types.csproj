@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>DAS</Authors>    
     <Description>SFA.DAS.EmployerFinance.Types library to calculate expired funds</Description>
     <PackageLicense>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice/blob/master/LICENSE</PackageLicense>

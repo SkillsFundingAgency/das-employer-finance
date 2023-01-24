@@ -9,7 +9,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
     [ApiAuthorize(Roles = "ReadUserAccounts")]
     [RoutePrefix("api/accounts")]
-    public class TransferConnectionsController : ApiController
+    public class TransferConnectionsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IHashingService _hashingService;

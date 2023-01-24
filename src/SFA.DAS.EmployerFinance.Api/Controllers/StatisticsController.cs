@@ -7,7 +7,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
     [ApiAuthorize(Roles = "ReadUserAccounts")]
     [RoutePrefix("api/financestatistics")]
-    public class StatisticsController : ApiController
+    public class StatisticsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly StatisticsOrchestrator _statisticsOrchestrator;
 

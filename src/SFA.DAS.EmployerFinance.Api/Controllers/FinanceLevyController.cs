@@ -6,7 +6,7 @@ using System.Web.Http;
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
     [RoutePrefix("api/accounts/{hashedAccountId}/levy")]
-    public class FinanceLevyController : ApiController
+    public class FinanceLevyController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly FinanceOrchestrator _orchestrator;
 

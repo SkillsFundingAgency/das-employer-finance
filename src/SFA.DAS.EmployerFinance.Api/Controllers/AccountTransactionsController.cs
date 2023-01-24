@@ -8,7 +8,7 @@ using System.Web.Http;
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
     [RoutePrefix("api/accounts/{hashedAccountId}/transactions")]
-    public class AccountTransactionsController : ApiController
+    public class AccountTransactionsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly AccountTransactionsOrchestrator _orchestrator;
 

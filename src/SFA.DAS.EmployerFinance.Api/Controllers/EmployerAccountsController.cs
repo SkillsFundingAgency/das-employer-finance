@@ -7,7 +7,7 @@ using System.Web.Http;
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
     [RoutePrefix("api/accounts")]
-    public class EmployerAccountsController : ApiController
+    public class EmployerAccountsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly FinanceOrchestrator _financeOrchestrator;
 
