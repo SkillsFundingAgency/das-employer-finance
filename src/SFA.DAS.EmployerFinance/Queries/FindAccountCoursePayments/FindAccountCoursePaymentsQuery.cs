@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
 {
-    public class FindAccountCoursePaymentsQuery : IAsyncRequest<FindAccountCoursePaymentsResponse>
+    public class FindAccountCoursePaymentsQuery : IRequest<FindAccountCoursePaymentsResponse>
     {
         public string HashedAccountId { get; set; }
         public long UkPrn { get; set; }

@@ -15,7 +15,7 @@ namespace SFA.DAS.EmployerFinance.Services
 
         public async Task UpdatePayeScheme(string empRef)
         {
-            await _mediator.SendAsync(new UpdatePayeInformationCommand {PayeRef = empRef});
+            await _mediator.Send(new UpdatePayeInformationCommand {PayeRef = empRef});
         }
     }
 }

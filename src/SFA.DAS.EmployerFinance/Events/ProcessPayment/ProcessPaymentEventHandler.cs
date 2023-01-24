@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Events.ProcessPayment
 {
-    public class ProcessPaymentEventHandler : IAsyncNotificationHandler<ProcessPaymentEvent>
+    public class ProcessPaymentEventHandler : INotificationHandler<ProcessPaymentEvent>
 
     {
         private readonly IDasLevyRepository _dasLevyRepository;
@@ -17,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.Events.ProcessPayment
             _logger = logger;
         }
 
-        public async Task Handle(ProcessPaymentEvent notification)
+        public async Task Handle(ProcessPaymentEvent notification, CancellationToken cancellationToken)
         {
             await _dasLevyRepository.ProcessPaymentData(notification.AccountId);
 

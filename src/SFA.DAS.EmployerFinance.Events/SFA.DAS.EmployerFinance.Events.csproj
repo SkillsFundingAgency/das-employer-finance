@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>.net6.0</TargetFramework>
     <Authors>DAS</Authors>
     <Description>Events raised by SFA.DAS.EmployerFinance</Description>
     <PackageLicense>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice/blob/master/LICENSE</PackageLicense>
@@ -8,8 +8,5 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SFA.DAS.Messaging" Version="3.1.133" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.355802">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 </Project>

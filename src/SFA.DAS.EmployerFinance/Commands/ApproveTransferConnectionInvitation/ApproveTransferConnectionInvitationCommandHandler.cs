@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation
 {
-    public class ApproveTransferConnectionInvitationCommandHandler : AsyncRequestHandler<ApproveTransferConnectionInvitationCommand>
+    public class ApproveTransferConnectionInvitationCommandHandler : IRequestHandler<ApproveTransferConnectionInvitationCommand, Unit>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -20,13 +21,14 @@ namespace SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation
             _userRepository = userRepository;
         }
 
-        protected override async Task HandleCore(ApproveTransferConnectionInvitationCommand message)
+        public async Task<Unit> Handle(ApproveTransferConnectionInvitationCommand request, CancellationToken cancellationToken)
         {
-            var approverAccount = await _employerAccountRepository.Get(message.AccountId);
-            var approverUser = await _userRepository.Get(message.UserRef);
-            var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(message.TransferConnectionInvitationId.Value);
+            var approverAccount = await _employerAccountRepository.Get(request.AccountId);
+            var approverUser = await _userRepository.Get(request.UserRef);
+            var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(request.TransferConnectionInvitationId.Value);
 
             transferConnectionInvitation.Approve(approverAccount, approverUser);
+            return Unit.Value;
         }
     }
 }

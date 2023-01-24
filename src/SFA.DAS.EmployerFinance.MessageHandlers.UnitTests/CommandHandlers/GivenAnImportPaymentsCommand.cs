@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
@@ -48,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             _loggerMock = new Mock<ILog>();
 
             _mediatorMock
-                .Setup(mock => mock.SendAsync(It.IsAny<GetPeriodEndsRequest>()))
+                .Setup(mock => mock.Send(It.IsAny<GetPeriodEndsRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetPeriodEndsResponse { CurrentPeriodEnds = new List<DbPeriodEnd>() });
 
             Fixture.Customize<Account>(x => x.Without(s => s.AccountLegalEntities));

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -9,7 +10,7 @@ using SFA.DAS.HashingService;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
 {
-    public class FindAccountCoursePaymentsQueryHandler : IAsyncRequestHandler<FindAccountCoursePaymentsQuery,
+    public class FindAccountCoursePaymentsQueryHandler : IRequestHandler<FindAccountCoursePaymentsQuery,
         FindAccountCoursePaymentsResponse>
     {
         private readonly IValidator<FindAccountCoursePaymentsQuery> _validator;
@@ -26,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
             _hashingService = hashingService;
         }
 
-        public async Task<FindAccountCoursePaymentsResponse> Handle(FindAccountCoursePaymentsQuery message)
+        public async Task<FindAccountCoursePaymentsResponse> Handle(FindAccountCoursePaymentsQuery message, CancellationToken cancellationToken)
         {
             var validationResult = await _validator.ValidateAsync(message);
 
@@ -42,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
 
             var accountId = _hashingService.DecodeValue(message.HashedAccountId);
             var transactions = await _dasLevyService.GetAccountCoursePaymentsByDateRange<PaymentTransactionLine>
-            (accountId, message.UkPrn, message.CourseName, message.CourseLevel, message.PathwayCode, message.FromDate, message.ToDate);
+                (accountId, message.UkPrn, message.CourseName, message.CourseLevel, message.PathwayCode, message.FromDate, message.ToDate);
 
             if (!transactions.Any())
             {
