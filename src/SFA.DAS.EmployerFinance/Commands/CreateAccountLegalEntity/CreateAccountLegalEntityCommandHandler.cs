@@ -18,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
             _logger = logger;
         }
 
-        public async Task Handle(CreateAccountLegalEntityCommand message,CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateAccountLegalEntityCommand message,CancellationToken cancellationToken)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
                 _logger.Error(exception, "Could not create Account Legal Entity");
                 throw;
             }
-            
+            return Unit.Value;
         }
     }
 }

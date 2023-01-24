@@ -3,10 +3,11 @@ using MediatR;
 using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.NLog.Logger;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
 {
-    public class CreateEnglishFractionCalculationDateCommandHandler : AsyncRequestHandler<CreateEnglishFractionCalculationDateCommand>
+    public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandler<CreateEnglishFractionCalculationDateCommand,Unit>
     {
         private readonly IValidator<CreateEnglishFractionCalculationDateCommand> _validator;
         private readonly IEnglishFractionRepository _englishFractionRepository;
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
             _logger = logger;
         }
 
-        protected override async Task HandleCore(CreateEnglishFractionCalculationDateCommand message)
+        public async Task<Unit> Handle(CreateEnglishFractionCalculationDateCommand message, CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(message);
 
@@ -31,6 +32,8 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
             await _englishFractionRepository.SetLastUpdateDate(message.DateCalculated);
 
             _logger.Info($"English Fraction CalculationDate updated to {message.DateCalculated.ToString("dd MMM yyyy")}");
+
+            return Unit.Value;
         }
     }
 }

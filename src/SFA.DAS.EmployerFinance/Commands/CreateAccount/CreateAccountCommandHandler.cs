@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.Messaging.Attributes;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccount
@@ -18,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccount
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(CreateAccountCommand message,CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateAccountCommand message, CancellationToken cancellationToken)
         {
             try
             {
@@ -31,6 +32,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccount
                 _logger.Error(ex, "Could not create account");
                 throw;
             }
-        }
+            return Unit.Value;
+        }        
     }
 }
