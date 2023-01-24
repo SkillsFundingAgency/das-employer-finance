@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
 {
-    public class CreateAccountLegalEntityCommand : IAsyncRequest
+    public class CreateAccountLegalEntityCommand : IAuthorizationContextModel,IRequest<Unit>
     { 
         public CreateAccountLegalEntityCommand(long id, long? pendingAgreementId, long? signedAgreementId, int? signedAgreementVersion, long accountId, long legalEntityId)
         {

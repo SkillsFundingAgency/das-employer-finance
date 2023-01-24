@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
@@ -6,7 +7,7 @@ using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
 {
-    public class CreateAccountLegalEntityCommandHandler : AsyncRequestHandler<CreateAccountLegalEntityCommand>
+    public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAccountLegalEntityCommand,Unit>
     {
         private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
         private readonly ILog _logger;
@@ -17,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
             _logger = logger;
         }
 
-        protected override async Task HandleCore(CreateAccountLegalEntityCommand message)
+        public async Task Handle(CreateAccountLegalEntityCommand message,CancellationToken cancellationToken)
         {
             try
             {
