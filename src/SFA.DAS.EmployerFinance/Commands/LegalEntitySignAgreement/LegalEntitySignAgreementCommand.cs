@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using MediatR.Pipeline;
@@ -37,7 +38,7 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(LegalEntitySignAgreementCommand message)
+        public async Task<Unit> Handle(LegalEntitySignAgreementCommand message, CancellationToken cancellationToken)
         {
             try
             {
