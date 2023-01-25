@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Commands.PublishGenericEvent;
@@ -16,7 +17,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
 {
-    public class RefreshEmployerLevyDataCommandHandler : AsyncRequestHandler<RefreshEmployerLevyDataCommand>
+    public class RefreshEmployerLevyDataCommandHandler : IRequestHandler<RefreshEmployerLevyDataCommand,Unit>
     {
         private readonly IValidator<RefreshEmployerLevyDataCommand> _validator;
         private readonly IDasLevyRepository _dasLevyRepository;
@@ -50,9 +51,9 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
             _logger = logger;
         }
 
-        protected override async Task HandleCore(RefreshEmployerLevyDataCommand message)
+        public async Task<Unit> Handle(RefreshEmployerLevyDataCommand request,CancellationToken cancellationToken)
         {
-            var result = _validator.Validate(message);
+            var result = _validator.Validate(request);
 
             if (!result.IsValid())
             {
@@ -62,13 +63,13 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
             var savedDeclarations = new List<DasDeclaration>();
             var updatedEmpRefs = new List<string>();
 
-            foreach (var employerLevyData in message.EmployerLevyData)
+            foreach (var employerLevyData in request.EmployerLevyData)
             {
                 var declarations = await _levyImportCleanerStrategy.Cleanup(employerLevyData.EmpRef, employerLevyData.Declarations.Declarations);
 
                 if (declarations.Length == 0) continue;
 
-                await _dasLevyRepository.CreateEmployerDeclarations(declarations, employerLevyData.EmpRef, message.AccountId);
+                await _dasLevyRepository.CreateEmployerDeclarations(declarations, employerLevyData.EmpRef, request.AccountId);
 
                 updatedEmpRefs.Add(employerLevyData.EmpRef);
                 savedDeclarations.AddRange(declarations);
@@ -79,12 +80,14 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
 
             if (hasDecalarations)
             {
-                levyTotalTransactionValue = await HasAccountHadLevyTransactions(message, updatedEmpRefs);
-                await PublishDeclarationUpdatedEvents(message.AccountId, savedDeclarations);
+                levyTotalTransactionValue = await HasAccountHadLevyTransactions(request, updatedEmpRefs);
+                await PublishDeclarationUpdatedEvents(request.AccountId, savedDeclarations);
             }
 
-            await PublishRefreshEmployerLevyDataCompletedEvent(hasDecalarations, levyTotalTransactionValue, message.AccountId);
-            await PublishAccountLevyStatusEvent(levyTotalTransactionValue, message.AccountId);
+            await PublishRefreshEmployerLevyDataCompletedEvent(hasDecalarations, levyTotalTransactionValue, request.AccountId);
+            await PublishAccountLevyStatusEvent(levyTotalTransactionValue, request.AccountId);
+
+            return Unit.Value;
         }
 
         private async Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
