@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
 {
-    public class GetTransferTransactionDetailsQueryHandler : IAsyncRequestHandler<GetTransferTransactionDetailsQuery, GetTransferTransactionDetailsResponse>
+    public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTransferTransactionDetailsQuery, GetTransferTransactionDetailsResponse>
     {
         private readonly EmployerFinanceDbContext _dbContext;
         private readonly IPublicHashingService _publicHashingService;
@@ -22,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
             _publicHashingService = publicHashingService;
         }
 
-        public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query)
+        public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query,CancellationToken cancellationToken)
         {
             var targetAccountId = _publicHashingService.DecodeValue(query.TargetAccountPublicHashedId);
 

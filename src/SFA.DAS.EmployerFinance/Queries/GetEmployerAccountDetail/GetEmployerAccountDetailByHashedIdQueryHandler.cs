@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using SFA.DAS.EAS.Account.Api.Client;
@@ -7,7 +8,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail
 {
-    public class GetEmployerAccountDetailByHashedIdQueryHandler : IAsyncRequestHandler<GetEmployerAccountDetailByHashedIdQuery, GetEmployerAccountDetailByHashedIdResponse>
+    public class GetEmployerAccountDetailByHashedIdQueryHandler : IRequestHandler<GetEmployerAccountDetailByHashedIdQuery, GetEmployerAccountDetailByHashedIdResponse>
     {
         private readonly IValidator<GetEmployerAccountDetailByHashedIdQuery> _validator;
         private readonly IAccountApiClient _accountApiClient;
@@ -20,7 +21,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail
             _mapper = mapper;
         }
 
-        public async Task<GetEmployerAccountDetailByHashedIdResponse> Handle(GetEmployerAccountDetailByHashedIdQuery message)
+        public async Task<GetEmployerAccountDetailByHashedIdResponse> Handle(GetEmployerAccountDetailByHashedIdQuery message,CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(message);
 

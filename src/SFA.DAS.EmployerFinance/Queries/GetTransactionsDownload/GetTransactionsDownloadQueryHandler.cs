@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.Common.Domain.Types;
@@ -11,7 +12,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload
 {
-    public class GetTransactionsDownloadQueryHandler : IAsyncRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>
+    public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>
     {
         private readonly ITransactionFormatterFactory _transactionsFormatterFactory;
         private readonly ITransactionRepository _transactionRepository;
@@ -27,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload
             _accountApiClient = accountApiClient;
         }
 
-        public async Task<GetTransactionsDownloadResponse> Handle(GetTransactionsDownloadQuery message)
+        public async Task<GetTransactionsDownloadResponse> Handle(GetTransactionsDownloadQuery message,CancellationToken cancellationToken)
         {
             var endDate = message.EndDate.ToDate();
             var endDateBeginningOfNextMonth = new DateTime(endDate.Year, endDate.Month, 1).AddMonths(1);

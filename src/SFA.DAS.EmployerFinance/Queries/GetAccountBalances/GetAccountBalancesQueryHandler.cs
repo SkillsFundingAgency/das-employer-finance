@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.Validation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
 {
-    public class GetAccountBalancesQueryHandler : IAsyncRequestHandler<GetAccountBalancesRequest, GetAccountBalancesResponse>
+    public class GetAccountBalancesQueryHandler : IRequestHandler<GetAccountBalancesRequest, GetAccountBalancesResponse>
     {
         private readonly IDasLevyRepository _dasLevyRepository;
         private readonly IValidator<GetAccountBalancesRequest> _validator;
@@ -16,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
             _validator = validator;
         }
 
-        public async Task<GetAccountBalancesResponse> Handle(GetAccountBalancesRequest message)
+        public async Task<GetAccountBalancesResponse> Handle(GetAccountBalancesRequest message,CancellationToken cancellationToken)
         {
 
             var validationResult = _validator.Validate(message);

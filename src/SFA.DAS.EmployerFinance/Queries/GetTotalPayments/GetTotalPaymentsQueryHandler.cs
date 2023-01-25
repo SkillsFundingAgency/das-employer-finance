@@ -1,12 +1,13 @@
 ﻿using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using System.Data.Entity;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments
 {
     public class GetTotalPaymentsQueryHandler
-        : IAsyncRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
+        : IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
     {
         private readonly EmployerFinanceDbContext _financeDb;
 
@@ -15,7 +16,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments
             _financeDb = financeDb;
         }
 
-        public async Task<GetTotalPaymentsResponse> Handle(GetTotalPaymentsQuery message)
+        public async Task<GetTotalPaymentsResponse> Handle(GetTotalPaymentsQuery message,CancellationToken cancellationToken)
         {
             return new GetTotalPaymentsResponse
             {

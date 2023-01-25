@@ -5,7 +5,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
 {
-    public class GetTransferTransactionDetailsQuery : IAuthorizationContextModel, IAsyncRequest<GetTransferTransactionDetailsResponse>
+    public class GetTransferTransactionDetailsQuery : IAuthorizationContextModel, IRequest<GetTransferTransactionDetailsResponse>
     {
         [IgnoreMap]
         [Required]

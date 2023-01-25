@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.HashingService;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
 {
-    public class GetLevyDeclarationsByAccountAndPeriodQueryHandler : IAsyncRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>
+    public class GetLevyDeclarationsByAccountAndPeriodQueryHandler : IRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>
     {
         private readonly IDasLevyRepository _repository;
         private readonly IHashingService _hashingService;
@@ -16,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
             _hashingService = hashingService;
         }
 
-        public async Task<GetLevyDeclarationsByAccountAndPeriodResponse> Handle(GetLevyDeclarationsByAccountAndPeriodRequest message)
+        public async Task<GetLevyDeclarationsByAccountAndPeriodResponse> Handle(GetLevyDeclarationsByAccountAndPeriodRequest message,CancellationToken cancellationToken)
         {
             var accountId = GetAccountId(message.HashedAccountId);
             var declarations = await _repository.GetAccountLevyDeclarations(accountId, message.PayrollYear, message.PayrollMonth);

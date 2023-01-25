@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -10,7 +11,7 @@ using SFA.DAS.EmployerFinance.Dtos;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetHealthCheck
 {
-    public class GetHealthCheckQueryHandler : IAsyncRequestHandler<GetHealthCheckQuery, GetHealthCheckQueryResponse>
+    public class GetHealthCheckQueryHandler : IRequestHandler<GetHealthCheckQuery, GetHealthCheckQueryResponse>
     {
         private readonly Lazy<EmployerFinanceDbContext> _db;
         private readonly IConfigurationProvider _configurationProvider;
@@ -21,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetHealthCheck
             _configurationProvider = configurationProvider;
         }
 
-        public async Task<GetHealthCheckQueryResponse> Handle(GetHealthCheckQuery message)
+        public async Task<GetHealthCheckQueryResponse> Handle(GetHealthCheckQuery message,CancellationToken cancellationToken)
         {
             var healthCheck = await _db.Value.HealthChecks
                 .OrderByDescending(h => h.Id)

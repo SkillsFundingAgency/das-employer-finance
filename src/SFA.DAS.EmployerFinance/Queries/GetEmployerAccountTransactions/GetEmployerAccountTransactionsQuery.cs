@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
 {
-    public class GetEmployerAccountTransactionsQuery : IAsyncRequest<GetEmployerAccountTransactionsResponse>
+    public class GetEmployerAccountTransactionsQuery : IRequest<GetEmployerAccountTransactionsResponse>
     {
         public string HashedAccountId { get; set; }
         public int Year { get; set; }

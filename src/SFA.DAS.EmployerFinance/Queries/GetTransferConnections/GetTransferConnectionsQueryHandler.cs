@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -8,7 +9,7 @@ using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnections
 {
-    public class GetTransferConnectionsQueryHandler : IAsyncRequestHandler<GetTransferConnectionsQuery, GetTransferConnectionsResponse>
+    public class GetTransferConnectionsQueryHandler : IRequestHandler<GetTransferConnectionsQuery, GetTransferConnectionsResponse>
     {
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
         private readonly IMapper _mapper;
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnections
             _mapper = mapper;
         }
 
-        public async Task<GetTransferConnectionsResponse> Handle(GetTransferConnectionsQuery message)
+        public async Task<GetTransferConnectionsResponse> Handle(GetTransferConnectionsQuery message,CancellationToken cancellationToken)
         {
             var transferConnectionInvitations = 
                 await _transferConnectionInvitationRepository.GetByReceiver(message.AccountId, TransferConnectionInvitationStatus.Approved);

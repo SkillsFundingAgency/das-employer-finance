@@ -2,11 +2,12 @@
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.HashingService;
 using SFA.DAS.Validation;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration
 {
-    public class GetLevyDeclarationQueryHandler : IAsyncRequestHandler<GetLevyDeclarationRequest, GetLevyDeclarationResponse>
+    public class GetLevyDeclarationQueryHandler : IRequestHandler<GetLevyDeclarationRequest, GetLevyDeclarationResponse>
     {
         private readonly IDasLevyRepository _repository;
         private readonly IValidator<GetLevyDeclarationRequest> _validator;
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration
             _hashingService = hashingService;
         }
 
-        public async Task<GetLevyDeclarationResponse> Handle(GetLevyDeclarationRequest message)
+        public async Task<GetLevyDeclarationResponse> Handle(GetLevyDeclarationRequest message,CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(message);
 

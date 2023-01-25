@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts
 {
-    public class GetAllEmplyoerAccountsQueryHandler : IAsyncRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>
+    public class GetAllEmplyoerAccountsQueryHandler : IRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
 
@@ -13,7 +14,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts
             _employerAccountRepository = employerAccountRepository;
         }
 
-        public async Task<GetAllEmployerAccountsResponse> Handle(GetAllEmployerAccountsRequest message)
+        public async Task<GetAllEmployerAccountsResponse> Handle(GetAllEmployerAccountsRequest message,CancellationToken cancellationToken)
         {
             var result = await _employerAccountRepository.GetAll();
 

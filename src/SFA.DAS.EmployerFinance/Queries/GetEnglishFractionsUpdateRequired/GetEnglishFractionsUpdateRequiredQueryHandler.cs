@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired
 {
-    public class GetEnglishFractionsUpdateRequiredQueryHandler : IAsyncRequestHandler<GetEnglishFractionUpdateRequiredRequest, GetEnglishFractionUpdateRequiredResponse>
+    public class GetEnglishFractionsUpdateRequiredQueryHandler : IRequestHandler<GetEnglishFractionUpdateRequiredRequest, GetEnglishFractionUpdateRequiredResponse>
     {
         private readonly IHmrcService _hmrcService;
         private readonly IEnglishFractionRepository _englishFractionRepository;
@@ -17,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired
             _englishFractionRepository = englishFractionRepository;
         }
 
-        public async Task<GetEnglishFractionUpdateRequiredResponse> Handle(GetEnglishFractionUpdateRequiredRequest message)
+        public async Task<GetEnglishFractionUpdateRequiredResponse> Handle(GetEnglishFractionUpdateRequiredRequest message,CancellationToken cancellationToken)
         {
             var hmrcLatestUpdateDate = await _hmrcService.GetLastEnglishFractionUpdate();
             var levyLatestUpdateDate = await _englishFractionRepository.GetLastUpdateDate();

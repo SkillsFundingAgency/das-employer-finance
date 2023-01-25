@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -9,7 +10,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions
 {
-   public class FindEmployerAccountLevyDeclarationTransactionsHandler : IAsyncRequestHandler<FindEmployerAccountLevyDeclarationTransactionsQuery, FindEmployerAccountLevyDeclarationTransactionsResponse>
+   public class FindEmployerAccountLevyDeclarationTransactionsHandler : IRequestHandler<FindEmployerAccountLevyDeclarationTransactionsQuery, FindEmployerAccountLevyDeclarationTransactionsResponse>
     {
         private readonly IValidator<FindEmployerAccountLevyDeclarationTransactionsQuery> _validator;
         private readonly IDasLevyService _dasLevyService;
@@ -25,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTran
             _hashingService = hashingService;
         }
 
-        public async Task<FindEmployerAccountLevyDeclarationTransactionsResponse> Handle(FindEmployerAccountLevyDeclarationTransactionsQuery message)
+        public async Task<FindEmployerAccountLevyDeclarationTransactionsResponse> Handle(FindEmployerAccountLevyDeclarationTransactionsQuery message,CancellationToken cancellationToken)
         {
             var validationResult = await _validator.ValidateAsync(message);
 

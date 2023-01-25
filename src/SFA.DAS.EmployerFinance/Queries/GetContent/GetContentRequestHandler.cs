@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.Authentication.Extensions.Legacy;
@@ -10,7 +11,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetContent
 {
-    public class GetContentRequestHandler : IAsyncRequestHandler<GetContentRequest, GetContentResponse>
+    public class GetContentRequestHandler : IRequestHandler<GetContentRequest, GetContentResponse>
     {
         private readonly IValidator<GetContentRequest> _validator;
         private readonly ILog _logger;
@@ -33,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetContent
             _employerFinanceConfiguration = employerFinanceConfiguration;
         }
 
-        public async Task<GetContentResponse> Handle(GetContentRequest message)
+        public async Task<GetContentResponse> Handle(GetContentRequest message,CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(message);
 

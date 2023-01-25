@@ -12,11 +12,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
 {
     public class GetEmployerAccountTransactionsHandler :
-        IAsyncRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>
+        IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>
     {
         private readonly IDasLevyService _dasLevyService;
         private readonly IValidator<GetEmployerAccountTransactionsQuery> _validator;
@@ -38,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
             _publicHashingService = publicHashingService;
         }
 
-        public async Task<GetEmployerAccountTransactionsResponse> Handle(GetEmployerAccountTransactionsQuery message)
+        public async Task<GetEmployerAccountTransactionsResponse> Handle(GetEmployerAccountTransactionsQuery message,CancellationToken  cancellationToken)
         {
             var result = await _validator.ValidateAsync(message);
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -14,7 +15,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
 {
-    public class SendTransferConnectionInvitationQueryHandler : IAsyncRequestHandler<SendTransferConnectionInvitationQuery, SendTransferConnectionInvitationResponse>
+    public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<SendTransferConnectionInvitationQuery, SendTransferConnectionInvitationResponse>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -30,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
             _mapper = mapper;
         }
 
-        public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message)
+        public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
         {
             var receiverAccount = await _employerAccountRepository.Get(message.ReceiverAccountPublicHashedId);
 

@@ -4,10 +4,11 @@ using SFA.DAS.Validation;
 using System;
 using System.Threading.Tasks;
 using SFA.DAS.HashingService;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
 {
-    public class GetEmployerAccountHashedHandler : IAsyncRequestHandler<GetEmployerAccountHashedQuery, GetEmployerAccountResponse>
+    public class GetEmployerAccountHashedHandler : IRequestHandler<GetEmployerAccountHashedQuery, GetEmployerAccountResponse>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly IValidator<GetEmployerAccountHashedQuery> _validator;
@@ -23,7 +24,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
             _hashingService = hashingService;
         }
 
-        public async Task<GetEmployerAccountResponse> Handle(GetEmployerAccountHashedQuery message)
+        public async Task<GetEmployerAccountResponse> Handle(GetEmployerAccountHashedQuery message,CancellationToken cancellationToken)
         {
             var result = await _validator.ValidateAsync(message);
 

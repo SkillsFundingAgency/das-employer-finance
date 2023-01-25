@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments
 {
-    public class GetTotalPaymentsQuery : IAsyncRequest<GetTotalPaymentsResponse>
+    public class GetTotalPaymentsQuery : IRequest<GetTotalPaymentsResponse>
     {
     }
 }

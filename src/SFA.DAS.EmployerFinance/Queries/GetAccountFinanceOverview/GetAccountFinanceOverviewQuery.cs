@@ -5,7 +5,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview
 {
-    public class GetAccountFinanceOverviewQuery : IAuthorizationContextModel, IAsyncRequest<GetAccountFinanceOverviewResponse>
+    public class GetAccountFinanceOverviewQuery : IAuthorizationContextModel, IRequest<GetAccountFinanceOverviewResponse>
     {
         [IgnoreMap]
         [Required]

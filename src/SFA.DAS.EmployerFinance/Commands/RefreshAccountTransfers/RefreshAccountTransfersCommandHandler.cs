@@ -65,7 +65,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
                         };
                     }).ToArray();
 
-                _logger.Info($"Retrieved {transfers.Length} grouped account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+                _logger.Info($"Retrieved {transfers.Length} grouped account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
                 await _transferRepository.CreateAccountTransfers(transfers);
             }

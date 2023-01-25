@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds
 {
-    public class GetPeriodEndsRequest : IAsyncRequest<GetPeriodEndsResponse>
+    public class GetPeriodEndsRequest : IRequest<GetPeriodEndsResponse>
     {
     }
 }

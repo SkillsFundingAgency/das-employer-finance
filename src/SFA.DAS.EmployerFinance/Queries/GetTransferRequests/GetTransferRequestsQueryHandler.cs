@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -11,7 +12,7 @@ using SFA.DAS.HashingService;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferRequests
 {
-    public class GetTransferRequestsQueryHandler : IAsyncRequestHandler<GetTransferRequestsQuery, GetTransferRequestsResponse>
+    public class GetTransferRequestsQueryHandler : IRequestHandler<GetTransferRequestsQuery, GetTransferRequestsResponse>
     {
         private readonly IEmployerAccountRepository _employerAccountsRepository;
         private readonly IMapper _mapper;
@@ -30,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferRequests
             _hashingService = hashingService;
         }
 
-        public async Task<GetTransferRequestsResponse> Handle(GetTransferRequestsQuery message)
+        public async Task<GetTransferRequestsResponse> Handle(GetTransferRequestsQuery message,CancellationToken cancellationToken)
         {
             var accountHashedId = _hashingService.HashValue(message.AccountId);
             var transferRequests = await _commitmentV2ApiClient.GetTransferRequests(message.AccountId);

@@ -5,7 +5,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLatestPendingReceivedTransferConnectionInvitation
 {
-    public class GetLatestPendingReceivedTransferConnectionInvitationQuery : IAuthorizationContextModel, IAsyncRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>
+    public class GetLatestPendingReceivedTransferConnectionInvitationQuery : IAuthorizationContextModel, IRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>
     {
         [IgnoreMap]
         [Required]

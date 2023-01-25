@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions
 {
-    public class FindEmployerAccountLevyDeclarationTransactionsQuery : IAsyncRequest<FindEmployerAccountLevyDeclarationTransactionsResponse>
+    public class FindEmployerAccountLevyDeclarationTransactionsQuery : IRequest<FindEmployerAccountLevyDeclarationTransactionsResponse>
     {
         public string HashedAccountId { get; set; }
         public DateTime FromDate { get; set; }

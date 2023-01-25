@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -10,7 +11,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview
 {
-    public class GetAccountFinanceOverviewQueryHandler : IAsyncRequestHandler<GetAccountFinanceOverviewQuery, GetAccountFinanceOverviewResponse>
+    public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountFinanceOverviewQuery, GetAccountFinanceOverviewResponse>
     {
         private readonly ICurrentDateTime _currentDateTime;
         private readonly IDasForecastingService _dasForecastingService;
@@ -32,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview
             _logger = logger;
         }
 
-        public async Task<GetAccountFinanceOverviewResponse> Handle(GetAccountFinanceOverviewQuery query)
+        public async Task<GetAccountFinanceOverviewResponse> Handle(GetAccountFinanceOverviewQuery query, CancellationToken cancellationToken)
         {
             var validationResult = await _validator.ValidateAsync(query);
 

@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration
 {
-    public class GetLevyDeclarationRequest : IAsyncRequest<GetLevyDeclarationResponse>
+    public class GetLevyDeclarationRequest : IRequest<GetLevyDeclarationResponse>
     {
         public string HashedAccountId { get; set; }
     }

@@ -5,7 +5,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization
 {
-    public class GetTransferConnectionInvitationAuthorizationQuery : IAuthorizationContextModel, IAsyncRequest<GetTransferConnectionInvitationAuthorizationResponse>
+    public class GetTransferConnectionInvitationAuthorizationQuery : IAuthorizationContextModel, IRequest<GetTransferConnectionInvitationAuthorizationResponse>
     {
         [IgnoreMap]
         [Required]

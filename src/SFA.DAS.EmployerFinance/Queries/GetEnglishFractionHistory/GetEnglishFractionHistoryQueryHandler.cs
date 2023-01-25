@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.HashingService;
@@ -6,7 +7,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
 {
-    public class GetEnglishFractionHistoryQueryHandler : IAsyncRequestHandler<GetEnglishFractionHistoryQuery, GetEnglishFractionHistoryResposne>
+    public class GetEnglishFractionHistoryQueryHandler : IRequestHandler<GetEnglishFractionHistoryQuery, GetEnglishFractionHistoryResposne>
     {
         private readonly IValidator<GetEnglishFractionHistoryQuery> _validator;
         private readonly IDasLevyRepository _dasLevyRepository;
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
             _hashingService = hashingService;
         }
 
-        public async Task<GetEnglishFractionHistoryResposne> Handle(GetEnglishFractionHistoryQuery message)
+        public async Task<GetEnglishFractionHistoryResposne> Handle(GetEnglishFractionHistoryQuery message,CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(message);
 

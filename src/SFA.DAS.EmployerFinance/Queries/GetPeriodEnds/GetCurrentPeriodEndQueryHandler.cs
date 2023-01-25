@@ -1,11 +1,12 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds
 {
-    public class GetPeriodEndQueryHandler : IAsyncRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>
+    public class GetPeriodEndQueryHandler : IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>
     {
         private readonly IDasLevyRepository _dasLevyRepository;
 
@@ -14,7 +15,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds
             _dasLevyRepository = dasLevyRepository;
         }
 
-        public async Task<GetPeriodEndsResponse> Handle(GetPeriodEndsRequest message)
+        public async Task<GetPeriodEndsResponse> Handle(GetPeriodEndsRequest message,CancellationToken cancellationToken)
         {
             var response = new GetPeriodEndsResponse();
 

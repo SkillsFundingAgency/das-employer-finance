@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -6,7 +7,7 @@ using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization
 {
-    public class GetTransferConnectionInvitationAuthorizationQueryHandler : IAsyncRequestHandler<GetTransferConnectionInvitationAuthorizationQuery, GetTransferConnectionInvitationAuthorizationResponse>
+    public class GetTransferConnectionInvitationAuthorizationQueryHandler : IRequestHandler<GetTransferConnectionInvitationAuthorizationQuery, GetTransferConnectionInvitationAuthorizationResponse>
     {
         private readonly ITransferRepository _transferRepository;
         private readonly EmployerFinanceConfiguration _configuration;
@@ -22,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthori
             _authorizationService = authorizationService;
         }
 
-        public async Task<GetTransferConnectionInvitationAuthorizationResponse> Handle(GetTransferConnectionInvitationAuthorizationQuery message)
+        public async Task<GetTransferConnectionInvitationAuthorizationResponse> Handle(GetTransferConnectionInvitationAuthorizationQuery message,CancellationToken cancellationToken)
         {
             var authorizationResult = await _authorizationService.GetAuthorizationResultAsync("EmployerFeature.TransferConnectionRequests");
             var transferAllowance = await _transferRepository.GetTransferAllowance(message.AccountId, _configuration.TransferAllowancePercentage);

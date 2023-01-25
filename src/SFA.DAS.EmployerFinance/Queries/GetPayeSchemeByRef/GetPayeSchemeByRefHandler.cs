@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.HashingService;
@@ -6,7 +7,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef
 {
-    public class GetPayeSchemeByRefHandler : IAsyncRequestHandler<GetPayeSchemeByRefQuery, GetPayeSchemeByRefResponse>
+    public class GetPayeSchemeByRefHandler : IRequestHandler<GetPayeSchemeByRefQuery, GetPayeSchemeByRefResponse>
     {
         private readonly IValidator<GetPayeSchemeByRefQuery> _validator;
         private readonly IPayeRepository _payeRepository;
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef
             _hashingService = hashingService;
         }
 
-        public async Task<GetPayeSchemeByRefResponse> Handle(GetPayeSchemeByRefQuery message)
+        public async Task<GetPayeSchemeByRefResponse> Handle(GetPayeSchemeByRefQuery message,CancellationToken cancellationToken)
         {
             var validationResult = _validator.Validate(message);
 

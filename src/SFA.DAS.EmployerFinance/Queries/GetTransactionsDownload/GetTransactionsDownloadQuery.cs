@@ -8,7 +8,7 @@ using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload
 {
-    public class GetTransactionsDownloadQuery : IAuthorizationContextModel, IAsyncRequest<GetTransactionsDownloadResponse>
+    public class GetTransactionsDownloadQuery : IAuthorizationContextModel, IRequest<GetTransactionsDownloadResponse>
     {
         [IgnoreMap]
         [Required]

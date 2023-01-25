@@ -5,7 +5,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferAllowance
 {
-    public class GetTransferAllowanceQuery : IAuthorizationContextModel, IAsyncRequest<GetTransferAllowanceResponse>
+    public class GetTransferAllowanceQuery : IAuthorizationContextModel, IRequest<GetTransferAllowanceResponse>
     {
         [IgnoreMap]
         [Required]

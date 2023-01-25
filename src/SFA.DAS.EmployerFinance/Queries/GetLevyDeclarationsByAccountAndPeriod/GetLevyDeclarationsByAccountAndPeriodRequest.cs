@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
 {
-    public class GetLevyDeclarationsByAccountAndPeriodRequest : IAsyncRequest<GetLevyDeclarationsByAccountAndPeriodResponse>
+    public class GetLevyDeclarationsByAccountAndPeriodRequest : IRequest<GetLevyDeclarationsByAccountAndPeriodResponse>
     {
         public string HashedAccountId { get; set; }
         public string PayrollYear { get; set; }

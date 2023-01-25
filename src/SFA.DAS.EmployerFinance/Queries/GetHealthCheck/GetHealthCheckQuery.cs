@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetHealthCheck
 {
-    public class GetHealthCheckQuery : IAsyncRequest<GetHealthCheckQueryResponse>
+    public class GetHealthCheckQuery : IRequest<GetHealthCheckQueryResponse>
     {
     }
 }
