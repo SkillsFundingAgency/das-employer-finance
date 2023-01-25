@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
@@ -10,7 +11,7 @@ using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
 {
-    public class RefreshAccountTransfersCommandHandler : AsyncRequestHandler<RefreshAccountTransfersCommand>
+    public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAccountTransfersCommand,Unit>
     {
         private readonly IValidator<RefreshAccountTransfersCommand> _validator;
         private readonly IPaymentService _paymentService;
@@ -29,9 +30,9 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
             _logger = logger;
         }
 
-        protected override async Task HandleCore(RefreshAccountTransfersCommand message)
+        public async Task<Unit> Handle(RefreshAccountTransfersCommand request,CancellationToken cancellationToken)
         {
-            var validationResult = _validator.Validate(message);
+            var validationResult = _validator.Validate(request);
 
             if (!validationResult.IsValid())
             {
@@ -40,11 +41,11 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
 
             try
             {
-                _logger.Info($"Getting account transfers from payment api for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+                _logger.Info($"Getting account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {message.CorrelationId}");
 
-                var paymentTransfers = await _paymentService.GetAccountTransfers(message.PeriodEnd, message.ReceiverAccountId, message.CorrelationId);
+                var paymentTransfers = await _paymentService.GetAccountTransfers(request.PeriodEnd, request.ReceiverAccountId, request.CorrelationId);
 
-                _logger.Info($"Retrieved payment transfers from payment api for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+                _logger.Info($"Retrieved payment transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
 
                 //Handle multiple transfers for the same account, period end and commitment ID by grouping them together
                 //This can happen if delivery months are different by collection months are not for payments
@@ -64,17 +65,19 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
                         };
                     }).ToArray();
 
-                _logger.Info($"Retrieved {transfers.Length} grouped account transfers from payment api for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+                _logger.Info($"Retrieved {transfers.Length} grouped account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {message.CorrelationId}");
 
                 await _transferRepository.CreateAccountTransfers(transfers);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Could not process transfers for Account Id {message.ReceiverAccountId} and Period End {message.PeriodEnd}, CorrelationId = {message.CorrelationId}");
+                _logger.Error(ex, $"Could not process transfers for Account Id {request.ReceiverAccountId} and Period End {request.PeriodEnd}, CorrelationId = {request.CorrelationId}");
                 throw;
             }
 
-            _logger.Info($"Refresh account transfers handler complete for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+            _logger.Info($"Refresh account transfers handler complete for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+            
+            return Unit.Value;
         }
     }
 }

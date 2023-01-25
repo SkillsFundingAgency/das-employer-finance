@@ -5,7 +5,7 @@ using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.PublishGenericEvent
 {
-    public class PublishGenericEventCommandHandler : IAsyncRequestHandler<PublishGenericEventCommand, PublishGenericEventCommandResponse>
+    public class PublishGenericEventCommandHandler : IRequestHandler<PublishGenericEventCommand, Unit>
     {
         private readonly IEventsApi _eventsApi;
         private readonly ILog _logger;
