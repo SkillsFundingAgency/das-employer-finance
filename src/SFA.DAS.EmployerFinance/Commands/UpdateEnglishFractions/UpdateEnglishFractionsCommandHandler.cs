@@ -32,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
 
             if (existingFractions.Any() && !request.EnglishFractionUpdateResponse.UpdateRequired && TheFractionIsOlderOrEqualToTheUpdateDate(request, existingFractions))
             {
-                return Unit.Value;   
+                //return Unit.Value;   
             }
 
             DateTime? dateFrom = null;
@@ -47,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
 
             if (fractionCalculations?.FractionCalculations == null)
             {
-                return Unit.Value;
+                //return Unit.Value;
             }
 
             var hmrcFractions = fractionCalculations.FractionCalculations.SelectMany(calculations =>

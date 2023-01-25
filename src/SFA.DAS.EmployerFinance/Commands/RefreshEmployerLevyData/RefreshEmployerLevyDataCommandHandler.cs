@@ -146,7 +146,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
             var declarationUpdatedEvent = _levyEventFactory.CreateDeclarationUpdatedEvent(hashedAccountId, payrollYear, payrollMonth);
             var genericEvent = _genericEventFactory.Create(declarationUpdatedEvent);
 
-            return _mediator.SendAsync(new PublishGenericEventCommand { Event = genericEvent });
+            return _mediator.Send(new PublishGenericEventCommand { Event = genericEvent });
         }
 
         private string ObscurePayeScheme(string payeSchemeId)

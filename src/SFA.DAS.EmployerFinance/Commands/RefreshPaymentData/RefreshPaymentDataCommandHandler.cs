@@ -95,7 +95,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData
             var newNonFullyFundedPayments = newPayments.Where(p => p.FundingSource != FundingSource.FullyFundedSfa);
 
             await _dasLevyRepository.CreatePayments(newNonFullyFundedPayments);
-            await _mediator.PublishAsync(new ProcessPaymentEvent { AccountId = request.AccountId });
+            await _mediator.Publish(new ProcessPaymentEvent { AccountId = request.AccountId });
 
             await PublishRefreshPaymentDataCompletedEvent(request, true);
 
