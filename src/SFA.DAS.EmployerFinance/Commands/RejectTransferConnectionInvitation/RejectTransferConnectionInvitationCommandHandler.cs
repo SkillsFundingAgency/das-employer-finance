@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation
 {
-    public class RejectTransferConnectionInvitationCommandHandler : AsyncRequestHandler<RejectTransferConnectionInvitationCommand>
+    public class RejectTransferConnectionInvitationCommandHandler : IRequestHandler<RejectTransferConnectionInvitationCommand, Unit>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -20,13 +21,15 @@ namespace SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation
             _userRepository = userRepository;
         }
 
-        protected override async Task HandleCore(RejectTransferConnectionInvitationCommand message)
+        public async Task<Unit> Handle(RejectTransferConnectionInvitationCommand request,CancellationToken cancellationToken)
         {
-            var rejectorAccount = await _employerAccountRepository.Get(message.AccountId);
-            var rejectorUser = await _userRepository.Get(message.UserRef);
-            var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(message.TransferConnectionInvitationId.Value);
+            var rejectorAccount = await _employerAccountRepository.Get(request.AccountId);
+            var rejectorUser = await _userRepository.Get(request.UserRef);
+            var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(request.TransferConnectionInvitationId.Value);
 
             transferConnectionInvitation.Reject(rejectorAccount, rejectorUser);
+
+            return Unit.Value;
         }
     }
 }

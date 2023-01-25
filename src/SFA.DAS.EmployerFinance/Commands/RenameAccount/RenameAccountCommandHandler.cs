@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
@@ -6,7 +7,7 @@ using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.RenameAccount
 {
-    public class RenameAccountCommandHandler : AsyncRequestHandler<RenameAccountCommand>
+    public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,Unit>
     {
         private readonly IAccountRepository _accountRepository;
         private readonly ILog _logger;
@@ -17,19 +18,21 @@ namespace SFA.DAS.EmployerFinance.Commands.RenameAccount
             _logger = logger;
         }
 
-        protected override async Task HandleCore(RenameAccountCommand message)
+        public async Task<Unit> Handle(RenameAccountCommand request,CancellationToken cancellationToken)
         {
             try
             {
-                await _accountRepository.RenameAccount(message.Id, message.Name);
+                await _accountRepository.RenameAccount(request.Id, request.Name);
 
-                _logger.Info($"Account {message.Id} renamed");
+                _logger.Info($"Account {request.Id} renamed");
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "Could not rename account");
                 throw;
             }
+
+            return Unit.Value;
         }
     }
 }

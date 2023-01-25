@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
@@ -10,7 +11,7 @@ using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
 {
-    public class UpdateEnglishFractionsCommandHandler : AsyncRequestHandler<UpdateEnglishFractionsCommand>
+    public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglishFractionsCommand, Unit>
     {
         private readonly IHmrcService _hmrcService;
         private readonly IEnglishFractionRepository _englishFractionRepository;
@@ -25,13 +26,13 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
             _logger = logger;
         }
 
-        protected override async Task HandleCore(UpdateEnglishFractionsCommand message)
+        public async Task<Unit> Handle(UpdateEnglishFractionsCommand request,CancellationToken cancellationToken)
         {
-            var existingFractions = (await _englishFractionRepository.GetAllEmployerFractions(message.EmployerReference)).ToList();
+            var existingFractions = (await _englishFractionRepository.GetAllEmployerFractions(request.EmployerReference)).ToList();
 
-            if (existingFractions.Any() && !message.EnglishFractionUpdateResponse.UpdateRequired && TheFractionIsOlderOrEqualToTheUpdateDate(message, existingFractions))
+            if (existingFractions.Any() && !request.EnglishFractionUpdateResponse.UpdateRequired && TheFractionIsOlderOrEqualToTheUpdateDate(request, existingFractions))
             {
-                return;   
+                return Unit.Value;   
             }
 
             DateTime? dateFrom = null;
@@ -42,11 +43,11 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
             }
 
 
-            var fractionCalculations = await _hmrcService.GetEnglishFractions(message.EmployerReference, dateFrom);
+            var fractionCalculations = await _hmrcService.GetEnglishFractions(request.EmployerReference, dateFrom);
 
             if (fractionCalculations?.FractionCalculations == null)
             {
-                return;
+                return Unit.Value;
             }
 
             var hmrcFractions = fractionCalculations.FractionCalculations.SelectMany(calculations =>
@@ -67,7 +68,7 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
                     }
                     else
                     {
-                        var exception = new ArgumentException($"Could not convert HMRC API fraction value {fraction.Value} to a decimal for english fraction update for EmpRef {message.EmployerReference}", nameof(fraction.Value));
+                        var exception = new ArgumentException($"Could not convert HMRC API fraction value {fraction.Value} to a decimal for english fraction update for EmpRef {request.EmployerReference}", nameof(fraction.Value));
                         _logger.Error(exception, exception.Message);
                     }
                 }
@@ -81,6 +82,8 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
             {
                 await _englishFractionRepository.CreateEmployerFraction(englishFraction, englishFraction.EmpRef);
             }
+
+            return Unit.Value;
         }
 
         private static bool TheFractionIsOlderOrEqualToTheUpdateDate(UpdateEnglishFractionsCommand message, List<DasEnglishFraction> existingFractions)

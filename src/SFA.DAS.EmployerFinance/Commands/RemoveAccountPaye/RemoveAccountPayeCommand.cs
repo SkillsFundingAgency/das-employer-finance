@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye
 {
-    public class RemoveAccountPayeCommand : IAsyncRequest
+    public class RemoveAccountPayeCommand : IAuthorizationContextModel,IRequest<Unit>
     {
         public long AccountId { get; }
         public string PayeRef { get; }

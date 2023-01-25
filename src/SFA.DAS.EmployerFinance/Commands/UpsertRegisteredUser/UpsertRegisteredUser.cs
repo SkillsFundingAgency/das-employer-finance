@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser
 {
-    public class UpsertRegisteredUserCommand : IAsyncRequest
+    public class UpsertRegisteredUserCommand : IAuthorizationContextModel,IRequest<Unit>
     {
         public string UserRef { get; set; }
         public string FirstName { get; set; }

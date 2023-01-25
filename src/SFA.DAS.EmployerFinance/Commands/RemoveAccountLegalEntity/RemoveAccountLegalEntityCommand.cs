@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountLegalEntity
 {
-    public class RemoveAccountLegalEntityCommand : IAsyncRequest
+    public class RemoveAccountLegalEntityCommand : IAuthorizationContextModel,IRequest<Unit>
     {
         public RemoveAccountLegalEntityCommand(long id)
         {

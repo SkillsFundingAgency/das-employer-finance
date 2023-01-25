@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -6,7 +7,7 @@ using SFA.DAS.EmployerFinance.MarkerInterfaces;
 
 namespace SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation
 {
-    public class SendTransferConnectionInvitationCommandHandler : IAsyncRequestHandler<SendTransferConnectionInvitationCommand, long>
+    public class SendTransferConnectionInvitationCommandHandler : IRequestHandler<SendTransferConnectionInvitationCommand, Unit>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -31,18 +32,20 @@ namespace SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation
             _publicHashingService = publicHashingService;
         }
 
-        public async Task<long> Handle(SendTransferConnectionInvitationCommand message)
+        public async Task<Unit> Handle(SendTransferConnectionInvitationCommand request, CancellationToken cancellationToken)
         {
-            var receiverAccountId = _publicHashingService.DecodeValue(message.ReceiverAccountPublicHashedId);
-            var senderAccount = await _employerAccountRepository.Get(message.AccountId);
+            var receiverAccountId = _publicHashingService.DecodeValue(request.ReceiverAccountPublicHashedId);
+            var senderAccount = await _employerAccountRepository.Get(request.AccountId);
             var receiverAccount = await _employerAccountRepository.Get(receiverAccountId);
-            var senderUser = await _userRepository.Get(message.UserRef);
-            var senderAccountTransferAllowance = await _transferRepository.GetTransferAllowance(message.AccountId, _configuration.TransferAllowancePercentage);
+            var senderUser = await _userRepository.Get(request.UserRef);
+            var senderAccountTransferAllowance = await _transferRepository.GetTransferAllowance(request.AccountId, _configuration.TransferAllowancePercentage);
             var transferConnectionInvitation = senderAccount.SendTransferConnectionInvitation(receiverAccount, senderUser, senderAccountTransferAllowance.RemainingTransferAllowance ?? 0);
 
             await _transferConnectionInvitationRepository.Add(transferConnectionInvitation);
 
-            return transferConnectionInvitation.Id;
+            //return transferConnectionInvitation.Id;
+
+            return Unit.Value;
         }
     }
 }

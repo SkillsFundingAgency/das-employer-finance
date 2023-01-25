@@ -3,10 +3,11 @@ using MediatR;
 using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.Hmrc;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation
 {
-    public class UpdatePayeInformationCommandHandler : AsyncRequestHandler<UpdatePayeInformationCommand>
+    public class UpdatePayeInformationCommandHandler : IRequestHandler<UpdatePayeInformationCommand, Unit>
     {
         private readonly IValidator<UpdatePayeInformationCommand> _validator;
         private readonly IPayeRepository _payeRepository;
@@ -19,30 +20,32 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation
             _hmrcService = hmrcService;
         }
 
-        protected override async Task HandleCore(UpdatePayeInformationCommand message)
+        public async Task<Unit> Handle(UpdatePayeInformationCommand request,CancellationToken cancellationToken)
         {
-            var validationResult = _validator.Validate(message);
+            var validationResult = _validator.Validate(request);
 
             if (!validationResult.IsValid())
             {
                 throw new InvalidRequestException(validationResult.ValidationDictionary);
             }
 
-            var scheme = await _payeRepository.GetPayeSchemeByRef(message.PayeRef);
+            var scheme = await _payeRepository.GetPayeSchemeByRef(request.PayeRef);
 
             if (!string.IsNullOrEmpty(scheme?.Name))
             {
-                return;
+               //return;
             }
 
             var result = await _hmrcService.GetEmprefInformation(scheme?.EmpRef);
 
             if (string.IsNullOrEmpty(result?.Employer?.Name?.EmprefAssociatedName))
             {
-                return;
+                //return;
             }
 
-            await _payeRepository.UpdatePayeSchemeName(message.PayeRef, result.Employer.Name.EmprefAssociatedName);
+            await _payeRepository.UpdatePayeSchemeName(request.PayeRef, result.Employer.Name.EmprefAssociatedName);
+
+            return Unit.Value;
         }
     }
 }

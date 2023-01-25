@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.RenameAccount
 {
-    public class RenameAccountCommand : IAsyncRequest
+    public class RenameAccountCommand : IAuthorizationContextModel, IRequest<Unit>
     {
         public RenameAccountCommand(long id, string name)
         {

@@ -41,11 +41,11 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
 
             try
             {
-                _logger.Info($"Getting account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+                _logger.Info($"Getting account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
                 var paymentTransfers = await _paymentService.GetAccountTransfers(request.PeriodEnd, request.ReceiverAccountId, request.CorrelationId);
 
-                _logger.Info($"Retrieved payment transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+                _logger.Info($"Retrieved payment transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
                 //Handle multiple transfers for the same account, period end and commitment ID by grouping them together
                 //This can happen if delivery months are different by collection months are not for payments

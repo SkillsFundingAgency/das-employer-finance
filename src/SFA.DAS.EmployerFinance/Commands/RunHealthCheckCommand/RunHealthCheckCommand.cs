@@ -6,7 +6,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand
 {
-    public class RunHealthCheckCommand : IAuthorizationContextModel, IAsyncRequest
+    public class RunHealthCheckCommand : IAuthorizationContextModel, IRequest<Unit>
     {
         [IgnoreMap]
         [Required]

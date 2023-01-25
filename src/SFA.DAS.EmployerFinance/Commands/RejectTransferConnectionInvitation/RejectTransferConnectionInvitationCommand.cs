@@ -6,7 +6,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation
 {
-    public class RejectTransferConnectionInvitationCommand : IAuthorizationContextModel, IAsyncRequest
+    public class RejectTransferConnectionInvitationCommand : IAuthorizationContextModel, IRequest<Unit>
     {
         [IgnoreMap]
         [Required]
