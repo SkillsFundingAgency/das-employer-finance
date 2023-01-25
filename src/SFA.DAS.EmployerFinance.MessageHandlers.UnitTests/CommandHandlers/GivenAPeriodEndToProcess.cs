@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
@@ -35,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             Fixture.Customize<Account>(x => x.Without(s => s.AccountLegalEntities));
             Fixture.Customize(new AutoMoqCustomization());
 
-            _mediatorMock.Setup(mock => mock.SendAsync(It.IsAny<GetAllEmployerAccountsRequest>()))
+            _mediatorMock.Setup(mock => mock.Send(It.IsAny<GetAllEmployerAccountsRequest>(),CancellationToken.None))
                 .ReturnsAsync(new GetAllEmployerAccountsResponse { Accounts = new List<Account> { Fixture.Create<Account>() } });
 
             _sut = new ProcessPeriodEndPaymentsCommandHandler(_mediatorMock.Object, _loggerMock.Object);
@@ -49,7 +50,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
         {
             // Arrange
             var accounts = Fixture.CreateMany<Account>(3).ToList();
-            _mediatorMock.Setup(mock => mock.SendAsync(It.IsAny<GetAllEmployerAccountsRequest>()))
+            _mediatorMock.Setup(mock => mock.Send(It.IsAny<GetAllEmployerAccountsRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetAllEmployerAccountsResponse { Accounts = accounts });
             var processPeriodEndCommand = new ProcessPeriodEndPaymentsCommand { PeriodEndRef = "1819-R01" };
 

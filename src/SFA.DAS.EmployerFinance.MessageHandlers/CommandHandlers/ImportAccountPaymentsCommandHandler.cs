@@ -26,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
             var correlationId = Guid.NewGuid();
             _logger.Info($"Processing refresh payment command for Account ID: {message.AccountId} PeriodEnd: {message.PeriodEndRef} CorrelationId: {correlationId}");
 
-            await _mediator.SendAsync(new RefreshPaymentDataCommand
+            await _mediator.Send(new RefreshPaymentDataCommand
             {
                 AccountId = message.AccountId,
                 PeriodEnd = message.PeriodEndRef,
@@ -35,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
 
             _logger.Info($"Processing refresh account transfers command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}, CorrelationId: {correlationId}");
 
-            await _mediator.SendAsync(new RefreshAccountTransfersCommand
+            await _mediator.Send(new RefreshAccountTransfersCommand
             {
                 ReceiverAccountId = message.AccountId,
                 PeriodEnd = message.PeriodEndRef,
@@ -44,7 +44,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
 
             _logger.Info($"Processing create account transfer transactions command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}");
 
-            await _mediator.SendAsync(new CreateTransferTransactionsCommand
+            await _mediator.Send(new CreateTransferTransactionsCommand
             {
                 ReceiverAccountId = message.AccountId,
                 PeriodEnd = message.PeriodEndRef,

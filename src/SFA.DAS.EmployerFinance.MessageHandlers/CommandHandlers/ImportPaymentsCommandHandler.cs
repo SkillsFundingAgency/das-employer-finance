@@ -43,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
 
             var periodEnds = await _paymentsEventsApiClient.GetPeriodEnds();
 
-            var result = await _mediator.SendAsync(new GetPeriodEndsRequest());
+            var result = await _mediator.Send(new GetPeriodEndsRequest());
             var periodsToProcess = periodEnds.Where(pe => !result.CurrentPeriodEnds.Any(existing => existing.PeriodEndId == pe.Id));
 
             if (!periodsToProcess.Any())
@@ -63,7 +63,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
             Models.Payments.PeriodEnd periodEnd = MapToDbPaymentPeriod(paymentsPeriodEnd);
 
             _logger.Info($"Creating period end {periodEnd.PeriodEndId}");
-            await _mediator.SendAsync(new CreateNewPeriodEndCommand { NewPeriodEnd = periodEnd });
+            await _mediator.Send(new CreateNewPeriodEndCommand { NewPeriodEnd = periodEnd });
 
             if (!periodEnd.AccountDataValidAt.HasValue || !periodEnd.CommitmentDataValidAt.HasValue)
             {

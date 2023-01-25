@@ -22,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
         public async Task Handle(ProcessPeriodEndPaymentsCommand message, IMessageHandlerContext context)
         {
             _logger.Info($"Creating payment queue message for all accounts for period end ref: '{message.PeriodEndRef}'");
-            var response = await _mediator.SendAsync(new GetAllEmployerAccountsRequest());
+            var response = await _mediator.Send(new GetAllEmployerAccountsRequest());
             var batchSize = 5000;
 
             var batchedAccounts = response.Accounts

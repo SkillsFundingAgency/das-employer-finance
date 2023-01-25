@@ -48,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
 
                 _logger.Info($"Getting english fraction updates for employer account {employerAccountId}");
 
-                var englishFractionUpdateResponse = await _mediator.SendAsync(new GetEnglishFractionUpdateRequiredRequest());
+                var englishFractionUpdateResponse = await _mediator.Send(new GetEnglishFractionUpdateRequiredRequest());
 
                 _logger.Info($"Getting levy declarations for PAYE scheme {payeRef} for employer account {employerAccountId}");
 

@@ -55,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             Fixture.Customize<Account>(x => x.Without(s => s.AccountLegalEntities));
             Fixture.Customize(new AutoMoqCustomization());
 
-            _mediatorMock.Setup(mock => mock.SendAsync(It.IsAny<GetAllEmployerAccountsRequest>()))
+            _mediatorMock.Setup(mock => mock.Send(It.IsAny<GetAllEmployerAccountsRequest>(),CancellationToken.None))
                 .ReturnsAsync(new GetAllEmployerAccountsResponse { Accounts = new List<Account> { Fixture.Create<Account>() } });
 
             _configuration = new PaymentsEventsApiClientLocalConfiguration { PaymentsDisabled = false };
@@ -100,7 +100,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             await _sut.Handle(_importPaymentsCommand, _messageHandlerContext);
 
             // Assert
-            _mediatorMock.Verify(x => x.SendAsync(It.IsAny<CreateNewPeriodEndCommand>()), Times.Never);
+            _mediatorMock.Verify(x => x.Send(It.IsAny<CreateNewPeriodEndCommand>(), CancellationToken.None), Times.Never);
         }
 
         [Test]
@@ -131,14 +131,14 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             var existingPeriodEnds = GetDbMatchedPeriodEnds(apiPeriodEnds);
             _paymentsEventsApiClientMock.Setup(mock => mock.GetPeriodEnds()).ReturnsAsync(apiPeriodEnds);
             _mediatorMock
-                .Setup(mock => mock.SendAsync(It.IsAny<GetPeriodEndsRequest>()))
+                .Setup(mock => mock.Send(It.IsAny<GetPeriodEndsRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetPeriodEndsResponse { CurrentPeriodEnds = existingPeriodEnds });
 
             // Act
             await _sut.Handle(_importPaymentsCommand, _messageHandlerContext);
 
             // Assert
-            _mediatorMock.Verify(x => x.SendAsync(It.IsAny<CreateNewPeriodEndCommand>()), Times.Never);
+            _mediatorMock.Verify(x => x.Send(It.IsAny<CreateNewPeriodEndCommand>(), CancellationToken.None), Times.Never);
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             _paymentsEventsApiClientMock.Setup(mock => mock.GetPeriodEnds()).ReturnsAsync(apiPeriodEnds);
 
             _mediatorMock
-                .Setup(mock => mock.SendAsync(It.IsAny<GetPeriodEndsRequest>()))
+                .Setup(mock => mock.Send(It.IsAny<GetPeriodEndsRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetPeriodEndsResponse { CurrentPeriodEnds = existingPeriodEnds });
 
             // Act
@@ -172,7 +172,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             var existingPeriodEnds = GetDbMatchedPeriodEnds(apiPeriodEnds).Skip(2).Take(2).ToList();
             _paymentsEventsApiClientMock.Setup(mock => mock.GetPeriodEnds()).ReturnsAsync(apiPeriodEnds);
 
-            _mediatorMock.Setup(mock => mock.SendAsync(It.IsAny<GetPeriodEndsRequest>()))
+            _mediatorMock.Setup(mock => mock.Send(It.IsAny<GetPeriodEndsRequest>(), CancellationToken.None))
                 .ReturnsAsync(new GetPeriodEndsResponse { CurrentPeriodEnds = existingPeriodEnds });
 
             // Act
@@ -187,7 +187,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             var expectedNewPeriodIds = GetExpectedPeriodEndIds(apiPeriodEnds, existingPeriodEnds);
             foreach (var expectedId in expectedNewPeriodIds)
             {
-                _mediatorMock.Verify(x => x.SendAsync(It.Is<CreateNewPeriodEndCommand>(command => command.NewPeriodEnd.PeriodEndId == expectedId)), Times.Once);
+                _mediatorMock.Verify(x => x.Send(It.Is<CreateNewPeriodEndCommand>(command => command.NewPeriodEnd.PeriodEndId == expectedId),CancellationToken.None), Times.Once);
             }
         }
 
