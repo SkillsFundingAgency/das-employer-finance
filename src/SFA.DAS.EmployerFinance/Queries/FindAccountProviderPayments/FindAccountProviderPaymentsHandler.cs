@@ -6,10 +6,11 @@ using SFA.DAS.Validation;
 using SFA.DAS.HashingService;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments
 {
-    public class FindAccountProviderPaymentsHandler : IAsyncRequestHandler<FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>
+    public class FindAccountProviderPaymentsHandler : IRequestHandler<FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>
     {
         private readonly IValidator<FindAccountProviderPaymentsQuery> _validator;
         private readonly IDasLevyService _dasLevyService;
@@ -25,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments
             _hashingService = hashingService;
         }
 
-        public async Task<FindAccountProviderPaymentsResponse> Handle(FindAccountProviderPaymentsQuery message)
+        public async Task<FindAccountProviderPaymentsResponse> Handle(FindAccountProviderPaymentsQuery message,CancellationToken cancellationToken)
         {
             var validationResult = await _validator.ValidateAsync(message);
 

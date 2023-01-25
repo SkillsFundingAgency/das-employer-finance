@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments
 {
-    public class FindAccountProviderPaymentsQuery : IAsyncRequest<FindAccountProviderPaymentsResponse>
+    public class FindAccountProviderPaymentsQuery : IRequest<FindAccountProviderPaymentsResponse>
     {
         public string HashedAccountId { get; set; }
         public long UkPrn { get; set; }
