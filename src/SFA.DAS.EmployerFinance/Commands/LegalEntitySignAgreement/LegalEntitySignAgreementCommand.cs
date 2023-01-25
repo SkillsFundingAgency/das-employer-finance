@@ -26,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
         public long LegalEntityId { get; set; }
     }
 
-    public class LegalEntitySignAgreementCommandHandler : IRequestExceptionHandler<LegalEntitySignAgreementCommand,Unit>
+    public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand,Unit>
     {
         private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
         private readonly ILog _logger;
@@ -37,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
             _logger = logger;
         }
 
-        public async Task Handle(LegalEntitySignAgreementCommand message)
+        public async Task<Unit> Handle(LegalEntitySignAgreementCommand message)
         {
             try
             {
