@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
@@ -82,7 +83,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvita
                     new List<TransferConnectionInvitationStatus> { TransferConnectionInvitationStatus.Pending, TransferConnectionInvitationStatus.Approved }))
                 .ReturnsAsync(false);
 
-            _response = await _handler.Handle(_query);
+            _response = await _handler.Handle(_query, CancellationToken.None);
 
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.ReceiverAccount, Is.Not.Null);

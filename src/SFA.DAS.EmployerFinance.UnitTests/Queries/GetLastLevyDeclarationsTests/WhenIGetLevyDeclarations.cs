@@ -6,6 +6,7 @@ using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
 {
@@ -34,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
         public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
         {
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.GetLastSubmissionForScheme(ExpectedEmpref));
@@ -48,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
             _dasLevyRepository.Setup(x => x.GetLastSubmissionForScheme(ExpectedEmpref)).ReturnsAsync(new DasDeclaration { SubmissionDate = expectedDate });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query,CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(actual.Transaction);

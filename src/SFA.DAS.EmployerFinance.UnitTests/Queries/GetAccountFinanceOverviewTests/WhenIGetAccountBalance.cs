@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -79,7 +80,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         [Test]
         public async Task ThenTheCurrentFundsShouldBeReturned()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.CurrentFunds.Should().Be(ExpectedCurrentFunds);
         }
@@ -87,7 +88,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         [Test]
         public async Task ThenTheFundsInShouldBeReturned()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.FundsIn.Should().Be(ExpectedFundsIn);
         }
@@ -95,7 +96,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         [Test]
         public async Task ThenTheFundsOutShouldBeReturned()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.FundsOut.Should().Be(ExpectedFundsOut);
         }
@@ -105,7 +106,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _forecastingService.Setup(s => s.GetAccountProjectionSummary(ExpectedAccountId)).ReturnsAsync(new AccountProjectionSummary());
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.FundsIn.Should().Be(0);
             response.FundsOut.Should().Be(0);
@@ -118,7 +119,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
 
             _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).Throws(expectedException);
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_query));
+            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_query, CancellationToken.None));
 
             _logger.Verify(l => l.Error(expectedException, It.IsAny<string>()), Times.Once);
         }

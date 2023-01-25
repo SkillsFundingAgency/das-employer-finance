@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Moq;
@@ -49,7 +50,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLatestPendingReceivedTran
 
         public async Task Handle()
         {
-            await Handler.Handle(Query);
+            await Handler.Handle(Query, CancellationToken.None);
         }
 
         public void VerifyGetLatestByReceiverIsCalled()

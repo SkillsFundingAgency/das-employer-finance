@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -65,7 +66,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
         public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
         {
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             _hashingService.Verify(x => x.DecodeValue(_hashedAccountId), Times.Once);
@@ -77,7 +78,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
         public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
         {
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(actual);
@@ -91,7 +92,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             RequestValidator.Setup(x => x.ValidateAsync(It.IsAny<FindEmployerAccountLevyDeclarationTransactionsQuery>())).ReturnsAsync(new ValidationResult {IsUnauthorized = true});
 
             //Act Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new FindEmployerAccountLevyDeclarationTransactionsQuery()));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new FindEmployerAccountLevyDeclarationTransactionsQuery(), CancellationToken.None));
         }
 
         [Test]
@@ -107,7 +108,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(11,actual.Total);

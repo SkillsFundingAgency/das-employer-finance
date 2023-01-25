@@ -7,6 +7,7 @@ using SFA.DAS.HashingService;
 using SFA.DAS.Validation;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
@@ -42,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
         public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
         {
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             _repository.Verify(x => x.GetAccountLevyDeclarations(ExpectedAccountId), Times.Once);
@@ -52,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
         public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
         {
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(actual);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -50,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
             RequestValidator.Setup(x => x.Validate(It.IsAny<GetPayeSchemeByRefQuery>())).Returns(new ValidationResult {ValidationDictionary = new Dictionary<string, string>()});
 
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             _payeRepository.Verify(x => x.GetPayeForAccountByRef(ExpectedAccountId, Query.Ref), Times.Once);
@@ -63,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
             RequestValidator.Setup(x => x.Validate(It.IsAny<GetPayeSchemeByRefQuery>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.AreSame(_expectedPayeScheme, actual.PayeScheme);

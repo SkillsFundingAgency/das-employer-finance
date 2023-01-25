@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactionsTests
 {
@@ -78,7 +79,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
             var toDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, daysInMonth);
 
             //Act
-            await RequestHandler.Handle(_request);
+            await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             _dasLevyService.Verify(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), fromDate, toDate), Times.Once);
@@ -97,7 +98,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
             var toDate = new DateTime(_request.Year, _request.Month, daysInMonth);
 
             //Act
-            await RequestHandler.Handle(_request);
+            await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             _dasLevyService.Verify(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), fromDate, toDate), Times.Once);
@@ -124,7 +125,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                            .ReturnsAsync(transactions);
 
             //Act
-            var response = await RequestHandler.Handle(_request);
+            var response = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(_request.HashedAccountId, response.Data.HashedAccountId);
@@ -137,7 +138,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
         public async Task ThenIfNoTransactionAreFoundAnEmptyTransactionListIsReturned()
         {
             //Act
-            var response = await RequestHandler.Handle(_request);
+            var response = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(_request.HashedAccountId, response.Data.HashedAccountId);
@@ -167,7 +168,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
 
              _dasLevyService.Setup(x => x.GetProviderName(expectedUkprn, It.IsAny<long>(), It.IsAny<string>())).ReturnsAsync("test");
             //Act
-            var actual = await RequestHandler.Handle(_request);
+            var actual = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             _dasLevyService.Verify(x => x.GetProviderName(expectedUkprn, It.IsAny<long>(), It.IsAny<string>()), Times.Once);
@@ -194,7 +195,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
             _dasLevyService.Setup(x => x.GetProviderName(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<string>())).Throws(new WebException());
 
             //Act
-            var actual = await RequestHandler.Handle(_request);
+            var actual = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             Assert.AreEqual("Training provider - name not recognised", actual.Data.TransactionLines.First().Description);
@@ -223,7 +224,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .ReturnsAsync((string)null);
 
             //Act
-            var actual = await RequestHandler.Handle(_request);
+            var actual = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             Assert.AreEqual("Training provider - name not recognised", actual.Data.TransactionLines.First().Description);
@@ -252,7 +253,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .Throws<Exception>();
 
             //Act
-            await RequestHandler.Handle(_request);
+            await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             _logger.Verify(x => x.Info(It.Is<string>(y => y.StartsWith("Provider not found for UkPrn:1254545"))));
@@ -275,7 +276,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();
@@ -302,7 +303,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();
@@ -333,7 +334,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .ReturnsAsync(provider.Name);
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();
@@ -364,7 +365,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .ReturnsAsync(provider.Name);
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();
@@ -396,7 +397,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .ReturnsAsync(provider.Name);
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();
@@ -426,7 +427,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .ReturnsAsync(transactions);
 
             //Act
-            var result = await RequestHandler.Handle(_request);
+            var result = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             Assert.IsTrue(result.AccountHasPreviousTransactions);
@@ -456,7 +457,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .ReturnsAsync(0);
 
             //Act
-            var result = await RequestHandler.Handle(_request);
+            var result = await RequestHandler.Handle(_request, CancellationToken.None);
 
             //Assert
             Assert.IsFalse(result.AccountHasPreviousTransactions);
@@ -483,7 +484,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();
@@ -517,7 +518,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 .Returns(expectedPublicHashedId);
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First() as TransferTransactionLine;
@@ -545,7 +546,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             var actualTransaction = actual.Data.TransactionLines.First();

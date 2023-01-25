@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -133,7 +134,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferAllowanceTests
 
             try
             {
-                Response = await handler.Handle(query);
+                Response = await handler.Handle(query, CancellationToken.None);
             }
             catch (Exception e)
             {

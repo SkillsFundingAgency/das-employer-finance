@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent
@@ -68,7 +69,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent
         {
             NotStoredInCacheSetup();
 
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             MockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
         }
@@ -78,7 +79,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent
         {
             NotStoredInCacheSetup();
 
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             MockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
         }

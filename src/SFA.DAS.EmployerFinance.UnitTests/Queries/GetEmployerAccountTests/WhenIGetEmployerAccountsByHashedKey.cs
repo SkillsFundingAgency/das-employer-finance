@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.HashingService;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
 {
@@ -48,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
             {
                 HashedAccountId = ExpectedHashedId,
                 UserId = ExpectedUserId
-            });
+            }, CancellationToken.None);
 
             //Assert
             _employerAccountRepository.Verify(x => x.Get(ExpectedAccountId));
@@ -62,7 +63,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
             {
                 HashedAccountId = ExpectedHashedId,
                 UserId = ExpectedUserId
-            });
+            }, CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(result);
@@ -77,7 +78,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
             RequestValidator.Setup(x => x.ValidateAsync(It.IsAny<GetEmployerAccountHashedQuery>())).ReturnsAsync(new ValidationResult { IsUnauthorized = true });
 
             //Act Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new GetEmployerAccountHashedQuery()));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new GetEmployerAccountHashedQuery(), CancellationToken.None));
 
         }
     }

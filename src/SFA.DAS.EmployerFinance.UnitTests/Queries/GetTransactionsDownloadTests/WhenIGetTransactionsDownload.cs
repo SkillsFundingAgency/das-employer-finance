@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -67,7 +68,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransactionsDownloadTests
         [Test]
         public async Task ThenShouldGetATransactionsFormatter()
         {
-            await _handler.Handle(_query);
+            await _handler.Handle(_query, CancellationToken.None);
 
             _transactionFormatterFactory.Verify(x => x.GetTransactionsFormatterByType(_query.DownloadFormat.Value, ApprenticeshipEmployerType.Levy), Times.Once());
         }
@@ -75,7 +76,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransactionsDownloadTests
         [Test]
         public async Task ThenShouldReturnValidResponse()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             Assert.IsNotNull(response);
             Assert.AreEqual("csv", response.FileExtension);
@@ -89,7 +90,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransactionsDownloadTests
             _transactionsRepository.Setup(r => r.GetAllTransactionDetailsForAccountByDate(AccountId, StartDate, ToDate))
                 .ReturnsAsync(new TransactionDownloadLine[0]);
 
-            Assert.ThrowsAsync<ValidationException>(async () => await _handler.Handle(_query), "There are no transactions in the date range");
+            Assert.ThrowsAsync<ValidationException>(async () => await _handler.Handle(_query, CancellationToken.None), "There are no transactions in the date range");
         }
     }
 }

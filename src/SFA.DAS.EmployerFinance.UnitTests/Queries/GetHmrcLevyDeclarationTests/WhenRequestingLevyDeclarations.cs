@@ -11,6 +11,7 @@ using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.UnitTests.ObjectMothers;
 using SFA.DAS.Hmrc;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
 {
@@ -32,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
             _hmrcService.Setup(x => x.GetLevyDeclarations(ExpectedEmpRef, It.IsAny<DateTime?>())).ReturnsAsync(DeclarationsObjectMother.Create(ExpectedEmpRef));
 
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(x => x.SendAsync(It.IsAny<GetLastLevyDeclarationQuery>())).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration() });
+            _mediator.Setup(x => x.Send(It.IsAny<GetLastLevyDeclarationQuery>())).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration() });
 
             _getHMRCLevyDeclarationQueryHandler = new GetHMRCLevyDeclarationQueryHandler(_validator.Object, _hmrcService.Object, _mediator.Object);
         }
@@ -41,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
         public async Task ThenTheValidatorIsCalled()
         {
             //Act
-            await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery());
+            await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery(), CancellationToken.None);
 
             //Assert
             _validator.Verify(x => x.Validate(It.IsAny<GetHMRCLevyDeclarationQuery>()));
@@ -54,14 +55,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
             _validator.Setup(x => x.Validate(It.IsAny<GetHMRCLevyDeclarationQuery>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery()));
+            Assert.ThrowsAsync<InvalidRequestException>(async () => await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery(), CancellationToken.None));
         }
 
         [Test]
         public async Task ThenTheLevyServiceIsCalledWithThePassedIdToGetTheLevyDeclarations()
         {
             //Act
-            await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef });
+            await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetLevyDeclarations(It.Is<string>(c => c.Equals(ExpectedEmpRef)), It.IsAny<DateTime?>()), Times.Once);
@@ -72,7 +73,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
         public async Task ThenTheResponseIsPopulatedWithDeclarations()
         {
             //Act
-            var actual = await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef });
+            var actual = await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(actual);
@@ -88,7 +89,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
             _mediator.Setup(x => x.SendAsync(It.Is<GetLastLevyDeclarationQuery>(c => c.EmpRef.Equals(ExpectedEmpRef)))).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration { SubmissionDate = expectedDate } });
 
             //Act
-            await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef });
+            await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetLevyDeclarations(It.Is<string>(c => c.Equals(ExpectedEmpRef)), It.Is<DateTime>(c => c.Date.Equals(expectedDate.AddDays(-1)))), Times.Once);

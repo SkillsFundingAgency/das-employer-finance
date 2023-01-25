@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using Moq;
 using NUnit.Framework;
@@ -40,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionInvitat
         [Test]
         public async Task ThenShouldCallRepository()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
             _transferConnectionInvitationRepository.Verify(v => v.GetBySenderOrReceiver(It.IsAny<long>()), Times.Once);
         }
     }

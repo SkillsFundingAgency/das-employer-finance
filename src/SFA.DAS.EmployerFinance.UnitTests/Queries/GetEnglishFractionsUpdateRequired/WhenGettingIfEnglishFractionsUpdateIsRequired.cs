@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateReq
             _englishFractionRepository.Setup(x => x.GetLastUpdateDate()).ReturnsAsync(DateTime.Now.AddDays(-1));
 
             //Act
-            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest());
+            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest(), CancellationToken.None);
 
             //Assert
             Assert.IsTrue(result.UpdateRequired); 
@@ -47,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateReq
             _englishFractionRepository.Setup(x => x.GetLastUpdateDate()).ReturnsAsync(updateTime);
 
             //Act
-            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest());
+            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest(),CancellationToken.None);
 
             //Assert
             Assert.IsFalse(result.UpdateRequired);

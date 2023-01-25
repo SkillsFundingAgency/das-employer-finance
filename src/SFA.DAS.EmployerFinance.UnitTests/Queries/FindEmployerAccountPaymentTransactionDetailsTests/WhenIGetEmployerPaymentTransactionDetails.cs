@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -71,7 +72,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
         public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
         {
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             _hashingService.Verify(x => x.DecodeValue(_hashedAccountId), Times.Once);
@@ -83,7 +84,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
         public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
         {
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(actual);
@@ -98,14 +99,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
                             .ReturnsAsync(new ValidationResult {IsUnauthorized = true});
 
             //Act Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new FindAccountProviderPaymentsQuery()));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new FindAccountProviderPaymentsQuery(), CancellationToken.None));
         }
 
         [Test]
         public async Task ThenTheProviderNameShouldBeAddedToTheResponse()
         {
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(ProviderName, actual.ProviderName);
@@ -124,7 +125,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
                });
 
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(transactionDate, actual.TransactionDate);
@@ -139,7 +140,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
                 .ReturnsAsync(new PaymentTransactionLine[0]);
 
             //Act
-            Assert.ThrowsAsync<NotFoundException>(async () => await RequestHandler.Handle(Query));
+            Assert.ThrowsAsync<NotFoundException>(async () => await RequestHandler.Handle(Query, CancellationToken.None));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Moq;
@@ -124,7 +125,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferRequestsTests
         [Test]
         public async Task ThenShouldReturnGetTransferRequestsResponse()
         {
-            _response = await _handler.Handle(_query);
+            _response = await _handler.Handle(_query, CancellationToken.None);
 
             Assert.That(_response, Is.Not.Null);
             Assert.That(_response.TransferRequests.Count(), Is.EqualTo(2));

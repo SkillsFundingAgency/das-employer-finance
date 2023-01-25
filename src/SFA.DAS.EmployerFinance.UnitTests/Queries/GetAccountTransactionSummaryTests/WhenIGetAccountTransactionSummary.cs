@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
 using SFA.DAS.HashingService;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountTransactionSummaryTests
@@ -38,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountTransactionSummary
             _repository.Setup(x => x.GetAccountTransactionSummary(accountId)).ReturnsAsync(expectedTransactionSummary);
 
             //Act
-            var response = await _requestHandler.Handle(_query);
+            var response = await _requestHandler.Handle(_query, CancellationToken.None);
 
             //Assert
             response.Data.Should().BeSameAs(expectedTransactionSummary);

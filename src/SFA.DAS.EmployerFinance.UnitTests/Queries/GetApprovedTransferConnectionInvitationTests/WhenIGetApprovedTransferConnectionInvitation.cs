@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Moq;
@@ -83,7 +84,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetApprovedTransferConnectio
                 TransferConnectionInvitationId = _approvedTransferConnectionInvitation.Id
             };
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             Assert.That(response, Is.Not.Null);
             Assert.That(response, Is.TypeOf<GetApprovedTransferConnectionInvitationResponse>());

@@ -12,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
+using System.Threading;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetailsTests
 {
@@ -160,7 +161,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnCorrectSenderDetails()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(SenderAccountName, result.SenderAccountName);
@@ -171,7 +172,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnCorrectReceiverDetails()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(ReceiverAccountName, result.ReceiverAccountName);
@@ -182,7 +183,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnCorrectCourseDetails()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(2, result.TransferDetails.Count());
@@ -194,7 +195,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnCorrectCourseSubTotals()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(2, result.TransferDetails.Count());
@@ -216,7 +217,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnCorrectCourseApprenticeCount()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
 
@@ -240,7 +241,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnTransferPaymentTotal()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             var expectedPaymentTotal = _transfers.Sum(t => t.Amount);
@@ -260,7 +261,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
             };
 
             //Act
-            var result = await _handler.Handle(query);
+            var result = await _handler.Handle(query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(_senderTranferTransaction.DateCreated, result.DateCreated);
@@ -270,7 +271,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldReturnReceiverTransferDate()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(_recieverTranferTransaction.DateCreated, result.DateCreated);
@@ -280,7 +281,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         public async Task ThenIShouldBeToldIfImTheReceiver()
         {
             //Act
-            var result = await _handler.Handle(_query);
+            var result = await _handler.Handle(_query, CancellationToken.None);
 
             //Assert
             Assert.IsFalse(result.IsCurrentAccountSender);
@@ -298,7 +299,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
             };
 
             //Act
-            var result = await _handler.Handle(query);
+            var result = await _handler.Handle(query, CancellationToken.None);
 
             //Assert
             Assert.IsTrue(result.IsCurrentAccountSender);

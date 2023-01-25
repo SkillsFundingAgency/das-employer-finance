@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.HashingService;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationsByAccountAndPeriodTests
@@ -34,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationsByAccount
             var expectedDeclarations = new List<LevyDeclarationItem>();
             _repository.Setup(x => x.GetAccountLevyDeclarations(accountId, query.PayrollYear, query.PayrollMonth)).ReturnsAsync(expectedDeclarations);
 
-            var response = await _handler.Handle(query);
+            var response = await _handler.Handle(query, CancellationToken.None);
 
             response.Declarations.Should().BeSameAs(expectedDeclarations);
         }
