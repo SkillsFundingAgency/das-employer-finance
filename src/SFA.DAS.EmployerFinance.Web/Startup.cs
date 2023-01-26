@@ -22,6 +22,7 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using SFA.DAS.EmployerFinance.ServiceRegistration;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
@@ -87,7 +88,7 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddAutoMapper(typeof(Startup).Assembly);
 
-            services.AddDatabaseRegistration(_employerAccountsConfiguration, _configuration["Environment"]);
+            services.AddDatabaseRegistration(_employerFinanceConfiguration, _configuration["Environment"]);
             services.AddDataRepositories();
 
             services.AddControllersWithViews(ConfigureMvcOptions)
