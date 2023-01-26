@@ -66,7 +66,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
             {
                 _logger.Info($"PayeScheme '{empRef}' has duplicate submission id(s) from Hmrc = '{string.Join(", ", duplicateIds)}'");
             }
-
+            //MAC-192 - use System.Collection first 
             return temp.DistinctBy(x => x.Id).ToArray();
         }
 
