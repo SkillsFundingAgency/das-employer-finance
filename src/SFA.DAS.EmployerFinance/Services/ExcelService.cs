@@ -51,16 +51,16 @@ namespace SFA.DAS.EmployerFinance.Services
                         var worksheetName = worksheetDetails.Key;
                         var worksheetData = worksheetDetails.Value;
 
-                        using (var worksheet = workbook.Worksheets.Add(worksheetName))
+                        var worksheet = workbook.Worksheets.Add(worksheetName);
+                        
+                        for (var rowIndex = 0; rowIndex < worksheetData.Length; rowIndex++)
                         {
-                            for (var rowIndex = 0; rowIndex < worksheetData.Length; rowIndex++)
+                            for (var columnIndex = 0; columnIndex < worksheetData[rowIndex].Length; columnIndex++)
                             {
-                                for (var columnIndex = 0; columnIndex < worksheetData[rowIndex].Length; columnIndex++)
-                                {
-                                    worksheet.Cell(rowIndex + 1, columnIndex + 1).Value = worksheetData[rowIndex][columnIndex];
-                                }
+                                worksheet.Cell(rowIndex + 1, columnIndex + 1).Value = worksheetData[rowIndex][columnIndex];
                             }
                         }
+                        
                     }
                     
                     workbook.SaveAs(stream);
