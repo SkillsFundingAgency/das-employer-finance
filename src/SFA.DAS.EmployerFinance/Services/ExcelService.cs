@@ -52,7 +52,6 @@ namespace SFA.DAS.EmployerFinance.Services
                         var worksheetData = worksheetDetails.Value;
 
                         var worksheet = workbook.Worksheets.Add(worksheetName);
-                        
                         for (var rowIndex = 0; rowIndex < worksheetData.Length; rowIndex++)
                         {
                             for (var columnIndex = 0; columnIndex < worksheetData[rowIndex].Length; columnIndex++)
@@ -60,9 +59,7 @@ namespace SFA.DAS.EmployerFinance.Services
                                 worksheet.Cell(rowIndex + 1, columnIndex + 1).Value = worksheetData[rowIndex][columnIndex];
                             }
                         }
-                        
-                    }
-                    
+                    }                    
                     workbook.SaveAs(stream);
                 }
 
