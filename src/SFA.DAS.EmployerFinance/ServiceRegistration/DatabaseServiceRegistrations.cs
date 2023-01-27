@@ -12,7 +12,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
         {
             if (environmentName.Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase))
             {
-                services.AddDbContext<EmployerFinanceDbContext>(options => options.UseSqlServer(config.DatabaseConnectionString), ServiceLifetime.Transient);
+                services.AddDbContext<EmployerFinanceDbContext>(options => options.UseSqlServer(config.DatabaseConnectionString), ServiceLifetime.Transient);                
             }
             else
             {
