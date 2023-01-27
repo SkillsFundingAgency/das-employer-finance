@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.Sql.Client;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
+using Microsoft.EntityFrameworkCore;
 
 namespace SFA.DAS.EmployerFinance.Data
 {
@@ -31,10 +32,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
             parameters.Add("@now", now);
 
-            await _db.Value.Database.Connection.ExecuteAsync(
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreateDraftExpiredFunds]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -48,10 +48,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
             parameters.Add("@now", now);
 
-            await _db.Value.Database.Connection.ExecuteAsync(
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreateExpiredFunds]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -61,10 +60,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
             parameters.Add("@AccountId", accountId);
 
-            return await _db.Value.Database.Connection.QueryAsync<ExpiredFund>(
+            return await _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
                 "[employer_financial].[GetExpiredFunds]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -75,10 +73,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
             parameters.Add("@AccountId", accountId);
 
-            return await _db.Value.Database.Connection.QueryAsync<ExpiredFund>(
+            return await _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
                 "[employer_financial].[GetDraftExpiredFunds]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure
             );
         }

@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Api.Types;
+using Microsoft.EntityFrameworkCore;
 using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.TransactionItemType;
 
 namespace SFA.DAS.EmployerFinance.Data
@@ -39,10 +40,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@transferTransactions",
                 transactionTable.AsTableValuedParameter("[employer_financial].[TransferTransactionsTable]"));
 
-            await _db.Value.Database.Connection.ExecuteAsync(
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreateAccountTransferTransactions]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -55,10 +55,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
             try
             {
-                return await _db.Value.Database.Connection.ExecuteScalarAsync<int>(
+                return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<int>(
                     sql: "[employer_financial].[GetPreviousTransactionsCount]",
                     param: parameters,
-                    transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                     commandType: CommandType.StoredProcedure);
 
             }
@@ -74,10 +73,9 @@ namespace SFA.DAS.EmployerFinance.Data
             var parameters = new DynamicParameters();
             parameters.Add("@accountId", accountId, DbType.Int64);
 
-            return _db.Value.Database.Connection.QuerySingleAsync<decimal>(
+            return _db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
                 sql: "SELECT ISNULL(SUM(Amount),0) FROM [employer_financial].[TransactionLine] WHERE AccountId = @accountId AND TransactionType in (1, 2, 3, 4, 5)",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.Text);
         }
     
@@ -89,10 +87,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@fromDate", new DateTime(fromDate.Year, fromDate.Month, fromDate.Day), DbType.DateTime);
             parameters.Add("@toDate", new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59), DbType.DateTime);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<TransactionEntity>(
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
                 sql: "[employer_financial].[GetTransactionLines_ByAccountId]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
 
             return MapTransactions(result);
@@ -143,10 +140,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@fromDate", new DateTime(fromDate.Year, fromDate.Month, fromDate.Day), DbType.DateTime);
             parameters.Add("@toDate", new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59), DbType.DateTime);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<TransactionEntity>(
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
                 sql: "[employer_financial].[GetPaymentDetail_ByAccountProviderAndDateRange]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
 
             return MapTransactions(result);
@@ -191,10 +187,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@fromDate", new DateTime(fromDate.Year, fromDate.Month, fromDate.Day), DbType.DateTime);
             parameters.Add("@toDate", new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59), DbType.DateTime);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<TransactionEntity>(
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
                 sql: "[employer_financial].[GetPaymentDetail_ByAccountProviderCourseAndDateRange]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
 
             return MapTransactions(result);
@@ -207,10 +202,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@fromDate", new DateTime(fromDate.Year, fromDate.Month, fromDate.Day), DbType.DateTime);
             parameters.Add("@toDate", new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59), DbType.DateTime);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<TransactionEntity>(
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
                 sql: "[employer_financial].[GetLevyDetail_ByAccountIdAndDateRange]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
 
             return MapTransactions(result);
@@ -225,10 +219,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@accountId", accountId, DbType.Int64);
             parameters.Add("@periodEnd", periodEnd, DbType.String);
 
-            return await _db.Value.Database.Connection.ExecuteScalarAsync<string>(
+            return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<string>(
                 sql: "[employer_financial].[GetProviderName]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
             
         }
@@ -240,11 +233,7 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@fromDate", fromDate, DbType.DateTime);
             parameters.Add("@toDate", toDate, DbType.DateTime);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<TransactionDownloadLine>(
-                sql: "[employer_financial].[GetAllTransactionDetailsForAccountByDate]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
-                commandType: CommandType.StoredProcedure);
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionDownloadLine>(sql: "[employer_financial].[GetAllTransactionDetailsForAccountByDate]", param: parameters, commandType: CommandType.StoredProcedure);
 
             var hmrcDateService = new HmrcDateService();
             var transactionDownloadLines = result as TransactionDownloadLine[] ?? result.ToArray();
@@ -265,11 +254,7 @@ namespace SFA.DAS.EmployerFinance.Data
             var parameters = new DynamicParameters();
             parameters.Add("@AccountId", accountId, DbType.Int64);
 
-            return await _db.Value.Database.Connection.ExecuteScalarAsync<decimal>(
-                sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
-                commandType: CommandType.StoredProcedure);
+            return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
         }       
 
         public async Task<List<TransactionSummary>> GetAccountTransactionSummary(long accountId)
@@ -278,11 +263,7 @@ namespace SFA.DAS.EmployerFinance.Data
 
             parameters.Add("@AccountId", accountId, DbType.Int64);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<TransactionSummary>(
-                sql: "[employer_financial].[GetTransactionSummary_ByAccountId]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
-                commandType: CommandType.StoredProcedure);
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionSummary>(sql: "[employer_financial].[GetTransactionSummary_ByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
 
             return result.ToList();
         }

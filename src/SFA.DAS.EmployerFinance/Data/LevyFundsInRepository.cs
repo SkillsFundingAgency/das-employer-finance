@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.NLog.Logger;
@@ -26,10 +27,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
             parameters.Add("@AccountId", accountId, DbType.Int64);
 
-            return await _db.Value.Database.Connection.QueryAsync<LevyFundsIn>(
+            return await _db.Value.Database.GetDbConnection().QueryAsync<LevyFundsIn>(
                 "[employer_financial].[GetLevyFundsIn]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure
             );
         }

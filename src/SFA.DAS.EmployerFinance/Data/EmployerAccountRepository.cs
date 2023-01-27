@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
@@ -13,19 +15,13 @@ using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.Data
 {
-    public class EmployerAccountRepository : BaseRepository, IEmployerAccountRepository
+    public class EmployerAccountRepository : IEmployerAccountRepository
     {
         private readonly Lazy<EmployerFinanceDbContext> _db;
-        private readonly IHashingService _hashingService;
-        private readonly IPublicHashingService _publicHashingService;
 
-        public EmployerAccountRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db,
-            IHashingService hashingService, IPublicHashingService publicHashingService)
-            : base(configuration.DatabaseConnectionString, logger)
+        public EmployerAccountRepository(Lazy<EmployerFinanceDbContext> db)
         {
             _db = db;
-            _hashingService = hashingService;
-            _publicHashingService = publicHashingService;
         }
 
         public async Task<Account> Get(long id)
@@ -42,11 +38,16 @@ namespace SFA.DAS.EmployerFinance.Data
 
         public async Task<Account> Get(string publicHashedId)
         {
-            var account = _publicHashingService.TryDecodeValue(publicHashedId, out var accountId)
-                ? await Get(accountId)
-                : null;
-            
-            return account;
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@HashedAccountId", publicHashedId, DbType.String);
+
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<Account>(
+                sql: "select a.* from [employer_account].[Account] a where a.HashedId = @HashedAccountId;",
+                param: parameters,
+                commandType: CommandType.Text);
+
+            return result.SingleOrDefault();
         }
 
         public async Task<List<Account>> GetAll()

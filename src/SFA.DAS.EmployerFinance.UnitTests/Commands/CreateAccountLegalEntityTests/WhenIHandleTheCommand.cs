@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -32,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateAccountLegalEntityTes
             var accountId = 10862;
             var legalEntityId = 44893;
 
-            await _handler.Handle(new CreateAccountLegalEntityCommand(id, pendingAgreementId, signedAgreementId, signedAgreementVersion, accountId, legalEntityId));
+            await _handler.Handle(new CreateAccountLegalEntityCommand(id, pendingAgreementId, signedAgreementId, signedAgreementVersion, accountId, legalEntityId),CancellationToken.None);
 
             _accountLegalEntityRepository.Verify(x => x.CreateAccountLegalEntity(id, pendingAgreementId, signedAgreementId, signedAgreementVersion, accountId, legalEntityId));
         }

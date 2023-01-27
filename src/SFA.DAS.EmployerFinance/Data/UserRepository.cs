@@ -2,6 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 using SFA.DAS.NLog.Logger;
@@ -29,10 +30,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@lastName", user.LastName, DbType.String);
             parameters.Add("@correlationId", user.CorrelationId, DbType.String);
 
-            await _db.Value.Database.Connection.ExecuteAsync(
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[UpsertUser] @userRef, @email, @firstName, @lastName, @correlationId",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.Text);
         }
     }
