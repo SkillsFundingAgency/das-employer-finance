@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Mvc.Attributes;
@@ -16,7 +16,8 @@ using SFA.DAS.Validation.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [RoutePrefix("accounts/{HashedAccountId}")]
+    [DasAuthorize]
+    [Route("accounts/{HashedAccountId}")]
     [DasAuthorize(EmployerUserRole.Any)]
     public class EmployerAccountTransactionsController : BaseController
     {
@@ -45,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance/provider/summary")]
         [Route("balance/provider/summary")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> ProviderPaymentSummary(string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> ProviderPaymentSummary(string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
         {
             var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
 
@@ -54,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance")]
         [Route("balance")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Index(GetAccountFinanceOverviewQuery query)
+        public async Task<IActionResult> Index(GetAccountFinanceOverviewQuery query)
         {
             _logger.Info($"EmployerAccountTransactionsController Index GetAccountFinanceOverviewQuery  AccountHashedId : {query.AccountHashedId} AccountId : {query.AccountId} ");
 
@@ -79,15 +80,15 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("finance/downloadtransactions")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> TransactionsDownload(TransactionDownloadViewModel model)
+        public async Task<IActionResult> TransactionsDownload(TransactionDownloadViewModel model)
         {
-            var response = await _mediator.SendAsync(model.GetTransactionsDownloadQuery);
+            var response = await _mediator.Send(model.GetTransactionsDownloadQuery);
             return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
         }
 
         [Route("finance/{year}/{month}")]
         [Route("balance/{year}/{month}")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> TransactionsView(string hashedAccountId, int year, int month)
+        public async Task<IActionResult> TransactionsView(string hashedAccountId, int year, int month)
         {
             var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
 
@@ -105,7 +106,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance/levyDeclaration/details")]
         [Route("balance/levyDeclaration/details")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> LevyDeclarationDetail(string hashedAccountId, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> LevyDeclarationDetail(string hashedAccountId, DateTime fromDate, DateTime toDate)
         {
             var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
 
@@ -114,7 +115,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance/course/standard/summary")]
         [Route("balance/course/standard/summary")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> CourseStandardPaymentSummary(string hashedAccountId, long ukprn, string courseName,
+        public async Task<IActionResult> CourseStandardPaymentSummary(string hashedAccountId, long ukprn, string courseName,
             int? courseLevel, DateTime fromDate, DateTime toDate)
         {
             return await CourseFrameworkPaymentSummary(hashedAccountId, ukprn, courseName, courseLevel, null, fromDate, toDate);
@@ -122,7 +123,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance/course/framework/summary")]
         [Route("balance/course/framework/summary")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> CourseFrameworkPaymentSummary(string hashedAccountId, long ukprn, string courseName,
+        public async Task<IActionResult> CourseFrameworkPaymentSummary(string hashedAccountId, long ukprn, string courseName,
             int? courseLevel, int? pathwayCode, DateTime fromDate, DateTime toDate)
         {
             var orchestratorResponse = await _accountTransactionsOrchestrator.GetCoursePaymentSummary(
@@ -134,9 +135,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance/transfer/details")]
         [Route("balance/transfer/details")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> TransferDetail(GetTransferTransactionDetailsQuery query)
+        public async Task<IActionResult> TransferDetail(GetTransferTransactionDetailsQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
 
             var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);
             return View(ControllerConstants.TransferDetailsViewName, model);

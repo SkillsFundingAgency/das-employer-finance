@@ -1,15 +1,14 @@
-﻿using System.Web;
+﻿using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authentication;
+using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Helpers;
-using System.Web.Mvc;
-using System.Collections.Generic;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [RoutePrefix("service")]
-    public class HomeController : Microsoft.AspNetCore.Mvc.Controller
+    [Route("service")]
+    public class HomeController : Controller
     {
         private readonly IAuthenticationService _owinWrapper;
         private readonly EmployerFinanceConfiguration _configuration;
@@ -20,13 +19,13 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             _configuration = configuration;
         }
 
-        public Microsoft.AspNetCore.Mvc.ActionResult Index()
+        public IActionResult Index()
         {
             return Redirect(Url.LegacyEasAction(string.Empty));
         }
 
-        [Authorize]
-        public Microsoft.AspNetCore.Mvc.ActionResult SignedIn()
+        [DasAuthorize]
+        public IActionResult SignedIn()
         {
             return View();
         }
@@ -34,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpGet]
         [Route("{HashedAccountId}/privacy", Order = 0)]
         [Route("privacy", Order = 1)]
-        public Microsoft.AspNetCore.Mvc.ActionResult Privacy()
+        public IActionResult Privacy()
         {
             return Redirect(Url.EmployerAccountsAction("service", "privacy"));
         }
@@ -42,13 +41,13 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpGet]
         [Route("{HashedAccountId}/cookieConsent", Order = 0)]
         [Route("cookieConsent", Order = 1)]
-        public Microsoft.AspNetCore.Mvc.ActionResult CookieConsent()
+        public IActionResult CookieConsent()
         {
             return Redirect(Url.EmployerAccountsAction("cookieConsent"));
         }       
 
         [Route("signOut")]
-        public Microsoft.AspNetCore.Mvc.ActionResult SignOut()
+        public IActionResult SignOut()
         {
             _owinWrapper.SignOutUser();
 
@@ -57,7 +56,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             var idToken = authenticationManager.User.FindFirst("id_token")?.Value;
             var constants = new Constants(_configuration.Identity);
 
-            return new Microsoft.AspNetCore.Mvc.RedirectResult(string.Format(constants.LogoutEndpoint(), idToken));
+            return new RedirectResult(string.Format(constants.LogoutEndpoint(), idToken));
         }
 
         [Route("SignOutCleanup")]
@@ -68,14 +67,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpGet]
         [Route("help")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Help()
+        public IActionResult Help()
         {
             return RedirectPermanent(_configuration.ZenDeskHelpCentreUrl);
         }
 
-        [Authorize]
+        [DasAuthorize]
         [Route("signIn")]
-        public Microsoft.AspNetCore.Mvc.ActionResult SignIn()
+        public IActionResult SignIn()
         {
             return RedirectToAction(ControllerConstants.IndexActionName);
         }       

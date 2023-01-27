@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 using SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [Authorize]
-    [RoutePrefix("healthcheck")]
-    public class HealthCheckController : Microsoft.AspNetCore.Mvc.Controller
+    [DasAuthorize]
+    [Route("healthcheck")]
+    public class HealthCheckController : Controller
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
@@ -21,10 +22,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             _mapper = mapper;
         }
 
-        [Route]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Index(GetHealthCheckQuery query)
+        public async Task<IActionResult> Index(GetHealthCheckQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<HealthCheckViewModel>(response);
 
             return View(model);
@@ -32,10 +32,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route]
         public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Index(RunHealthCheckCommand command)
         {
-            await _mediator.SendAsync(command);
+            await _mediator.Send(command);
 
             return RedirectToAction("Index");
         }

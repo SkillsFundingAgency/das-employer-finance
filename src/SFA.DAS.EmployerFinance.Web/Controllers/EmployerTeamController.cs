@@ -1,6 +1,4 @@
-﻿using System.Web.Mvc;
-
-namespace SFA.DAS.EmployerFinance.Web.Controllers
+﻿namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     public class EmployerTeamController : Microsoft.AspNetCore.Mvc.Controller
     {
