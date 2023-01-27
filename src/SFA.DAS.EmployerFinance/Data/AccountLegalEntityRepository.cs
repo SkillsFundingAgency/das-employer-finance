@@ -2,6 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.Sql.Client;
@@ -30,10 +31,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@signedAgreementId", signedAgreementId, DbType.Int64);
             parameters.Add("@pendingAgreementId", pendingAgreementId, DbType.Int64);
 
-            return _db.Value.Database.Connection.ExecuteAsync(
+            return _db.Value.Database.GetDbConnection().ExecuteAsync(
                 "[employer_financial].[CreateAccountLegalEntity]",
                 parameters,
-                _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -46,10 +46,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@signedAgreementVersion", signedAgreementVersion, DbType.Int32);
             parameters.Add("@signedAgreementId", signedAgreementId, DbType.Int64);
 
-            return _db.Value.Database.Connection.ExecuteAsync(
+            return _db.Value.Database.GetDbConnection().ExecuteAsync(
                 "[employer_financial].[SignAccountLegalEntityAgreement]",
                 parameters,
-                _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -59,10 +58,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
             parameters.Add("@id", id, DbType.Int64);
 
-            return _db.Value.Database.Connection.ExecuteAsync(
+            return _db.Value.Database.GetDbConnection().ExecuteAsync(
                 "[employer_financial].[RemoveAccountLegalEntity]",
                 parameters,
-                _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
     }

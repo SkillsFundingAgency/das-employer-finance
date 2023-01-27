@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.Sql.Client;
@@ -26,10 +27,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
             parameters.Add("@accountId", accountId, DbType.Int64);
 
-            var result = await _db.Value.Database.Connection.QueryAsync<string>(
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<string>(
                 sql: "SELECT Name FROM [employer_financial].[Account] WHERE Id = @accountId",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.Text);
 
             return result.SingleOrDefault();
@@ -37,10 +37,9 @@ namespace SFA.DAS.EmployerFinance.Data
 
         public async Task<Dictionary<long, string>> GetAccountNames(IEnumerable<long> accountIds)
         {
-            var result = await _db.Value.Database.Connection.QueryAsync<AccountNameItem>(
+            var result = await _db.Value.Database.GetDbConnection().QueryAsync<AccountNameItem>(
                 sql: "SELECT Id, Name FROM [employer_financial].[Account] WHERE Id IN @accountIds",
-                param: new { accountIds = accountIds },
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction);
+                param: new { accountIds = accountIds });
 
             return result.ToDictionary(d => d.Id, d => d.Name);
         }
@@ -52,10 +51,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@id", accountId, DbType.Int64);
             parameters.Add("@name", name, DbType.String);
 
-            await _db.Value.Database.Connection.ExecuteAsync(
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreateAccount]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -66,10 +64,9 @@ namespace SFA.DAS.EmployerFinance.Data
             parameters.Add("@id", accountId, DbType.Int64);
             parameters.Add("@name", name, DbType.String);
 
-            await _db.Value.Database.Connection.ExecuteAsync(
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[RenameAccount]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
 
