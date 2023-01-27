@@ -23,7 +23,7 @@ using SFA.DAS.Validation.Mvc;
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     [DasAuthorize("EmployerFeature.TransferConnectionRequests", EmployerUserRole.Any)]
-    [RoutePrefix("accounts/{HashedAccountId}/transfers/connections/requests")]
+    [Route("accounts/{HashedAccountId}/transfers/connections/requests")]
     public class TransferConnectionInvitationsController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly IMapper _mapper;
