@@ -4,7 +4,7 @@ using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.HashingService;
@@ -17,7 +17,6 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         private readonly IHashingService _hashingService;
         private readonly ITransfersService _transfersService;
         private readonly IAccountApiClient _accountApiClient;
-        private readonly IDateTimeStringFormatter _dateTimeStringFormatter;
 
         protected TransfersOrchestrator()
         {
@@ -27,14 +26,12 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             IAuthorizationService authorizationService,
             IHashingService hashingService,
             ITransfersService transfersService,
-            IAccountApiClient accountApiClient,
-            IDateTimeStringFormatter dateTimeStringFormatter)
+            IAccountApiClient accountApiClient)
         {
             _authorizationService = authorizationService;
             _hashingService = hashingService;
             _transfersService = transfersService;
             _accountApiClient = accountApiClient;
-            _dateTimeStringFormatter = dateTimeStringFormatter;
         }
 
         public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)
@@ -58,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     ApplicationsCount = indexTask.Result.ApplicationsCount,
                     RenderCreateTransfersPledgeButton = renderCreateTransfersPledgeButtonTask.Result,                    
                     StartingTransferAllowance = accountDetail.Result.StartingTransferAllowance,
-                    FinancialYearString = _dateTimeStringFormatter.FinancialYearStringFor(DateTime.UtcNow),
+                    FinancialYearString = DateTime.UtcNow.ToFinancialYearString(),
                     HashedAccountID = hashedAccountId
                 }
             };
@@ -86,9 +83,9 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     NextYearEstimatedSpend = financialBreakdownTask.Result.NextYearEstimatedCommittedSpend,
                     YearAfterNextYearEstimatedSpend = financialBreakdownTask.Result.YearAfterNextYearEstimatedCommittedSpend,
                     StartingTransferAllowance = accountDetailTask.Result.StartingTransferAllowance,
-                    FinancialYearString = _dateTimeStringFormatter.FinancialYearStringFor(DateTime.UtcNow),
-                    NextFinancialYearString = _dateTimeStringFormatter.FinancialYearStringFor(DateTime.UtcNow.AddYears(1)),
-                    YearAfterNextFinancialYearString = _dateTimeStringFormatter.FinancialYearStringFor(DateTime.UtcNow.AddYears(2)),
+                    FinancialYearString = DateTime.UtcNow.ToFinancialYearString(),
+                    NextFinancialYearString = DateTime.UtcNow.AddYears(1).ToFinancialYearString(),
+                    YearAfterNextFinancialYearString = DateTime.UtcNow.AddYears(2).ToFinancialYearString(),
                     AmountPledged = financialBreakdownTask.Result.AmountPledged
                 }
             };
