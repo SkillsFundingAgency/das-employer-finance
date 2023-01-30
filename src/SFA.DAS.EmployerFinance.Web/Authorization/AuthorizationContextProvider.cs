@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Context;
@@ -41,7 +40,7 @@ namespace SFA.DAS.EmployerFinance.Web.Authorization
 
         private (string HashedId, long? Id) GetAccountValues()
         {
-            if (!_httpContext.Request.RequestContext.RouteData.Values.TryGetValue(RouteValueKeys.AccountHashedId, out var accountHashedId))
+            if (!_actionContextAccessor.ActionContext.RouteData.Values.TryGetValue(RouteValueKeys.AccountHashedId, out var accountHashedId))
             {
                 return (null, null);
             }
