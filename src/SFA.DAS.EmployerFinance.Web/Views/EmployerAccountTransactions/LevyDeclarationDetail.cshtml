@@ -1,5 +1,9 @@
 ﻿@using System.Globalization
-@using SFA.DAS.EmployerFinance.Web.Extensions
+@using SFA.DAS.EmployerFinance.Web.Helpers
+@using SFA.DAS.EmployerFinance.Interfaces
+
+@inject IUrlActionHelper UrlHelpers;
+
 @model OrchestratorResponse<TransactionLineViewModel<SFA.DAS.EmployerFinance.Models.Levy.LevyDeclarationTransactionLine>>
 
 @{
@@ -87,7 +91,7 @@
 @section breadcrumb {
     <div class="breadcrumbs">
         <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction($"teams")">Home</a></li>
+            <li><a href="@UrlHelpers.EmployerFinanceAction($"teams")">Home</a></li>
             <li><a href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new {year = Model.Data.TransactionDate.Year, month = Model.Data.TransactionDate.Month})">Your transactions</a></li>
             <li>@paymentType details</li>
         </ol>

@@ -1,6 +1,10 @@
 @using SFA.DAS.EmployerFinance.Web.Extensions
 @using System.Globalization
 @using SFA.DAS.Common.Domain.Types;
+@using SFA.DAS.EmployerFinance.Interfaces
+
+@inject IUrlActionHelper UrlHelpers;
+
 @model OrchestratorResponse<ProviderPaymentsSummaryViewModel>
 
 @{
@@ -150,7 +154,7 @@
 @section breadcrumb {
     <div class="breadcrumbs" id="js-breadcrumbs">
         <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction($"accounts/{@Model.Data.HashedAccountId}/teams")">Home</a></li>
+            <li><a href="@UrlHelpers.EmployerAccountsAction($"accounts/{@Model.Data.HashedAccountId}/teams")">Home</a></li>
             <li><a href="@Url.Action("Index", "EmployerAccountTransactions")">Your transactions</a></li>
             <li>Debit details</li>
         </ol>

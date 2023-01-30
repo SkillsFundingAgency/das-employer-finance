@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
-using WebApi.StructureMap;
 
 namespace SFA.DAS.EmployerFinance.Web.Helpers
 {

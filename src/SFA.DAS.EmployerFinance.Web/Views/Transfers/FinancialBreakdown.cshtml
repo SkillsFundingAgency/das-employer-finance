@@ -1,4 +1,8 @@
 ﻿@using System.Globalization
+@using SFA.DAS.EmployerFinance.Interfaces
+
+@inject IUrlActionHelper UrlHelpers;
+
 @model OrchestratorResponse<SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.FinancialBreakdownViewModel>
 @{
     ViewBag.PageID = "transfers-breakdown";
@@ -165,9 +169,9 @@
 @section breadcrumb {
     <div class="breadcrumbs">
         <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction("teams")">Home</a></li>
-            <li><a href="@Url.EmployerFinanceAction("finance")">Finance</a></li>
-            <li><a href="@Url.EmployerFinanceAction("transfers")">Transfers</a></li>
+            <li><a href="@UrlHelpers.EmployerAccountsAction("teams")">Home</a></li>
+            <li><a href="@UrlHelpers.EmployerFinanceAction("finance")">Finance</a></li>
+            <li><a href="@UrlHelpers.EmployerFinanceAction("transfers")">Transfers</a></li>
             <li>Financial breakdown</li>
         </ol>
     </div>
