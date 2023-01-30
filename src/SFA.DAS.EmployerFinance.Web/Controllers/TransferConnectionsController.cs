@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Security.Claims;
 using AutoMapper;
 using MediatR;
 using SFA.DAS.Authorization.EmployerFeatures.Models;

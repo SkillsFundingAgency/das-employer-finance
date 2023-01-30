@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -24,7 +24,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     [DasAuthorize("EmployerFeature.TransferConnectionRequests", EmployerUserRole.Any)]
     [Route("accounts/{HashedAccountId}/transfers/connections/requests")]
-    public class TransferConnectionInvitationsController : Microsoft.AspNetCore.Mvc.Controller
+    public class TransferConnectionInvitationsController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;

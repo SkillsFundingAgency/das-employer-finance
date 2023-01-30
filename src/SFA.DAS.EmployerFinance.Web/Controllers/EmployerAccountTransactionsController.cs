@@ -19,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
     [DasAuthorize]
     [Route("accounts/{HashedAccountId}")]
     [DasAuthorize(EmployerUserRole.Any)]
-    public class EmployerAccountTransactionsController : BaseController
+    public class EmployerAccountTransactionsController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;

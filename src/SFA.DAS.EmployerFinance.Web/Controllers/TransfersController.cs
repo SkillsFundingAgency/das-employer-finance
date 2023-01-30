@@ -1,15 +1,14 @@
 ﻿using System.Threading.Tasks;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     [DasAuthorize(EmployerUserRole.Any)]
     [Route("accounts/{HashedAccountId}")] 
-    public class TransfersController : Microsoft.AspNetCore.Mvc.Controller
+    public class TransfersController :Controller
     {
         private readonly TransfersOrchestrator _transfersOrchestrator;
 
