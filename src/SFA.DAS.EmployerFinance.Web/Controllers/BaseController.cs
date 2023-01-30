@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Web;
-using System.Web.Mvc;
+using System.Security.Claims;
 using SFA.DAS.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.Validation;

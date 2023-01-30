@@ -1,8 +1,10 @@
-﻿namespace SFA.DAS.EmployerFinance.Web.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    public class EmployerTeamController : Microsoft.AspNetCore.Mvc.Controller
+    public class EmployerTeamController : Controller
     {
-        public Microsoft.AspNetCore.Mvc.ActionResult Index()
+        public IActionResult Index()
         {
             throw new System.NotImplementedException();
         }

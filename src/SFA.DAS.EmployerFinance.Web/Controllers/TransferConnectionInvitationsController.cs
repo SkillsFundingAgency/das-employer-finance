@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Security.Claims;
 using AutoMapper;
 using MediatR;
-using SFA.DAS.Authorization.Mvc;
+using Microsoft.AspNetCore.Components;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
@@ -19,8 +19,6 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.Validation.Mvc;
-using Microsoft.AspNetCore.Components;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -38,14 +36,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [Route]
-        public Microsoft.AspNetCore.Mvc.ActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
 
         [ImportModelStateFromTempData]
         [Route("start")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Start()
+        public IActionResult Start()
         {
             return View(new StartTransferConnectionInvitationViewModel());
         }
@@ -54,9 +52,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("start")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Start(StartTransferConnectionInvitationViewModel model)
+        public async Task<IActionResult> Start(StartTransferConnectionInvitationViewModel model)
         {
-            await _mediator.SendAsync(new SendTransferConnectionInvitationQuery
+            await _mediator.Send(new SendTransferConnectionInvitationQuery
             {
                 ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId,
                 AccountId = model.AccountId
@@ -67,9 +65,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpNotFoundForNullModel]
         [ImportModelStateFromTempData]
         [Route("send")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Send(SendTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Send(SendTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<SendTransferConnectionInvitationViewModel>(response);
 
             return View(model);
@@ -79,12 +77,12 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("send")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Send(SendTransferConnectionInvitationViewModel model)
+        public async Task<IActionResult> Send(SendTransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
                 case "Confirm":
-                    var transferConnectionInvitationId = await _mediator.SendAsync(new SendTransferConnectionInvitationCommand
+                    var transferConnectionInvitationId = await _mediator.Send(new SendTransferConnectionInvitationCommand
                     {
                         AccountId = model.AccountId,
                         ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId,
@@ -101,9 +99,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpNotFoundForNullModel]
         [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/sent")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Sent(GetSentTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Sent(GetSentTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<SentTransferConnectionInvitationViewModel>(response);
 
             return View(model);
@@ -113,7 +111,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/sent")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Sent(SentTransferConnectionInvitationViewModel model)
+        public IActionResult Sent(SentTransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
@@ -129,9 +127,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpNotFoundForNullModel]
         [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/receive")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Receive(GetReceivedTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Receive(GetReceivedTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<ReceiveTransferConnectionInvitationViewModel>(response);
 
             return View(model);
@@ -141,15 +139,15 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/receive")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Receive(ReceiveTransferConnectionInvitationViewModel model)
+        public async Task<IActionResult> Receive(ReceiveTransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
                 case "Approve":
-                    await _mediator.SendAsync(new ApproveTransferConnectionInvitationCommand { AccountId = model.AccountId, UserRef = model.UserRef, TransferConnectionInvitationId = model.TransferConnectionInvitationId });
+                    await _mediator.Send(new ApproveTransferConnectionInvitationCommand { AccountId = model.AccountId, UserRef = model.UserRef, TransferConnectionInvitationId = model.TransferConnectionInvitationId });
                     return RedirectToAction("Approved", new { transferConnectionInvitationId = model.TransferConnectionInvitationId });
                 case "Reject":
-                    await _mediator.SendAsync(new RejectTransferConnectionInvitationCommand { AccountId = model.AccountId, UserRef = model.UserRef, TransferConnectionInvitationId = model.TransferConnectionInvitationId });
+                    await _mediator.Send(new RejectTransferConnectionInvitationCommand { AccountId = model.AccountId, UserRef = model.UserRef, TransferConnectionInvitationId = model.TransferConnectionInvitationId });
                     return RedirectToAction("Rejected", new { transferConnectionInvitationId = model.TransferConnectionInvitationId });
                 default:
                     throw new ArgumentOutOfRangeException(nameof(model.Choice));
@@ -159,9 +157,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpNotFoundForNullModel]
         [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/approved")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Approved(GetApprovedTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Approved(GetApprovedTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<ApprovedTransferConnectionInvitationViewModel>(response);
 
             return View(model);
@@ -171,7 +169,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/approved")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Approved(ApprovedTransferConnectionInvitationViewModel model)
+        public IActionResult Approved(ApprovedTransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
@@ -187,9 +185,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpNotFoundForNullModel]
         [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/rejected")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Rejected(GetRejectedTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Rejected(GetRejectedTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<RejectedTransferConnectionInvitationViewModel>(response);
 
             return View(model);
@@ -199,12 +197,12 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/rejected")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Rejected(RejectedTransferConnectionInvitationViewModel model)
+        public async Task<IActionResult> Rejected(RejectedTransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
                 case "Confirm":
-                    await _mediator.SendAsync(new DeleteTransferConnectionInvitationCommand
+                    await _mediator.Send(new DeleteTransferConnectionInvitationCommand
                     {
                         AccountId = model.AccountId,
                         TransferConnectionInvitationId = model.TransferConnectionInvitationId,
@@ -220,9 +218,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpNotFoundForNullModel]
         [Route("{transferConnectionInvitationId}/details")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Details(GetTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Details(GetTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<TransferConnectionInvitationViewModel>(response);
 
             return View(model);
@@ -232,12 +230,12 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/details")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Details(TransferConnectionInvitationViewModel model)
+        public async Task<IActionResult> Details(TransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
                 case "Confirm":
-                    await _mediator.SendAsync(new DeleteTransferConnectionInvitationCommand
+                    await _mediator.Send(new DeleteTransferConnectionInvitationCommand
                     {
                         AccountId = model.AccountId,
                         TransferConnectionInvitationId = model.TransferConnectionInvitationId,
@@ -253,7 +251,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/deleted")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Deleted()
+        public IActionResult Deleted()
         {
             var model = new DeletedTransferConnectionInvitationViewModel();
 
@@ -264,7 +262,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/deleted")]
-        public Microsoft.AspNetCore.Mvc.ActionResult Deleted(DeletedTransferConnectionInvitationViewModel model)
+        public IActionResult Deleted(DeletedTransferConnectionInvitationViewModel model)
         {
             switch (model.Choice)
             {
@@ -279,9 +277,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpGet]
         [Route("outstanding")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Outstanding(GetLatestPendingReceivedTransferConnectionInvitationQuery query)
+        public async Task<IActionResult> Outstanding(GetLatestPendingReceivedTransferConnectionInvitationQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
 
             return response.TransferConnectionInvitation == null
                 ? RedirectToAction("Index", "TransferConnections")

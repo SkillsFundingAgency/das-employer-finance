@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -47,13 +51,15 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }       
 
         [Route("signOut")]
-        public IActionResult SignOut()
+        public async Task<IActionResult> SignOut()
         {
-            _owinWrapper.SignOutUser();
+            var idToken = await HttpContext.GetTokenAsync("id_token");
 
-            var owinContext = HttpContext.GetOwinContext();
-            var authenticationManager = owinContext.Authentication;
-            var idToken = authenticationManager.User.FindFirst("id_token")?.Value;
+            var authenticationProperties = new AuthenticationProperties();
+            authenticationProperties.Parameters.Clear();
+            authenticationProperties.Parameters.Add("id_token", idToken);
+            SignOut(authenticationProperties, CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme);
+
             var constants = new Constants(_configuration.Identity);
 
             return new RedirectResult(string.Format(constants.LogoutEndpoint(), idToken));

@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Security.Claims;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     [DasAuthorize(EmployerUserRole.Any)]
-    [RoutePrefix("accounts/{HashedAccountId}")] 
+    [Route("accounts/{HashedAccountId}")] 
     public class TransfersController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly TransfersOrchestrator _transfersOrchestrator;
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpGet]
         [Route("transfers")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Index(string hashedAccountId)
+        public async Task<IActionResult> Index(string hashedAccountId)
         {
             var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId);
 
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [DasAuthorize("EmployerFeature.FinanceDetails")]
         [HttpGet]
         [Route("transfers/financial-breakdown")]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> FinancialBreakdown(string hashedAccountId)
+        public async Task<IActionResult> FinancialBreakdown(string hashedAccountId)
         {
             var viewModel = await _transfersOrchestrator.GetFinancialBreakdownViewModel(hashedAccountId);
             return View(viewModel);
