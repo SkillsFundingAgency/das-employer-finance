@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Context;
 using SFA.DAS.Authorization.EmployerFeatures.Context;
@@ -11,13 +12,13 @@ namespace SFA.DAS.EmployerFinance.Web.Authorization
 {
     public class AuthorizationContextProvider : IAuthorizationContextProvider
     {
-        private readonly HttpContextBase _httpContext;
+        private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHashingService _hashingService;
         private readonly IAuthenticationService _authenticationService;
 
-        public AuthorizationContextProvider(HttpContextBase httpContext, IHashingService hashingService, IAuthenticationService authenticationService)
+        public AuthorizationContextProvider(IActionContextAccessor actionContextAccessor, IHashingService hashingService, IAuthenticationService authenticationService)
         {
-            _httpContext = httpContext;
+            _actionContextAccessor = actionContextAccessor;
             _hashingService = hashingService;
             _authenticationService = authenticationService;
         }
