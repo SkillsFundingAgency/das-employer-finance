@@ -28,7 +28,7 @@ resources:
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/2.1.2
+    ref: refs/tags/2.1.3
     endpoint: SkillsFundingAgency
   - repository: das-platform-automation
     type: github
@@ -81,3 +81,84 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
       AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+
+- stage: Deploy_TEST2
+  dependsOn: Build
+  displayName: Deploy to TEST2
+  variables:
+  - group: DevTest Management Resources
+  - group: TEST2 DevTest Shared Resources
+  - group: TEST2 das-employer-finance
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: TEST2
+      SolutionBaseName: $(SolutionBaseName)
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+
+- stage: Deploy_PP
+  dependsOn: Build
+  displayName: Deploy to PP
+  variables:
+  - group: PreProd Management Resources
+  - group: PreProd Shared Resources
+  - group: PreProd das-employer-finance
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: PP
+      SolutionBaseName: $(SolutionBaseName)
+      ServiceConnection: SFA-DIG-PreProd-ARM
+      OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-FCS
+
+# - stage: Deploy_PROD
+#   dependsOn: Build
+#   displayName: Deploy to PROD
+#   variables:
+#   - group: PROD Management Resources
+#   - group: PROD Shared Resources
+#   - group: PROD das-employer-finance
+#   jobs:
+#   - template: pipeline-templates/job/deploy.yml
+#     parameters:
+#       Environment: PROD
+#       SolutionBaseName: $(SolutionBaseName)
+#       ServiceConnection: SFA-DIG-Prod-ARM
+#       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
+#       AppRoleAssignmentsServiceConnection: das-app-role-assignments-FCS
+
+# - stage: Deploy_MO
+#   dependsOn: Build
+#   displayName: Deploy to MO
+#   variables:
+#   - group: MO Management Resources
+#   - group: MO Shared Resources
+#   - group: MO das-employer-finance
+#   jobs:
+#   - template: pipeline-templates/job/deploy.yml
+#     parameters:
+#       Environment: MO
+#       SolutionBaseName: $(SolutionBaseName)
+#       ServiceConnection: SFA-ASM-ModelOffice-ARM
+#       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
+#       AppRoleAssignmentsServiceConnection: das-app-role-assignments-FCS
+
+- stage: Deploy_DEMO
+  dependsOn: Build
+  displayName: Deploy to DEMO
+  variables:
+  - group: DevTest Management Resources
+  - group: DEMO DevTest Shared Resources
+  - group: DEMO das-employer-finance
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: DEMO
+      SolutionBaseName: $(SolutionBaseName)
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
+      AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
+
