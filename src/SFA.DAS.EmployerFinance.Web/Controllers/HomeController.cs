@@ -1,5 +1,4 @@
-﻿//using System.Security.Claims;
-using DocumentFormat.OpenXml.Office2021.DocumentTasks;
+﻿using DocumentFormat.OpenXml.Office2021.DocumentTasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 
@@ -14,19 +14,21 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     [Route("service")]
     public class HomeController : Controller
-    {
+    { 
         private readonly IAuthenticationService _owinWrapper;
         private readonly EmployerFinanceConfiguration _configuration;
+        private readonly IUrlActionHelper _urlHelper;
 
-        public HomeController(IAuthenticationService owinWrapper, EmployerFinanceConfiguration configuration)
+        public HomeController(IAuthenticationService owinWrapper, EmployerFinanceConfiguration configuration, IUrlActionHelper urlHelper)
         {
             _owinWrapper = owinWrapper;
             _configuration = configuration;
+            _urlHelper = urlHelper;
         }
 
         public IActionResult Index()
         {
-            return Redirect(Url.LegacyEasAction(string.Empty));
+            return Redirect(_urlHelper.LegacyEasAction(string.Empty));
         }
 
         [DasAuthorize]
@@ -40,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("privacy", Order = 1)]
         public IActionResult Privacy()
         {
-            return Redirect(Url.EmployerAccountsAction("service", "privacy"));
+            return Redirect(_urlHelper.EmployerAccountsAction("service", "privacy"));
         }
 
         [HttpGet]
