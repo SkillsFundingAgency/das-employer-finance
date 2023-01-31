@@ -77,6 +77,10 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddDatabaseRegistration(_employerFinanceConfiguration, _configuration["Environment"]);
             services.AddDataRepositories();
+            
+            //MAC-192
+            //services.AddApplicationServices(_employerFinanceConfiguration);
+            services.AddHashingServices(_employerFinanceConfiguration);
 
             services.AddControllersWithViews(ConfigureMvcOptions)
                 // Newtonsoft.Json is added for compatibility reasons
