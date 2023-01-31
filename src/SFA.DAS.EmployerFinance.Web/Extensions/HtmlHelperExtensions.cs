@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MediatR;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Helpers;
@@ -10,11 +13,6 @@ using SFA.DAS.EmployerFinance.Queries.GetContent;
 using SFA.DAS.MA.Shared.UI.Configuration;
 using SFA.DAS.MA.Shared.UI.Models;
 using SFA.DAS.MA.Shared.UI.Models.Links;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web.Extensions
 {
@@ -62,25 +60,6 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
 
             var trimCharacters = new char[] { '/' };
             return new HtmlString($"{cdnLocation.Trim(trimCharacters)}/{folderName.Trim(trimCharacters)}/{fileName.Trim(trimCharacters)}");
-        }
-
-        public HtmlString SetZenDeskLabels(this HtmlHelper html, params string[] labels)
-        {
-            var keywords = string.Join(",", labels
-               .Where(label => !string.IsNullOrEmpty(label))
-               .Select(label => $"'{EscapeApostrophes(label)}'"));
-
-            // when there are no keywords default to empty string to prevent zen desk matching articles from the url
-            var apiCallString = "<script type=\"text/javascript\">zE('webWidget', 'helpCenter:setSuggestions', { labels: ["
-                + (!string.IsNullOrEmpty(keywords) ? keywords : "''")
-                + "] });</script>";
-
-            return new HtmlString(apiCallString);
-        }
-
-        private static string EscapeApostrophes(string input)
-        {
-            return input.Replace("'", @"\'");
         }
 
         public string GetZenDeskSnippetKey()
@@ -139,7 +118,39 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return headerModel;
         }
 
-        public IFooterViewModel GetFooterViewModel(HtmlHelper html, bool useLegacyStyles = false)
+        public HtmlString GetContentByType(string type, bool useLegacyStyles = false)
+        {
+            var response = AsyncHelper.RunSync(() => _mediator.Send(new GetContentRequest
+            {
+                UseLegacyStyles = useLegacyStyles,
+                ContentType = type
+            }));
+
+            return new HtmlString(response.Content);
+        }
+
+        public bool IsAuthorized(string featureType)
+        {
+            var isAuthorized = _authorisationService.IsAuthorized(featureType);
+
+            return isAuthorized;
+        }
+
+        public HtmlString SetZenDeskLabels(params string[] zenDeskLabels)
+        {
+            var keywords = string.Join(",", zenDeskLabels
+              .Where(label => !string.IsNullOrEmpty(label))
+              .Select(label => $"'{EscapeApostrophes(label)}'"));
+
+            // when there are no keywords default to empty string to prevent zen desk matching articles from the url
+            var apiCallString = "<script type=\"text/javascript\">zE('webWidget', 'helpCenter:setSuggestions', { labels: ["
+                + (!string.IsNullOrEmpty(keywords) ? keywords : "''")
+                + "] });</script>";
+
+            return new HtmlString(apiCallString);
+        }
+
+        public IFooterViewModel GetFooterViewModel(IHtmlHelper html, bool useLegacyStyles = false)
         {
             return new FooterViewModel(new FooterConfiguration
             {
@@ -154,7 +165,7 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             );
         }
 
-        public ICookieBannerViewModel GetCookieBannerViewModel(HtmlHelper html)
+        public ICookieBannerViewModel GetCookieBannerViewModel(IHtmlHelper html)
         {
             return new CookieBannerViewModel(new CookieBannerConfiguration
             {
@@ -168,22 +179,9 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             );
         }
 
-        public HtmlString GetContentByType(string type, bool useLegacyStyles = false)
+        public string EscapeApostrophes(string input)
         {
-            var response = AsyncHelper.RunSync(() => _mediator.Send(new GetContentRequest
-            {
-                UseLegacyStyles = useLegacyStyles,
-                ContentType = type
-            }));
-
-            return new HtmlString(response.Content);
-        }
-
-        public static bool IsAuthorized(string featureType)
-        {
-            var isAuthorized = authorisationService.IsAuthorized(featureType);
-
-            return isAuthorized;
+            return input.Replace("'", @"\'");
         }
     }
 }   
