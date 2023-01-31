@@ -54,7 +54,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         {
             var accountTask = _accountApiClient.GetAccount(query.AccountId);
             _logger.Info("After GetAccount call");
-            var getAccountFinanceOverviewTask = _mediator.SendAsync(query);
+            var getAccountFinanceOverviewTask = _mediator.Send(query);
 
             var account = await accountTask;
 
@@ -89,7 +89,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         {
             try
             {
-                var data = await _mediator.SendAsync(new FindAccountProviderPaymentsQuery
+                var data = await _mediator.Send(new FindAccountProviderPaymentsQuery
                 {
                     HashedAccountId = hashedId,
                     UkPrn = ukprn,
@@ -155,7 +155,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             {
                 var accountTask = _accountApiClient.GetAccount(hashedAccountId);
                 
-                var getProviderPaymentsTask = _mediator.SendAsync(new FindAccountProviderPaymentsQuery
+                var getProviderPaymentsTask = _mediator.Send(new FindAccountProviderPaymentsQuery
                 {
                     HashedAccountId = hashedAccountId,
                     UkPrn = ukprn,
@@ -243,7 +243,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             {
                 var accountTask = _accountApiClient.GetAccount(hashedAccountId);
 
-                var accountCoursePaymentsResponse = await _mediator.SendAsync(new FindAccountCoursePaymentsQuery
+                var accountCoursePaymentsResponse = await _mediator.Send(new FindAccountCoursePaymentsQuery
                 {
                     HashedAccountId = hashedAccountId,
                     UkPrn = ukprn,
@@ -334,7 +334,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
             var aggregratedTransactions =
                 await
-                    _mediator.SendAsync(new GetEmployerAccountTransactionsQuery
+                    _mediator.Send(new GetEmployerAccountTransactionsQuery
                     {
                         ExternalUserId = externalUserId,
                         Year = year,
@@ -409,7 +409,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             FindAccountLevyDeclarationTransactions(
                 string hashedId, DateTime fromDate, DateTime toDate, string externalUserId)
         {
-            var data = await _mediator.SendAsync(new FindEmployerAccountLevyDeclarationTransactionsQuery
+            var data = await _mediator.Send(new FindEmployerAccountLevyDeclarationTransactionsQuery
             {
                 HashedAccountId = hashedId,
                 FromDate = fromDate,
@@ -419,7 +419,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
             foreach (var transaction in data.Transactions)
             {
-                var payeSchemeData = await _mediator.SendAsync(new GetPayeSchemeByRefQuery
+                var payeSchemeData = await _mediator.Send(new GetPayeSchemeByRefQuery
                 {
                     HashedAccountId = hashedId,
                     Ref = transaction.EmpRef
