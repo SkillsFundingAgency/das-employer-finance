@@ -1,29 +1,70 @@
-﻿using MediatR;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MediatR;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Queries.GetContent;
-using SFA.DAS.EmployerFinance.Web.App_Start;
 using SFA.DAS.MA.Shared.UI.Configuration;
 using SFA.DAS.MA.Shared.UI.Models;
 using SFA.DAS.MA.Shared.UI.Models.Links;
-using System;
-using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web.Extensions
 {
-    public static class HtmlHelperExtensions
+    public interface IHtmlHelperExtensions
     {
-        public static Microsoft.AspNetCore.Html.HtmlString CdnLink(this HtmlHelper html, string folderName, string fileName)
+        HtmlString CdnLink(string folderName, string fileName);
+        HtmlString SetZenDeskLabels(params string[] zenDeskLabels);
+        string EscapeApostrophes(string input);
+        string GetZenDeskSnippetKey();
+        string GetZenDeskSnippetSectionId();
+        string GetZenDeskCobrowsingSnippetKey();
+        IHeaderViewModel GetHeaderViewModel(IHtmlHelper html, bool useLegacyStyles = false);
+        IFooterViewModel GetFooterViewModel(IHtmlHelper html, bool useLegacyStyles = false);
+        ICookieBannerViewModel GetCookieBannerViewModel(IHtmlHelper html);
+        HtmlString GetContentByType(string type, bool useLegacyStyles = false);
+        bool IsAuthorized(string featureType);
+    }
+    public class HtmlHelperExtensions : IHtmlHelperExtensions
+    {
+        private readonly EmployerFinanceConfiguration _configuration;
+        private readonly IMediator _mediator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<HtmlHelperExtensions> _logger;
+        private readonly IAuthorizationService _authorisationService;
+        private readonly ICompositeViewEngine _compositeViewEngine;
+
+        public HtmlHelperExtensions(
+            EmployerFinanceConfiguration configuration,
+            IMediator mediator,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<HtmlHelperExtensions> logger,
+            IAuthorizationService authorisationService,
+            ICompositeViewEngine compositeViewEngine)
         {
-            var cdnLocation = StructuremapMvc.StructureMapDependencyScope.Container.GetInstance<EmployerFinanceConfiguration>().CdnBaseUrl;
+            _configuration = configuration;
+            _mediator = mediator;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+            _authorisationService = authorisationService;
+            _compositeViewEngine = compositeViewEngine;
+        }
+        public HtmlString CdnLink(string folderName, string fileName)
+        {
+            var cdnLocation = _configuration.CdnBaseUrl;
 
             var trimCharacters = new char[] { '/' };
-            return new Microsoft.AspNetCore.Html.HtmlString($"{cdnLocation.Trim(trimCharacters)}/{folderName.Trim(trimCharacters)}/{fileName.Trim(trimCharacters)}");
+            return new HtmlString($"{cdnLocation.Trim(trimCharacters)}/{folderName.Trim(trimCharacters)}/{fileName.Trim(trimCharacters)}");
         }
 
-        public static Microsoft.AspNetCore.Html.HtmlString SetZenDeskLabels(this HtmlHelper html, params string[] labels)
+        public HtmlString SetZenDeskLabels(this HtmlHelper html, params string[] labels)
         {
             var keywords = string.Join(",", labels
                .Where(label => !string.IsNullOrEmpty(label))
@@ -34,7 +75,7 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
                 + (!string.IsNullOrEmpty(keywords) ? keywords : "''")
                 + "] });</script>";
 
-            return Microsoft.AspNetCore.Html.HtmlString.Create(apiCallString);
+            return new HtmlString(apiCallString);
         }
 
         private static string EscapeApostrophes(string input)
@@ -42,43 +83,38 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return input.Replace("'", @"\'");
         }
 
-        public static string GetZenDeskSnippetKey(this HtmlHelper html)
-        {
-            var configuration = DependencyResolver.Current.GetService<EmployerFinanceConfiguration>();            
-            return configuration.ZenDeskSnippetKey;
+        public string GetZenDeskSnippetKey()
+        {     
+            return _configuration.ZenDeskSnippetKey;
         }
 
-        public static string GetZenDeskSnippetSectionId(this HtmlHelper html)
+        public string GetZenDeskSnippetSectionId()
         {
-            var configuration = DependencyResolver.Current.GetService<EmployerFinanceConfiguration>();
-            return configuration.ZenDeskSectionId;
+            return _configuration.ZenDeskSectionId;
         }
 
-        public static string GetZenDeskCobrowsingSnippetKey(this HtmlHelper html)
+        public string GetZenDeskCobrowsingSnippetKey()
         {
-            var configuration = DependencyResolver.Current.GetService<EmployerFinanceConfiguration>();
-            return configuration.ZenDeskCobrowsingSnippetKey;
+            return _configuration.ZenDeskCobrowsingSnippetKey;
         }
 
-        public static IHeaderViewModel GetHeaderViewModel(this HtmlHelper html, bool useLegacyStyles = false)
+        public IHeaderViewModel GetHeaderViewModel(IHtmlHelper html, bool useLegacyStyles = false)
         {
-            var configuration = DependencyResolver.Current.GetService<EmployerFinanceConfiguration>();
-            var employerFinanceBaseUrl = configuration.EmployerFinanceBaseUrl + (configuration.EmployerFinanceBaseUrl.EndsWith("/") ? "" : "/");
-            var requestUrl = html.ViewContext.HttpContext.Request.Url;
+            var employerFinanceBaseUrl = _configuration.EmployerFinanceBaseUrl + (_configuration.EmployerFinanceBaseUrl.EndsWith("/") ? "" : "/");
 
             var headerModel = new HeaderViewModel(new HeaderConfiguration
             {
-                ManageApprenticeshipsBaseUrl = configuration.EmployerAccountsBaseUrl,
-                ApplicationBaseUrl = configuration.EmployerAccountsBaseUrl,
-                EmployerCommitmentsBaseUrl = configuration.EmployerCommitmentsBaseUrl,
-                EmployerCommitmentsV2BaseUrl = configuration.EmployerCommitmentsV2BaseUrl,
-                EmployerFinanceBaseUrl = configuration.EmployerFinanceBaseUrl,
-                AuthenticationAuthorityUrl = configuration.Identity.BaseAddress,
-                ClientId = configuration.Identity.ClientId,
-                EmployerRecruitBaseUrl = configuration.EmployerRecruitBaseUrl,
+                ManageApprenticeshipsBaseUrl = _configuration.EmployerAccountsBaseUrl,
+                ApplicationBaseUrl = _configuration.EmployerAccountsBaseUrl,
+                EmployerCommitmentsBaseUrl = _configuration.EmployerCommitmentsBaseUrl,
+                EmployerCommitmentsV2BaseUrl = _configuration.EmployerCommitmentsV2BaseUrl,
+                EmployerFinanceBaseUrl = _configuration.EmployerFinanceBaseUrl,
+                AuthenticationAuthorityUrl = _configuration.Identity.BaseAddress,
+                ClientId = _configuration.Identity.ClientId,
+                EmployerRecruitBaseUrl = _configuration.EmployerRecruitBaseUrl,
                 SignOutUrl = new Uri($"{employerFinanceBaseUrl}service/signOut"),
-                ChangeEmailReturnUrl = requestUrl,
-                ChangePasswordReturnUrl = requestUrl
+                ChangeEmailReturnUrl = new Uri($"{employerFinanceBaseUrl}service/email/change"),
+                ChangePasswordReturnUrl = new Uri($"{employerFinanceBaseUrl}service/password/change")
             },
             new UserContext
             {
@@ -103,13 +139,11 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return headerModel;
         }
 
-        public static IFooterViewModel GetFooterViewModel(this HtmlHelper html, bool useLegacyStyles = false)
+        public IFooterViewModel GetFooterViewModel(HtmlHelper html, bool useLegacyStyles = false)
         {
-            var configuration = DependencyResolver.Current.GetService<EmployerFinanceConfiguration>();
-
             return new FooterViewModel(new FooterConfiguration
             {
-                ManageApprenticeshipsBaseUrl = configuration.EmployerAccountsBaseUrl
+                ManageApprenticeshipsBaseUrl = _configuration.EmployerAccountsBaseUrl
             },
             new UserContext
             {
@@ -120,13 +154,11 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             );
         }
 
-        public static ICookieBannerViewModel GetCookieBannerViewModel(this HtmlHelper html)
+        public ICookieBannerViewModel GetCookieBannerViewModel(HtmlHelper html)
         {
-            var configuration = DependencyResolver.Current.GetService<EmployerFinanceConfiguration>();
-
             return new CookieBannerViewModel(new CookieBannerConfiguration
             {
-                ManageApprenticeshipsBaseUrl = configuration.EmployerAccountsBaseUrl
+                ManageApprenticeshipsBaseUrl = _configuration.EmployerAccountsBaseUrl
             },
             new UserContext
             {
@@ -136,18 +168,22 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             );
         }
 
-        public static Microsoft.AspNetCore.Html.HtmlString GetContentByType(this HtmlHelper html, string type, bool useLegacyStyles = false)
+        public HtmlString GetContentByType(string type, bool useLegacyStyles = false)
         {
-            var mediator = DependencyResolver.Current.GetService<IMediator>();
-
-            var response = AsyncHelper.RunSync(() => mediator.SendAsync(new GetContentRequest
+            var response = AsyncHelper.RunSync(() => _mediator.Send(new GetContentRequest
             {
                 UseLegacyStyles = useLegacyStyles,
                 ContentType = type
             }));
 
-            var content = response;
-            return MvcHtmlString.Create(content.Content);
+            return new HtmlString(response.Content);
+        }
+
+        public static bool IsAuthorized(string featureType)
+        {
+            var isAuthorized = authorisationService.IsAuthorized(featureType);
+
+            return isAuthorized;
         }
     }
 }   
