@@ -35,6 +35,8 @@ namespace SFA.DAS.EmployerFinance.Configuration
         public string NServiceBusLicense { get; set; }
         public string PublicAllowedHashstringCharacters { get; set; }
         public string PublicHashstring { get; set; }
+        public string PublicAllowedAccountLegalEntityHashstringCharacters { get; set; }
+        public string PublicAllowedAccountLegalEntityHashstringSalt { get; set; }
         public string ServiceBusConnectionString { get; set; }
         public string RedisConnectionString { get; set; }
         public virtual int FundsExpiryPeriod { get; set; }
