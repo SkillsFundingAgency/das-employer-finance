@@ -36,6 +36,7 @@
     <PackageReference Include="SFA.DAS.AutoConfiguration">
       <Version>2.0.1</Version>
     </PackageReference>
+    <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
     <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.0.0.4388" />
     <PackageReference Include="SFA.DAS.HashingService" Version="1.0.183" />
     <PackageReference Include="SFA.DAS.Logging">

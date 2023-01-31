@@ -1,18 +1,8 @@
-﻿// This Startup file is based on ASP.NET Core new project templates and is included
-// as a starting point for DI registration and HTTP request processing pipeline configuration.
-// This file will need updated according to the specific scenario of the application being upgraded.
-// For more information on ASP.NET Core startup files, see https://docs.microsoft.com/aspnet/core/fundamentals/startup
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using AutoMapper;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,9 +10,9 @@ using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using SFA.DAS.EmployerFinance.ServiceRegistration;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
@@ -51,23 +41,13 @@ namespace SFA.DAS.EmployerFinance.Web
 
             if (!configuration.IsTest())
             {
-                //MAC_192 need to look
-
-                //config.AddAzureTableStorage(options =>
-                //    {
-                //        options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
-                //        options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
-                //        options.EnvironmentName = configuration["EnvironmentName"];
-                //        options.PreFixConfigurationKeys = false;
-                //    }
-                //);
+                config.AddAzureTableStorage(
             }
 
-            _configuration=config.Build();
+            _configuration =config.Build();
 
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
