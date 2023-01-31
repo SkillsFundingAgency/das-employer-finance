@@ -83,6 +83,8 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddHashingServices(_employerFinanceConfiguration);
             services.AddCachesRegistrations();
+            services.AddDateTimeServices(_configuration);
+            services.AddEventsApi();
 
             services.AddControllersWithViews(ConfigureMvcOptions)
                 // Newtonsoft.Json is added for compatibility reasons
