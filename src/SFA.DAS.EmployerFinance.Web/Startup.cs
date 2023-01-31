@@ -80,7 +80,9 @@ namespace SFA.DAS.EmployerFinance.Web
             
             //MAC-192
             //services.AddApplicationServices(_employerFinanceConfiguration);
+
             services.AddHashingServices(_employerFinanceConfiguration);
+            services.AddCachesRegistrations();
 
             services.AddControllersWithViews(ConfigureMvcOptions)
                 // Newtonsoft.Json is added for compatibility reasons
