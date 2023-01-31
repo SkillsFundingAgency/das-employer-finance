@@ -18,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
         public async Task SaveIdentityAttributes(string userRef, string email, string firstName, string lastName)
         {
-            await _mediator.SendAsync(new UpsertRegisteredUserCommand
+            await _mediator.Send(new UpsertRegisteredUserCommand
             {
                 EmailAddress = email,
                 UserRef = userRef,

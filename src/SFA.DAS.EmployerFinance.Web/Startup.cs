@@ -41,7 +41,14 @@ namespace SFA.DAS.EmployerFinance.Web
 
             if (!configuration.IsTest())
             {
-                config.AddAzureTableStorage(
+                config.AddAzureTableStorage(options =>
+                    {
+                        options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
+                        options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
+                        options.EnvironmentName = configuration["EnvironmentName"];
+                        options.PreFixConfigurationKeys = false;
+                    }
+                );
             }
 
             _configuration =config.Build();
