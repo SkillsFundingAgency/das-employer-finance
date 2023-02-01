@@ -34,7 +34,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             IMapper mapper,
             IMediator mediator,
             ILog logger)
-        : base(owinWrapper)
         {
             _owinWrapper = owinWrapper;
             _accountTransactionsOrchestrator = accountTransactionsOrchestrator;
@@ -128,7 +127,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             var orchestratorResponse = await _accountTransactionsOrchestrator.GetCoursePaymentSummary(
                 hashedAccountId, ukprn, courseName, courseLevel, pathwayCode,
-                fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+                fromDate, toDate, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
 
             return View(ControllerConstants.CoursePaymentSummaryViewName, orchestratorResponse.Data);
         }
