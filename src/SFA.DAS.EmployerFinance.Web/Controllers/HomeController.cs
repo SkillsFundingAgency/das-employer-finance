@@ -49,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("cookieConsent", Order = 1)]
         public IActionResult CookieConsent()
         {
-            return Redirect(Url.EmployerAccountsAction("cookieConsent"));
+            return Redirect(_urlHelper.EmployerAccountsAction("cookieConsent"));
         }       
 
         [Route("signOut")]
