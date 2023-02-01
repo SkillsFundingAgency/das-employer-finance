@@ -1,95 +1,97 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using IdentityModel.Client;
-using SFA.DAS.Authentication;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerUsers.WebClientComponents;
-using SFA.DAS.EmployerFinance.Web;
+﻿//MAP-192 Delete later
 
-namespace SFA.DAS.EmployerFinance.Web.Authentication
-{
-    public class OwinAuthenticationService : IAuthenticationService
-    {
-        private readonly EmployerFinanceConfiguration _configuration;
-        private readonly HttpContextBase _httpContext;
+//using System;
+//using System.Linq;
+//using System.Security.Claims;
+//using System.Threading.Tasks;
+//using System.Web;
+//using IdentityModel.Client;
+//using SFA.DAS.Authentication;
+//using SFA.DAS.EmployerFinance.Configuration;
+//using SFA.DAS.EmployerUsers.WebClientComponents;
+//using SFA.DAS.EmployerFinance.Web;
 
-        public OwinAuthenticationService(EmployerFinanceConfiguration configuration, HttpContextBase httpContext)
-        {
-            _configuration = configuration;
-            _httpContext = httpContext;
-        }
+//namespace SFA.DAS.EmployerFinance.Web.Authentication
+//{
+//    public class OwinAuthenticationService : IAuthenticationService
+//    {
+//        private readonly EmployerFinanceConfiguration _configuration;
+//        private readonly HttpContextBase _httpContext;
 
-        public string GetClaimValue(string key)
-        {
-            var claimIdentity = ((ClaimsIdentity)HttpContextHelper.Current.User.Identity).Claims.FirstOrDefault(c => c.Type == key);
-            return claimIdentity == null ? "" : claimIdentity.Value;
-        }
+//        public OwinAuthenticationService(EmployerFinanceConfiguration configuration, HttpContextBase httpContext)
+//        {
+//            _configuration = configuration;
+//            _httpContext = httpContext;
+//        }
 
-        public bool HasClaim(string type, string value)
-        {
-            return ((ClaimsIdentity)_httpContext.User.Identity).HasClaim(type, value);
-        }
+//        public string GetClaimValue(string key)
+//        {
+//            var claimIdentity = ((ClaimsIdentity)HttpContextHelper.Current.User.Identity).Claims.FirstOrDefault(c => c.Type == key);
+//            return claimIdentity == null ? "" : claimIdentity.Value;
+//        }
 
-        public bool IsUserAuthenticated()
-        {
-            return HttpContextHelper.Current.GetOwinContext().Authentication.User.Identity.IsAuthenticated;
-        }
+//        public bool HasClaim(string type, string value)
+//        {
+//            return ((ClaimsIdentity)_httpContext.User.Identity).HasClaim(type, value);
+//        }
 
-        public void SignOutUser()
-        {
-            var owinContext = HttpContextHelper.Current.GetOwinContext();
-            var authenticationManager = owinContext.Authentication;
+//        public bool IsUserAuthenticated()
+//        {
+//            return HttpContextHelper.Current.GetOwinContext().Authentication.User.Identity.IsAuthenticated;
+//        }
 
-            authenticationManager.SignOut("Cookies");
-        }
+//        public void SignOutUser()
+//        {
+//            var owinContext = HttpContextHelper.Current.GetOwinContext();
+//            var authenticationManager = owinContext.Authentication;
 
-        public bool TryGetClaimValue(string key, out string value)
-        {
-            var identity = _httpContext.User.Identity as ClaimsIdentity;
-            var claim = identity?.Claims.FirstOrDefault(c => c.Type == key);
+//            authenticationManager.SignOut("Cookies");
+//        }
 
-            value = claim?.Value;
+//        public bool TryGetClaimValue(string key, out string value)
+//        {
+//            var identity = _httpContext.User.Identity as ClaimsIdentity;
+//            var claim = identity?.Claims.FirstOrDefault(c => c.Type == key);
 
-            return value != null;
-        }
+//            value = claim?.Value;
 
-        public async Task UpdateClaims()
-        {
-            var constants = new Constants(_configuration.Identity);
-            var userInfoEndpoint = constants.UserInfoEndpoint();
-            var accessToken = GetClaimValue("access_token");
-            var userInfoClient = new UserInfoClient(new Uri(userInfoEndpoint), accessToken);
-            var userInfo = await userInfoClient.GetAsync();
-            var identity = (ClaimsIdentity)HttpContextHelper.Current.User.Identity;
+//            return value != null;
+//        }
 
-            foreach (var claim in userInfo.Claims.ToList())
-            {
-                if (claim.Item1.Equals(DasClaimTypes.Email))
-                {
-                    var emailClaim = identity.Claims.FirstOrDefault(c => c.Type == "email");
-                    var emailClaim2 = identity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.Email);
+//        public async Task UpdateClaims()
+//        {
+//            var constants = new Constants(_configuration.Identity);
+//            var userInfoEndpoint = constants.UserInfoEndpoint();
+//            var accessToken = GetClaimValue("access_token");
+//            var userInfoClient = new UserInfoClient(new Uri(userInfoEndpoint), accessToken);
+//            var userInfo = await userInfoClient.GetAsync();
+//            var identity = (ClaimsIdentity)HttpContextHelper.Current.User.Identity;
 
-                    identity.RemoveClaim(emailClaim);
-                    identity.RemoveClaim(emailClaim2);
-                    identity.AddClaim(new Claim("email", claim.Item2));
-                    identity.AddClaim(new Claim(DasClaimTypes.Email, claim.Item2));
-                }
+//            foreach (var claim in userInfo.Claims.ToList())
+//            {
+//                if (claim.Item1.Equals(DasClaimTypes.Email))
+//                {
+//                    var emailClaim = identity.Claims.FirstOrDefault(c => c.Type == "email");
+//                    var emailClaim2 = identity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.Email);
 
-                if (claim.Item1.Equals(DasClaimTypes.RequiresVerification))
-                {
-                    var requiresValidationClaim =
-                        identity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.RequiresVerification);
+//                    identity.RemoveClaim(emailClaim);
+//                    identity.RemoveClaim(emailClaim2);
+//                    identity.AddClaim(new Claim("email", claim.Item2));
+//                    identity.AddClaim(new Claim(DasClaimTypes.Email, claim.Item2));
+//                }
 
-                    if (requiresValidationClaim != null)
-                    {
-                        identity.RemoveClaim(requiresValidationClaim);
-                    }
-                    identity.AddClaim(new Claim(DasClaimTypes.RequiresVerification, claim.Item2));
-                }
-            }
-        }
-    }
-}
+//                if (claim.Item1.Equals(DasClaimTypes.RequiresVerification))
+//                {
+//                    var requiresValidationClaim =
+//                        identity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.RequiresVerification);
+
+//                    if (requiresValidationClaim != null)
+//                    {
+//                        identity.RemoveClaim(requiresValidationClaim);
+//                    }
+//                    identity.AddClaim(new Claim(DasClaimTypes.RequiresVerification, claim.Item2));
+//                }
+//            }
+//        }
+//    }
+//}
