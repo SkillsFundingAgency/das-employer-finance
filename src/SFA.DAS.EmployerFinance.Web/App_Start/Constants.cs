@@ -1,15 +1,15 @@
 ﻿using SFA.DAS.Authentication;
 
-namespace SFA.DAS.EmployerFinance.Web.App_Start
+namespace SFA.DAS.EmployerFinance.Web
 {
     public class Constants
     {
         private readonly string _baseUrl;
         private readonly IdentityServerConfiguration _configuration;
 
-        public Constants(string baseUrl, IdentityServerConfiguration configuration)
+        public Constants(IdentityServerConfiguration configuration)
         {
-            _baseUrl = baseUrl;
+            _baseUrl = configuration.ClaimIdentifierConfiguration.ClaimsBaseUrl;
             _configuration = configuration;
         }
         public string AuthorizeEndpoint() => $"{_configuration.BaseAddress}{_configuration.AuthorizeEndPoint}";

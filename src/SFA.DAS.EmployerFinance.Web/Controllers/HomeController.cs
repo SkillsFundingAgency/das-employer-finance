@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("privacy", Order = 1)]
         public IActionResult Privacy()
         {
-            return Redirect(_urlHelper.EmployerAccountsAction("service", "privacy"));
+            //return Redirect(_urlHelper.EmployerAccountsAction("service", "privacy"));
+            return View();
         }
 
         [HttpGet]
@@ -48,7 +50,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         public IActionResult CookieConsent()
         {
             return Redirect(_urlHelper.EmployerAccountsAction("cookieConsent"));
-        }       
+        }
 
         [Route("signOut")]
         public async Task<IActionResult> SignOut()
@@ -66,9 +68,15 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [Route("SignOutCleanup")]
-        public void SignOutCleanup()
+        public async void SignOutCleanup()
         {
-            _owinWrapper.SignOutUser();
+            var idToken = await HttpContext.GetTokenAsync("id_token");
+
+            var authenticationProperties = new AuthenticationProperties();
+            authenticationProperties.Parameters.Clear();
+            authenticationProperties.Parameters.Add("id_token", idToken);
+
+            SignOut(authenticationProperties,CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme) ;
         }
 
         [HttpGet]
