@@ -47,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("balance/provider/summary")]
         public async Task<IActionResult> ProviderPaymentSummary(string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
         {
-            var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
 
             return View(ControllerConstants.ProviderPaymentSummaryViewName, viewModel);
         }
@@ -107,7 +107,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("balance/levyDeclaration/details")]
         public async Task<IActionResult> LevyDeclarationDetail(string hashedAccountId, DateTime fromDate, DateTime toDate)
         {
-            var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
 
             return View(ControllerConstants.LevyDeclarationDetailViewName, viewModel);
         }
