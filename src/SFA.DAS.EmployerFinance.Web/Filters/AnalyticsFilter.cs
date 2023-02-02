@@ -1,42 +1,45 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters
 {
-    public class AnalyticsFilter : Microsoft.AspNetCore.Mvc.Filters.ActionFilterAttribute
+    public class AnalyticsFilter : ActionFilterAttribute
     {
-        public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext filterContext)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            string userId = null;
-            string hashedAccountId = null;
-            string userEmail = null;
-            string userName = null;
-
-            var thisController = filterContext.Controller as BaseController;
+            var thisController = filterContext.Controller as Controller;
             if (thisController != null)
             {
-                userId = thisController.OwinWrapper.GetClaimValue(@"sub");
-                userEmail = thisController.OwinWrapper.GetClaimValue(@"email");
-                userName = $"{thisController.OwinWrapper.GetClaimValue(@"firstname")} {thisController.OwinWrapper.GetClaimValue(@"lastname")}";
-            }
+                //MAP-192 Delete commented
 
-            if (filterContext.ActionParameters.ContainsKey("hashedAccountId"))
-            {
-                hashedAccountId = filterContext.ActionParameters["hashedAccountId"] as string;
-            }
-            else if(Microsoft.AspNetCore.Mvc.Controller.ControllerContext.RouteData.Values.ContainsKey("hashedAccountId"))
-            {
-                hashedAccountId = filterContext.Controller.ControllerContext.RouteData.Values["hashedAccountId"] as string;
-            }
+                //    userId = thisController.OwinWrapper.GetClaimValue(@"sub");
+                //    userEmail = thisController.OwinWrapper.GetClaimValue(@"email");
+                //    userName = $"{thisController.OwinWrapper.GetClaimValue(@"firstname")} {thisController.OwinWrapper.GetClaimValue(@"lastname")}";
+                //}
 
-            filterContext.Controller.ViewBag.GaData = new GaData
-            {
-                UserId = userId,
-                Acc = hashedAccountId,
-                UserEmail = userEmail,
-                UserName = userName
-            };
+                //if (filterContext.ActionParameters.ContainsKey("hashedAccountId"))
+                //{
+                //    hashedAccountId = filterContext.ActionParameters["hashedAccountId"] as string;
+                //}
+                //else if(Microsoft.AspNetCore.Mvc.Controller.ControllerContext.RouteData.Values.ContainsKey("hashedAccountId"))
+                //{
+                //    hashedAccountId = filterContext.Controller.ControllerContext.RouteData.Values["hashedAccountId"] as string;
+                //}
+
+                //filterContext.Controller.ViewBag.GaData = new GaData
+                //{
+                //    UserId = userId,
+                //    Acc = hashedAccountId,
+                //    UserEmail = userEmail,
+                //    UserName = userName
+                //};
+
+                var user= thisController.User;
+                var userId=user?.Get
+
+            }
 
             base.OnActionExecuting(filterContext);
         }
@@ -46,9 +49,7 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
         public class GaData
         {
             public GaData()
-            {
-            }
-
+            { }
             public string DataLoaded { get; set; } = "dataLoaded";
             public string UserId { get; set; }
             public string UserEmail { get; set; }

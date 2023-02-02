@@ -53,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateModelState]
+        [ValidateModelState]        
         [Route("start")]
         public async Task<IActionResult> Start(StartTransferConnectionInvitationViewModel model)
         {
