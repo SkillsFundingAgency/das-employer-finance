@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Azure.Amqp.Transaction;
 using SFA.DAS.EmployerFinance.Web.Extensions;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters
 {
@@ -10,7 +9,7 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var thisController = filterContext.Controller as Controller;
+            var thisController = filterContext.Controller as Microsoft.AspNetCore.Mvc.Controller;
             if (thisController != null)
             {
                 //MAP-192 Delete commented
@@ -39,14 +38,12 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
 
                 var user= thisController.User;
                 var userId = user?.GetUserId();
-                thisController.ViewBagg.GaData = new GaData
+                thisController.ViewBag.GaData = new GaData
                 {
                     UserId = userId,
                     Acc = thisController.RouteData.Values[RouteValues.EncodedAccountId]?.ToString().ToUpper()
                 };
             }
-        }
-
             base.OnActionExecuting(filterContext);
         }
 
