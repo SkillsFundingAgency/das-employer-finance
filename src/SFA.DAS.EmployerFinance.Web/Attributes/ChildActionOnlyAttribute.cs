@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Web.Attributes
 {
-    internal class ChildActionOnlyAttribute : Attribute
-    {
+    public class ChildActionOnlyAttribute : Attribute
+    {//MAP-192 Need Implementing
     }
 }

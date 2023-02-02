@@ -2,28 +2,25 @@
 using System.Net;
 using System.Threading.Tasks;
 using NServiceBus;
+using NServiceBus.ObjectBuilder.Common;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
-using SFA.DAS.EmployerFinance.Startup;
-using SFA.DAS.EmployerFinance.Web.App_Start;
 using SFA.DAS.NServiceBus.Configuration;
-using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.Configuration.NLog;
+using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
-using SFA.DAS.NServiceBus.Configuration.StructureMap;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
-using NServiceBus.ObjectBuilder.Common;
-using System.Drawing.Printing;
+using StructureMap;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
     public class NServiceBusStartup // : IStartup
     {
-        private readonly IContainer _container;
+        private readonly StructureMap.IContainer _container;
         private readonly EmployerFinanceConfiguration _employerFinanceConfiguration;
         private IEndpointInstance _endpoint;
 
-        public NServiceBusStartup(IContainer container, EmployerFinanceConfiguration employerFinanceConfiguration, IEndpointInstance endpoint)
+        public NServiceBusStartup(StructureMap.IContainer container, EmployerFinanceConfiguration employerFinanceConfiguration, IEndpointInstance endpoint)
         {
             _container = container;
             _employerFinanceConfiguration = employerFinanceConfiguration;
@@ -34,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Web
         {
 
             var endpointConfiguration = new EndpointConfiguration("SFA.DAS.EmployerAccounts.Web")
-                .UseAzureServiceBusTransport(() => _employerFinanceConfiguration.ServiceBusConnectionString, _container)
+               .UseAzureServiceBusTransport(() => _employerFinanceConfiguration.ServiceBusConnectionString, _container)
                 .UseErrorQueue("SFA.DAS.EmployerAccounts.Web-errors")
                 .UseInstallers()
                 .UseLicense(WebUtility.HtmlDecode(_employerFinanceConfiguration.NServiceBusLicense))
@@ -47,7 +44,7 @@ namespace SFA.DAS.EmployerFinance.Web
 
             _endpoint = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);
 
-            container.Configure(c =>
+            _container.Configure(c =>
             {
                 c.For<IMessageSession>().Use(_endpoint);
             });

@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Net;
-using System.Security.Claims;
 using SFA.DAS.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
+using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     public class BaseController : Microsoft.AspNetCore.Mvc.Controller
     {
-        public IAuthenticationService OwinWrapper;
+        private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
 
-        public BaseController(IAuthenticationService owinWrapper)
+        private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
+
+        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage)
         {
-            OwinWrapper = owinWrapper;
+            _flashMessage = flashMessage;
         }
 
         protected override Microsoft.AspNetCore.Mvc.ViewResult View(string viewName, string masterName, object model)
