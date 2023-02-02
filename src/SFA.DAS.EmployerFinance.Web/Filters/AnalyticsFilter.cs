@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Azure.Amqp.Transaction;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters
 {
@@ -37,9 +39,13 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
 
                 var user= thisController.User;
                 var userId = user?.GetUserId();
-                Controller
-
+                thisController.ViewBagg.GaData = new GaData
+                {
+                    UserId = userId,
+                    Acc = thisController.RouteData.Values[RouteValues.EncodedAccountId]?.ToString().ToUpper()
+                };
             }
+        }
 
             base.OnActionExecuting(filterContext);
         }
