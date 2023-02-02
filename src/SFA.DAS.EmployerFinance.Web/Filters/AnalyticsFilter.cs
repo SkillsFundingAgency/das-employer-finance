@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SFA.DAS.EmployerFinance.Web.Controllers;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters
 {
@@ -37,7 +36,8 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
                 //};
 
                 var user= thisController.User;
-                var userId=user?.Get
+                var userId = user?.GetUserId();
+                Controller
 
             }
 
