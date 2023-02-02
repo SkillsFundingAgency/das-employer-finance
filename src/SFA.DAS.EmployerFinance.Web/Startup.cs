@@ -86,6 +86,8 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddDateTimeServices(_configuration);
             services.AddEventsApi();
 
+            services.AddEmployerFinanceApi();
+
             services.AddControllersWithViews(ConfigureMvcOptions)
                 // Newtonsoft.Json is added for compatibility reasons
                 // The recommended approach is to use System.Text.Json for serialization

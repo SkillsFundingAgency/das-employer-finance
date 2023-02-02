@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using System.Web.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Web.Helpers;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters
 {
@@ -17,16 +18,21 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
             {
                 string hashedAccountId = string.Empty;
 
-                if(filterContext.ActionParameters != null && filterContext.ActionParameters.ContainsKey("HashedAccountId"))
+                var controller = filterContext.Controller as Controller;
+
+                if (controller != null && controller.RouteData.Values.ContainsKey("HashedAccountId"))
                 {
-                    hashedAccountId = filterContext.ActionParameters["HashedAccountId"].ToString();
+                    hashedAccountId = controller.RouteData.Values[RouteValues.EncodedAccountId].ToString();
 
-                } else if(filterContext.RouteData?.Values?.ContainsKey("HashedAccountId") == true) {
+                }
+                else if (controller.RouteData?.Values?.ContainsKey(RouteValues.EncodedAccountId) == true)
+                {
 
-                    hashedAccountId = filterContext.RouteData.Values["HashedAccountId"].ToString();
+                    hashedAccountId = controller.RouteData.Values[RouteValues.EncodedAccountId].ToString();
                 }
 
-                if(string.IsNullOrWhiteSpace(hashedAccountId))
+
+                if (string.IsNullOrWhiteSpace(hashedAccountId))
                 {
                     filterContext.Result = new Microsoft.AspNetCore.Mvc.ViewResult { ViewName = ControllerConstants.BadRequestViewName };
                     return;
