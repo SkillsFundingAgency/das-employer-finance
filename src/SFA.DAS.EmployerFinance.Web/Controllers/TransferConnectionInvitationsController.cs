@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.GetApprovedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetLatestPendingReceivedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetReceivedTransferConnectionInvitation;
@@ -16,10 +17,8 @@ using SFA.DAS.EmployerFinance.Queries.GetRejectedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetSentTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
-using SFA.DAS.EmployerFinance.Web.Extensions;
+using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using SFA.DAS.EmployerFinance.Interfaces;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -38,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             _urlHelper = urlHelper;
         }
 
-        [Route]
+        [HttpGet]
         public IActionResult Index()
         {
             return View();

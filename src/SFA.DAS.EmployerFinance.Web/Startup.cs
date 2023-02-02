@@ -13,6 +13,8 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using SFA.DAS.EAS.Account.Api.Client;
+using Microsoft.AspNetCore.Http;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
@@ -62,8 +64,10 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddOptions();
 
             services.AddLogging();
-
+            
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddConfigurationOptions(_configuration);
 
@@ -79,7 +83,7 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddDataRepositories();
             
             //MAC-192
-            //services.AddApplicationServices(_employerFinanceConfiguration);
+            services.AddApplicationServices(_employerFinanceConfiguration);
 
             services.AddHashingServices(_employerFinanceConfiguration);
             services.AddCachesRegistrations();

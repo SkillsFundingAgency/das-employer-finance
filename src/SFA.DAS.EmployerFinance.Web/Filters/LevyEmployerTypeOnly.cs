@@ -8,16 +8,13 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using SFA.DAS.NServiceBus.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters
 {
     public class LevyEmployerTypeOnly : Microsoft.AspNetCore.Mvc.Filters.ActionFilterAttribute
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        
-        public LevyEmployerTypeOnly(IHttpContextAccessor httpContextAccessor) {
-            _httpContextAccessor= httpContextAccessor;
-        }
 
         public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext filterContext)
         {
@@ -46,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
                 }
 
                 //MAP-192 - need testing
-                var accountApi = (IAccountApiClient)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(IAccountApiClient));
+                var accountApi = filterContext.HttpContext.RequestServices.GetService<IAccountApiClient>();
 
                 var task = Task.Run(async () => await accountApi.GetAccount(hashedAccountId));
                 AccountDetailViewModel account = task.Result;

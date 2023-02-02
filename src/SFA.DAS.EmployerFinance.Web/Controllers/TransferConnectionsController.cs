@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     [DasAuthorize(EmployerUserRole.Any)]
-    [Route("accounts/{HashedAccountId}/transfers/connections")]
+    [Microsoft.AspNetCore.Mvc.Route("accounts/{HashedAccountId}/transfers/connections")]
     public class TransferConnectionsController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly ILog _logger;
@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             _featureTogglesService = featureTogglesService;
         }
 
-        [Route]
+        [HttpGet]
         public async Task<IActionResult> Index(GetEmployerAccountDetailByHashedIdQuery query)
         {
             // redirecting to access denied only when the feature toggle is not enabled, this is not checking
