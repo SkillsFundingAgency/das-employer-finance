@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using SFA.DAS.Common.Domain.Types;
@@ -12,6 +13,12 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
 {
     public class LevyEmployerTypeOnly : Microsoft.AspNetCore.Mvc.Filters.ActionFilterAttribute
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        
+        public LevyEmployerTypeOnly(IHttpContextAccessor httpContextAccessor) {
+            _httpContextAccessor= httpContextAccessor;
+        }
+
         public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext filterContext)
         {
             try
@@ -37,9 +44,10 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
                     filterContext.Result = new Microsoft.AspNetCore.Mvc.ViewResult { ViewName = ControllerConstants.BadRequestViewName };
                     return;
                 }
-                
-                var accountApi = DependencyResolver.Current.GetService<IAccountApiClient>();
-                
+
+                //MAP-192 - need testing
+                var accountApi = (IAccountApiClient)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(IAccountApiClient));
+
                 var task = Task.Run(async () => await accountApi.GetAccount(hashedAccountId));
                 AccountDetailViewModel account = task.Result;
                 ApprenticeshipEmployerType apprenticeshipEmployerType = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), account.ApprenticeshipEmployerType, true);
