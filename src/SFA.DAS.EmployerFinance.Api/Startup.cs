@@ -3,25 +3,53 @@
 // This file will need updated according to the specific scenario of the application being upgraded.
 // For more information on ASP.NET Core startup files, see https://docs.microsoft.com/aspnet/core/fundamentals/startup
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SFA.DAS.Configuration.AzureTableStorage;
+using SFA.DAS.EmployerFinance.Configuration;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfiguration _configuration;
+        private readonly IHostEnvironment _environment;
+        public Startup(IConfiguration configuration,IHostEnvironment environment)
         {
-            Configuration = configuration;
+            _environment= environment;
+
+            var config = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .SetBasePath(Directory.GetCurrentDirectory());
+
+#if DEBUG
+            if (!configuration.IsDev())
+            {
+                config.AddJsonFile("appsettings.json", false)
+                    .AddJsonFile("appsettings.Development.json", true);
+            }
+#endif
+
+            config.AddEnvironmentVariables();
+
+            if (!configuration.IsTest())
+            {
+                config.AddAzureTableStorage(options =>
+                {
+                    options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
+                    options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
+                    options.EnvironmentName = configuration["EnvironmentName"];
+                    options.PreFixConfigurationKeys = false;
+                }
+                );
+            }
+            _configuration = config.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -42,14 +70,20 @@ namespace SFA.DAS.EmployerFinance.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHsts();
+            }
 
-            app.UseStaticFiles();
+            app.UseHttpsRedirection()
+                .UseAp
+                .UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
