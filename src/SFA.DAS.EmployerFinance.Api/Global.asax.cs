@@ -1,22 +1,24 @@
-﻿using System.Web;
-using System.Web.Http;
-using SFA.DAS.EmployerFinance.Startup;
-using WebApi.StructureMap;
+﻿//Map-192 - need to delete this
 
-namespace SFA.DAS.EmployerFinance.Api
-{
-    public class WebApiApplication : HttpApplication
-    {
-        protected void Application_Start()
-        {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+//using System.Web;
+//using System.Web.Http;
+//using SFA.DAS.EmployerFinance.Startup;
+//using WebApi.StructureMap;
 
-            GlobalConfiguration.Configuration.DependencyResolver.GetService<IStartup>().StartAsync().GetAwaiter().GetResult();
-        }
+//namespace SFA.DAS.EmployerFinance.Api
+//{
+//    public class WebApiApplication : HttpApplication
+//    {
+//        protected void Application_Start()
+//        {
+//            GlobalConfiguration.Configure(WebApiConfig.Register);
 
-        protected void Application_End()
-        {
-            GlobalConfiguration.Configuration.DependencyResolver.GetService<IStartup>().StopAsync().GetAwaiter().GetResult();
-        }
-    }
-}
+//            GlobalConfiguration.Configuration.DependencyResolver.GetService<IStartup>().StartAsync().GetAwaiter().GetResult();
+//        }
+
+//        protected void Application_End()
+//        {
+//            GlobalConfiguration.Configuration.DependencyResolver.GetService<IStartup>().StopAsync().GetAwaiter().GetResult();
+//        }
+//    }
+//}
