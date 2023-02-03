@@ -18,11 +18,16 @@
 
 
 using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SFA.DAS.Configuration.AzureTableStorage;
+using SFA.DAS.EmployerFinance.Api.Authentication;
+using SFA.DAS.EmployerFinance.Api.Authorization;
+using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.Validation.Mvc.Extensions;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace SFA.DAS.EmployerFinance.Api
@@ -68,8 +73,23 @@ namespace SFA.DAS.EmployerFinance.Api
         {
             var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
 
-            services.AddApi
-
+            services.AddApiConfigurationSections(_configuration)
+                .AddApiAuthentication(_configuration)
+                .AddApiAuthorization(_environment)
+                .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
+                .AddMvc(opt =>
+                {
+                    opt.AddAuthorization();
+                });
+            services.AddSwaggerGen(c =>
+            {
+                c.OperationFilter<AuthorizationHeaderParameterOperationFilter>();
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Employer Accounts API"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
