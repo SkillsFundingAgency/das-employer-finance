@@ -30,9 +30,10 @@ namespace SFA.DAS.EmployerFinance.Jobs
                 .UseLicense(WebUtility.HtmlDecode(_container.GetInstance<EmployerFinanceConfiguration>().NServiceBusLicense))
                 .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
                 .UseNewtonsoftJsonSerializer()
-                .UseNLogFactory()
+                //MAP-192 Need implementing
+                //.UseNLogFactory()
                 .UseSendOnly()
-                .UseStructureMapBuilder(_container)
+                //.UseStructureMapBuilder(_container)
             ;
 
             _endpoint = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);

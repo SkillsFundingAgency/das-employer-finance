@@ -1,26 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Web.Http.Description;
-using Swagger.Net;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
     public class AuthorizationHeaderParameterOperationFilter : IOperationFilter
     {
-        public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.parameters == null)
+            operation.Parameters ??= new List<OpenApiParameter>();
+            operation.Parameters.Add(new OpenApiParameter
             {
-                operation.parameters = new List<Parameter>();
-
-            }
-            operation.parameters.Add(new Parameter
-            {
-                name = "Authorization",
-                @in = "header",
-                description = "access token",
-                required = false,
-                type = "string",
-                @default = "Bearer "
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Description = "access token",
+                Required = false,
+                Schema = new OpenApiSchema
+                {
+                    Type = "string",
+                    Default = new OpenApiString("Bearer ")
+                },
             });
         }
     }
