@@ -7,6 +7,9 @@ using SFA.DAS.EmployerFinance.Startup;
 using Microsoft.ApplicationInsights.Extensibility;
 using System.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.DependencyInjection;
+using StructureMap;
 
 namespace SFA.DAS.EmployerFinance.Jobs
 {
@@ -14,28 +17,49 @@ namespace SFA.DAS.EmployerFinance.Jobs
     {
         public static async Task Main()
         {
-            using (var container = IoC.Initialize())
+
+            var container = IoC.Initialize();
+
+            using (var host = CreateHost(container))
             {
-                var config = new JobHostConfiguration { JobActivator = new StructureMapJobActivator(container) };
-                var loggerFactory = container.GetInstance<ILoggerFactory>();
-                var startup = container.GetInstance<IStartup>();
-
-                if (container.GetInstance<IEnvironmentService>().IsCurrent(DasEnv.LOCAL))
-                {
-                    config.UseDevelopmentSettings();
-                }
-
-                config.LoggerFactory = loggerFactory;
-                config.UseTimers();
-
                 var jobHost = host.Services.GetService(typeof(IJobHost)) as JobHost;
 
-                await startup.StartAsync();
+                await host.StartAsync();
 
-                jobHost.RunAndBlock();
+                await host.RunAsync();
 
-                await startup.StopAsync();
+                await host.StopAsync();
             }
+
+        }
+
+        private static IHost CreateHost(IContainer container)
+        {
+            var builder = new HostBuilder()
+                 .ConfigureWebJobs(config =>
+                 {
+                     config.AddTimers();
+                 })
+                 .ConfigureLogging((context, loggingBuilder) =>
+                 {
+                     var appInsightsKey = context.Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"];
+                     if (!string.IsNullOrEmpty(appInsightsKey))
+                     {
+                         loggingBuilder.AddApplicationInsightsWebJobs(o => o.InstrumentationKey = appInsightsKey);
+                     }
+                 }).ConfigureServices((context, services) =>
+                 {
+                     services.AddScoped<IJobActivator, StructureMapJobActivator>();
+                 });
+
+            var isDevelopment = container.GetInstance<IEnvironmentService>().IsCurrent(DasEnv.LOCAL);
+
+            if (isDevelopment)
+            {
+                builder.UseEnvironment("development");
+            }
+
+            return builder.Build();
         }
     }
 }
