@@ -6,19 +6,13 @@ using SFA.DAS.EmployerFinance.Jobs.DependencyResolution;
 using SFA.DAS.EmployerFinance.Startup;
 using Microsoft.ApplicationInsights.Extensibility;
 using System.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace SFA.DAS.EmployerFinance.Jobs
 {
     public class Program
     {
-        public static void Main()
-        {
-            TelemetryConfiguration.Active.InstrumentationKey = ConfigurationManager.AppSettings["APPINSIGHTS_INSTRUMENTATIONKEY"];
-
-            MainAsync().GetAwaiter().GetResult();
-        }
-
-        public static async Task MainAsync()
+        public static async Task Main()
         {
             using (var container = IoC.Initialize())
             {
@@ -32,10 +26,9 @@ namespace SFA.DAS.EmployerFinance.Jobs
                 }
 
                 config.LoggerFactory = loggerFactory;
-
                 config.UseTimers();
 
-                var jobHost = new JobHost(config);
+                var jobHost = host.Services.GetService(typeof(IJobHost)) as JobHost;
 
                 await startup.StartAsync();
 
