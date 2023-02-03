@@ -22,11 +22,11 @@ namespace SFA.DAS.EmployerFinance.Jobs.DependencyResolution
                 s.AssembliesFromApplicationBaseDirectory(a => a.GetName().Name.StartsWith("SFA.DAS"));
                 s.RegisterConcreteTypesAgainstTheFirstInterface();
             });
-
-            For<ILoggerFactory>().Use(() => new LoggerFactory().AddNLog()).Singleton();
-            For<ILogger>().Use(c => c.GetInstance<ILoggerFactory>().CreateLogger(c.ParentType));
-            For<EmployerFinanceDbContext>().Use(c => GetDbContext(c));
-            //For<IRunOnceJobsService>().Use<RunOnceJobsService>();
+            //MAp-192
+            //For<ILoggerFactory>().Use(() => new LoggerFactory().AddNLog()).Singleton();
+            //For<ILogger>().Use(c => c.GetInstance<ILoggerFactory>().CreateLogger(c.ParentType));
+            //For<EmployerFinanceDbContext>().Use(c => GetDbContext(c));
+            ////For<IRunOnceJobsService>().Use<RunOnceJobsService>();
         }
 
         private static EmployerFinanceDbContext GetDbContext(IContext context)
