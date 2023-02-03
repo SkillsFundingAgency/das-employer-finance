@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
@@ -20,10 +21,8 @@ namespace SFA.DAS.EmployerFinance.Web.ViewComponents
 
         public IViewComponentResult Invoke(TransferAllowanceViewModel model)
         {
-            var response = Task.Run(() => _mediator.Send(query)).GetAwaiter().GetResult();
-            var model = _mapper.Map<TransferAllowanceViewModel>(response);
-
-            return View(model);
+            var response = Task.Run(() => _mediator.Send(_query)).GetAwaiter().GetResult();
+            return View(_mapper.Map<TransferAllowanceViewModel>(response));
         }
     }
 }
