@@ -2,11 +2,9 @@
 using System.Net;
 using System.Threading.Tasks;
 using NServiceBus;
-using NServiceBus.ObjectBuilder.Common;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.NServiceBus.Configuration;
-using SFA.DAS.NServiceBus.Configuration.NLog;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
@@ -37,9 +35,10 @@ namespace SFA.DAS.EmployerFinance.Web
                 .UseLicense(WebUtility.HtmlDecode(_employerFinanceConfiguration.NServiceBusLicense))
                 .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
                 .UseNewtonsoftJsonSerializer()
-                .UseNLogFactory()
+                //Map-192 need implementing
+                //.UseNLogFactory()
                 .UseOutbox(true)
-                .UseStructureMapBuilder(_container)
+                //.UseStructureMapBuilder(_container)
                 .UseUnitOfWork();
 
             _endpoint = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);
