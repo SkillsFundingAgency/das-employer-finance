@@ -40,6 +40,10 @@ using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using SFA.DAS.Api.Common.AppStart;
+using SFA.DAS.EmployerFinance.Data;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+using SFA.DAS.EmployerFinance.ServiceRegistration;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -128,6 +132,17 @@ namespace SFA.DAS.EmployerFinance.Api
                     Title = "Employer Finance API"
                 });
             });
+
+            services.AddHashingServices(employerAccountsConfiguration);
+            services.AddAutoMapper(typeof(Startup).Assembly);
+            services.AddMediatorValidators();
+            services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+            services.AddNotifications(_configuration);
+
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
+
+            services.AddApplicationInsightsTelemetry();
         }
 
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
