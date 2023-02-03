@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers
 
         public async Task Handle(CreatedAccountEvent message, IMessageHandlerContext context)
         {
-            await _mediator.SendAsync(new CreateAccountCommand(message.AccountId, message.Name));
+            await _mediator.Send(new CreateAccountCommand(message.AccountId, message.Name));
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers
 
         public async Task Handle(ChangedAccountNameEvent message, IMessageHandlerContext context)
         {
-            await _mediator.SendAsync(new RenameAccountCommand(message.AccountId, message.CurrentName));
+            await _mediator.Send(new RenameAccountCommand(message.AccountId, message.CurrentName));
         }
     }
 }

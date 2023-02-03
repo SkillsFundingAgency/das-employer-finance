@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers
 
         public async Task Handle(DeletedPayeSchemeEvent message, IMessageHandlerContext context)
         {
-            await _mediator.SendAsync(new RemoveAccountPayeCommand(message.AccountId, message.PayeRef));
+            await _mediator.Send(new RemoveAccountPayeCommand(message.AccountId, message.PayeRef));
         }
     }
 }

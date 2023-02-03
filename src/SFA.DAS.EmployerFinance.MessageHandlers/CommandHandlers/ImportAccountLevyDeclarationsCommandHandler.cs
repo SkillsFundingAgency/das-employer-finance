@@ -69,7 +69,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
 
         private async Task RefreshEmployerAccountLevyDeclarations(long employerAccountId, ICollection<EmployerLevyData> payeSchemeDeclarations)
         {
-            await _mediator.SendAsync(new RefreshEmployerLevyDataCommand
+            await _mediator.Send(new RefreshEmployerLevyDataCommand
             {
                 AccountId = employerAccountId,
                 EmployerLevyData = payeSchemeDeclarations
@@ -85,7 +85,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
             _logger.Debug($"Getting levy declarations from HMRC for PAYE scheme {payeRef}");
 
             var levyDeclarationQueryResult = HmrcProcessingEnabled || DeclarationProcessingOnly ?
-                await _mediator.SendAsync(new GetHMRCLevyDeclarationQuery { EmpRef = payeRef }) : null;
+                await _mediator.Send(new GetHMRCLevyDeclarationQuery { EmpRef = payeRef }) : null;
 
             _logger.Debug($"Processing levy declarations retrieved from HMRC for PAYE scheme {payeRef}");
 
@@ -140,7 +140,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
             if (HmrcProcessingEnabled || FractionProcessingOnly)
             {
                 _logger.Debug($"Getting update for english fraction for PAYE scheme {payeRef}");
-                await _mediator.SendAsync(new UpdateEnglishFractionsCommand
+                await _mediator.Send(new UpdateEnglishFractionsCommand
                 {
                     EmployerReference = payeRef,
                     EnglishFractionUpdateResponse = englishFractionUpdateResponse
@@ -155,7 +155,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
                 _logger.Debug($"Updating english fraction calculation date to " +
                               $"{englishFractionUpdateResponse.DateCalculated.ToShortDateString()} for PAYE scheme {payeRef}");
 
-                await _mediator.SendAsync(new CreateEnglishFractionCalculationDateCommand
+                await _mediator.Send(new CreateEnglishFractionCalculationDateCommand
                 {
                     DateCalculated = englishFractionUpdateResponse.DateCalculated
                 });

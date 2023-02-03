@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers
 
         public Task Handle(RemovedLegalEntityEvent message, IMessageHandlerContext context)
         {
-            return _mediator.SendAsync(new RemoveAccountLegalEntityCommand(message.AccountLegalEntityId));
+            return _mediator.Send(new RemoveAccountLegalEntityCommand(message.AccountLegalEntityId));
         }
     }
 }

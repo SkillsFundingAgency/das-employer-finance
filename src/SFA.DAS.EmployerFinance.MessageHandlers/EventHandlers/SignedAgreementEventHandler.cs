@@ -18,7 +18,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers
 
         public Task Handle(SignedAgreementEvent message, IMessageHandlerContext context)
         {
-            return _mediator.SendAsync(new LegalEntitySignAgreementCommand(message.AgreementId,
+            return _mediator.Send(new LegalEntitySignAgreementCommand(message.AgreementId,
                 message.SignedAgreementVersion, message.AccountId, message.LegalEntityId));
         }
     }
