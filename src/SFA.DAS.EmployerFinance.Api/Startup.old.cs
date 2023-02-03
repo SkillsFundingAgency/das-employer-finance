@@ -1,10 +1,5 @@
 ﻿using System.Configuration;
-using Microsoft.Owin;
-using Microsoft.Owin.Security.ActiveDirectory;
-using Owin;
 using SFA.DAS.EmployerFinance.Api;
-
-[assembly: OwinStartup(typeof(Startup))]
 
 namespace SFA.DAS.EmployerFinance.Api
 {
