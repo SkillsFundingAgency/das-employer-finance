@@ -30,6 +30,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.Infrastructure;
+using SFA.DAS.Api.Common.Configuration;
 using SFA.DAS.Authorization.DependencyResolution.Microsoft;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
@@ -38,6 +39,7 @@ using SFA.DAS.EmployerFinance.Api.ErrorHandler;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using SFA.DAS.Api.Common.AppStart;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -83,8 +85,6 @@ namespace SFA.DAS.EmployerFinance.Api
             var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
 
             services.AddApiConfigurationSections(_configuration)
-                .AddApiAuthentication(_configuration)
-                .AddApiAuthorization(_environment)
                 .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
                 .AddMvc(opt =>
                 {
@@ -93,8 +93,7 @@ namespace SFA.DAS.EmployerFinance.Api
                         opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
                         opt.AddAuthorization();
                     }
-                }
-                );
+                });
             if (_configuration.IsDevOrLocal())
             {
                 services.AddAuthentication("BasicAuthentication")
@@ -114,9 +113,9 @@ namespace SFA.DAS.EmployerFinance.Api
                             .Get<AzureActiveDirectoryConfiguration>();
 
                 var policies = new Dictionary<string, string>
-            {
-                {PolicyNames.Default, RoleNames.Default},
-            };
+                {
+                    {PolicyNames.Default, RoleNames.Default},
+                };
                 services.AddAuthentication(azureAdConfiguration, policies);
                 services.AddAuthorization<AuthorizationContextProvider>();
             }
