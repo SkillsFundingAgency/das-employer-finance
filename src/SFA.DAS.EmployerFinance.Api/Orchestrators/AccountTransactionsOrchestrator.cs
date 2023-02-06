@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.Routing;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators
 {
@@ -16,14 +15,16 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
     {
         private readonly IMediator _mediator;
         private readonly ILog _logger;
+        private readonly IUrlHelper _urlHelper;
 
-        public AccountTransactionsOrchestrator(IMediator mediator, ILog logger)
+        public AccountTransactionsOrchestrator(IMediator mediator, ILog logger, IUrlHelper urlHelper)
         {
             _mediator = mediator;
             _logger = logger;
+            _urlHelper = urlHelper;
         }
       
-        public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month, UrlHelper urlHelper)
+        public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month, IUrlHelper urlHelper)
         {
             _logger.Info($"Requesting account transactions for account {hashedAccountId}, year {year} and month {month}");
 
@@ -58,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
             return response.Data;
         }
 
-        private Transaction ConvertToTransactionViewModel(string hashedAccountId, Models.Transaction.TransactionLine transactionLine, UrlHelper urlHelper)
+        private Transaction ConvertToTransactionViewModel(string hashedAccountId, Models.Transaction.TransactionLine transactionLine, IUrlHelper urlHelper)
         {
             var viewModel = new Transaction
             {
@@ -73,7 +74,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
 
             if (transactionLine.TransactionType == Models.Transaction.TransactionItemType.Declaration)
             {
-                viewModel.ResourceUri = urlHelper.Route("GetLevyForPeriod", new { hashedAccountId, payrollYear = transactionLine.PayrollYear, payrollMonth = transactionLine.PayrollMonth });
+                viewModel.ResourceUri = urlHelper.RouteUrl("GetLevyForPeriod", new { hashedAccountId, payrollYear = transactionLine.PayrollYear, payrollMonth = transactionLine.PayrollMonth });
             }
 
             return viewModel;

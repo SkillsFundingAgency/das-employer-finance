@@ -15,10 +15,12 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
     public class AccountTransactionsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly AccountTransactionsOrchestrator _orchestrator;
+        private readonly IUrlHelper _urlHelper;
 
-        public AccountTransactionsController(AccountTransactionsOrchestrator orchestrator)
+        public AccountTransactionsController(AccountTransactionsOrchestrator orchestrator, IUrlHelper urlHelper)
         {
             _orchestrator = orchestrator;
+            _urlHelper = urlHelper;
         }
 
         [Route("", Name = "GetTransactionSummary")]
@@ -71,7 +73,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
                 month = DateTime.Now.Month;
             }
 
-            var result = await _orchestrator.GetAccountTransactions(hashedAccountId, year, month, Url);
+            var result = await _orchestrator.GetAccountTransactions(hashedAccountId, year, month, _urlHelper);
             return result;
         }
     }
