@@ -21,7 +21,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting Finance statistics");
 
-            var financialStatisticsQueryTask = _mediator.SendAsync(new GetTotalPaymentsQuery());
+            var financialStatisticsQueryTask = _mediator.Send(new GetTotalPaymentsQuery());
 
             return new TotalPaymentsModel
             {            

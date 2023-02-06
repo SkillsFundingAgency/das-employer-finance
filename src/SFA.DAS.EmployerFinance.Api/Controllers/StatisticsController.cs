@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authorization.WebApi.Attributes;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using SFA.DAS.EmployerFinance.Queries.GetStatistics;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {

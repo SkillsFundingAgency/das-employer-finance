@@ -19,6 +19,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,6 +46,7 @@ using SFA.DAS.EmployerFinance.Data;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Authorisation;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -113,7 +116,7 @@ namespace SFA.DAS.EmployerFinance.Api
             else
             {
                 var azureAdConfiguration = _configuration
-                            .GetSection("AzureAd")
+                            .GetSection(ConfigurationKeys.AzureActiveDirectoryApiConfiguration)
                             .Get<AzureActiveDirectoryConfiguration>();
 
                 var policies = new Dictionary<string, string>
@@ -133,9 +136,9 @@ namespace SFA.DAS.EmployerFinance.Api
                 });
             });
 
-            services.AddHashingServices(employerAccountsConfiguration);
+            services.AddHashingServices(employerFinanceConfiguration);
             services.AddAutoMapper(typeof(Startup).Assembly);
-            services.AddMediatorValidators();
+            //services.AddMediatorValidators();
             services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
             services.AddNotifications(_configuration);
 

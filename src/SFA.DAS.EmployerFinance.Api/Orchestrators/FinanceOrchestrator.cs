@@ -38,7 +38,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting levy declaration for account {hashedAccountId}");
 
-            var response = await _mediator.SendAsync(new GetLevyDeclarationRequest { HashedAccountId = hashedAccountId });
+            var response = await _mediator.Send(new GetLevyDeclarationRequest { HashedAccountId = hashedAccountId });
             if (response.Declarations == null)
             {
                 return null;
@@ -55,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting levy declaration for account {hashedAccountId}, year {payrollYear} and month {payrollMonth}");
 
-            var response = await _mediator.SendAsync(new GetLevyDeclarationsByAccountAndPeriodRequest { HashedAccountId = hashedAccountId, PayrollYear = payrollYear, PayrollMonth = payrollMonth });
+            var response = await _mediator.Send(new GetLevyDeclarationsByAccountAndPeriodRequest { HashedAccountId = hashedAccountId, PayrollYear = payrollYear, PayrollMonth = payrollMonth });
             if (response.Declarations == null)
             {
                 return null;
@@ -71,7 +71,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting english fraction history for account {hashedAccountId}, empRef {empRef}");
 
-            var response = await _mediator.SendAsync(new GetEnglishFractionHistoryQuery { HashedAccountId = hashedAccountId, EmpRef = empRef });
+            var response = await _mediator.Send(new GetEnglishFractionHistoryQuery { HashedAccountId = hashedAccountId, EmpRef = empRef });
             if (response.FractionDetail == null)
             {
                 return null;
@@ -86,7 +86,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting current english fractions for account {hashedAccountId}, empRefs {string.Join(", ", empRefs)}");
 
-            var response = await _mediator.SendAsync(new GetEnglishFractionCurrentQuery { HashedAccountId = hashedAccountId, EmpRefs = empRefs });
+            var response = await _mediator.Send(new GetEnglishFractionCurrentQuery { HashedAccountId = hashedAccountId, EmpRefs = empRefs });
             if (response.Fractions == null)
             {
                 return null;
@@ -114,7 +114,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
                 }                
             }
             
-            var response = await _mediator.SendAsync(new GetAccountBalancesRequest
+            var response = await _mediator.Send(new GetAccountBalancesRequest
             {
                 AccountIds = decodedAccountIds
             });
@@ -130,7 +130,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting GetTransferAllowance for the hashedAccountId {hashedAccountId} ");
 
-            var response = await _mediator.SendAsync(new GetTransferAllowanceQuery
+            var response = await _mediator.Send(new GetTransferAllowanceQuery
             {
                 AccountId = _hashingService.DecodeValue(hashedAccountId)
             });
