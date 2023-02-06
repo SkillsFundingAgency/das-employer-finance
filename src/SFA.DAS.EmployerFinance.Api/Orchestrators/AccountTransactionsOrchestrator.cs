@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.NLog.Logger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting account transactions for account {hashedAccountId}, year {year} and month {month}");
 
-            var data = await _mediator.SendAsync(new GetEmployerAccountTransactionsQuery {
+            var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery {
                         Year = year,
                         Month = month,
                         HashedAccountId = hashedAccountId
@@ -47,14 +49,14 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         {
             _logger.Info($"Requesting account transaction summary for account {hashedAccountId}");
 
-            var response = await _mediator.SendAsync(new GetAccountTransactionSummaryRequest { HashedAccountId = hashedAccountId });
+            var response = await _mediator.Send(new GetAccountTransactionSummaryRequest { HashedAccountId = hashedAccountId });
             if (response.Data == null)
             {
                 return null;
             }
             _logger.Info($"Received account transaction summary response for account {hashedAccountId}");
             return response.Data;
-        }     
+        }
 
         private Transaction ConvertToTransactionViewModel(string hashedAccountId, Models.Transaction.TransactionLine transactionLine, UrlHelper urlHelper)
         {
