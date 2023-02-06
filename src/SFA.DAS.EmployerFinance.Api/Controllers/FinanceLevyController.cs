@@ -1,9 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Api.Attributes;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
@@ -20,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         [Route("", Name = "GetLevy")]
         [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
         [HttpGet]
-        public async Task<IHttpActionResult> Index(string hashedAccountId)
+        public async Task<IActionResult> Index(string hashedAccountId)
         {
             var result = await _orchestrator.GetLevy(hashedAccountId);
 
@@ -35,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         [Route("{payrollYear}/{payrollMonth}", Name = "GetLevyForPeriod")]
         [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
+        public async Task<IActionResult> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
         {
             var result = await _orchestrator.GetLevy(hashedAccountId, payrollYear, payrollMonth);
 
@@ -50,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         [Route("english-fraction-history", Name = "GetEnglishFractionHistory")]
         [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetEnglishFractionHistory(string hashedAccountId, string empRef)
+        public async Task<IActionResult> GetEnglishFractionHistory(string hashedAccountId, string empRef)
         {
             var result = await _orchestrator.GetEnglishFractionHistory(hashedAccountId, empRef);
 
@@ -65,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         [Route("english-fraction-current", Name = "GetEnglishFractionCurrent")]
         [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetEnglishFractionCurrent([FromUri] string[] empRefs, string hashedAccountId)
+        public async Task<IActionResult> GetEnglishFractionCurrent([System.Web.Http.FromUri] string[] empRefs, string hashedAccountId)
         {
             var result = await _orchestrator.GetEnglishFractionCurrent(hashedAccountId, empRefs);
 
