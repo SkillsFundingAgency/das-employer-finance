@@ -3,11 +3,15 @@ using SFA.DAS.EmployerFinance.Api.Attributes;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using System;
 using System.Threading.Tasks;
-using System.Web.Http;
+using System.Net;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.Authorization.WebApi.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
-    [RoutePrefix("api/accounts/{hashedAccountId}/transactions")]
+    [Route("api/accounts/{hashedAccountId}/transactions")]
     public class AccountTransactionsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly AccountTransactionsOrchestrator _orchestrator;
@@ -18,9 +22,9 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("", Name = "GetTransactionSummary")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [DasAuthorize(Roles = "ReadAllEmployerAccountBalances")]
         [HttpGet]
-        public async Task<IHttpActionResult> Index(string hashedAccountId)
+        public async Task<IActionResult> Index(string hashedAccountId)
         {
             var result = await _orchestrator.GetAccountTransactionSummary(hashedAccountId);
 
@@ -29,15 +33,15 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
                 return NotFound();
             }
 
-            result.ForEach(x => x.Href = Url.Route("GetTransactions", new { hashedAccountId, year = x.Year, month = x.Month }));
+            result.ForEach(x => x.Href = Url.RouteUrl("GetTransactions", new { hashedAccountId, year = x.Year, month = x.Month }));
 
             return Ok(result);
         }
 
         [Route("{year?}/{month?}", Name = "GetTransactions")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [DasAuthorize(Roles = "ReadAllEmployerAccountBalances")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetTransactions(string hashedAccountId, int year = 0, int month = 0)
+        public async Task<IActionResult> GetTransactions(string hashedAccountId, int year = 0, int month = 0)
         {
             var result = await GetAccountTransactions(hashedAccountId, year, month);
 
@@ -49,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
             if (result.HasPreviousTransactions)
             {
                 var previousMonth = new DateTime(result.Year, result.Month, 1).AddMonths(-1);
-                result.PreviousMonthUri = Url.Route("GetTransactions", new { hashedAccountId, year = previousMonth.Year, month = previousMonth.Month });
+                result.PreviousMonthUri = Url.RouteUrl("GetTransactions", new { hashedAccountId, year = previousMonth.Year, month = previousMonth.Month });
             }
 
             return Ok(result);

@@ -1,25 +1,26 @@
 ﻿using SFA.DAS.EmployerFinance.Api.Attributes;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using System.Threading.Tasks;
-using System.Web.Http;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SFA.DAS.Authorization.WebApi.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
-    [ApiAuthorize(Roles = "ReadUserAccounts")]
-    [RoutePrefix("api/financestatistics")]
-    public class StatisticsController : Microsoft.AspNetCore.Mvc.ControllerBase
+    [DasAuthorize(Roles = "ReadUserAccounts")]
+    [Route("api/financestatistics")]
+    public class StatisticsController : ControllerBase
     {
-        private readonly StatisticsOrchestrator _statisticsOrchestrator;
+        private readonly IMediator _mediator;
 
-        public StatisticsController(StatisticsOrchestrator statisticsOrchestrator)
-        {
-            _statisticsOrchestrator = statisticsOrchestrator;
-        }
+        public StatisticsController(IMediator mediator) => _mediator = mediator;
 
+        [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> GetStatistics()
+        public async Task<IActionResult> GetStatistics()
         {
-            return Ok(await _statisticsOrchestrator.Get());
+            var response = await _mediator.Send(new GetStatisticsQuery());
+            return Ok(response.Statistics);
         }
     }
 }

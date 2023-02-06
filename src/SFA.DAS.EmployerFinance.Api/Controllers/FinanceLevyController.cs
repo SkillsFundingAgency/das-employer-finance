@@ -1,11 +1,13 @@
 ﻿using SFA.DAS.EmployerFinance.Api.Attributes;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using System.Threading.Tasks;
-using System.Web.Http;
+using System.Collections.Generic;
+using System.Linq;
+using MediatR;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
-    [RoutePrefix("api/accounts/{hashedAccountId}/levy")]
+    [Route("api/accounts/{hashedAccountId}/levy")]
     public class FinanceLevyController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly FinanceOrchestrator _orchestrator;
