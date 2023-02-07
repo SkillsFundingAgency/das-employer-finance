@@ -72,6 +72,7 @@ namespace SFA.DAS.EmployerFinance.Web
              .GetSection("Identity")
              .Get<IdentityServerConfiguration>();
 
+            services.AddOrchestrators();
             services.AddAutoMapper(typeof(Startup).Assembly);
 
             services.AddDatabaseRegistration(_employerFinanceConfiguration, _configuration["Environment"]);
