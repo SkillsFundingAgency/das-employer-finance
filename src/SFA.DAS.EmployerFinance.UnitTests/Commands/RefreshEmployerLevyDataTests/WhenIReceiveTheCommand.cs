@@ -17,6 +17,7 @@ using SFA.DAS.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
@@ -73,7 +74,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
         public async Task ThenTheValidatorIsCalled()
         {
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef));
+            await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef), CancellationToken.None);
 
             //Assert
             _validator.Verify(x => x.Validate(It.IsAny<RefreshEmployerLevyDataCommand>()));
@@ -86,7 +87,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             _validator.Setup(x => x.Validate(It.IsAny<RefreshEmployerLevyDataCommand>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _refreshEmployerLevyDataCommandHandler.Handle(new RefreshEmployerLevyDataCommand()));
+            Assert.ThrowsAsync<InvalidRequestException>(async () => await _refreshEmployerLevyDataCommandHandler.Handle(new RefreshEmployerLevyDataCommand(), CancellationToken.None));
         }
 
         [Test]
@@ -96,7 +97,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             var refreshEmployerLevyDataCommand = RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef);
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(refreshEmployerLevyDataCommand);
+            await _refreshEmployerLevyDataCommandHandler.Handle(refreshEmployerLevyDataCommand, CancellationToken.None);
 
             //Assert
             _levyRepository.Verify(x => x.GetEmployerDeclarationSubmissionIds(ExpectedEmpRef), Times.Once());
@@ -109,7 +110,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             _levyRepository.Setup(x => x.GetEmployerDeclarationSubmissionIds(ExpectedEmpRef)).ReturnsAsync(new List<long> { 2 });
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId));
+            await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId), CancellationToken.None);
 
             //Assert
             _levyRepository.Verify(x => x.CreateEmployerDeclarations(It.IsAny<IEnumerable<DasDeclaration>>(), ExpectedEmpRef, ExpectedAccountId));
@@ -123,7 +124,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             _levyRepository.Setup(m => m.ProcessDeclarations(ExpectedAccountId, It.IsAny<string>())).Returns(Task.FromResult(decimal.One));
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(data);
+            await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             //Assert
             _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Once);
@@ -146,7 +147,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             var data = RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId);
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(data);
+            await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             //Assert
             _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Never);
@@ -223,7 +224,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
                 yearEndAdjustmentSubmissionDate);
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(data);
+            await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(data.EmployerLevyData.Sum(eld => eld.Declarations.Declarations.Count), savedDeclarations.Count, "Incorrect number of declarations saved");
@@ -239,7 +240,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             _hmrcDateService.Setup(x => x.IsSubmissionForFuturePeriod(declaration.PayrollYear, declaration.PayrollMonth.Value, It.IsAny<DateTime>())).Returns(true);
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(data);
+            await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             //Assert
             _levyRepository.Verify(x => x.CreateEmployerDeclarations(It.Is<IEnumerable<DasDeclaration>>(c => c.Count() == 4), ExpectedEmpRef, ExpectedAccountId), Times.Once);
@@ -269,12 +270,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             _genericEventFactory.Setup(x => x.Create(expectedLevyEvents[1])).Returns(expectedGenericEvents[1]);
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(data);
+            await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             //Assert
-            _mediator.Verify(x => x.SendAsync(It.IsAny<PublishGenericEventCommand>()), Times.Exactly(2));
-            _mediator.Verify(x => x.SendAsync(It.Is<PublishGenericEventCommand>(y => y.Event == expectedGenericEvents[0])), Times.Exactly(1));
-            _mediator.Verify(x => x.SendAsync(It.Is<PublishGenericEventCommand>(y => y.Event == expectedGenericEvents[1])), Times.Exactly(1));
+            _mediator.Verify(x => x.Send(It.IsAny<PublishGenericEventCommand>(), CancellationToken.None), Times.Exactly(2));
+            _mediator.Verify(x => x.Send(It.Is<PublishGenericEventCommand>(y => y.Event == expectedGenericEvents[0]), CancellationToken.None), Times.Exactly(1));
+            _mediator.Verify(x => x.Send(It.Is<PublishGenericEventCommand>(y => y.Event == expectedGenericEvents[1]), CancellationToken.None), Times.Exactly(1));
         }
 
         [Test]
@@ -285,7 +286,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             _hmrcDateService.Setup(x => x.DoesSubmissionPreDateLevy(It.IsAny<string>())).Returns(true);
 
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(data);
+            await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             //Assert
             _levyRepository.Verify(x => x.CreateEmployerDeclarations(It.IsAny<IEnumerable<DasDeclaration>>(), It.IsAny<string>(), It.IsAny<long>()), Times.Never);
@@ -311,7 +312,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             newDeclaration.NoPaymentForPeriod = false;
 
             //Act
-            Func<Task> action = () => _refreshEmployerLevyDataCommandHandler.Handle(data);
+            Func<Task> action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
             action.ShouldThrow<ArgumentNullException>();
         }
@@ -331,7 +332,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             newDeclaration.LevyDueYtd = null;
             newDeclaration.NoPaymentForPeriod = true;
             //Act
-            Func<Task> action = () => _refreshEmployerLevyDataCommandHandler.Handle(data);
+            Func<Task> action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
             action.ShouldNotThrow();
         }
 
@@ -340,7 +341,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
         public async Task ThenARefreshEmployerLevyDataCompletedEventIsPublished()
         {
             //Act
-            await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId));
+            await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId), CancellationToken.None);
 
 
             //Assert

@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -37,7 +36,7 @@
       <Version>2.0.1</Version>
     </PackageReference>
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
-    <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.0.0.4388" />
+    <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.1.338" />
     <PackageReference Include="SFA.DAS.HashingService" Version="1.0.183" />
     <PackageReference Include="SFA.DAS.Logging">
       <Version>1.0.5</Version>
@@ -50,7 +49,6 @@
     <PackageReference Include="SFA.DAS.NServiceBus.SqlServer">
       <Version>17.0.49</Version>
     </PackageReference>
-    <PackageReference Include="SFA.DAS.OidcMiddleware" Version="2.0.0.61553" />
     <PackageReference Include="SFA.DAS.UnitOfWork.EntityFramework">
       <Version>9.0.13</Version>
     </PackageReference>
@@ -64,21 +62,10 @@
       <Version>5.1.167</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="StructureMap" Version="4.7.1" />
-    <PackageReference Include="StructureMap.MVC5" Version="3.1.1.134" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.355802">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="SFA.DAS.Web.Policy" Version="1.1.0.63777" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="NLog.xsd">

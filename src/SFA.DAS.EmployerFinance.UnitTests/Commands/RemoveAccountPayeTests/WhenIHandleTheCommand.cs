@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RemoveAccountPayeTests
             var accountId = 123443;
             var payeRef = "ABC/12343534";
 
-            await _handler.Handle(new RemoveAccountPayeCommand(accountId, payeRef));
+            await _handler.Handle(new RemoveAccountPayeCommand(accountId, payeRef), CancellationToken.None);
 
             _payeRepository.Verify(x => x.RemovePayeScheme(accountId, payeRef));
         }

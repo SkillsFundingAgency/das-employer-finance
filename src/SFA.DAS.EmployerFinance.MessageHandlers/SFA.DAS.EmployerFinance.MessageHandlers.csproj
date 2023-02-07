@@ -46,9 +46,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <TransformOnBuild>true</TransformOnBuild>
-    </None>
     <None Include="App.*.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>

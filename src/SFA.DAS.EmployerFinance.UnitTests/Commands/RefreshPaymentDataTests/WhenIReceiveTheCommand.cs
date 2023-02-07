@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
@@ -95,7 +96,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
         public async Task ThenTheCommandIsValidated()
         {
             //Act
-            await _handler.Handle(new RefreshPaymentDataCommand());
+            await _handler.Handle(new RefreshPaymentDataCommand(), CancellationToken.None);
 
             //Assert
             _validator.Verify(x => x.Validate(It.IsAny<RefreshPaymentDataCommand>()), Times.Once);
@@ -109,14 +110,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
                       .Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act Assert
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new RefreshPaymentDataCommand()));
+            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new RefreshPaymentDataCommand(), CancellationToken.None));
         }
 
         [Test]
         public async Task ThenThePaymentsApiIsCalledToGetPaymentData()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _paymentService.Verify(x => x.GetAccountPayments(_command.PeriodEnd, _command.AccountId, It.IsAny<Guid>()));
@@ -129,7 +130,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
             _paymentService.Setup(x => x.GetAccountPayments(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<Guid>()))
                            .ReturnsAsync(new List<PaymentDetails>());
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.CreatePayments(It.IsAny<IEnumerable<PaymentDetails>>()), Times.Never);
@@ -139,7 +140,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
         public async Task ThenTheRepositorySavesStandardPaymentsCorrectly()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.CreatePayments(_paymentDetails), Times.Once);
@@ -149,10 +150,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
         public async Task ThenTheEventIsCalledToUpdateTheDeclarationDataWhenNewPaymentsHaveBeenCreated()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
-            _mediator.Verify(x => x.PublishAsync(It.IsAny<ProcessPaymentEvent>()), Times.Once);
+            _mediator.Verify(x => x.Publish(It.IsAny<ProcessPaymentEvent>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -169,11 +170,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
                 .ReturnsAsync(_paymentDetails);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.CreatePayments(It.IsAny<IEnumerable<PaymentDetails>>()), Times.Never);
-            _mediator.Verify(x => x.PublishAsync(It.IsAny<ProcessPaymentEvent>()), Times.Never);
+            _mediator.Verify(x => x.Publish(It.IsAny<ProcessPaymentEvent>(), CancellationToken.None), Times.Never);
 
         }
 
@@ -185,11 +186,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
                            .ThrowsAsync(new WebException());
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.GetAccountPaymentIds(_command.AccountId), Times.Never);
-            _mediator.Verify(x => x.PublishAsync(It.IsAny<ProcessPaymentEvent>()), Times.Never);
+            _mediator.Verify(x => x.Publish(It.IsAny<ProcessPaymentEvent>(), CancellationToken.None), Times.Never);
 
             _logger.Verify(x => x.Error(It.IsAny<WebException>(),
                 $"Unable to get payment information for AccountId = '{AccountId}' and PeriodEnd = '{_command.PeriodEnd}' CorrelationId: {_command.CorrelationId}"));
@@ -199,7 +200,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
         public async Task ShouldGetExistingPaymentIdsFromDatabase()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.GetAccountPaymentIds(AccountId), Times.Once);
@@ -221,14 +222,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
                            .ReturnsAsync(_paymentDetails);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.CreatePayments(It.Is<IEnumerable<PaymentDetails>>(s =>
                 s.Any(p => p.Id.Equals(newPaymentGuid)) &&
                 s.Count() == 1)));
 
-            _mediator.Verify(x => x.PublishAsync(It.IsAny<ProcessPaymentEvent>()), Times.Once);
+            _mediator.Verify(x => x.Publish(It.IsAny<ProcessPaymentEvent>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -247,14 +248,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
                 .ReturnsAsync(_paymentDetails);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.CreatePayments(It.Is<IEnumerable<PaymentDetails>>(s =>
                 s.All(p => !p.Id.Equals(fullyFundedPaymentGuid)) &&
                 s.Count() == 1)));
 
-            _mediator.Verify(x => x.PublishAsync(It.IsAny<ProcessPaymentEvent>()), Times.Once);
+            _mediator.Verify(x => x.Publish(It.IsAny<ProcessPaymentEvent>(), CancellationToken.None), Times.Once);
         }
         
         [Test]
@@ -265,7 +266,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
                 .Throws<Exception>();
 
             //Act
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(new RefreshPaymentDataCommand()));
+            Assert.ThrowsAsync<Exception>(() => _handler.Handle(new RefreshPaymentDataCommand(), CancellationToken.None));
 
             //Assert
             _eventPublisher.Events.Should().BeEmpty();

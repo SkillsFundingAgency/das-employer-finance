@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -118,7 +119,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             {
                 AccountId = _accountId,
                 EmployerLevyData = _employerLevyData
-            });
+            }, CancellationToken.None);
         }
 
         public void VerifyRefreshEmployerLevyDataCompletedEventIsPublished(bool expectedLevyImportedValue)

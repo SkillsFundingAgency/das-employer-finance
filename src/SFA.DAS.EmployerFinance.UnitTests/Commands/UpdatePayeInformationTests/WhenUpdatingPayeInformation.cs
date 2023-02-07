@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using HMRC.ESFA.Levy.Api.Types;
 using Moq;
@@ -46,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             _validator.Setup(x => x.Validate(It.IsAny<UpdatePayeInformationCommand>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new UpdatePayeInformationCommand()));
+            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new UpdatePayeInformationCommand(), CancellationToken.None));
 
             //Assert
             _validator.Verify(x => x.Validate(It.IsAny<UpdatePayeInformationCommand>()));
@@ -56,7 +57,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
         public async Task ThenTheSchemeIsRetrievedFromTheDatabase()
         {
             //Act
-            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef });
+            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _payeRepository.Verify(x => x.GetPayeSchemeByRef(ExpectedEmpRef), Times.Once);
@@ -69,7 +70,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             _payeRepository.Setup(x => x.GetPayeSchemeByRef(ExpectedEmpRef)).ReturnsAsync(new Paye {EmpRef = ExpectedEmpRef});
 
             //Act
-            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef });
+            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEmprefInformation(ExpectedEmpRef), Times.Once);
@@ -82,7 +83,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             _payeRepository.Setup(x => x.GetPayeSchemeByRef(ExpectedEmpRef)).ReturnsAsync(new Paye { EmpRef = ExpectedEmpRef, Name = "Test" });
 
             //Act
-            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef });
+            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEmprefInformation(It.IsAny<string>()), Times.Never);
@@ -92,7 +93,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
         public async Task ThenIfTheSchemeNameIsPopulatedTheRecordIsUpdated()
         {
             //Act
-            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef });
+            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _payeRepository.Verify(x => x.UpdatePayeSchemeName(ExpectedEmpRef, ExpectedEmpRefName), Times.Once);
@@ -110,7 +111,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
                 });
 
             //Act
-            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef });
+            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _payeRepository.Verify(x => x.UpdatePayeSchemeName(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -123,7 +124,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             _hmrcService.Setup(x => x.GetEmprefInformation(ExpectedEmpRef)).ReturnsAsync(() => null);
 
             //Act
-            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef });
+            await _handler.Handle(new UpdatePayeInformationCommand { PayeRef = ExpectedEmpRef }, CancellationToken.None);
 
             //Assert
             _payeRepository.Verify(x => x.UpdatePayeSchemeName(It.IsAny<string>(), It.IsAny<string>()), Times.Never);

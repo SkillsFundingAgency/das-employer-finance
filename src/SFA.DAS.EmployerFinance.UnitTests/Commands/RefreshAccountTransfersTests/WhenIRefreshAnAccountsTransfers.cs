@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTests
@@ -104,7 +105,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
         public async Task ThenTheTransfersShouldBeRetrieved()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _paymentService.Verify(x => x.GetAccountTransfers(_command.PeriodEnd, _command.ReceiverAccountId, It.IsAny<Guid>()), Times.Once);
@@ -114,7 +115,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
         public async Task ThenTheRetrievedTransfersShouldBeSaved()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _transferRepository.Verify(x => x.CreateAccountTransfers(It.Is<IEnumerable<AccountTransfer>>(t =>
@@ -128,7 +129,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
         public async Task ThenTheRetrievedTransfersShouldBeLinkedToPeriodEnd()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _transferRepository.Verify(x => x.CreateAccountTransfers(
@@ -150,7 +151,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
                 });
 
             //Act + Assert
-            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_command));
+            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_command, CancellationToken.None));
         }
 
         [Test]
@@ -169,7 +170,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
             //Act
             try
             {
-                await _handler.Handle(_command);
+                await _handler.Handle(_command, CancellationToken.None);
             }
             catch (InvalidRequestException)
             {
@@ -196,7 +197,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
             //Act
             try
             {
-                await _handler.Handle(_command);
+                await _handler.Handle(_command, CancellationToken.None);
             }
             catch (InvalidRequestException)
             {
@@ -215,7 +216,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
                 .Throws<WebException>();
 
             //Act + Assert
-            Assert.ThrowsAsync<WebException>(() => _handler.Handle(_command));
+            Assert.ThrowsAsync<WebException>(() => _handler.Handle(_command, CancellationToken.None));
 
             _transferRepository.Verify(x => x.CreateAccountTransfers(_transfers), Times.Never);
         }
@@ -233,7 +234,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
                 .ReturnsAsync(_transfers);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             //There should be only one transfer which has combine amount of above
@@ -262,7 +263,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
 
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _transferRepository.Verify(x => x.CreateAccountTransfers(It.Is<IEnumerable<AccountTransfer>>(

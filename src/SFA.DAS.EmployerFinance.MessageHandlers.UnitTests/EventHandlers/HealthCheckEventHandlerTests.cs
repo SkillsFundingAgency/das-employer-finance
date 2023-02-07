@@ -41,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
                 new HealthCheckBuilder().WithId(2).Build()
             };
 
-            Db.Setup(d => d.HealthChecks).Returns(new DbSetStub<HealthCheck>(HealthChecks));
+            Db.Setup(d => d.HealthChecks).Returns(() => new DbSetStub<HealthCheck>(HealthChecks));
 
             Handler = new HealthCheckEventHandler(new Lazy<EmployerFinanceDbContext>(() => Db.Object));
         }

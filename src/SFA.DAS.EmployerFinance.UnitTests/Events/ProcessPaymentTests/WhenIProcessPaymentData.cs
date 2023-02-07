@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Data;
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Events.ProcessPaymentTests
             const int accountId = 10;
 
             //Act
-            await _eventHandler.Handle(new ProcessPaymentEvent{AccountId = accountId });
+            await _eventHandler.Handle(new ProcessPaymentEvent{AccountId = accountId }, CancellationToken.None);
 
             //Assert
             _dasLevyRepository.Verify(x => x.ProcessPaymentData(accountId), Times.Once);
@@ -39,7 +40,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Events.ProcessPaymentTests
         public async Task ThenTheLoggerIsCalledWithInfoLevel()
         {
             //Act
-            await _eventHandler.Handle(new ProcessPaymentEvent());
+            await _eventHandler.Handle(new ProcessPaymentEvent(), CancellationToken.None);
 
             //Assert
             _logger.Verify(x => x.Info("Process Payments Called"));

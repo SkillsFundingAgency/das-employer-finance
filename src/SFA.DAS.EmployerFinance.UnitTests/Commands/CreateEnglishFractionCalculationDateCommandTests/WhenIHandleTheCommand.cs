@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -40,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
             _validator.Setup(x => x.Validate(It.IsAny<CreateEnglishFractionCalculationDateCommand>())).Returns(new ValidationResult {ValidationDictionary = new Dictionary<string, string> {{"", ""}}});
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async ()=> await _handler.Handle(new CreateEnglishFractionCalculationDateCommand()));
+            Assert.ThrowsAsync<InvalidRequestException>(async ()=> await _handler.Handle(new CreateEnglishFractionCalculationDateCommand(), CancellationToken.None));
 
             //Assert
             _validator.Verify(x=>x.Validate(It.IsAny<CreateEnglishFractionCalculationDateCommand>()),Times.Once);
@@ -50,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
         public async Task ThenTheRepositoryIsUpdatedWhenTheCommandIsValid()
         {
             //Act
-            await _handler.Handle(new CreateEnglishFractionCalculationDateCommand {DateCalculated = _expectedDate});
+            await _handler.Handle(new CreateEnglishFractionCalculationDateCommand {DateCalculated = _expectedDate}, CancellationToken.None);
 
             //Assert
             _englishFractionRepository.Verify(x=>x.SetLastUpdateDate(_expectedDate));
@@ -60,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
         public async Task ThenAnInfoLevelMessageIsLoggedWhenItHasBeenUpdated()
         {
             //Act
-            await _handler.Handle(new CreateEnglishFractionCalculationDateCommand { DateCalculated = _expectedDate });
+            await _handler.Handle(new CreateEnglishFractionCalculationDateCommand { DateCalculated = _expectedDate }, CancellationToken.None);
 
             //Assert
             _logger.Verify(x => x.Info($"English Fraction CalculationDate updated to {_expectedDate.ToString("dd MMM yyyy")}"), Times.Once());

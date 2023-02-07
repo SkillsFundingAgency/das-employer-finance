@@ -5,7 +5,7 @@ using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation
 {
-    public class SendTransferConnectionInvitationCommand : IAuthorizationContextModel, IRequest<Unit>
+    public class SendTransferConnectionInvitationCommand : IAuthorizationContextModel, IRequest<int>
     {
         [Required]
         public long AccountId { get; set; }

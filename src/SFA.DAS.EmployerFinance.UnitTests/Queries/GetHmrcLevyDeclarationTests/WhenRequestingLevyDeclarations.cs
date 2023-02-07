@@ -33,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
             _hmrcService.Setup(x => x.GetLevyDeclarations(ExpectedEmpRef, It.IsAny<DateTime?>())).ReturnsAsync(DeclarationsObjectMother.Create(ExpectedEmpRef));
 
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(x => x.Send(It.IsAny<GetLastLevyDeclarationQuery>())).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration() });
+            _mediator.Setup(x => x.Send(It.IsAny<GetLastLevyDeclarationQuery>(), CancellationToken.None)).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration() });
 
             _getHMRCLevyDeclarationQueryHandler = new GetHMRCLevyDeclarationQueryHandler(_validator.Object, _hmrcService.Object, _mediator.Object);
         }
@@ -86,7 +86,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
         {
             //Arrange
             var expectedDate = new DateTime(2017, 01, 20);
-            _mediator.Setup(x => x.SendAsync(It.Is<GetLastLevyDeclarationQuery>(c => c.EmpRef.Equals(ExpectedEmpRef)))).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration { SubmissionDate = expectedDate } });
+            _mediator.Setup(x => x.Send(It.Is<GetLastLevyDeclarationQuery>(c => c.EmpRef.Equals(ExpectedEmpRef)), CancellationToken.None)).ReturnsAsync(new GetLastLevyDeclarationResponse { Transaction = new DasDeclaration { SubmissionDate = expectedDate } });
 
             //Act
             await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef }, CancellationToken.None);

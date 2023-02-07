@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -192,7 +193,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
             {
                 AccountId = _accountId,
                 PeriodEnd = _periodEnd
-            });
+            }, CancellationToken.None);
         }
 
         public void VerifyRefreshPaymentDataCompletedEventIsPublished(bool expectedPaymentProcessedValue)

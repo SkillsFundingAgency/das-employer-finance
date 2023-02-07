@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -93,7 +94,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         {
             var now = DateTime.UtcNow;
 
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             Assert.That(_transferConnectionInvitation.Status, Is.EqualTo(TransferConnectionInvitationStatus.Rejected));
             Assert.That(_transferConnectionInvitation.Changes.Count, Is.EqualTo(1));
@@ -113,7 +114,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         [Test]
         public async Task ThenShouldPublishRejectedTransferConnectionInvitationEvent()
         {
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             var messages = _unitOfWorkContext.GetEvents().ToList();
             var message = messages.OfType<RejectedTransferConnectionRequestEvent>().FirstOrDefault();
@@ -138,7 +139,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         {
             _command.AccountId = _senderAccount.Id;
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command), "Requires rejector account is the receiver account.");
+            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command, CancellationToken.None), "Requires rejector account is the receiver account.");
         }
 
         [Test]
@@ -153,7 +154,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
 
             _transferConnectionInvitationRepository.Setup(r => r.Get(_transferConnectionInvitation.Id)).ReturnsAsync(_transferConnectionInvitation);
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command), "Requires transfer connection invitation is pending.");
+            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command, CancellationToken.None), "Requires transfer connection invitation is pending.");
         }
     }
 }

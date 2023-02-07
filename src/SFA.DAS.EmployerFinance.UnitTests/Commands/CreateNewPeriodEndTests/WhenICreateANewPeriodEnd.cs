@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -30,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
         public async Task ThenTheCommandIsValidated()
         {
             //Act
-            await _handler.Handle(new CreateNewPeriodEndCommand());
+            await _handler.Handle(new CreateNewPeriodEndCommand(), CancellationToken.None);
 
             //Assert
             _validator.Verify(x=>x.Validate(It.IsAny<CreateNewPeriodEndCommand>()),Times.Once);
@@ -44,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
             _validator.Setup(x => x.Validate(It.IsAny<CreateNewPeriodEndCommand>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { {"",""} } });
 
             //Assert
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new CreateNewPeriodEndCommand()));
+            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new CreateNewPeriodEndCommand(), CancellationToken.None));
         }
 
         [Test]
@@ -54,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
             var command = new CreateNewPeriodEndCommand { NewPeriodEnd = new PeriodEnd { CalendarPeriodMonth = 1, CalendarPeriodYear = 1 } };
             
             //Act
-            await _handler.Handle(command);
+            await _handler.Handle(command, CancellationToken.None);
 
             //Assert
             _repository.Verify(x=>x.CreateNewPeriodEnd(It.IsAny<PeriodEnd>()));

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.RenameAccount;
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RenameAccountTests
             var accountId = 123443;
             var name = "Account Name";
 
-            await _handler.Handle(new RenameAccountCommand(accountId, name));
+            await _handler.Handle(new RenameAccountCommand(accountId, name), CancellationToken.None);
 
             _accountRepository.Verify(x => x.RenameAccount(accountId, name));
         }

@@ -7,7 +7,7 @@ using SFA.DAS.EmployerFinance.MarkerInterfaces;
 
 namespace SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation
 {
-    public class SendTransferConnectionInvitationCommandHandler : IRequestHandler<SendTransferConnectionInvitationCommand, Unit>
+    public class SendTransferConnectionInvitationCommandHandler : IRequestHandler<SendTransferConnectionInvitationCommand, int>
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -32,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation
             _publicHashingService = publicHashingService;
         }
 
-        public async Task<Unit> Handle(SendTransferConnectionInvitationCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(SendTransferConnectionInvitationCommand request, CancellationToken cancellationToken)
         {
             var receiverAccountId = _publicHashingService.DecodeValue(request.ReceiverAccountPublicHashedId);
             var senderAccount = await _employerAccountRepository.Get(request.AccountId);
@@ -43,9 +43,7 @@ namespace SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation
 
             await _transferConnectionInvitationRepository.Add(transferConnectionInvitation);
 
-            //return transferConnectionInvitation.Id;
-
-            return Unit.Value;
+            return transferConnectionInvitation.Id;
         }
     }
 }

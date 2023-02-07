@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Data;
@@ -53,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
                 new HealthCheckBuilder().WithId(2).Build()
             };
 
-            Db.Setup(d => d.HealthChecks).Returns(new DbSetStub<HealthCheck>(HealthChecks));
+            Db.Setup(d => d.HealthChecks).Returns((() => new DbSetStub<HealthCheck>(HealthChecks)));
 
             Handler = new GetHealthCheckQueryHandler(new Lazy<EmployerFinanceDbContext>(() => Db.Object), ConfigurationProvider);
         }

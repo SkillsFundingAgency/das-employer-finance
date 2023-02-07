@@ -184,7 +184,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLatestPendingReceivedTran
                 ApprovedReceivedTransferConnectionInvitation
             };
 
-            Db.Setup(d => d.TransferConnectionInvitations).Returns(new DbSetStub<TransferConnectionInvitation>(data));
+            Db.Setup(d => d.TransferConnectionInvitations).Returns(() => new DbSetStub<TransferConnectionInvitation>(data));
         }
 
         public async Task GetLatestPendingByReceiver()

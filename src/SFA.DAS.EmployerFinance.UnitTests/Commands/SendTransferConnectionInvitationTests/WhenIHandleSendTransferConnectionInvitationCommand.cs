@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -105,7 +106,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public async Task Handle()
         {
-            Result = await Handler.Handle(Command);
+            Result = await Handler.Handle(Command,CancellationToken.None);
         }
 
         public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetReceiverAccount()

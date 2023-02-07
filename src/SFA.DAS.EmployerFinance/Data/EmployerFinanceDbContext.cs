@@ -71,6 +71,10 @@ namespace SFA.DAS.EmployerFinance.Data
                 )).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         }
+        public virtual Task<List<T>> SqlQueryAsync<T>(string query, params object[] parameters)
+        {
+            return Database.SqlQueryRaw<T>(query, parameters).ToListAsync();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -287,7 +288,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
             var handler = CreateHandler();
 
-            return handler.Handle(command);
+            return handler.Handle(command, CancellationToken.None);
         }
 
         private DeleteTransferConnectionInvitationCommandHandler CreateHandler()

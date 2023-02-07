@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.LegalEntitySignAgreementTes
             var accountId = 10862;
             var legalEntityId = 44893;
 
-            await _handler.Handle(new LegalEntitySignAgreementCommand(signedAgreementId, signedAgreementVersion, accountId, legalEntityId));
+            await _handler.Handle(new LegalEntitySignAgreementCommand(signedAgreementId, signedAgreementVersion, accountId, legalEntityId), CancellationToken.None);
 
             _accountLegalEntityRepository.Verify(x => x.SignAgreement(signedAgreementId, signedAgreementVersion, accountId, legalEntityId));
         }

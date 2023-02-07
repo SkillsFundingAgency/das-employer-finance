@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -33,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
     {
         public Mock<EmployerFinanceDbContext> Db { get; set; }
         public RunHealthCheckCommand RunHealthCheckCommand { get; set; }
-        public IAsyncRequestHandler<RunHealthCheckCommand, Unit> Handler { get; set; }
+        public IRequestHandler<RunHealthCheckCommand, Unit> Handler { get; set; }
         public Mock<IEmployerFinanceApiClient> EmployerFinanceApiClient { get; set; }
         public UnitOfWorkContext UnitOfWorkContext { get; set; }
 
@@ -51,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public Task Handle()
         {
-            return Handler.Handle(RunHealthCheckCommand);
+            return Handler.Handle(RunHealthCheckCommand, CancellationToken.None);
         }
     }
 }

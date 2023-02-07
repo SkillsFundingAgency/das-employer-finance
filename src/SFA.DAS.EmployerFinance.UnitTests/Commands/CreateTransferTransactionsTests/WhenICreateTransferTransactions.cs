@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
@@ -69,7 +70,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
         public async Task ThenTransferSenderTransactionsShouldBeSaved()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             var transfer = _accountTransfers.First();
@@ -95,7 +96,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
         public async Task ThenTransferReceiverTransactionsShouldBeSaved()
         {
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             var transfer = _accountTransfers.First();
@@ -131,7 +132,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
                 });
 
             //Act + Assert
-            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_command));
+            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_command, CancellationToken.None));
         }
 
         [Test]
@@ -151,7 +152,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             var expectedTotalAmount = -_accountTransfers.Sum(t => t.Amount);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
 
@@ -180,7 +181,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             var expectedTotalAmount = _accountTransfers.Sum(t => t.Amount);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
 
@@ -216,7 +217,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
                 .ReturnsAsync(_accountTransfers);
 
             //Act
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             //Assert
             _transactionRepository.Verify(x => x.CreateTransferTransactions(It.Is<IEnumerable<TransferTransactionLine>>(transactions =>
@@ -234,7 +235,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
                                   .Throws(expectedException);
 
             //Act + Assert
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command));
+            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command, CancellationToken.None));
             _logger.Verify(x => x.Error(expectedException, It.IsAny<string>()), Times.Once);
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HMRC.ESFA.Levy.Api.Types;
 using Moq;
@@ -112,7 +113,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { UpdateRequired = true }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _englishFractionRepository.Verify(x => x.GetAllEmployerFractions(_employerReference), Times.Once);
@@ -152,7 +153,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { UpdateRequired = true }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _englishFractionRepository.Verify(x => x.CreateEmployerFraction(
@@ -201,7 +202,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { UpdateRequired = true }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _englishFractionRepository.Verify(x => x.CreateEmployerFraction(It.IsAny<DasEnglishFraction>(), It.IsAny<string>()), Times.Never);
@@ -218,7 +219,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { DateCalculated = new DateTime(2016, 01, 01), UpdateRequired = false }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEnglishFractions(_employerReference), Times.Never);
@@ -240,7 +241,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { DateCalculated = new DateTime(2016, 01, 01), UpdateRequired = true }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEnglishFractions(_employerReference, It.IsAny<DateTime?>()), Times.Once);
@@ -273,7 +274,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { DateCalculated = new DateTime(2016, 01, 02), UpdateRequired = false }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEnglishFractions(_employerReference, It.IsAny<DateTime?>()), Times.Once);
@@ -295,7 +296,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { DateCalculated = new DateTime(2016, 01, 01), UpdateRequired = false }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEnglishFractions(_employerReference, It.IsAny<DateTime?>()), Times.Once);
@@ -319,7 +320,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions
             {
                 EmployerReference = _employerReference,
                 EnglishFractionUpdateResponse = new GetEnglishFractionUpdateRequiredResponse { DateCalculated = new DateTime(2016, 01, 01), UpdateRequired = true }
-            });
+            }, CancellationToken.None);
 
             //Assert
             _hmrcService.Verify(x => x.GetEnglishFractions(_employerReference, DateTime.Today.AddDays(-11)), Times.Once);
