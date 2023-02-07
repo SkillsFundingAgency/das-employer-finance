@@ -92,15 +92,12 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddEmployerFinanceApi();
 
-            services.AddControllersWithViews(ConfigureMvcOptions)
-                // Newtonsoft.Json is added for compatibility reasons
-                // The recommended approach is to use System.Text.Json for serialization
-                // Visit the following link for more guidance about moving away from Newtonsoft.Json to System.Text.Json
-                // https://docs.microsoft.com/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to
-                .AddNewtonsoftJson(options =>
-                {
-                    options.UseMemberCasing();
-                });
+#if DEBUG
+            services.AddControllersWithViews(o =>
+            {
+                o.AddAuthorization();
+            }).AddRazorRuntimeCompilation();
+#endif
 
         }
 

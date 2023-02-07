@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MediatR;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.AppStart;
 using SFA.DAS.Api.Common.Configuration;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.Authorization.DependencyResolution.Microsoft;
-using SFA.DAS.Authorization.EmployerFeatures.DependencyResolution.Microsoft;
 using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
@@ -25,24 +24,9 @@ using SFA.DAS.EmployerFinance.Api.ErrorHandler;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Authorisation;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-//using SFA.DAS.Api.Common.Infrastructure;
-//using SFA.DAS.Api.Common.Configuration;
-//using SFA.DAS.Authorization.DependencyResolution.Microsoft;
-//using SFA.DAS.Configuration.AzureTableStorage;
-//using SFA.DAS.EmployerFinance.Api.Authentication;
-//using SFA.DAS.EmployerFinance.Api.Authorization;
-//using SFA.DAS.EmployerFinance.Api.ErrorHandler;
-//using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
-//using SFA.DAS.EmployerFinance.Configuration;
-//using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-//using SFA.DAS.Api.Common.AppStart;
-//using SFA.DAS.EmployerFinance.Data;
-//using Microsoft.AspNetCore.Mvc.Infrastructure;
-//using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
-//using SFA.DAS.EmployerFinance.ServiceRegistration;
-//using SFA.DAS.EmployerFinance.Authorisation;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -91,7 +75,7 @@ namespace SFA.DAS.EmployerFinance.Api
                 .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
                 .AddMvc(opt =>
                 {
-                    if (!_configuration.IsDevOrLocal())
+                    if (!_configuration.IsDevOrLocal() && !_configuration.IsTest())
                     {
                         opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
                         opt.AddAuthorization();
@@ -133,15 +117,14 @@ namespace SFA.DAS.EmployerFinance.Api
             });
 
             services.AddHashingServices(employerFinanceConfiguration);
-            services.AddAutoMapper(typeof(ActivityMappings), typeof(Startup));
-            //services.AddMediatorValidators();
+            services.AddMediatorValidators();
+            //MAC-192-need to implement
             services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
-            services.AddNotifications(_configuration);
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
 
-            services.AddApplicationInsightsTelemetry();
+            //services.AddApplicationInsightsTelemetry();
         }
 
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
@@ -178,7 +161,8 @@ namespace SFA.DAS.EmployerFinance.Api
                 {
                     opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Employer Accounts API");
                     opt.RoutePrefix = "swagger";
-                });
+                }
+                );
         }
     }
 }
