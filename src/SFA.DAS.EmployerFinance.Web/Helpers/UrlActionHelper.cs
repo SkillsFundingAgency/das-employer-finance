@@ -30,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             return NonAccountsAction(baseUrl, path);
         }
 
-        public string LevyTransfersMatchingAction(string path)
+        public string LevyTransfersMatchingAccountAction(string path)
         {
             var baseUrl = _configuration.LevyTransferMatchingBaseUrl;
 
