@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,21 +13,16 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using SFA.DAS.EAS.Account.Api.Client;
-using Microsoft.AspNetCore.Http;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
     public class Startup
     {
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
         private EmployerFinanceConfiguration _employerFinanceConfiguration;
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+        public Startup(IConfiguration configuration)
         {
-            _environment= environment;
-
             var config = new ConfigurationBuilder()
                 .AddConfiguration(configuration)
                 .SetBasePath(Directory.GetCurrentDirectory());
@@ -120,10 +115,6 @@ namespace SFA.DAS.EmployerFinance.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private void ConfigureMvcOptions(MvcOptions mvcOptions)
-        { 
         }
     }
 }
