@@ -1,23 +1,4 @@
-﻿// This Startup file is based on ASP.NET Core new project templates and is included
-// as a starting point for DI registration and HTTP request processing pipeline configuration.
-// This file will need updated according to the specific scenario of the application being upgraded.
-// For more information on ASP.NET Core startup files, see https://docs.microsoft.com/aspnet/core/fundamentals/startup
-
-//using System.IO;
-//using Microsoft.AspNetCore.Builder;
-//using Microsoft.AspNetCore.Hosting;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.DependencyInjection;
-//using Microsoft.Extensions.Hosting;
-//using Microsoft.Extensions.Logging;
-//using SFA.DAS.Configuration.AzureTableStorage;
-//using SFA.DAS.EmployerFinance.Api.ErrorHandler;
-//using SFA.DAS.EmployerFinance.Configuration;
-//using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using AutoMapper;
 using MediatR;
@@ -31,22 +12,37 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
-using SFA.DAS.Api.Common.Infrastructure;
+using SFA.DAS.Api.Common.AppStart;
 using SFA.DAS.Api.Common.Configuration;
+using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.Authorization.DependencyResolution.Microsoft;
+using SFA.DAS.Authorization.EmployerFeatures.DependencyResolution.Microsoft;
+using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.ErrorHandler;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
-using SFA.DAS.EmployerFinance.Configuration;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using SFA.DAS.Api.Common.AppStart;
-using SFA.DAS.EmployerFinance.Data;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
-using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Authorisation;
+using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.ServiceRegistration;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+//using SFA.DAS.Api.Common.Infrastructure;
+//using SFA.DAS.Api.Common.Configuration;
+//using SFA.DAS.Authorization.DependencyResolution.Microsoft;
+//using SFA.DAS.Configuration.AzureTableStorage;
+//using SFA.DAS.EmployerFinance.Api.Authentication;
+//using SFA.DAS.EmployerFinance.Api.Authorization;
+//using SFA.DAS.EmployerFinance.Api.ErrorHandler;
+//using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
+//using SFA.DAS.EmployerFinance.Configuration;
+//using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+//using SFA.DAS.Api.Common.AppStart;
+//using SFA.DAS.EmployerFinance.Data;
+//using Microsoft.AspNetCore.Mvc.Infrastructure;
+//using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+//using SFA.DAS.EmployerFinance.ServiceRegistration;
+//using SFA.DAS.EmployerFinance.Authorisation;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -137,7 +133,7 @@ namespace SFA.DAS.EmployerFinance.Api
             });
 
             services.AddHashingServices(employerFinanceConfiguration);
-            services.AddAutoMapper(typeof(Startup).Assembly);
+            services.AddAutoMapper(typeof(ActivityMappings), typeof(Startup));
             //services.AddMediatorValidators();
             services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
             services.AddNotifications(_configuration);

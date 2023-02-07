@@ -1,8 +1,8 @@
 using System;
 using System.Configuration;
-using System.Data.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
@@ -21,33 +21,40 @@ namespace SFA.DAS.EmployerFinance.Api.DependencyResolution
             {
                 s.AssembliesFromApplicationBaseDirectory(a => a.GetName().Name.StartsWith("SFA.DAS"));
                 s.RegisterConcreteTypesAgainstTheFirstInterface();
-            });
-
-            var environmentName = ConfigurationManager.AppSettings["EnvironmentName"];
-
-            For<DbConnection>().Use($"Build DbConnection", c =>
-            {
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-
-                return environmentName.Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase)
-                    ? new SqlConnection(GetEmployerFinanceConnectionString(c))
-                    : new SqlConnection
-                    {
-                        ConnectionString = GetEmployerFinanceConnectionString(c),
-                        AccessToken = azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result
-                    };
-            });
+            });           
 
             For<EmployerFinanceDbContext>().Use(c => GetFinanceDbContext(c));
         }
 
         private EmployerFinanceDbContext GetFinanceDbContext(IContext context)
         {
+            var environmentName = ConfigurationManager.AppSettings["EnvironmentName"];
             var hashingService = context.GetInstance<IHashingService>();
             var publicHashingService = context.GetInstance<IPublicHashingService>();
 
-            var db = new EmployerFinanceDbContext(context.GetInstance<DbConnection>(), hashingService, publicHashingService);
-            return db;
+            var connectionString = GetEmployerFinanceConnectionString(context);
+            var connectionStringBuilder= new SqlConnectionStringBuilder(connectionString);
+            bool useManagedIdentity = !connectionStringBuilder.IntegratedSecurity && string.IsNullOrEmpty(connectionStringBuilder.UserID);
+
+            var optionsBuilder = new DbContextOptionsBuilder<EmployerFinanceDbContext>();
+            if (useManagedIdentity)
+            {
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                var accessToken = azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result;
+                var sqlConnection = new SqlConnection
+                {
+                    ConnectionString = connectionString,
+                    AccessToken = accessToken,
+                };
+                optionsBuilder.UseSqlServer(sqlConnection);
+            }
+
+            else
+            {
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+
+           return new EmployerFinanceDbContext(optionsBuilder.Options);
         }
 
         private string GetEmployerFinanceConnectionString(IContext context)
