@@ -1,8 +1,13 @@
 @using SFA.DAS.EmployerFinance.Web
 @using Microsoft.ApplicationInsights.Extensibility
+@using Microsoft.AspNetCore.Http
 @using SFA.DAS.Authorization
 @using SFA.DAS.Authorization.Mvc
 @using SFA.DAS.EmployerFinance.Web.Helpers
+@using SFA.DAS.EmployerFinance.Web.Extensions
+
+@inject IHtmlHelperExtensions HtmlHelper
+@inject IHttpContextAccessor HtmlContextAccessor
 
 @{
     ViewBag.UseCDN = true;
@@ -39,29 +44,29 @@
         <meta name="description" content="@ViewBag.MetaDesc">
     }
 
-    <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="@Html.CdnLink("assets/images","favicon.ico")" type="image/x-icon" />
-    <link rel="mask-icon" href="@Html.CdnLink("assets/images","govuk-mask-icon.svg")" color="#0b0c0c">
-    <link rel="apple-touch-icon" sizes="180x180" href="@Html.CdnLink("assets/images","govuk-apple-touch-icon-180x180.png")">
-    <link rel="apple-touch-icon" sizes="167x167" href="@Html.CdnLink("assets/images","govuk-apple-touch-icon-167x167.png")">
-    <link rel="apple-touch-icon" sizes="152x152" href="@Html.CdnLink("assets/images","govuk-apple-touch-icon-152x152.png")">
-    <link rel="apple-touch-icon" href="@Html.CdnLink("assets/images","govuk-apple-touch-icon.png")">
+    <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="@HtmlHelper.CdnLink("assets/images","favicon.ico")" type="image/x-icon" />
+    <link rel="mask-icon" href="@HtmlHelper.CdnLink("assets/images","govuk-mask-icon.svg")" color="#0b0c0c">
+    <link rel="apple-touch-icon" sizes="180x180" href="@HtmlHelper.CdnLink("assets/images","govuk-apple-touch-icon-180x180.png")">
+    <link rel="apple-touch-icon" sizes="167x167" href="@HtmlHelper.CdnLink("assets/images","govuk-apple-touch-icon-167x167.png")">
+    <link rel="apple-touch-icon" sizes="152x152" href="@HtmlHelper.CdnLink("assets/images","govuk-apple-touch-icon-152x152.png")">
+    <link rel="apple-touch-icon" href="@HtmlHelper.CdnLink("assets/images","govuk-apple-touch-icon.png")">
     <link href="~/dist/css/select2.min.css" media="all" rel="stylesheet" />
     <!--[if !IE 8]><!-->
-    <link href="@Html.CdnLink("css", "main.css")" rel="stylesheet" />
+    <link href="@HtmlHelper.CdnLink("css", "main.css")" rel="stylesheet" />
     <!--<![endif]-->
     <!--[if IE 8]
-      <link href="@Html.CdnLink("css", "all-ie8.css")" rel="stylesheet" />
+      <link href="@HtmlHelper.CdnLink("css", "all-ie8.css")" rel="stylesheet" />
     [endif]-->
     <!--[if lt IE 9]>
       <script src="/html5-shiv/html5shiv.js"></script>
     <![endif]-->
 
-    <meta property="og:image" content="@Html.CdnLink("assets/images","govuk-opengraph-image.png")">
+    <meta property="og:image" content="@HtmlHelper.CdnLink("assets/images","govuk-opengraph-image.png")">
 
-    @Html.Partial("GoogleAnalyticsInfo")
+    @Html.PartialAsync("GoogleAnalyticsInfo")
 
     <!-- This is from individual pages -->
-    @RenderSection("gaDataLayer", false)
+    @await RenderSectionAsync("gaDataLayer", false)
 
     <script type="text/javascript">
         var appInsights = window.appInsights ||
@@ -97,8 +102,8 @@
     </script>
 
     <!--[if lt IE 9]><script src="/dist/javascripts/respond.min.js"></script><![endif]-->
-    @Html.Partial("_ZenDeskWidget")
-    @Html.Partial("_ZenDeskApiPush")
+    @Html.PartialAsync("_ZenDeskWidget")
+    @Html.PartialAsync("_ZenDeskApiPush")
     <style>
         #agreement-list .call-to-action,
         #agreement-header.call-to-action {
@@ -141,7 +146,7 @@
     <script>
         document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
     </script>
-    @Html.Partial("_CookieBanner", Html.GetCookieBannerViewModel())
+    @Html.PartialAsync("_CookieBanner", HtmlHelper.GetCookieBannerViewModel(Html))
     <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
     <!--[if lt IE 8]>
@@ -150,21 +155,21 @@
         </div>
     <![endif]-->
 
-    @Html.Partial("_Header", Html.GetHeaderViewModel())
+    @Html.PartialAsync("_Header", HtmlHelper.GetHeaderViewModel(Html))
     <div class="govuk-width-container">
         @RenderSection("breadcrumb", required: false)
         <main class="govuk-main-wrapper" id="main-content" role="main">
-            @if (HttpContextHelper.Current.User.Identity.IsAuthenticated)
+            @if (HtmlContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
-                @Html.GetContentByType("banner")
+                @HtmlHelper.GetContentByType("banner")
             }
     
-            @Html.Partial(@"_SuccessMessage_CDN", Model as OrchestratorResponse)
+            @Html.PartialAsync(@"_SuccessMessage_CDN", Model as OrchestratorResponse)
             @RenderBody()
         </main>
     </div>
 
-    @Html.Partial("_Footer", Html.GetFooterViewModel())
+    @Html.PartialAsync("_Footer", HtmlHelper.GetFooterViewModel(Html))
 
     @if (!string.IsNullOrWhiteSpace(SystemDetailsViewModel.EnvironmentName))
     {
@@ -173,16 +178,16 @@
         </div>
     }
 
-    <script src="@Html.CdnLink("libs/jquery","jquery.min.js")"></script>
-    <script src="@Html.CdnLink("libs/govuk-frontend","all.js")"></script>
+    <script src="@HtmlHelper.CdnLink("libs/jquery","jquery.min.js")"></script>
+    <script src="@HtmlHelper.CdnLink("libs/govuk-frontend","all.js")"></script>
 
-    <script src="@Html.CdnLink("js","das-all.min.js")"></script>
-    <script src="@Html.CdnLink("js","app.min.js")"></script>
+    <script src="@HtmlHelper.CdnLink("js","das-all.min.js")"></script>
+    <script src="@HtmlHelper.CdnLink("js","app.min.js")"></script>
 
     <script>
         window.GOVUKFrontend.initAll();
         window.DASFrontend.initAll();
     </script>
-    @RenderSection("pageSpecificJS", required: false)
+    @await RenderSectionAsync("pageSpecificJS", required: false)
 </body>
 </html>

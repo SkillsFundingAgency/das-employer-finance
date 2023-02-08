@@ -136,6 +136,11 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return isAuthorized;
         }
 
+        public bool IsValid(IHtmlHelper html)
+        {
+           return true; //MAP-192 - Need implementing default to true for now
+        }
+
         public HtmlString SetZenDeskLabels(params string[] zenDeskLabels)
         {
             var keywords = string.Join(",", zenDeskLabels
