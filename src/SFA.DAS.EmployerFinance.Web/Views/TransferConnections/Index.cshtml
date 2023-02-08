@@ -1,5 +1,9 @@
 ﻿@using SFA.DAS.EmployerFinance.Web.Extensions
 @using SFA.DAS.Common.Domain.Types;
+@using SFA.DAS.EmployerFinance.Interfaces
+
+@inject IUrlActionHelper UrlHelpers;
+@inject IHtmlHelperExtensions HtmlHelper;
 
 @{
     ViewBag.Title = "Transfers";
@@ -14,7 +18,7 @@
 
 @if (ViewBag.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
 {
-    @Html.Action("TransferAllowance")
+    @Url.Action("TransferAllowance")
 }
 
 <div class="govuk-grid-row">
@@ -22,12 +26,12 @@
 
         @if (ViewBag.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
         {
-            <p><a href="@Url.EmployerProjectionsAction("forecasting/estimations/start-transfer")" class="govuk-link govuk-link--no-visited-state">Estimate</a> the number of apprentices you can fund with your transfer allowance.</p>
+            <p><a href="@UrlHelpers.EmployerProjectionsAction("forecasting/estimations/start-transfer")" class="govuk-link govuk-link--no-visited-state">Estimate</a> the number of apprentices you can fund with your transfer allowance.</p>
         }
 
-        @Html.Action("TransferConnectionInvitationAuthorization")
-        @Html.Action("TransferConnectionInvitations")
-        @Html.Action("TransferRequests")
+        @Url.Action("TransferConnectionInvitationAuthorization")
+        @Url.Action("TransferConnectionInvitations")
+        @Url.Action("TransferRequests")
         
     </div>
 </div>
@@ -36,7 +40,7 @@
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
             <li class="govuk-breadcrumbs__list-item">
-                <a class="govuk-breadcrumbs__link" href="@Url.EmployerAccountsAction("teams")">Home</a>
+                <a class="govuk-breadcrumbs__link" href="@UrlHelpers.EmployerAccountsAction("teams")">Home</a>
             </li>
             <li class="govuk-breadcrumbs__list-item">
                 <a class="govuk-breadcrumbs__link" href="@Url.Action("Index", "EmployerAccountTransactions")">Finance</a>

@@ -1,5 +1,12 @@
 @using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
 @using SFA.DAS.Validation.Mvc
+@using SFA.DAS.EmployerFinance.Web.Helpers
+@using SFA.DAS.EmployerFinance.Interfaces
+@using SFA.DAS.EmployerFinance.Web.Extensions
+
+@inject IUrlActionHelper UrlHelpers;
+@inject IHtmlHelperExtensions HtmlHelper;
+
 @model TransactionDownloadViewModel
 
 @{
@@ -10,7 +17,7 @@
     ViewBag.ZenDeskLabel = "eas-download-transactions";
 }
 
-@Html.Partial("_ValidationSummary", ViewData.ModelState)
+@Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
 <div class="grid-row">
     <div class="column-two-thirds">
         <h1 class="heading-xlarge">Download transactions</h1>
@@ -70,7 +77,7 @@
 @section breadcrumb {
     <div class="breadcrumbs">
         <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction($"teams")">Home</a></li>
+            <li><a href="@UrlHelpers.EmployerAccountsAction($"teams")">Home</a></li>
             <li><a href="@Url.Action("Index", "EmployerAccountTransactions")">Finance</a></li>
             <li>@ViewBag.Title</li>
         </ol>
