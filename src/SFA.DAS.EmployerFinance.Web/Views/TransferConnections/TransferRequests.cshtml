@@ -1,12 +1,16 @@
 ﻿@using SFA.DAS.EmployerFinance.Web.Extensions
 @using SFA.DAS.EmployerFinance.Web.Helpers
 @using System.Globalization
+@using SFA.DAS.EmployerFinance.Interfaces
+
+@inject HtmlHelperExtensions HtmlHelper
+@inject IUrlActionHelper UrlHelper
 
 @model SFA.DAS.EmployerFinance.Web.ViewModels.TransferRequestsViewModel
 
 @{
     var culture = new CultureInfo("en-GB");
-    var transferConnectionRequestsAuthorized = Html.IsAuthorized("EmployerFeature.TransferConnectionRequests");
+    var transferConnectionRequestsAuthorized = HtmlHelper.IsAuthorized("EmployerFeature.TransferConnectionRequests");
 }
 
 <h3 class="govuk-heading-m">
@@ -35,7 +39,7 @@
                     <td class="govuk-table__cell govuk-table__cell--numeric">
                         @if (transferConnectionRequestsAuthorized)
                         {
-                            <a href="@Url.EmployerCommitmentsV2Action($"sender/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
+                            <a href="@UrlHelper.EmployerCommitmentsV2Action($"sender/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
                                 Details<span class="govuk-visually-hidden"> about the @transferRequest.ReceiverAccount.Name request</span>
                             </a>
                         }
@@ -74,7 +78,7 @@
                         <td class="govuk-table__cell govuk-table__cell--numeric">
                             @if (transferConnectionRequestsAuthorized)
                             {
-                                <a href="@Url.EmployerCommitmentsV2Action($"receiver/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
+                                <a href="@UrlHelper.EmployerCommitmentsV2Action($"receiver/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
                                     Details<span class="govuk-visually-hidden"> about the @transferRequest.SenderAccount.Name request</span>
                                 </a>
                             }

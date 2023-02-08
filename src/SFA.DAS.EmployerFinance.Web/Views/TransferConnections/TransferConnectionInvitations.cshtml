@@ -2,10 +2,12 @@
 @using SFA.DAS.EmployerFinance.Web.Extensions
 @using SFA.DAS.EmployerFinance.Web.Helpers
 
+@inject HtmlHelperExtensions HtmlHelper
+
 @model SFA.DAS.EmployerFinance.Web.ViewModels.TransferConnectionInvitationsViewModel
 
 @{
-    var transferConnectionRequestsAuthorized = Html.IsAuthorized("EmployerFeature.TransferConnectionRequests");
+    var transferConnectionRequestsAuthorized = HtmlHelper.IsAuthorized("EmployerFeature.TransferConnectionRequests");
 }
 
 <h3 class="govuk-heading-m">

@@ -136,7 +136,7 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return isAuthorized;
         }
 
-        public bool IsValid(IHtmlHelper html)
+        public bool IsValid(params string[] options)
         {
            return true; //MAP-192 - Need implementing default to true for now
         }

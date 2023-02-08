@@ -8,7 +8,7 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connections/requests/start";
 }
 
-@Html.Partial("_ValidationSummary", ViewData.ModelState)
+@Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
 <div class="grid-row">
     <div class="column-two-thirds">
         <h1 class="heading-xlarge">Which employer are you connecting with?</h1>
