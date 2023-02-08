@@ -1,8 +1,9 @@
-@using SFA.DAS.EmployerFinance.Web
 @using Microsoft.ApplicationInsights.Extensibility
-@using SFA.DAS.Authorization
-@using SFA.DAS.Authorization.Mvc
-@using SFA.DAS.EmployerFinance.Web.Helpers
+@using SFA.DAS.EmployerFinance.Web.Extensions
+@using Microsoft.AspNetCore.Http
+
+@inject IHtmlHelperExtensions HtmlHelper;
+@inject IHttpContextAccessor HtmlContextAccessor
 
 <!DOCTYPE html>
 <!--[if lt IE 9]><html class="lte-ie8" lang="en"><![endif]-->
@@ -10,6 +11,15 @@
 <html lang="en">
 <!--<![endif]-->
 <head>
+    @if (ViewBag.UserId != null)
+    {
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ 'userID': '@ViewBag.UserId' });
+        </script>
+    }
+
+    @await Html.PartialAsync("_GoogleTagManager")
     <meta charset="utf-8" />
     <title>@ViewBag.Title - Manage apprentices</title>
     @if (!string.IsNullOrWhiteSpace(ViewBag.MetaDesc))
@@ -38,18 +48,19 @@
     <meta name="msapplication-config" content="none" />
     <link href="~/dist/css/select2.min.css" media="all" rel="stylesheet" />
 
-    <!--[if IE 6]><link href="@Styles.Url("~/bundles/screenie6")" media="screen" rel="stylesheet" /><![endif]-->
-    <!--[if IE 7]><link href="@Styles.Url("~/bundles/screenie7")" media="screen" rel="stylesheet" /><![endif]-->
-    <!--[if IE 8]><link href="@Styles.Url("~/bundles/screenie8")" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if IE 6]><link href="~/dist/css/screen-ie6.css" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if IE 7]><link href="~/dist/css/screen-ie7.css" media="screen" rel="stylesheet" /><![endif]-->
+    <!--[if IE 8]><link href="~/dist/css/screen-ie8.css" media="screen" rel="stylesheet" /><![endif]-->
     <!--[if gt IE 8]><!-->
-    <link href="@Styles.Url("~/bundles/screen")" media="all" rel="stylesheet" />
+    <link href="~/dist/css/screen.css" media="all" rel="stylesheet" />
     <!--<![endif]-->
+    <link href="~/dist/css/site.css" media="all" rel="stylesheet" />
 
-    @Html.Partial("_GoogleTagManager")
-    @Html.Partial("GoogleAnalyticsInfo")
+    @await Html.PartialAsync("_GoogleTagManager")
+    @await Html.PartialAsync("GoogleAnalyticsInfo")
 
     <!-- This is from individual pages -->
-    @RenderSection("gaDataLayer", false)
+    @await RenderSectionAsync("gaDataLayer", required: false)
 
     <script type="text/javascript">
         var appInsights = window.appInsights ||
@@ -85,11 +96,11 @@
     </script>
 
     <!--[if lt IE 9]><script src="/dist/javascripts/respond.min.js"></script><![endif]-->
-    @Html.Partial("_ZenDeskWidget")
-    @Html.Partial("_ZenDeskApiPush")
+    @await Html.PartialAsync("_ZenDeskWidget")
+    @await Html.PartialAsync("_ZenDeskApiPush")
 </head>
 <body id="@ViewBag.PageID">
-    @Html.Partial("_GoogleTagManagerNoScript")
+    @await Html.PartialAsync("_GoogleTagManagerNoScript")
     <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
     <div id="skiplink-container">
         <div>
@@ -103,30 +114,30 @@
             </p>
         </div>
     <![endif]-->
-    @Html.Partial("_CookieBanner", Html.GetCookieBannerViewModel())
+    @await Html.PartialAsync("_CookieBanner", HtmlHelper.GetCookieBannerViewModel(Html))
     <div id="svg-defs" aria-hidden="true">
-        @Html.Partial("_SVGSprite")
+        @await Html.PartialAsync("_SVGSprite")
     </div>
 
-    @Html.Partial("_Header", Html.GetHeaderViewModel(useLegacyStyles: true))
+    @await Html.PartialAsync("_Header", HtmlHelper.GetHeaderViewModel(Html,useLegacyStyles: true))
 
     <main role="main" id="content">
-        @RenderSection("breadcrumb", false)
+        @await RenderSectionAsync("breadcrumb", required: false)
 
-        @if (HttpContextHelper.Current.User.Identity.IsAuthenticated)
+        @if (HtmlContextAccessor.HttpContext.User.Identity.IsAuthenticated)
         {
-            @Html.GetContentByType("banner", useLegacyStyles: true)
+            @HtmlHelper.GetContentByType("banner", useLegacyStyles: true)
         }
 
-        @Html.Partial(@"_SuccessMessage", Model as OrchestratorResponse)
+        @await Html.PartialAsync(@"_SuccessMessage", Model as OrchestratorResponse)
         @RenderBody()
     </main>
 
-    @Html.Partial("_Footer", Html.GetFooterViewModel(useLegacyStyles: true))
+    @await Html.PartialAsync("_Footer", HtmlHelper.GetFooterViewModel(Html, useLegacyStyles: true))
 
     <div id="global-app-error" class="app-error hidden"></div>
-    @Scripts.Render("~/bundles/sfajs")
-    @RenderSection("pageSpecificJS", false)
+    <script src="/bundles/sfajs.js"></script>
+    @await RenderSectionAsync("pageSpecificJS", required: false)
     @if (!string.IsNullOrWhiteSpace(SystemDetailsViewModel.EnvironmentName))
     {
         <div class="about">
