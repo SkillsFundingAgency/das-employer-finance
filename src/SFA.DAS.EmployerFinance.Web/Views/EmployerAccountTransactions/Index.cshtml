@@ -2,6 +2,10 @@
 @using SFA.DAS.Authorization
 @using SFA.DAS.Authorization.Mvc
 @using SFA.DAS.EmployerFinance.Web.Helpers
+@using SFA.DAS.EmployerFinance.Interfaces
+@using SFA.DAS.EmployerFinance.Web.Extensions
+
+@inject IUrlActionHelper UrlHelpers;
 
 @model OrchestratorResponse<FinanceDashboardViewModel>
 
@@ -123,7 +127,7 @@
                     }
                     <p class="finance-figure__label" id="lbl-current-funds-expiring">
                         Estimated funds expiring in @expiryDate<br />
-                        <a title="Find out more about expired funds" href="@Url.EmployerProjectionsAction("forecasting/expired-funds-guidance")">
+                        <a title="Find out more about expired funds" href="@UrlHelpers.EmployerProjectionsAction(" forecasting /expired-funds-guidance")">
                             Find out more about expired funds
                         </a>
                     </p>
@@ -170,7 +174,7 @@
     {
         <div class="column-half">
             <h2 class="heading-medium">
-                <a title="Funding projection" href="@Url.EmployerProjectionsAction("forecasting/projections")">
+                <a title="Funding projection" href="@UrlHelpers.EmployerProjectionsAction("forecasting/projections")">
                     Funding projection
                 </a>
             </h2>
@@ -191,7 +195,7 @@
 @section breadcrumb {
     <div class="breadcrumbs">
         <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction("teams")">Home</a></li>
+            <li><a href="@UrlHelpers.EmployerAccountsAction("teams")">Home</a></li>
             <li>@ViewBag.Title</li>
         </ol>
     </div>
