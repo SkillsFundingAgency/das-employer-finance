@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ServiceBus;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
@@ -11,6 +11,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsTests
 {
@@ -133,7 +134,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
                 });
 
             //Act + Assert
-            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_command, CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>(() => _handler.Handle(_command, CancellationToken.None));
         }
 
         [Test]

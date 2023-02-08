@@ -47,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions
 
             if (fractionCalculations?.FractionCalculations == null)
             {
-                //return Unit.Value;
+                return Unit.Value;
             }
 
             var hmrcFractions = fractionCalculations.FractionCalculations.SelectMany(calculations =>

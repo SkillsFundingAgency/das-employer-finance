@@ -35,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
 
             if (receiverAccount == null || receiverAccount.Id == message.AccountId)
             {
-                ThrowValidationException<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId, "You must enter a valid account ID");
+                ThrowValidationException("ReceiverAccountPublicHashedId", "You must enter a valid account ID");
             }
 
             var anyTransferConnectionToSameReceiverInvitations = 
@@ -46,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
                
             if (anyTransferConnectionToSameReceiverInvitations)
             {
-                ThrowValidationException<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId, "You can't connect with this employer because they already have a pending or accepted connection request");
+                ThrowValidationException("ReceiverAccountPublicHashedId", "You can't connect with this employer because they already have a pending or accepted connection request");
             }
 
             var senderAccount = await _employerAccountRepository.Get(message.AccountId);
@@ -58,10 +58,10 @@ namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
             };
         }
 
-        private void ThrowValidationException<T>(Expression<Func<T, object>> property, string message) where T : class
+        private void ThrowValidationException(string property, string message)
         {
             var validationResult = new Validation.ValidationResult();
-            validationResult.AddError(property.Name,message);
+            validationResult.AddError(property,message);
             var ex = new ValidationException();
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }

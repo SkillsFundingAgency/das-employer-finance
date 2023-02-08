@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.ServiceBus;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -13,6 +13,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests
 {
@@ -204,7 +205,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
                 ValidationDictionary = new Dictionary<string, string> { { "Test Error", "Error" } }
             });
 
-            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_query, CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>(() => _handler.Handle(_query, CancellationToken.None));
         }
     }
 }

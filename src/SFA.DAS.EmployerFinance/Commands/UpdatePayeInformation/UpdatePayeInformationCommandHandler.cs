@@ -34,14 +34,14 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation
 
             if (!string.IsNullOrEmpty(scheme?.Name))
             {
-               //return;
+               return Unit.Value;
             }
 
             var result = await _hmrcService.GetEmprefInformation(scheme?.EmpRef);
 
             if (string.IsNullOrEmpty(result?.Employer?.Name?.EmprefAssociatedName))
             {
-                //return;
+                return Unit.Value;
             }
 
             await _payeRepository.UpdatePayeSchemeName(request.PayeRef, result.Employer.Name.EmprefAssociatedName);

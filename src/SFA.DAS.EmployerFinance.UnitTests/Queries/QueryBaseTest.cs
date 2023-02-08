@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.ServiceBus;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Validation;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries
 {
@@ -61,7 +62,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
             RequestValidator.Setup(x => x.ValidateAsync(It.IsAny<TRequest>())).ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await RequestHandler.Handle(Query, CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>( () =>  RequestHandler.Handle(Query, CancellationToken.None));
         }
     }
 }
