@@ -1,8 +1,11 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
@@ -21,9 +24,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         public void Arrange()
         {
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<long>>()));
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<long>>(), CancellationToken.None));
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object);
+            _controller =
+                new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
 
             _viewModel = new TransferConnectionInvitationViewModel
             {
@@ -38,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Details(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.Is<DeleteTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId)), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<DeleteTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -51,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             Assert.That(result, Is.Not.Null);
             Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
             Assert.That(actionName, Is.EqualTo("Deleted"));
-            Assert.That(result.RouteValues.TryGetValue("controller", out var controllerName), Is.False);
+            Assert.That(result.RouteValues.TryGetValue("controller", out _), Is.False);
         }
 
         [Test]
@@ -61,7 +65,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Details(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.IsAny<DeleteTransferConnectionInvitationCommand>()), Times.Never);
+            _mediator.Verify(m => m.Send(It.IsAny<DeleteTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }
 
         [Test]

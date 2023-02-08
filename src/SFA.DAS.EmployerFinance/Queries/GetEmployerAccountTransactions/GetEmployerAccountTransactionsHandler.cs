@@ -6,13 +6,14 @@ using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.HashingService;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
 {
@@ -45,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
 
             if (!result.IsValid())
             {
-                throw new InvalidRequestException(result.ValidationDictionary);
+                throw new ValidationException(result.ConvertToDataAnnotationsValidationResult(), null, null);
             }            
 
             if (result.IsUnauthorized)

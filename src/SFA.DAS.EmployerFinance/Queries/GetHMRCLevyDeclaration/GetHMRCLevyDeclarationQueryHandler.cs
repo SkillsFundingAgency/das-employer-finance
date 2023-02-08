@@ -1,10 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.Hmrc;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration
 {
@@ -27,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             var existingDeclaration = await _mediator.Send(new GetLastLevyDeclarationQuery { EmpRef = message.EmpRef });

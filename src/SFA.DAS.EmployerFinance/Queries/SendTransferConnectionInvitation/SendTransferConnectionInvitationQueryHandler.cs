@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
 {
@@ -62,9 +60,10 @@ namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
 
         private void ThrowValidationException<T>(Expression<Func<T, object>> property, string message) where T : class
         {
+            var validationResult = new Validation.ValidationResult();
+            validationResult.AddError(property.Name,message);
             var ex = new ValidationException();
-            ex.AddError<T>(property, message);
-            throw ex;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
     }
 }

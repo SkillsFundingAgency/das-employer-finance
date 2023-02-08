@@ -16,7 +16,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [SetUp]
         public void Arrange()
         {
-            _controller = new TransferConnectionInvitationsController(_mapper.Object, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(_mapper.Object, _mediator.Object, null);
         }
 
         [Test]

@@ -13,13 +13,11 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
     [Route("service")]
     public class HomeController : Controller
     { 
-        private readonly IAuthenticationService _owinWrapper;
         private readonly EmployerFinanceConfiguration _configuration;
         private readonly IUrlActionHelper _urlHelper;
 
-        public HomeController(IAuthenticationService owinWrapper, EmployerFinanceConfiguration configuration, IUrlActionHelper urlHelper)
+        public HomeController(EmployerFinanceConfiguration configuration, IUrlActionHelper urlHelper)
         {
-            _owinWrapper = owinWrapper;
             _configuration = configuration;
             _urlHelper = urlHelper;
         }

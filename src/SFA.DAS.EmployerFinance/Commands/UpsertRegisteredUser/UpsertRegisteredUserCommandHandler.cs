@@ -1,11 +1,12 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser
 {
@@ -29,7 +30,10 @@ namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser
         {
             var validationResult = _validator.Validate(request);
 
-            if (!validationResult.IsValid()) throw new InvalidRequestException(validationResult.ValidationDictionary);
+            if (!validationResult.IsValid())
+            {
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
+            }
 
             await _userRepository.Upsert(new User
             {

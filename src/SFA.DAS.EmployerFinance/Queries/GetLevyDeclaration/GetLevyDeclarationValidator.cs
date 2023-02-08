@@ -1,6 +1,6 @@
-﻿using SFA.DAS.Validation;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration
 {

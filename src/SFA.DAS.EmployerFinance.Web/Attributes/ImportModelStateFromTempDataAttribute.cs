@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using SFA.DAS.Validation.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Web.Attributes
 {

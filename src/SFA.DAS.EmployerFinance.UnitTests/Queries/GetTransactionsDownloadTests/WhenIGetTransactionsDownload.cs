@@ -1,7 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Common.Domain.Types;
@@ -10,11 +10,8 @@ using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Transaction;
-using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
-using SFA.DAS.Validation;
 using MonthYear = SFA.DAS.EmployerFinance.Messages.MonthYear;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransactionsDownloadTests

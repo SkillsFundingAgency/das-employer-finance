@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Net.Http;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.Authentication.Extensions.Legacy;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetContent
 {
@@ -16,21 +15,18 @@ namespace SFA.DAS.EmployerFinance.Queries.GetContent
         private readonly IValidator<GetContentRequest> _validator;
         private readonly ILog _logger;
         private readonly IContentApiClient _service;
-        private readonly ICacheStorageService _cacheStorageService;
         private readonly EmployerFinanceConfiguration _employerFinanceConfiguration;
 
         public GetContentRequestHandler(
             IValidator<GetContentRequest> validator,
             ILog logger,
             IContentApiClient service,
-            ICacheStorageService cacheStorageService,
             EmployerFinanceConfiguration employerFinanceConfiguration
             )
         {
             _validator = validator;
             _logger = logger;
             _service = service;
-            _cacheStorageService = cacheStorageService;
             _employerFinanceConfiguration = employerFinanceConfiguration;
         }
 
@@ -40,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetContent
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             var applicationId = message.UseLegacyStyles ? _employerFinanceConfiguration.ApplicationId + "-legacy" : _employerFinanceConfiguration.ApplicationId;

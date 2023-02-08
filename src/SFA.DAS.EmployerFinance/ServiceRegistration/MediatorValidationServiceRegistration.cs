@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.ServiceRegistration
 {

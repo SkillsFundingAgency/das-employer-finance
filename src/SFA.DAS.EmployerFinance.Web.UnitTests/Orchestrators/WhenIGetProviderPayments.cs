@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -72,12 +73,12 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
         private Expression<Func<IMediator, Task<FindAccountProviderPaymentsResponse>>> AssertExpressionValidation()
         {
-            return x => x.SendAsync(It.Is<FindAccountProviderPaymentsQuery>(c => c.ExternalUserId.Equals(ExternalUser)
+            return x => x.Send(It.Is<FindAccountProviderPaymentsQuery>(c => c.ExternalUserId.Equals(ExternalUser)
                                                                                  && c.FromDate.Equals(_fromDate)
                                                                                  && c.ToDate.Equals(_toDate)
                                                                                  && c.HashedAccountId.Equals(
                                                                                      HashedAccountId)
-                                                                                 && c.UkPrn.Equals(ExpectedUkPrn)));
+                                                                                 && c.UkPrn.Equals(ExpectedUkPrn)), CancellationToken.None);
         }
 
 

@@ -34,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
 
             _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
             _orchestrator.Setup(o => o.Index(It.Is<GetAccountFinanceOverviewQuery>(q => q.AccountId == ExpectedAccountId && q.AccountHashedId == ExpectedHashedAccountId)))
-                .ReturnsAsync(new OrchestratorResponse<FinanceDashboardViewModel>
+                .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
                 {
                     Data = new FinanceDashboardViewModel
                     {
@@ -58,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             var result = await _controller.Index(_query);
 
             //Assert
-            var viewResult = result as ViewResultBase;
+            var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
 
             var model = viewResult.Model as OrchestratorResponse<FinanceDashboardViewModel>;
@@ -74,7 +74,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             var result = await _controller.Index(_query);
 
             //Assert
-            var viewResult = result as ViewResultBase;
+            var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
 
             var model = viewResult.Model as OrchestratorResponse<FinanceDashboardViewModel>;
@@ -90,7 +90,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             const string redirectUrl = "http://example.com";
 
             _orchestrator.Setup(o => o.Index(It.IsAny<GetAccountFinanceOverviewQuery>()))
-                .ReturnsAsync(new OrchestratorResponse<FinanceDashboardViewModel>
+                .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
                 {
                     RedirectUrl = redirectUrl
                 });

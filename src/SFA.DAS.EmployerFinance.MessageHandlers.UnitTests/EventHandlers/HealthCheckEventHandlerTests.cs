@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NServiceBus;
 using NUnit.Framework;
+using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
@@ -41,9 +42,9 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
                 new HealthCheckBuilder().WithId(2).Build()
             };
 
-            Db.Setup(d => d.HealthChecks).Returns(() => new DbSetStub<HealthCheck>(HealthChecks));
+            Db.Setup(d => d.HealthChecks).ReturnsDbSet(HealthChecks);
 
-            Handler = new HealthCheckEventHandler(new Lazy<EmployerFinanceDbContext>(() => Db.Object));
+            Handler = new HealthCheckEventHandler(Db.Object);
         }
 
         public Task Handle()

@@ -2,12 +2,12 @@
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
-using SFA.DAS.Validation;
 using System;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.HashingService;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
 {

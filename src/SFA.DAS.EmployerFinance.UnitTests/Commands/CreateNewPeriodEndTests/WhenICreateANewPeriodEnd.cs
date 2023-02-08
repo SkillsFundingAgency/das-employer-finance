@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Validation;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
 {
@@ -45,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
             _validator.Setup(x => x.Validate(It.IsAny<CreateNewPeriodEndCommand>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { {"",""} } });
 
             //Assert
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new CreateNewPeriodEndCommand(), CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>(async () => await _handler.Handle(new CreateNewPeriodEndCommand(), CancellationToken.None));
         }
 
         [Test]

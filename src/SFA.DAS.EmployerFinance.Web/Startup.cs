@@ -44,6 +44,7 @@ namespace SFA.DAS.EmployerFinance.Web
                         options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
                         options.EnvironmentName = configuration["EnvironmentName"];
                         options.PreFixConfigurationKeys = false;
+                        options.ConfigurationKeysRawJsonResult = new[] {"SFA.DAS.Encoding"};
                     }
                 );
             }
@@ -55,14 +56,12 @@ namespace SFA.DAS.EmployerFinance.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-
+            
             services.AddOptions();
 
             services.AddLogging();
             
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddConfigurationOptions(_configuration);
 
@@ -81,6 +80,7 @@ namespace SFA.DAS.EmployerFinance.Web
             //MAC-192
             services.AddApplicationServices(_employerFinanceConfiguration);
 
+            //TODO replace with EncodingService
             services.AddHashingServices(_employerFinanceConfiguration);
             services.AddCachesRegistrations();
             services.AddDateTimeServices(_configuration);

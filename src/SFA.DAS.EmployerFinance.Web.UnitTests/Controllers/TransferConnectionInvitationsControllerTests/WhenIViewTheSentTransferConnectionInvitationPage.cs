@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +29,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();
 
-            _mediator.Setup(m => m.SendAsync(_query)).ReturnsAsync(_response);
+            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
 
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null);
         }
 
         [Test]
@@ -38,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             await _controller.Sent(_query);
 
-            _mediator.Verify(m => m.SendAsync(_query), Times.Once);
+            _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
         }
 
         [Test]

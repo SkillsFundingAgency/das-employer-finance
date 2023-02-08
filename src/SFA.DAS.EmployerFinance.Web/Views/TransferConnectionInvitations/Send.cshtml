@@ -1,8 +1,4 @@
-﻿@using SFA.DAS.Validation.Mvc
-@using SFA.DAS.EmployerFinance.Web.Extensions
-
-@inject IHtmlHelperExtensions HtmlHelper;
-
+﻿@inject IHtmlHelperExtensions HtmlHelper;
 
 @model SFA.DAS.EmployerFinance.Web.ViewModels.SendTransferConnectionInvitationViewModel
 
@@ -39,7 +35,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="form-group @(HtmlHelper.IsValid(m => m.Choice) ? "" : "error")">
+            <div asp-fieldname="Choice">
                 <fieldset>
                     <legend>
                         <span class="form-label-bold">Do you want to connect with this receiving employer?</span>

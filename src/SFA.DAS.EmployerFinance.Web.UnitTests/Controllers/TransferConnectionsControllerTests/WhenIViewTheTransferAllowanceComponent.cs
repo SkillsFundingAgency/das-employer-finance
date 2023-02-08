@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -41,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.SendAsync(_query)).ReturnsAsync(_response);
+            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
             _featureToggleService = new Mock<IFeatureTogglesService<EmployerFeatureToggle>>();
 
             _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, _featureToggleService.Object);
@@ -52,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         {
             _controller.TransferAllowance(_query);
 
-            _mediator.Verify(m => m.SendAsync(_query), Times.Once);
+            _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
         }
 
         [Test]

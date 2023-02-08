@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.HashingService;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent
 {
@@ -26,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             var accountId = _hashingService.DecodeValue(message.HashedAccountId);

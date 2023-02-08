@@ -32,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<Microsoft.AspNetCore.Mvc.ActionResult> Index(RunHealthCheckCommand command)
+        public async Task<IActionResult> Index(RunHealthCheckCommand command)
         {
             await _mediator.Send(command);
 

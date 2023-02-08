@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.NLog.Logger;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
 {
@@ -26,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             await _englishFractionRepository.SetLastUpdateDate(request.DateCalculated);

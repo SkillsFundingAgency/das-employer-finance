@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Events.ProcessPayment;
 using SFA.DAS.EmployerFinance.Messages.Events;
@@ -14,6 +14,7 @@ using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.Provider.Events.Api.Types;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData
 {
@@ -49,7 +50,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             ICollection<PaymentDetails> payments = null;

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Authentication;
@@ -55,7 +57,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
             _formatter = new Mock<ITransactionFormatter>();
 
-            _mediator.Setup(m => m.SendAsync(It.IsAny<GetTransactionsDownloadQuery>()))
+            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetTransactionsDownloadResponse
                 {
                     MimeType = ExpectedMimeType,
@@ -80,7 +82,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
         {
             await _controller.TransactionsDownload(_transactionDownloadViewModel);
 
-            _mediator.Verify(m => m.SendAsync(_transactionDownloadViewModel.GetTransactionsDownloadQuery), Times.Once);
+            _mediator.Verify(m => m.Send(_transactionDownloadViewModel.GetTransactionsDownloadQuery, CancellationToken.None), Times.Once);
         }
 
         [Test]

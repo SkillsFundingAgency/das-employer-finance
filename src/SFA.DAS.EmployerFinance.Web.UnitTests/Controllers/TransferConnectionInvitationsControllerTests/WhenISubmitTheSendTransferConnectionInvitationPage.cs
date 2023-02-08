@@ -1,8 +1,11 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.SendTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
@@ -21,9 +24,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         public void Arrange()
         {
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<long>>())).ReturnsAsync(TransferConnectionId);
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<long>>(), CancellationToken.None)).ReturnsAsync(TransferConnectionId);
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
 
             _viewModel = new SendTransferConnectionInvitationViewModel
             {
@@ -38,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Send(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.Is<SendTransferConnectionInvitationCommand>(c => c.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId)), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<SendTransferConnectionInvitationCommand>(c => c.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -63,7 +66,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Send(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.IsAny<SendTransferConnectionInvitationCommand>()), Times.Never);
+            _mediator.Verify(m => m.Send(It.IsAny<SendTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }
 
         [Test]

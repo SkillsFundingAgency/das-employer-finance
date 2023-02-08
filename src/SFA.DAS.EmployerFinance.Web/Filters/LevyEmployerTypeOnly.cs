@@ -15,7 +15,13 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
 {
     public class LevyEmployerTypeOnly : Microsoft.AspNetCore.Mvc.Filters.ActionFilterAttribute
     {
+        private readonly IAccountApiClient _accountApiClient;
 
+        public LevyEmployerTypeOnly(IAccountApiClient accountApiClient)
+        {
+            _accountApiClient = accountApiClient;
+        }
+        
         public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext filterContext)
         {
             try
@@ -42,12 +48,10 @@ namespace SFA.DAS.EmployerFinance.Web.Filters
                     return;
                 }
 
-                //MAP-192 - need testing
-                var accountApi = filterContext.HttpContext.RequestServices.GetService<IAccountApiClient>();
-
-                var task = Task.Run(async () => await accountApi.GetAccount(hashedAccountId));
-                AccountDetailViewModel account = task.Result;
-                ApprenticeshipEmployerType apprenticeshipEmployerType = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), account.ApprenticeshipEmployerType, true);
+                
+                var task = Task.Run(async () => await _accountApiClient.GetAccount(hashedAccountId));
+                var account = task.Result;
+                var apprenticeshipEmployerType = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), account.ApprenticeshipEmployerType, true);
 
                 if (apprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
                 {

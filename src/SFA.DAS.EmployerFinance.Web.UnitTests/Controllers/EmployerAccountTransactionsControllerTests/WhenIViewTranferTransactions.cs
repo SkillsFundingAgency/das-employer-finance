@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -74,7 +75,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             _mapper.Setup(x => x.Map<TransferTransactionDetailsViewModel>(response))
                    .Returns(expectedViewModel);
 
-            _mediator.Setup(x => x.SendAsync(It.IsAny<GetTransferTransactionDetailsQuery>()))
+            _mediator.Setup(x => x.Send(It.IsAny<GetTransferTransactionDetailsQuery>(), CancellationToken.None))
                 .ReturnsAsync(response);
 
             //Act

@@ -6,13 +6,15 @@ using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Messaging.Interfaces;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Validation;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTests
 {
@@ -151,7 +153,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
                 });
 
             //Act + Assert
-            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_command, CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>(() => _handler.Handle(_command, CancellationToken.None));
         }
 
         [Test]
@@ -172,7 +174,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
             {
                 await _handler.Handle(_command, CancellationToken.None);
             }
-            catch (InvalidRequestException)
+            catch (ValidationException)
             {
                 //Swallow the invalid request exception for this test as we are expecting one
             }
@@ -199,7 +201,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
             {
                 await _handler.Handle(_command, CancellationToken.None);
             }
-            catch (InvalidRequestException)
+            catch (ValidationException)
             {
                 //Swallow the invalid request exception for this test as we are expecting one
             }

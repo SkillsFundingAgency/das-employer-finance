@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,10 +11,10 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Levy;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.HashingService;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Services;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
 {
@@ -57,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
 
             if (!result.IsValid())
             {
-                throw new InvalidRequestException(result.ValidationDictionary);
+                throw new ValidationException(result.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             var savedDeclarations = new List<DasDeclaration>();

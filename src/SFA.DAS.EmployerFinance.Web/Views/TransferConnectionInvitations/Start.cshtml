@@ -1,5 +1,4 @@
-﻿@using SFA.DAS.Validation.Mvc
-@model SFA.DAS.EmployerFinance.Web.ViewModels.StartTransferConnectionInvitationViewModel
+﻿@model SFA.DAS.EmployerFinance.Web.ViewModels.StartTransferConnectionInvitationViewModel
 
 @{
     ViewBag.Title = "Start transfer connection request";
@@ -15,7 +14,7 @@
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
-            <div class="form-group @(Html.IsValid(m => m.ReceiverAccountPublicHashedId) ? "" : "error")">
+            <div asp-fieldname="Choice">
                 <label for="@Html.IdFor(m => m.ReceiverAccountPublicHashedId)">
                     <span class="form-label-bold">Enter the employer's apprenticeship account ID</span>
                     <span class="form-hint">You need to request this directly from the employer. Account IDs can be found under the account name on the apprenticeship service homepage.</span>

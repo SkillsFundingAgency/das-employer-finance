@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -180,7 +181,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
         private void SetupGetCoursePaymentsResponse(int year, int month, IEnumerable<PaymentTransactionLine> payments)
         {
-            _mediatorMock.Setup(x => x.SendAsync(It.IsAny<FindAccountCoursePaymentsQuery>()))
+            _mediatorMock.Setup(x => x.Send(It.IsAny<FindAccountCoursePaymentsQuery>(), CancellationToken.None))
                 .ReturnsAsync(new FindAccountCoursePaymentsResponse
                 {
                     Transactions = payments.ToList()

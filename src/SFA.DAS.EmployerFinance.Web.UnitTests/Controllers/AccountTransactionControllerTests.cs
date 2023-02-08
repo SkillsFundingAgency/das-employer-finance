@@ -28,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
             _owinWrapper = new Mock<IAuthenticationService>();
 
             _orchestrator.Setup(x => x.GetAccountTransactions(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(new OrchestratorResponse<TransactionViewResultViewModel>
+                .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>
                 {
                     Data = new TransactionViewResultViewModel(DateTime.Now)
                     {

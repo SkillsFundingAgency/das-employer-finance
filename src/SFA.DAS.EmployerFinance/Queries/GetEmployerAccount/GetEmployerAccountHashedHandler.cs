@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.Validation;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SFA.DAS.HashingService;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
 {
@@ -30,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
 
             if (!result.IsValid())
             {
-                throw new InvalidRequestException(result.ValidationDictionary);
+                throw new ValidationException(result.ConvertToDataAnnotationsValidationResult(),null,null);
             }
 
             if (result.IsUnauthorized)

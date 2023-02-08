@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,18 +15,17 @@ using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
 using AggregationData = SFA.DAS.EmployerFinance.Models.Transaction.AggregationData;
 using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.TransactionItemType;
 using TransactionViewModel = SFA.DAS.EmployerFinance.Web.ViewModels.TransactionViewModel;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
+
     public class EmployerAccountTransactionsOrchestrator
     {
         private readonly ICurrentDateTime _currentTime;
@@ -98,6 +98,15 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     ExternalUserId = externalUserId
                 });
 
+                if (data == null)
+                {
+                    return new OrchestratorResponse<PaymentTransactionViewModel>
+                    {
+                        Status = HttpStatusCode.NotFound,
+                        Exception = new Exception("Not found")
+                    };
+                }
+                
                 var courseGroups = data.Transactions.GroupBy(x => new { x.CourseName, x.CourseLevel, x.CourseStartDate });
 
                 var coursePaymentGroups = courseGroups.Select(x => new ApprenticeshipPaymentGroup
@@ -122,15 +131,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     }
                 };
             }
-            catch (NotFoundException e)
-            {
-                return new OrchestratorResponse<PaymentTransactionViewModel>
-                {
-                    Status = HttpStatusCode.NotFound,
-                    Exception = e
-                };
-            }
-            catch (InvalidRequestException e)
+            catch (ValidationException e)
             {
                 return new OrchestratorResponse<PaymentTransactionViewModel>
                 {
@@ -163,9 +164,18 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     ToDate = toDate,
                     ExternalUserId = externalUserId,
                 });                
-
+                
                 await Task.WhenAll(accountTask, getProviderPaymentsTask).ConfigureAwait(false);
 
+                if (accountTask.Result == null || getProviderPaymentsTask.Result == null)
+                {
+                    return new OrchestratorResponse<ProviderPaymentsSummaryViewModel>
+                    {
+                        Status = HttpStatusCode.NotFound,
+                        Exception = new Exception("Not found")
+                    };
+                }
+                
                 var providerPaymentsResponse = getProviderPaymentsTask.Result;
 
                 var courseGroups = providerPaymentsResponse.Transactions.GroupBy(x => new { x.CourseName, x.CourseLevel, x.PathwayName, x.CourseStartDate });
@@ -209,15 +219,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     }
                 };
             }
-            catch (NotFoundException e)
-            {
-                return new OrchestratorResponse<ProviderPaymentsSummaryViewModel>
-                {
-                    Status = HttpStatusCode.NotFound,
-                    Exception = e
-                };
-            }
-            catch (InvalidRequestException e)
+            catch (ValidationException e)
             {
                 return new OrchestratorResponse<ProviderPaymentsSummaryViewModel>
                 {
@@ -241,8 +243,6 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         {
             try
             {
-                var accountTask = _accountApiClient.GetAccount(hashedAccountId);
-
                 var accountCoursePaymentsResponse = await _mediator.Send(new FindAccountCoursePaymentsQuery
                 {
                     HashedAccountId = hashedAccountId,
@@ -255,6 +255,15 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     ExternalUserId = externalUserId
                 });
 
+                if (accountCoursePaymentsResponse == null)
+                {
+                    return new OrchestratorResponse<CoursePaymentDetailsViewModel>
+                    {
+                        Status = HttpStatusCode.NotFound,
+                        Exception = new Exception("Not found")
+                    };
+                }
+                
                 var apprenticePaymentGroups = accountCoursePaymentsResponse.Transactions.GroupBy(x => new { x.ApprenticeULN });
 
                 var paymentSummaries = apprenticePaymentGroups.Select(pg =>
@@ -272,7 +281,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
                 var apprenticePayments = paymentSummaries.ToList();
 
-                var accountResponse = await accountTask;
+                var accountResponse = await _accountApiClient.GetAccount(hashedAccountId);;
 
                 return new OrchestratorResponse<CoursePaymentDetailsViewModel>
                 {
@@ -293,15 +302,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     }
                 };
             }
-            catch (NotFoundException e)
-            {
-                return new OrchestratorResponse<CoursePaymentDetailsViewModel>
-                {
-                    Status = HttpStatusCode.NotFound,
-                    Exception = e
-                };
-            }
-            catch (InvalidRequestException e)
+            catch (ValidationException e)
             {
                 return new OrchestratorResponse<CoursePaymentDetailsViewModel>
                 {

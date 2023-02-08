@@ -1,12 +1,10 @@
 ﻿@using System.Globalization
-@using SFA.DAS.EmployerFinance.Web.Helpers
 @using SFA.DAS.EmployerFinance.Interfaces
-@using SFA.DAS.EmployerFinance.Web.Extensions
 
 @inject IUrlActionHelper UrlHelpers;
 @inject IHtmlHelperExtensions HtmlHelper;
 
-@model OrchestratorResponse<SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.IndexViewModel>
+@model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.IndexViewModel>
 
 @{
     ViewBag.PageID = "transfers";

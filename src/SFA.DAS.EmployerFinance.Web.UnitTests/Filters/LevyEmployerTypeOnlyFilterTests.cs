@@ -21,29 +21,27 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Filters
         [SetUp]
         public void SetUp()
         {
-            _filterContext = new ActionExecutingContext
-            {
-                ActionParameters = new Dictionary<string, object> { { "HashedAccountId", "abc123" } }
-            };
+            _filterContext = new ActionExecutingContext(null, null,
+                new Dictionary<string, object> {{"HashedAccountId", "abc123"}}, null);
 
             _accountApiClientMock = new Mock<IAccountApiClient>();
             var serviceProviderMock = new Mock<IServiceProvider>();
             serviceProviderMock.Setup(provider => provider.GetService(typeof(IAccountApiClient)))
                 .Returns(_accountApiClientMock.Object);
 
-            var dependencyResolver = new Mock<IDependencyResolver>();
-            dependencyResolver
-                .Setup(mock => mock.GetService(typeof(IAccountApiClient)))
-                .Returns(_accountApiClientMock.Object);
-
-            DependencyResolver.SetResolver(dependencyResolver.Object);
+            // var dependencyResolver = new Mock<IDependencyResolver>();
+            // dependencyResolver
+            //     .Setup(mock => mock.GetService(typeof(IAccountApiClient)))
+            //     .Returns(_accountApiClientMock.Object);
+            //
+            // DependencyResolver.SetResolver(dependencyResolver.Object);
         }
 
         [Test]
         public void WhenLevyEmployer_ShouldAllowAccess()
         {
             // Arrange
-            var sut = new LevyEmployerTypeOnly();
+            var sut = new LevyEmployerTypeOnly(_accountApiClientMock.Object);
             _accountApiClientMock
                 .Setup(mock => mock.GetAccount(It.IsAny<string>()))
                 .ReturnsAsync(new AccountDetailViewModel { ApprenticeshipEmployerType = "Levy" });
@@ -60,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Filters
         public void WhenNonLevyEmployer_ShouldDenyAccess()
         {
             // Arrange
-            var sut = new LevyEmployerTypeOnly();
+            var sut = new LevyEmployerTypeOnly(_accountApiClientMock.Object);
             _accountApiClientMock
                 .Setup(mock => mock.GetAccount(It.IsAny<string>()))
                 .ReturnsAsync(new AccountDetailViewModel { ApprenticeshipEmployerType = "NonLevy" });
@@ -78,7 +76,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Filters
         public void WhenGetAccountFails_ShouldRedirectToBadRequest()
         {
             // Arrange
-            var sut = new LevyEmployerTypeOnly();
+            var sut = new LevyEmployerTypeOnly(_accountApiClientMock.Object);
             _accountApiClientMock
                 .Setup(mock => mock.GetAccount(It.IsAny<string>()))
                 .Throws(new Exception());
@@ -96,13 +94,13 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Filters
         public void WhenFilterUsedIncorrectly_ShouldRedirectToBadRequest()
         {
             // Arrange
-            var sut = new LevyEmployerTypeOnly();
+            var sut = new LevyEmployerTypeOnly(_accountApiClientMock.Object);
             _accountApiClientMock
                 .Setup(mock => mock.GetAccount(It.IsAny<string>()))
                 .Throws(new Exception());
 
             // Act
-            _filterContext = new ActionExecutingContext();
+            _filterContext = new ActionExecutingContext(null, null,null,null);
             sut.OnActionExecuting(_filterContext);
             var result = _filterContext.Result as ViewResult;
 

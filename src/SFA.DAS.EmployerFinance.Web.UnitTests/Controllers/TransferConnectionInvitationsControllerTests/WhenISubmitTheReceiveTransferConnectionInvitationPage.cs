@@ -1,9 +1,12 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
@@ -23,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _mediator = new Mock<IMediator>();
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
 
             _viewModel = new ReceiveTransferConnectionInvitationViewModel
             {
@@ -38,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Receive(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.Is<ApproveTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId)), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<ApproveTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -63,7 +66,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Receive(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.IsAny<ApproveTransferConnectionInvitationCommand>()), Times.Never);
+            _mediator.Verify(m => m.Send(It.IsAny<ApproveTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }
 
         [Test]
@@ -73,7 +76,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Receive(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.Is<RejectTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId)), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<RejectTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -98,7 +101,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Receive(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.IsAny<RejectTransferConnectionInvitationCommand>()), Times.Never);
+            _mediator.Verify(m => m.Send(It.IsAny<RejectTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }
     }
 }

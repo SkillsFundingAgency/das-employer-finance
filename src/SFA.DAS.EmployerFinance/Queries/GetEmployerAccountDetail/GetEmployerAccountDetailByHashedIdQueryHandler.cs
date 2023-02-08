@@ -1,10 +1,11 @@
-﻿using System.Threading;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail
 {
@@ -27,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             var accountDetail = await _accountApiClient.GetAccount(message.HashedAccountId);

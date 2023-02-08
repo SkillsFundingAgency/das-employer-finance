@@ -13,7 +13,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [SetUp]
         public void Arrange()
         {
-            _controller = new TransferConnectionInvitationsController(null, null);
+            _controller = new TransferConnectionInvitationsController(null, null, null);
         }
 
         [Test]

@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.Validation;
 using System.Threading;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
 {
@@ -23,7 +24,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
             var validationResult = _validator.Validate(message);
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             var result = await _dasLevyRepository.GetAccountBalances(message.AccountIds);

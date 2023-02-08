@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Data;
 using System.Threading;
+using Microsoft.ServiceBus;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration
 {
@@ -23,7 +25,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null,null);
             }
 
             var result = await _dasLevyRepository.GetLastSubmissionForScheme(message.EmpRef);

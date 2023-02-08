@@ -4,7 +4,9 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.Authentication;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
+using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
 {
@@ -12,7 +14,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
     public class HomeControllerTest
     {
         private EmployerFinanceConfiguration _configuration;
-        private Mock<IDependencyResolver> _dependancyResolver;
         private HomeController _homeController;
 
         [SetUp]
@@ -23,16 +24,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
                 EmployerPortalBaseUrl = "https://localhost"
             };
 
-            _dependancyResolver = new Mock<IDependencyResolver>();
-            _dependancyResolver.Setup(r => r.GetService(typeof(EmployerFinanceConfiguration))).Returns(_configuration);
-
-            DependencyResolver.SetResolver(_dependancyResolver.Object);
-
             _homeController =
-                new HomeController(Mock.Of<IAuthenticationService>(), Mock.Of<EmployerFinanceConfiguration>())
-                {
-                    Url = new UrlHelper()
-                };
+                new HomeController(Mock.Of<EmployerFinanceConfiguration>(), Mock.Of<IUrlActionHelper>());
         }
 
         [Test]

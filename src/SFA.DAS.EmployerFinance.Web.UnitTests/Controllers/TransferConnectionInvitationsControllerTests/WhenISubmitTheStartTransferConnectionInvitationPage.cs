@@ -1,7 +1,10 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -20,9 +23,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [SetUp]
         public void Arrange()
         {
-            _mediator.Setup(m => m.SendAsync(It.IsAny<SendTransferConnectionInvitationQuery>())).ReturnsAsync(new SendTransferConnectionInvitationResponse());
+            _mediator.Setup(m => m.Send(It.IsAny<SendTransferConnectionInvitationQuery>(), CancellationToken.None)).ReturnsAsync(new SendTransferConnectionInvitationResponse());
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
 
             _viewModel = new StartTransferConnectionInvitationViewModel
             {
@@ -35,7 +38,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             await _controller.Start(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.Is<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId)), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId), CancellationToken.None), Times.Once);
         }
 
         [Test]

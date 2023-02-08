@@ -4,13 +4,13 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.GetContent;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent
 {
@@ -61,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent
             };
 
             RequestHandler = new GetContentRequestHandler(RequestValidator.Object, MockLogger.Object,
-                MockContentService.Object, MockCacheStorageService.Object, EmployerFinanceConfiguration);
+                MockContentService.Object, EmployerFinanceConfiguration);
         }
 
         [Test]

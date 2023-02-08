@@ -14,6 +14,7 @@ using SFA.DAS.NLog.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using SFA.DAS.EAS.Account.Api.Client;
@@ -54,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
 
-            _mediator.Setup(x => x.SendAsync(It.IsAny<GetEmployerAccountHashedQuery>()))
+            _mediator.Setup(x => x.Send(It.IsAny<GetEmployerAccountHashedQuery>(), CancellationToken.None))
                 .ReturnsAsync(_response);
 
             _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
@@ -80,7 +81,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 AccountId = AccountId
             };
 
-            _mediator.Setup(m => m.SendAsync(It.IsAny<GetAccountFinanceOverviewQuery>()))
+            _mediator.Setup(m => m.Send(It.IsAny<GetAccountFinanceOverviewQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetAccountFinanceOverviewResponse());
 
             //Act

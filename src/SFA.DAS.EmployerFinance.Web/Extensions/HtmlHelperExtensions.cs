@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using MediatR;
@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -16,8 +14,6 @@ using SFA.DAS.EmployerFinance.Queries.GetContent;
 using SFA.DAS.MA.Shared.UI.Configuration;
 using SFA.DAS.MA.Shared.UI.Models;
 using SFA.DAS.MA.Shared.UI.Models.Links;
-using SFA.DAS.Validation;
-using SFA.DAS.Validation.Mvc;
 
 namespace SFA.DAS.EmployerFinance.Web.Extensions
 {
@@ -35,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
         HtmlString GetContentByType(string type, bool useLegacyStyles = false);
         bool IsAuthorized(string featureType);
 
-        bool IsValid<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression);
+        //bool IsValid<TModel, TProperty>(IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression);
     }
     public class HtmlHelperExtensions : IHtmlHelperExtensions
     {
@@ -191,26 +187,26 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return input.Replace("'", @"\'");
         }
 
-        public bool IsValid<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
-        {
-           var expressionText = htmlHelper.GetExpressionText(expression);
-            var fullHtmlFieldName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(expressionText);
-            if (htmlHelper.ViewData.ModelState.ContainsKey(fullHtmlFieldName))
-            {
-                var errors = htmlHelper.ViewData.ModelState[fullHtmlFieldName]?.Errors;
-                if (errors != null && errors.Any())
-                    return false;
-            }
-            return true;
-        }
-
-        private string GetExpressionText<TModel, TResult>(this IHtmlHelper htmlHelper, Expression<Func<TModel, TResult>> expression)
-        {
-            var expressionProvider = htmlHelper.ViewContext.HttpContext.RequestServices
-                .GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
-
-            return expressionProvider.GetExpressionText(expression);
-
-        }
+        // public bool IsValid<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
+        // {
+        //    var expressionText = htmlHelper.GetExpressionText(expression);
+        //     var fullHtmlFieldName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(expressionText);
+        //     if (htmlHelper.ViewData.ModelState.ContainsKey(fullHtmlFieldName))
+        //     {
+        //         var errors = htmlHelper.ViewData.ModelState[fullHtmlFieldName]?.Errors;
+        //         if (errors != null && errors.Any())
+        //             return false;
+        //     }
+        //     return true;
+        // }
+        //
+        // private string GetExpressionText<TModel, TResult>(this IHtmlHelper htmlHelper, Expression<Func<TModel, TResult>> expression)
+        // {
+        //     var expressionProvider = htmlHelper.ViewContext.HttpContext.RequestServices
+        //         .GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
+        //
+        //     return expressionProvider.GetExpressionText(expression);
+        //
+        // }
     }
 }   

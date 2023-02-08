@@ -1,5 +1,4 @@
-﻿@using SFA.DAS.Validation.Mvc
-@model SFA.DAS.EmployerFinance.Web.ViewModels.DeletedTransferConnectionInvitationViewModel
+﻿@model SFA.DAS.EmployerFinance.Web.ViewModels.DeletedTransferConnectionInvitationViewModel
 
 @{
     ViewBag.Title = "Deleted transfer connection request";
@@ -19,7 +18,7 @@
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
-            <div class="form-group @(Html.IsValid(m => m.Choice) ? "" : "error")">
+            <div asp-fieldname="Choice">
                 <fieldset>
                     <legend>
                         <span class="visuallyhidden">What next?</span>

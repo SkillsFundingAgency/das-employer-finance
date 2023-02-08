@@ -6,8 +6,8 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.HashingService;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
 {

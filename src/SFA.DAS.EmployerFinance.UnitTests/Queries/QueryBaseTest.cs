@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.ServiceBus;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries
 {

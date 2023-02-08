@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -35,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         {
             // Arrange
             _mediatorMock
-                .Setup(mock => mock.SendAsync(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>()))
+                .Setup(mock => mock.Send(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetEmployerAccountDetailByHashedIdResponse { AccountDetail = new AccountDetailDto() });
 
             _featureToggleService
@@ -56,7 +57,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         {
             // Arrange
             _mediatorMock
-                .Setup(mock => mock.SendAsync(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>()))
+                .Setup(mock => mock.Send(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetEmployerAccountDetailByHashedIdResponse { AccountDetail = new AccountDetailDto()});
 
             //Act

@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using HMRC.ESFA.Levy.Api.Types;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Paye;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Hmrc;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
 {
@@ -47,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             _validator.Setup(x => x.Validate(It.IsAny<UpdatePayeInformationCommand>())).Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await _handler.Handle(new UpdatePayeInformationCommand(), CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>(async () => await _handler.Handle(new UpdatePayeInformationCommand(), CancellationToken.None));
 
             //Assert
             _validator.Verify(x => x.Validate(It.IsAny<UpdatePayeInformationCommand>()));

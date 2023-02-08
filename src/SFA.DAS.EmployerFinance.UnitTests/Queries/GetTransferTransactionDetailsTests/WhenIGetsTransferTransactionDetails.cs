@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using System.Threading;
+using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetailsTests
 {
@@ -138,11 +139,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
                     It.IsAny<string>(), ReceiverAccountId, SenderAccountId, PeriodEnd))
                 .ReturnsAsync(_transfers);
 
-            _db.Setup(x => x.PeriodEnds).Returns(() => new DbSetStub<PeriodEnd>(_periodEnd));
+            _db.Setup(x => x.PeriodEnds).ReturnsDbSet(new List<PeriodEnd>{_periodEnd});
 
-            _db.Setup(x => x.Transactions).Returns(() => new DbSetStub<TransactionLineEntity>(
+            _db.Setup(x => x.Transactions).ReturnsDbSet(new List<TransactionLineEntity>{
                 _senderTranferTransaction,
-                _recieverTranferTransaction));
+                _recieverTranferTransaction});
 
             _publicHashingService.Setup(x => x.DecodeValue(SenderPublicHashedId))
                 .Returns(SenderAccountId);

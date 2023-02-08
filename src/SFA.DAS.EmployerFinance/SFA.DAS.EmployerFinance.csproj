@@ -42,7 +42,6 @@
     <PackageReference Include="SFA.DAS.Sql.Client" Version="1.0.0.44965" />
     <PackageReference Include="SFA.DAS.UnitOfWork" Version="9.0.13" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
-    <PackageReference Include="SFA.DAS.Validation" Version="5.1.167" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="ClosedXML" Version="0.100.3" />
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="2.0.5" />

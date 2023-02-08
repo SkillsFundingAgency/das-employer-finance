@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Validation;
 using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalculationDateCommandTests
 {
@@ -41,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
             _validator.Setup(x => x.Validate(It.IsAny<CreateEnglishFractionCalculationDateCommand>())).Returns(new ValidationResult {ValidationDictionary = new Dictionary<string, string> {{"", ""}}});
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async ()=> await _handler.Handle(new CreateEnglishFractionCalculationDateCommand(), CancellationToken.None));
+            Assert.ThrowsAsync<ValidationException>(async ()=> await _handler.Handle(new CreateEnglishFractionCalculationDateCommand(), CancellationToken.None));
 
             //Assert
             _validator.Verify(x=>x.Validate(It.IsAny<CreateEnglishFractionCalculationDateCommand>()),Times.Once);

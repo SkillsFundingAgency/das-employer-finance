@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.TestCommon.Helpers;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvitationTests
 {
@@ -111,7 +111,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvita
 
             var exception = Assert.ThrowsAsync<ValidationException>(async () => await _handler.Handle(_query, CancellationToken.None));
 
-            Assert.That(exception.ValidationErrors.Single().Message, Is.EqualTo("You must enter a valid account ID"));
+            Assert.That(exception.ValidationResult.ErrorMessage, Is.EqualTo("You must enter a valid account ID"));
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvita
 
             var exception = Assert.ThrowsAsync<ValidationException>(async () => await _handler.Handle(_query, CancellationToken.None));
 
-            Assert.That(exception.ValidationErrors.Single().Message, Is.EqualTo("You can't connect with this employer because they already have a pending or accepted connection request"));
+            Assert.That(exception.ValidationResult.ErrorMessage, Is.EqualTo("You can't connect with this employer because they already have a pending or accepted connection request"));
         }
     }
 }

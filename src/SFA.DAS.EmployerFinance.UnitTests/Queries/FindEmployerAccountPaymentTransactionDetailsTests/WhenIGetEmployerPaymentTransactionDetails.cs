@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Models.ApprenticeshipProvider;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Services;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.HashingService;
-using SFA.DAS.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTransactionDetailsTests
 {
@@ -132,7 +130,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
         }
 
         [Test]
-        public void ThenANotFoundExceptionShouldBeThrowIfNoTransactionsAreFound()
+        public async Task ThenANotFoundExceptionShouldBeThrowIfNoTransactionsAreFound()
         {
             //Arrange
             _dasLevyService.Setup(x => x.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
@@ -140,7 +138,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
                 .ReturnsAsync(new PaymentTransactionLine[0]);
 
             //Act
-            Assert.ThrowsAsync<NotFoundException>(async () => await RequestHandler.Handle(Query, CancellationToken.None));
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
+            
+            //Assert
+            Assert.IsNull(actual);
         }
     }
 }

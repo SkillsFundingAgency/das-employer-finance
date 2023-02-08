@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Web.Mappings;
+using SFA.DAS.EmployerFinance.Mappings;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Mappings
 {
@@ -10,7 +12,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Mappings
         [Test]
         public void ThenShouldUseValidConfiguration()
         {
-            var config = new MapperConfiguration(c => c.AddProfiles(typeof(HealthCheckMappings)));
+            var config = new MapperConfiguration(c => c.AddProfiles(new List<AutoMapper.Profile>{new HealthCheckMappings()}));
 
             config.AssertConfigurationIsValid();
         }

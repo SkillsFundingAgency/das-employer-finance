@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Dtos;
@@ -25,13 +27,13 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             _configurationProvider = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null);
         }
 
         [Test]
         public async Task ThenShouldRedirectWhenHasOutstandingTransfer()
         {
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>()))
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>(), CancellationToken.None))
                 .ReturnsAsync(new GetLatestPendingReceivedTransferConnectionInvitationResponse
                 {
                     TransferConnectionInvitation = new TransferConnectionInvitationDto()
@@ -45,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenShouldRedirectToExpectedRouteWhenHasOutstandingTransfer()
         {
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>()))
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>(), CancellationToken.None))
                 .ReturnsAsync(new GetLatestPendingReceivedTransferConnectionInvitationResponse
                 {
                     TransferConnectionInvitation = new TransferConnectionInvitationDto()
@@ -62,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenShouldRedirectWhenDoesNotHaveOutstandingTransfer()
         {
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>()))
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>(), CancellationToken.None))
                 .ReturnsAsync(new GetLatestPendingReceivedTransferConnectionInvitationResponse
                 {
                     TransferConnectionInvitation = null
@@ -76,7 +78,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenShouldRedirectToExpectedRouteWhenDoesNotHaveOutstandingTransfer()
         {
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>()))
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<GetLatestPendingReceivedTransferConnectionInvitationResponse>>(), CancellationToken.None))
                 .ReturnsAsync(new GetLatestPendingReceivedTransferConnectionInvitationResponse
                 {
                     TransferConnectionInvitation = null

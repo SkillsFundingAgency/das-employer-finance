@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -51,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
 
-            _mediator.Setup(x => x.SendAsync(It.IsAny<GetEmployerAccountHashedQuery>()))
+            _mediator.Setup(x => x.Send(It.IsAny<GetEmployerAccountHashedQuery>(), CancellationToken.None))
                 .ReturnsAsync(_response);
 
             _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
@@ -72,8 +73,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             await _orchestrator.GetAccountTransactions(HashedAccountId, year, month, ExternalUser);
 
             //Assert
-            _mediator.Verify(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(
-                q => q.Year == year && q.Month == month)), Times.Once);
+            _mediator.Verify(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(
+                q => q.Year == year && q.Month == month), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -83,8 +84,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int), ExternalUser);
 
             //Assert
-            _mediator.Verify(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(
-                q => q.Year == 0 && q.Month == 0)), Times.Once);
+            _mediator.Verify(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(
+                q => q.Year == 0 && q.Month == 0), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -265,7 +266,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 })
             );
 
-            _mediator.Setup(x => x.SendAsync(It.IsAny<GetEmployerAccountTransactionsQuery>()))
+            _mediator.Setup(x => x.Send(It.IsAny<GetEmployerAccountTransactionsQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetEmployerAccountTransactionsResponse
                 {
                     Data = new AggregationData

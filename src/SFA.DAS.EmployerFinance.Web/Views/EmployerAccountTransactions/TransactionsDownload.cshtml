@@ -1,8 +1,5 @@
 @using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
-@using SFA.DAS.Validation.Mvc
-@using SFA.DAS.EmployerFinance.Web.Helpers
 @using SFA.DAS.EmployerFinance.Interfaces
-@using SFA.DAS.EmployerFinance.Web.Extensions
 
 @inject IUrlActionHelper UrlHelpers;
 @inject IHtmlHelperExtensions HtmlHelper;
@@ -33,7 +30,8 @@
         @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", FormMethod.Post, new { novalidate = "novalidate" }))
         {
             @Html.AntiForgeryToken()
-            <div class="form-group @(Html.IsValid(m => m.GetTransactionsDownloadQuery.StartDate.Month) && Html.IsValid(m => m.GetTransactionsDownloadQuery.StartDate.Year) ? "" : "error")">
+            
+            <div asp-fieldname="GetTransactionsDownloadQuery.StartDate.Month,GetTransactionsDownloadQuery.StartDate.Year">
                 <span id="@Html.IdFor(m => m.GetTransactionsDownloadQuery.StartDate)" class="form-label-bold">Start date</span>
                 <span class="form-hint">For example, 5 2017</span>
                 <div class="form-date">
@@ -49,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group @(Html.IsValid(m => m.GetTransactionsDownloadQuery.EndDate.Month) && Html.IsValid(m => m.GetTransactionsDownloadQuery.EndDate.Year) ? "" : "error")">
+            <div asp-fieldname="GetTransactionsDownloadQuery.EndDate.Month,GetTransactionsDownloadQuery.EndDate.Year">
                 <span id="@Html.IdFor(m => m.GetTransactionsDownloadQuery.EndDate)" class="form-label-bold">End date</span>
                 <span class="form-hint">For example, 10 2017</span>
                 <div class="form-date">

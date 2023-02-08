@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -16,18 +17,14 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
         private TransferConnectionInvitationsController _controller;
         private readonly SentTransferConnectionInvitationViewModel _viewModel = new SentTransferConnectionInvitationViewModel();
-        private readonly Mock<IMediator> _mediator = new Mock<IMediator>();
-
+        
         [SetUp]
         public void Arrange()
         {
-            var routeData = new RouteData();
-
-            routeData.Values[ControllerConstants.AccountHashedIdRouteKeyName] = AccountHashedId;
-
-            var urlHelper = new UrlHelper(new RequestContext(Mock.Of<HttpContextBase>(), routeData));
-
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object) { Url = urlHelper };
+            var urlHelper = new Mock<IUrlActionHelper>();
+            urlHelper.Setup(x => x.EmployerAccountsAction("team")).Returns($"/accounts/{AccountHashedId}/teams");
+            
+            _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object);
         }
 
         [Test]

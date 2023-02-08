@@ -1,12 +1,13 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.Validation;
 using SFA.DAS.HashingService;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using System.Threading;
+using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments
 {
@@ -32,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments
 
             if (!validationResult.IsValid())
             {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
+                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
             if (validationResult.IsUnauthorized)
@@ -46,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments
 
             if (!transactions.Any())
             {
-                throw new NotFoundException("No transactions found.");
+                return null;//TODO
             }
 
             var firstTransaction = transactions.First();

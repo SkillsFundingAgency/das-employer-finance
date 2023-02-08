@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
@@ -19,9 +22,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         public void Arrange()
         {
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<long>>()));
+            _mediator.Setup(m => m.Send(It.IsAny<IRequest<long>>(), CancellationToken.None));
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object);
+            _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
 
             _viewModel = new RejectedTransferConnectionInvitationViewModel
             {
@@ -36,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Rejected(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.Is<DeleteTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId)), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<DeleteTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -59,7 +62,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Rejected(_viewModel);
 
-            _mediator.Verify(m => m.SendAsync(It.IsAny<DeleteTransferConnectionInvitationCommand>()), Times.Never);
+            _mediator.Verify(m => m.Send(It.IsAny<DeleteTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }
 
         [Test]
