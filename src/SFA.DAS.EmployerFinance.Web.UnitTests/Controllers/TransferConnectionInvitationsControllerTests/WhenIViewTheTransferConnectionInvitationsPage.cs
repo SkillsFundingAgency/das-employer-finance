@@ -21,7 +21,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             var result = _controller.Index() as ViewResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
+            Assert.That(result.ViewName, Is.Null);
             Assert.That(result.Model, Is.Null);
         }
     }

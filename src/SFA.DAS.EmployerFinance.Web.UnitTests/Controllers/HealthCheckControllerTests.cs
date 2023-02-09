@@ -24,7 +24,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
         {
             return RunAsync(f => f.Index(), (f, r) =>
             {
-                r.Should().NotBeNull().And.Match<ViewResult>(a => a.ViewName == "");
+                r.Should().NotBeNull().And.Match<ViewResult>(a => a.ViewName == null);
                 r.As<ViewResult>().Model.Should().NotBeNull().And.Match<HealthCheckViewModel>(m => m.HealthCheck == f.GetHealthCheckQueryResponse.HealthCheck);
             });
         }
@@ -32,9 +32,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
         [Test]
         public Task Index_WhenPostingTheIndexAction_ThenShouldRedirectToTheIndexAction()
         {
-            return RunAsync(f => f.PostIndex(), (f, r) => r.Should().NotBeNull().And.Match<RedirectToRouteResult>(a =>
-                a.RouteValues["Action"].Equals("Index") &&
-                a.RouteValues["Controller"] == null));
+            return RunAsync(f => f.PostIndex(), (f, r) => r.Should().NotBeNull().And.Match<RedirectToActionResult>(a =>
+                a.ActionName.Equals("Index") &&
+                a.ControllerName == null));
         }
     }
 

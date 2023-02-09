@@ -44,12 +44,12 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
                 .Returns((string p) => new EmployerFeatureToggle { Feature = p, IsEnabled = false });
 
             //Act
-            var result = await _controller.Index(new GetEmployerAccountDetailByHashedIdQuery { HashedAccountId = "ACC123" }) as RedirectToRouteResult;
+            var result = await _controller.Index(new GetEmployerAccountDetailByHashedIdQuery { HashedAccountId = "ACC123" }) as RedirectToActionResult;
 
             //Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues["action"], Is.EqualTo("Index"));
-            Assert.That(result.RouteValues["controller"], Is.EqualTo("AccessDenied"));
+            Assert.That(result.ActionName, Is.EqualTo("Index"));
+            Assert.That(result.ControllerName, Is.EqualTo("AccessDenied"));
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
+            Assert.That(result.ViewName, Is.Null);
             Assert.That(result.Model, Is.Null);
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -14,7 +15,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
     [TestFixture]
     public class WhenISubmitTheSendTransferConnectionInvitationPage
     {
-        private const long TransferConnectionId = 123;
+        private const int TransferConnectionId = 123;
 
         private TransferConnectionInvitationsController _controller;
         private SendTransferConnectionInvitationViewModel _viewModel;
@@ -24,7 +25,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         public void Arrange()
         {
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.Send(It.IsAny<IRequest<long>>(), CancellationToken.None)).ReturnsAsync(TransferConnectionId);
+            _mediator.Setup(m => m.Send(It.IsAny<SendTransferConnectionInvitationCommand>(), CancellationToken.None)).ReturnsAsync(TransferConnectionId);
 
             _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
 
@@ -49,12 +50,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Confirm";
 
-            var result = await _controller.Send(_viewModel) as RedirectToRouteResult;
+            var result = await _controller.Send(_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Sent"));
-            Assert.That(result.RouteValues.ContainsKey("controller"), Is.False);
+            Assert.That(result.ActionName, Is.EqualTo("Sent"));
+            Assert.That(result.ControllerName, Is.Null);
             Assert.That(result.RouteValues.TryGetValue("transferConnectionInvitationId", out var transferConnectionId), Is.True);
             Assert.That(transferConnectionId, Is.EqualTo(TransferConnectionId));
         }
@@ -74,12 +74,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "ReEnterAccountId";
 
-            var result = await _controller.Send(_viewModel) as RedirectToRouteResult;
+            var result = await _controller.Send(_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Start"));
-            Assert.That(result.RouteValues.ContainsKey("controller"), Is.False);
+            Assert.That(result.ActionName, Is.EqualTo("Start"));
+            Assert.That(result.ControllerName, Is.Null);
         }
     }
 }

@@ -44,12 +44,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
         {
-            var result = await _controller.Start(_viewModel) as RedirectToRouteResult;
+            var result = await _controller.Start(_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Send"));
-            Assert.That(result.RouteValues.ContainsKey("controller"), Is.False);
+            Assert.That(result.ActionName, Is.EqualTo("Send"));
             Assert.That(result.RouteValues.TryGetValue("ReceiverAccountPublicHashedId", out var receiverPublicHashedAccountId), Is.True);
             Assert.That(receiverPublicHashedAccountId, Is.EqualTo(ReceiverAccountPublicHashedId));
         }

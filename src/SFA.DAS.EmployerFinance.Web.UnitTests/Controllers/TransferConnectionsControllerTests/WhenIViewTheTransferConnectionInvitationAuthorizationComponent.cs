@@ -57,7 +57,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             var model = result?.Model as TransferConnectionInvitationAuthorizationViewModel;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
+            Assert.That(result.ViewName, Is.Null);
             Assert.That(model, Is.Not.Null);
             Assert.That(model.AuthorizationResult, Is.EqualTo(_response.AuthorizationResult));
             Assert.That(model.IsValidSender, Is.EqualTo(_response.IsValidSender));

@@ -49,12 +49,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Approve";
 
-            var result = await _controller.Receive(_viewModel) as RedirectToRouteResult;
+            var result = await _controller.Receive(_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Approved"));
-            Assert.That(result.RouteValues.ContainsKey("controller"), Is.False);
+            Assert.That(result.ActionName, Is.EqualTo("Approved"));
             Assert.That(result.RouteValues.TryGetValue("transferConnectionInvitationId", out var transferConnectionId), Is.True);
             Assert.That(transferConnectionId, Is.EqualTo(TransferConnectionId));
         }
@@ -84,12 +82,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Reject";
 
-            var result = await _controller.Receive(_viewModel) as RedirectToRouteResult;
+            var result = await _controller.Receive(_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Rejected"));
-            Assert.That(result.RouteValues.ContainsKey("controller"), Is.False);
+            Assert.That(result.ActionName, Is.EqualTo("Rejected"));
             Assert.That(result.RouteValues.TryGetValue("transferConnectionInvitationId", out var transferConnectionId), Is.True);
             Assert.That(transferConnectionId, Is.EqualTo(TransferConnectionId));
         }

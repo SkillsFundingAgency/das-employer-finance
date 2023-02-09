@@ -60,7 +60,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             var model = result?.Model as TransferConnectionInvitationsViewModel;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
+            Assert.That(result.ViewName, Is.Null);
             Assert.That(model, Is.Not.Null);
             Assert.That(model.TransferConnectionInvitations, Is.EqualTo(_response.TransferConnectionInvitations));
         }

@@ -61,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
 
-            var model = viewResult.Model as OrchestratorResponse<FinanceDashboardViewModel>;
+            var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
             Assert.IsNotNull(model);
             Assert.IsNotNull(model.Data);
             Assert.AreEqual(ExpectedHashedAccountId, model.Data.AccountHashedId);
@@ -77,7 +77,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             var viewResult = result as ViewResult;
             Assert.IsNotNull(viewResult);
 
-            var model = viewResult.Model as OrchestratorResponse<FinanceDashboardViewModel>;
+            var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
             Assert.IsNotNull(model);
             Assert.IsNotNull(model.Data);
             Assert.AreEqual(ExpectedCurrentFunds, model.Data.CurrentLevyFunds);

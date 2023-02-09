@@ -31,13 +31,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToTransfersPage";
 
-            var result = _controller.Deleted(_viewModel) as RedirectToRouteResult;
+            var result = _controller.Deleted(_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Index"));
-            Assert.That(result.RouteValues.TryGetValue("controller", out var controllerName), Is.True);
-            Assert.That(controllerName, Is.EqualTo("TransferConnections"));
+            Assert.That(result.ActionName, Is.EqualTo("Index"));
+            Assert.That(result.ControllerName, Is.EqualTo("TransferConnections"));
         }
 
         [Test]

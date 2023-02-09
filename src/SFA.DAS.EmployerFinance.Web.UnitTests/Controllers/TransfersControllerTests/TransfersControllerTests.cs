@@ -63,8 +63,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         {   
             var result = await _controller.FinancialBreakdown(HashedAccountId);
             var view = result as ViewResult;
-            var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
+            var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
            
+            Assert.IsNotNull(viewModel);
             Assert.IsNotNull(viewModel.Data);
             Assert.IsNotNull(viewModel.Data.AcceptedPledgeApplications);
             Assert.IsNotNull(viewModel.Data.ApprovedPledgeApplications);
@@ -111,12 +112,12 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             Assert.AreEqual(availablePledgedFunds, viewModel.Data.AvailablePledgedFunds);
         }
 
-        private async Task<OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
+        private async Task<Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
         {
             var result = await _controller.FinancialBreakdown(HashedAccountId);
 
             var view = result as ViewResult;
-            var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
+            var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
 
             Assert.IsNotNull(viewModel);
 

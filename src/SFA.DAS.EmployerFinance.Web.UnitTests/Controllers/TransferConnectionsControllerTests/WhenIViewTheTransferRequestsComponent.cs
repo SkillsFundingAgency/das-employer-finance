@@ -64,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             var model = result?.Model as TransferRequestsViewModel;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
+            Assert.That(result.ViewName, Is.Null);
             Assert.That(model, Is.Not.Null);
             Assert.That(model.TransferRequests, Is.EqualTo(_response.TransferRequests));
         }

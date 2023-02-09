@@ -23,7 +23,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             var model = result?.Model as StartTransferConnectionInvitationViewModel;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
             Assert.That(model, Is.Not.Null);
         }
     }

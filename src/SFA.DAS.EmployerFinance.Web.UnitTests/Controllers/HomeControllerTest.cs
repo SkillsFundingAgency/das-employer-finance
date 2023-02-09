@@ -13,19 +13,17 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
     [TestFixture]
     public class HomeControllerTest
     {
-        private EmployerFinanceConfiguration _configuration;
         private HomeController _homeController;
+        private const string ExpectedUrl = "https://localhost";
 
         [SetUp]
         public void Arrange()
         {
-            _configuration = new EmployerFinanceConfiguration
-            {
-                EmployerPortalBaseUrl = "https://localhost"
-            };
-
+            var urlHelper = new Mock<IUrlActionHelper>();
+            urlHelper.Setup(x => x.LegacyEasAction("")).Returns(ExpectedUrl);
+            
             _homeController =
-                new HomeController(Mock.Of<EmployerFinanceConfiguration>(), Mock.Of<IUrlActionHelper>());
+                new HomeController(Mock.Of<EmployerFinanceConfiguration>(), urlHelper.Object);
         }
 
         [Test]
@@ -36,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(_configuration.EmployerPortalBaseUrl, result.Url);
+            Assert.AreEqual(ExpectedUrl, result.Url);
         }
     }
 }

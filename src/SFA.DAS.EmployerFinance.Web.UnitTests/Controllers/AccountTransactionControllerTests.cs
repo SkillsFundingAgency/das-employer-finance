@@ -63,7 +63,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
             var result = await _controller.TransactionsView("TEST", 2017, 1);
 
             var viewResult = result as ViewResult;
-            var viewModel = viewResult?.Model as OrchestratorResponse<TransactionViewResultViewModel>;
+            var viewModel = viewResult?.Model as Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>;
 
             //Assert
             Assert.IsNotNull(viewModel);

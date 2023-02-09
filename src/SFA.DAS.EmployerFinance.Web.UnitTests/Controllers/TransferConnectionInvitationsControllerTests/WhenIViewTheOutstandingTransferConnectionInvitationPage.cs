@@ -41,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery());
 
-            Assert.AreEqual(typeof(RedirectToRouteResult), actionResult.GetType());
+            Assert.AreEqual(typeof(RedirectToActionResult), actionResult.GetType());
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                     TransferConnectionInvitation = new TransferConnectionInvitationDto()
                 });
 
-            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery()) as RedirectToRouteResult;
+            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery()) as RedirectToActionResult;
 
             CheckRoute(
                 null,
@@ -72,7 +72,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery());
 
-            Assert.AreEqual(typeof(RedirectToRouteResult), actionResult.GetType());
+            Assert.AreEqual(typeof(RedirectToActionResult), actionResult.GetType());
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                     TransferConnectionInvitation = null
                 });
 
-            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery()) as RedirectToRouteResult;
+            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery()) as RedirectToActionResult;
 
             CheckRoute(
                 nameof(TransferConnectionsController),
@@ -92,15 +92,15 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                 actionResult);
         }
 
-        private void CheckRoute(string expectedControllerName, string expectedActionName, RedirectToRouteResult actualRoute)
+        private void CheckRoute(string expectedControllerName, string expectedActionName, RedirectToActionResult actualRoute)
         {
             if (!string.IsNullOrWhiteSpace(expectedControllerName) && expectedControllerName.EndsWith("Controller", StringComparison.InvariantCultureIgnoreCase))
             {
                 expectedControllerName = expectedControllerName.Substring(0, expectedControllerName.Length - "Controller".Length);
             }
 
-            Assert.AreEqual(expectedControllerName, actualRoute.RouteValues["Controller"]);
-            Assert.AreEqual(expectedActionName, actualRoute.RouteValues["Action"]);
+            Assert.AreEqual(expectedControllerName, actualRoute.ControllerName);
+            Assert.AreEqual(expectedActionName, actualRoute.ActionName);
         }
     }
 }
