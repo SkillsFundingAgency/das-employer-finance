@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
@@ -37,8 +39,8 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
             _hashingService.Setup(x => x.DecodeValue(_hashedAccountId)).Returns(_accountId);
 
             _mediator.Setup(
-                    m => m.SendAsync(
-                        It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId))))
+                    m => m.Send(
+                        It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId)),It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_response);
 
             _controller = new TransferConnectionsController(_mediator.Object, _hashingService.Object);
@@ -50,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
             await _controller.GetTransferConnections(_hashedAccountId);
 
             _mediator.Verify(
-                m => m.SendAsync(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId))),
+                m => m.Send(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId)),It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -60,26 +62,26 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
             await _controller.GetTransferConnections(_accountId);
 
             _mediator.Verify(
-                m => m.SendAsync(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId))),
+                m => m.Send(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId)), It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
         [Test]
         public async Task ThenShouldReturnTransferConnectionsForDecodedHashedAccountId()
         {
-            var result = await _controller.GetTransferConnections(_hashedAccountId) as OkNegotiatedContentResult<IEnumerable<TransferConnection>>;
+            var result = await _controller.GetTransferConnections(_hashedAccountId) as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Content, Is.SameAs(_transferConnections));
+            Assert.That(result, Is.SameAs(_transferConnections));
         }
 
         [Test]
         public async Task ThenShouldReturnTransferConnectionsForAccountId()
         {
-            var result = await _controller.GetTransferConnections(_accountId) as OkNegotiatedContentResult<IEnumerable<TransferConnection>>;
+            var result = await _controller.GetTransferConnections(_accountId) as OkObjectResult;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Content, Is.SameAs(_transferConnections));
+            Assert.That(result, Is.SameAs(_transferConnections));
         }
     }
 }

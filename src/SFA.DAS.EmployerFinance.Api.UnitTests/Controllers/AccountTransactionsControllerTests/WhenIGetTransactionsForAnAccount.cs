@@ -27,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
             _mediator = new Mock<IMediator>();
             _logger = new Mock<ILog>();
             _urlHelper = new Mock<IUrlHelper>();
-            _urlHelper.Setup(x => x.Route(It.IsAny<string>(), It.IsAny<object>())).Returns("dummyurl");            
+            _urlHelper.Setup(x => x.RouteUrl(It.IsAny<string>(), It.IsAny<object>())).Returns("dummyurl");            
             var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object);
             _controller = new AccountTransactionsController(orchestrator);
             _controller.Url = _urlHelper.Object;
@@ -83,7 +83,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
 
             model?.Should().NotBeNull();
             model?.PreviousMonthUri.Should().BeNullOrEmpty();
-            _urlHelper.Verify(x => x.Route("GetTransactions", It.IsAny<object>()), Times.Never);
+            _urlHelper.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()), Times.Never);
         }
 
         [Test]
@@ -104,13 +104,13 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
 
             //Act
             var expectedUri = "someuri";
-            _urlHelper.Setup(x => x.Route("GetTransactions", It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, year = year - 1, month = 12 })))).Returns(expectedUri);
+            _urlHelper.Setup(x => x.RouteUrl("GetTransactions", It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, year = year - 1, month = 12 })))).Returns(expectedUri);
 
             //Assert
             var response = await _controller.GetTransactions(hashedAccountId, year, month);
-            var model = response as OkNegotiatedContentResult<Transactions>;
+            var model = ((OkObjectResult)response).Value as Transactions;
 
-            model?.Content.PreviousMonthUri.Should().Be(expectedUri);
+            model?.PreviousMonthUri.Should().Be(expectedUri);
         }
 
         [Test]
@@ -131,13 +131,13 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
 
             //Assert
             Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<Transactions>>(response);
-            var model = response as OkNegotiatedContentResult<Transactions>;
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            var model = ((OkObjectResult)response).Value as Transactions;
 
-            model?.Content.Should().NotBeNull();
-            model?.Content.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
-            model?.Content.PreviousMonthUri.Should().BeNullOrEmpty();
-            _urlHelper.Verify(x => x.Route("GetTransactions", It.IsAny<object>()), Times.Never);
+            model?.Should().NotBeNull();
+            model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
+            model?.PreviousMonthUri.Should().BeNullOrEmpty();
+            _urlHelper.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()), Times.Never);
         }
 
 
@@ -161,16 +161,16 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
             var expectedUri = "someuri";
             _urlHelper.Setup(
                     x =>
-                        x.Route("GetLevyForPeriod",
+                        x.RouteUrl("GetLevyForPeriod",
                             It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, payrollYear = levyTransaction.TransactionLines[0].PayrollYear, payrollMonth = levyTransaction.TransactionLines[0].PayrollMonth }))))
                 .Returns(expectedUri);
 
             //Act
             var response = await _controller.GetTransactions(hashedAccountId, year, month);
-            var model = response as OkNegotiatedContentResult<Transactions>;
+            var model = ((OkObjectResult)response).Value as Transactions;
 
             //Assert            
-            model?.Content[0].ResourceUri.Should().Be(expectedUri);
+            model? [0].ResourceUri.Should().Be(expectedUri);
         }
 
 
@@ -191,11 +191,11 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
 
             //Assert            
             Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<Transactions>>(response);
-            var model = response as OkNegotiatedContentResult<Transactions>;
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            var model = ((OkObjectResult)response).Value as Transactions;
 
-            model?.Content.Should().NotBeNull();
-            model?.Content.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
+            model?.Should().NotBeNull();
+            model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
         }
     }    
 }
