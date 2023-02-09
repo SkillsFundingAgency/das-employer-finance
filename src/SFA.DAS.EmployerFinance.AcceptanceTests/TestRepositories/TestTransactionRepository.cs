@@ -12,7 +12,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
+//using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories
 {

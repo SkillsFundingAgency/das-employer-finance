@@ -13,8 +13,6 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
-using SFA.DAS.NServiceBus.Configuration.NLog;
-using SFA.DAS.NServiceBus.Configuration.StructureMap;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
 using SFA.DAS.Testing.AzureStorageEmulator;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
@@ -97,9 +95,10 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                     .UseLicense(WebUtility.HtmlDecode(_container.GetInstance<EmployerFinanceConfiguration>().NServiceBusLicense))
                     .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
                     .UseNewtonsoftJsonSerializer()
-                    .UseNLogFactory()
+                    //MAP-192- Implement
+                    //.UseNLogFactory()
                     .UseOutbox()
-                    .UseStructureMapBuilder(_container)
+                    //.UseStructureMapBuilder(_container)
                     .UseUnitOfWork();
 
                 if (Debugger.IsAttached)
