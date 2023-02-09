@@ -1,9 +1,11 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountLevyControllerTests
@@ -19,7 +21,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountLevyControlle
             short payrollMonth = 5;
             var levyResponse = new GetLevyDeclarationsByAccountAndPeriodResponse { Declarations = LevyDeclarationItems.Create(12334, "abc123") };
             Mediator.Setup(
-                    x => x.SendAsync(It.Is<GetLevyDeclarationsByAccountAndPeriodRequest>(q => q.HashedAccountId == hashedAccountId && q.PayrollYear == payrollYear && q.PayrollMonth == payrollMonth)))
+                    x => x.Send(It.Is<GetLevyDeclarationsByAccountAndPeriodRequest>(q => q.HashedAccountId == hashedAccountId && q.PayrollYear == payrollYear && q.PayrollMonth == payrollMonth), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(levyResponse);            
 
             //Act
@@ -27,13 +29,13 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountLevyControlle
 
             //Assert
             Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<List<LevyDeclaration>>>(response);
-            var model = response as OkNegotiatedContentResult<List<LevyDeclaration>>;
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            var model = ((OkObjectResult)response).Value as List<LevyDeclaration>;
 
-            model?.Content.Should().NotBeNull();
-            Assert.IsTrue(model?.Content.TrueForAll(x => x.HashedAccountId == hashedAccountId));
-            model?.Content.ShouldAllBeEquivalentTo(levyResponse.Declarations, options => options.Excluding(x => x.HashedAccountId).Excluding(x => x.PayeSchemeReference));
-            Assert.IsTrue(model?.Content[0].PayeSchemeReference == levyResponse.Declarations[0].EmpRef);
+            model?.Should().NotBeNull();
+            Assert.IsTrue(model?.TrueForAll(x => x.HashedAccountId == hashedAccountId));
+            model?.ShouldAllBeEquivalentTo(levyResponse.Declarations, options => options.Excluding(x => x.HashedAccountId).Excluding(x => x.PayeSchemeReference));
+            Assert.IsTrue(model?[0].PayeSchemeReference == levyResponse.Declarations[0].EmpRef);
         }
     }
 }

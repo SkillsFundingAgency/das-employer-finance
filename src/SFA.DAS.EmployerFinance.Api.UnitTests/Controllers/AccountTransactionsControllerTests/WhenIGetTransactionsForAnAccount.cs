@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
@@ -17,14 +19,14 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
         private AccountTransactionsController _controller;
         private Mock<IMediator> _mediator;
         private Mock<ILog> _logger;
-        private Mock<UrlHelper> _urlHelper;
+        private Mock<IUrlHelper> _urlHelper;
 
         [SetUp]
         public void Arrange()
         {
             _mediator = new Mock<IMediator>();
             _logger = new Mock<ILog>();
-            _urlHelper = new Mock<UrlHelper>();
+            _urlHelper = new Mock<IUrlHelper>();
             _urlHelper.Setup(x => x.Route(It.IsAny<string>(), It.IsAny<object>())).Returns("dummyurl");            
             var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object);
             _controller = new AccountTransactionsController(orchestrator);
@@ -43,17 +45,18 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Data = TransactionLineObjectMother.Create(),
                 AccountHasPreviousTransactions = false
             };
-            _mediator.Setup(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month))).ReturnsAsync(transactionsResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
            
             //Act
             var response = await _controller.GetTransactions(hashedAccountId, year, month);
 
             //Assert
             Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<Transactions>>(response);
-            var model = response as OkNegotiatedContentResult<Transactions>;
-            model?.Content.Should().NotBeNull();
-            model?.Content.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            var model = ((OkObjectResult)response).Value as Transactions;
+
+            model?.Should().NotBeNull();
+            model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
         }
 
         [Test]
@@ -68,18 +71,18 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Data = TransactionLineObjectMother.Create(),
                 AccountHasPreviousTransactions = false
             };
-            _mediator.Setup(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month))).ReturnsAsync(transactionsResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
             //Act
             var response = await _controller.GetTransactions(hashedAccountId, year, month);
             
             //Assert
             Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<Transactions>>(response);
-            var model = response as OkNegotiatedContentResult<Transactions>;
+            Assert.IsInstanceOf<OkObjectResult>(response);
+            var model = ((OkObjectResult)response).Value as Transactions;
 
-            model?.Content.Should().NotBeNull();
-            model?.Content.PreviousMonthUri.Should().BeNullOrEmpty();
+            model?.Should().NotBeNull();
+            model?.PreviousMonthUri.Should().BeNullOrEmpty();
             _urlHelper.Verify(x => x.Route("GetTransactions", It.IsAny<object>()), Times.Never);
         }
 
@@ -97,7 +100,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Year = year,
                 Month = month
             };
-            _mediator.Setup(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month))).ReturnsAsync(transactionsResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
             //Act
             var expectedUri = "someuri";
@@ -121,7 +124,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Data = TransactionLineObjectMother.Create(),
                 AccountHasPreviousTransactions = false
             };
-            _mediator.Setup(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == DateTime.Now.Month))).ReturnsAsync(transactionsResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == DateTime.Now.Month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
             //Act
             var response = await _controller.GetTransactions(hashedAccountId, year);
@@ -153,7 +156,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Year = year,
                 Month = month
             };
-            _mediator.Setup(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month))).ReturnsAsync(transactionsResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
             var expectedUri = "someuri";
             _urlHelper.Setup(
@@ -181,7 +184,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Data = TransactionLineObjectMother.Create(),
                 AccountHasPreviousTransactions = false
             };
-            _mediator.Setup(x => x.SendAsync(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == DateTime.Now.Year && q.Month == DateTime.Now.Month))).ReturnsAsync(transactionsResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == DateTime.Now.Year && q.Month == DateTime.Now.Month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
             //Act
             var response = await _controller.GetTransactions(hashedAccountId);
