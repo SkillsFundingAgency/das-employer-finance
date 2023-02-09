@@ -1,16 +1,14 @@
-﻿using System.Net;
-using System.Data.Common;
+﻿using System.Data.Common;
+using System.Net;
 using System.Threading.Tasks;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
-using SFA.DAS.NServiceBus.Configuration;
+using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
 using StructureMap;
-using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
-using SFA.DAS.NServiceBus.Configuration.NLog;
-using SFA.DAS.NServiceBus.Configuration.StructureMap;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
+using SFA.DAS.NServiceBus.Configuration;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.TestHarness
 {
@@ -35,9 +33,10 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.TestHarness
                 .UseLicense(WebUtility.HtmlDecode(_employerFinanceConfiguration.NServiceBusLicense))
                 .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
                 .UseNewtonsoftJsonSerializer()
-                .UseNLogFactory()
+                //MAP-192 Need to implement
+                //.UseNLogFactory()
                 .UseOutbox()
-                .UseStructureMapBuilder(_container)
+                //.UseStructureMapBuilder(_container)
                 .UseUnitOfWork();
 
             _endpoint = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);

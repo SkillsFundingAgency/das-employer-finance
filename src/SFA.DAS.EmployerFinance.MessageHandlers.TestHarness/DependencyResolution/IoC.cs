@@ -14,7 +14,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.TestHarness.DependencyResoluti
             {
                 c.AddRegistry<CachesRegistry>();
                 c.AddRegistry<ConfigurationRegistry>();
-                c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
+                //c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
                 c.AddRegistry<NServiceBusUnitOfWorkRegistry>();
                 c.AddRegistry<DefaultRegistry>();
             });
