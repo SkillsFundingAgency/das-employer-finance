@@ -29,8 +29,8 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
             _mediator = new Mock<IMediator>();
             _logger = new Mock<ILog>();
             _urlHelper = new Mock<IUrlHelper>();
-            var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object);
-            _controller = new AccountTransactionsController(orchestrator);
+            var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object, _urlHelper.Object);
+            _controller = new AccountTransactionsController(orchestrator, _urlHelper.Object);
             _controller.Url = _urlHelper.Object;
         }
 

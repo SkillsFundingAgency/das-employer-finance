@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Moq;
@@ -42,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsCont
                 TransferAllowance = new Models.Transfers.TransferAllowance { RemainingTransferAllowance = 10 }
             };
             
-            _mediator.Setup(x => x.SendAsync(It.Is<GetTransferAllowanceQuery>(q => q.AccountId == It.IsAny<long>()))).ReturnsAsync(accountBalancesResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetTransferAllowanceQuery>(q => q.AccountId == It.IsAny<long>()), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
 
             //Act
             var response = await _employerAccountsController.GetTransferAllowance(hashedAccountId);

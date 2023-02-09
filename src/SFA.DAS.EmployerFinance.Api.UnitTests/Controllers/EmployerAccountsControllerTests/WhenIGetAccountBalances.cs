@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -43,7 +44,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsCont
                     new Models.Account.AccountBalance { AccountId = 2, Balance = 20000 } }
             };
             
-            _mediator.Setup(x => x.SendAsync(It.Is<GetAccountBalancesRequest>(q => q.AccountIds == It.IsAny<List<long>>()))).ReturnsAsync(accountBalancesResponse);
+            _mediator.Setup(x => x.Send(It.Is<GetAccountBalancesRequest>(q => q.AccountIds == It.IsAny<List<long>>()), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
 
             //Act
             var response = await _employerAccountsController.GetAccountBalances(hashedAccountIds);
