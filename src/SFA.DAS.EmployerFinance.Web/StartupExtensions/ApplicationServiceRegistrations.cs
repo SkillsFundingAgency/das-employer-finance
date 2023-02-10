@@ -7,7 +7,7 @@ using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Helpers;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.Hmrc.ExecutionPolicy;
 using SFA.DAS.NServiceBus.Services;
 
@@ -51,11 +51,11 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 
             //services.AddTransient<IUserAccountRepository, UserAccountRepository>();
 
-            //services.AddScoped(typeof(ICookieService<>), typeof(HttpCookieService<>));
-            //services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
-            //services.AddScoped<IUrlActionHelper, UrlActionHelper>();
+            services.AddScoped(typeof(ICookieService<>), typeof(HttpCookieService<>));
+            services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
+            services.AddScoped<IUrlActionHelper, UrlActionHelper>();
 
-            //services.AddScoped<IEncodingService, EncodingService>();
+            services.AddScoped<IEncodingService, EncodingService>();
 
             services.AddTransient<HmrcExecutionPolicy>();
 
