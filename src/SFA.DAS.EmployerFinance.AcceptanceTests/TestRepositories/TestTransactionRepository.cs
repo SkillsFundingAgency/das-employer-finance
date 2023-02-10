@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Migrations;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Data.SqlClient;
 using SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.NLog.Logger;
-//using SFA.DAS.Sql.Client;
+using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories
 {
@@ -67,7 +67,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories
 
         public Task<int> GetMaxAccountId()
         {
-            return _employerFinanceDbContext.Value.Database.Connection.QueryFirstAsync<int>(
+            return _employerFinanceDbContext.Value.Database.QueryFirstAsync<int>(
                 sql: @"
                     SELECT COALESCE(MAX(a.AccountId), 0)
                     FROM
@@ -119,7 +119,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories
             var parameters = new DynamicParameters();
 
             parameters.Add("@submissionIds", idsDataTable.AsTableValuedParameter("[employer_financial].[SubmissionIds]"));
-            return _employerFinanceDbContext.Value.Database.Connection.ExecuteAsync(
+            return _employerFinanceDbContext.Value.Database.ExecuteAsync(
                 sql: "[employer_financial].[UpdateTransactionLineDateCreatedToTransactionDate_BySubmissionId]",
                 param: parameters,
                 transaction: _employerFinanceDbContext.Value.Database.CurrentTransaction.UnderlyingTransaction,
@@ -133,7 +133,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories
 
             parameters.Add("@SubmissionIdsDates", idsDataTable.AsTableValuedParameter("[employer_financial].[SubmissionIdsDate]"));
 
-            return _employerFinanceDbContext.Value.Database.Connection.ExecuteAsync(
+            return _employerFinanceDbContext.Value.Database.ExecuteAsync(
                 sql: "[employer_financial].[UpdateTransactionLinesDateCreated_BySubmissionId]",
                 param: parameters,
                 transaction: _employerFinanceDbContext.Value.Database.CurrentTransaction.UnderlyingTransaction,
