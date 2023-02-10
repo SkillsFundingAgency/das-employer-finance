@@ -14,14 +14,14 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
         {
             return new Container(c =>
             {
-                c.AddRegistry<ApprenticeshipLevyRegistry>();
+                //c.AddRegistry<ApprenticeshipLevyRegistry>();
                 c.AddRegistry<CachesRegistry>();
-                c.AddRegistry<CommitmentsV2ApiClientRegistry>();
+                //c.AddRegistry<CommitmentsV2ApiClientRegistry>();
                 c.AddRegistry<ConfigurationRegistry>();
                 c.AddRegistry<DataRegistry>();
                 c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
                 c.AddRegistry<EventsRegistry>();
-                c.AddRegistry<ExecutionPoliciesRegistry>();
+                //c.AddRegistry<ExecutionPoliciesRegistry>();
                 c.AddRegistry<HashingRegistry>();
                 c.AddRegistry<LoggerRegistry>();
                 c.AddRegistry<MapperRegistry>();
