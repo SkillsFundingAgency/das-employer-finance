@@ -21,7 +21,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
         {
             var formattedFileData = PaymentFormatter.GetFileData(TransactionDownloadLines);
 
-            var formattedFileContent = Encoding.UTF8.GetString(formattedFileData);
+            var formattedFileContent = System.Text.Encoding.UTF8.GetString(formattedFileData);
 
             var rows = formattedFileContent.Split(
                 new[] { Environment.NewLine },
@@ -58,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
         {
             var formattedFileData = PaymentFormatter.GetFileData(TransactionDownloadLines); 
 
-            var formattedFileContent = Encoding.UTF8.GetString(formattedFileData);
+            var formattedFileContent = System.Text.Encoding.UTF8.GetString(formattedFileData);
 
             var rows = formattedFileContent.Split(
                 new[] { Environment.NewLine },

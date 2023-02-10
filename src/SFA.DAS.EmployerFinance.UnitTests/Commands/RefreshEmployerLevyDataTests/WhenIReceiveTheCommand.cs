@@ -11,7 +11,7 @@ using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.UnitTests.ObjectMothers;
 using SFA.DAS.Events.Api.Types;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
         private Mock<IHmrcDateService> _hmrcDateService;
         private Mock<ILevyEventFactory> _levyEventFactory;
         private Mock<IGenericEventFactory> _genericEventFactory;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private ILevyImportCleanerStrategy _levyImportCleanerStrategy;
         private Mock<ILog> _logger;
         private Mock<ICurrentDateTime> _currentDateTime;
@@ -63,13 +63,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
 
             _levyEventFactory = new Mock<ILevyEventFactory>();
             _genericEventFactory = new Mock<IGenericEventFactory>();
-            _hashingService = new Mock<IHashingService>();
+            _encodingService = new Mock<IEncodingService>();
             _logger = new Mock<ILog>();
             _eventPublisher = new TestableEventPublisher();
             _levyImportCleanerStrategy = new LevyImportCleanerStrategy(_levyRepository.Object, _hmrcDateService.Object, _logger.Object, _currentDateTime.Object);
 
             _refreshEmployerLevyDataCommandHandler = new RefreshEmployerLevyDataCommandHandler(_validator.Object, _levyRepository.Object, _mediator.Object,
-                _levyEventFactory.Object, _genericEventFactory.Object, _hashingService.Object, _levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILog>());
+                _levyEventFactory.Object, _genericEventFactory.Object, _encodingService.Object, _levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILog>());
         }
 
         [Test]
@@ -255,7 +255,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             var data = RefreshEmployerLevyDataCommandObjectMother.CreateLevyDataWithMultiplePeriods(ExpectedAccountId, DateTime.UtcNow);
 
             var hashedAccountId = "ABC123";
-            _hashingService.Setup(x => x.HashValue(ExpectedAccountId)).Returns(hashedAccountId);
+            _encodingService.Setup(x => x.Encode(ExpectedAccountId,EncodingType.AccountId)).Returns(hashedAccountId);
 
             var expectedLevyEvents = new List<LevyDeclarationUpdatedEvent> { new LevyDeclarationUpdatedEvent { ResourceUri = "ABC" }, new LevyDeclarationUpdatedEvent { ResourceUri = "ZZZ" } };
             var expectedGenericEvents = new List<GenericEvent> { new GenericEvent { Id = 1 }, new GenericEvent { Id = 2 } };

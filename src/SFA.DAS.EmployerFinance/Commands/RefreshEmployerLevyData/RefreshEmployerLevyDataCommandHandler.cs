@@ -12,7 +12,7 @@ using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Services;
 
@@ -25,7 +25,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
         private readonly IMediator _mediator;
         private readonly ILevyEventFactory _levyEventFactory;
         private readonly IGenericEventFactory _genericEventFactory;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
         private readonly ILevyImportCleanerStrategy _levyImportCleanerStrategy;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILog _logger;
@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
             IMediator mediator,
             ILevyEventFactory levyEventFactory,
             IGenericEventFactory genericEventFactory,
-            IHashingService hashingService,
+            IEncodingService encodingService,
             ILevyImportCleanerStrategy levyImportCleanerStrategy,
             IEventPublisher eventPublisher,
             ILog logger)
@@ -46,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
             _mediator = mediator;
             _levyEventFactory = levyEventFactory;
             _genericEventFactory = genericEventFactory;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
             _levyImportCleanerStrategy = levyImportCleanerStrategy;
             _eventPublisher = eventPublisher;
             _logger = logger;
@@ -129,7 +129,7 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
 
         private async Task PublishDeclarationUpdatedEvents(long accountId, IEnumerable<DasDeclaration> savedDeclarations)
         {
-            var hashedAccountId = _hashingService.HashValue(accountId);
+            var hashedAccountId = _encodingService.Encode(accountId, EncodingType.AccountId);
 
             var periodsChanged = savedDeclarations.Select(x =>
                 new

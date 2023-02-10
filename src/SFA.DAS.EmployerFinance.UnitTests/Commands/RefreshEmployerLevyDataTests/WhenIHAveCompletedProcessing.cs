@@ -15,7 +15,7 @@ using SFA.DAS.EmployerFinance.Models.HmrcLevy;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Testing.Services;
 using SFA.DAS.Testing;
@@ -67,7 +67,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
         {
             _dasLevyRepository = new Mock<IDasLevyRepository>();
             var genericEventFactory = new Mock<IGenericEventFactory>();
-            var hashingService = new Mock<IHashingService>();
+            var hashingService = new Mock<EncodingService>();
             var levyEventFactory = new Mock<ILevyEventFactory>();
             var logger = new Mock<ILog>();
             var mediator = new Mock<IMediator>();
