@@ -19,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
                 //c.AddRegistry<CommitmentsV2ApiClientRegistry>();
                 c.AddRegistry<ConfigurationRegistry>();
                 c.AddRegistry<DataRegistry>();
-                c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
+                //c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
                 c.AddRegistry<EventsRegistry>();
                 //c.AddRegistry<ExecutionPoliciesRegistry>();
                 c.AddRegistry<HashingRegistry>();
@@ -31,8 +31,8 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
                 c.AddRegistry<NotificationsRegistry>();
                 c.AddRegistry<NServiceBusClientUnitOfWorkRegistry>();
                 c.AddRegistry<NServiceBusUnitOfWorkRegistry>();
-                c.AddRegistry<PaymentsRegistry>();
-                c.AddRegistry<TokenServiceRegistry>();
+                //c.AddRegistry<PaymentsRegistry>();
+                //c.AddRegistry<TokenServiceRegistry>();
                 c.AddRegistry<UnitOfWorkRegistry>();
                 c.AddRegistry<DefaultRegistry>();
             });
