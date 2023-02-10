@@ -9,7 +9,7 @@ using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.Encoding;
 using SFA.DAS.Hmrc.ExecutionPolicy;
-using SFA.DAS.NServiceBus.Services;
+using SFA.DAS.EmployerFinance.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {
