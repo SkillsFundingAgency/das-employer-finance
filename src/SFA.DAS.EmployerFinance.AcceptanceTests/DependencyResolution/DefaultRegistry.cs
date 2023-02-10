@@ -18,7 +18,8 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
     {
         public DefaultRegistry()
         {
-            For<ILoggingContext>().Use(c => HttpContextHelper.Current == null ? null : new LoggingContext(new HttpContextWrapper(HttpContextHelper.Current)));
+            //For<ILoggingContext>().Use(c => HttpContextHelper.Current == null ? null : new LoggingContext(new HttpContextWrapper(HttpContextHelper.Current)));
+            For<ILoggingContext>().Use<LoggingContext>();
             For<ITestTransactionRepository>().Use<TestTransactionRepository>();
 
             RegisterEmployerAccountTransactionsController();
