@@ -4,8 +4,7 @@ using SFA.DAS.Authorization.Context;
 using SFA.DAS.Authorization.EmployerFeatures.Context;
 using SFA.DAS.Authorization.EmployerUserRoles.Context;
 using SFA.DAS.EmployerFinance.Infrastructure;
-using SFA.DAS.EmployerUsers.WebClientComponents;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Authorisation
 {
