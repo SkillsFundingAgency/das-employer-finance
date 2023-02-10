@@ -10,6 +10,10 @@ using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.Encoding;
 using SFA.DAS.Hmrc.ExecutionPolicy;
 using SFA.DAS.EmployerFinance.Services;
+using SFA.DAS.NServiceBus.Services;
+using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
+using SFA.DAS.EmployerFinance.Infrastructure;
+using Microsoft.ApplicationInsights.DataContracts;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {
@@ -20,36 +24,27 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             //MAP-192 Needimplementing
 
             services.AddScoped<IHtmlHelperExtensions, HtmlHelperExtensions>();
-            //services.AddScoped<ActivitiesHelper>();
-            //services.AddTransient<IRestClientFactory, RestClientFactory>();
-            //services.AddTransient<IRestServiceFactory, RestServiceFactory>();
-            //services.AddTransient<IHttpServiceFactory, HttpServiceFactory>();
-            //services.AddTransient<IUserAornPayeLockService, UserAornPayeLockService>();
 
-            //services.AddScoped<IProviderRegistrationApiClient, ProviderRegistrationApiClient>();
+            services.AddScoped<IProviderService, ProviderServiceCache>();
+            services.AddScoped<IProviderService, ProviderServiceFromDb>();
 
-            //services.AddTransient<IReservationsService, ReservationsService>();
-            //services.Decorate<IReservationsService, ReservationsServiceWithTimeout>();
+            services.AddTransient<IOuterApiClient, OuterApiClient>();
+            services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
+            services.AddTransient<IContentApiClient, ContentApiClient>();
+            services.AddTransient<IContentApiClient, ContentApiClientWithCaching>();
 
-            //services.AddTransient<ICommitmentV2Service, CommitmentsV2Service>();
-            //services.Decorate<ICommitmentV2Service, CommitmentsV2ServiceWithTimeout>();
+            services.AddTransient<IDasAccountService, DasAccountService>();
+            services.AddTransient<IDasForecastingService, DasForecastingService>();
+            services.AddTransient<IDasLevyService,DasLevyService>();
 
-            //services.AddTransient<IRecruitService, RecruitService>();
-            //services.Decorate<IRecruitService, RecruitServiceWithTimeout>();
+
+            services.Decorate<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
 
             services.AddScoped<IAccountApiClient, AccountApiClient>();
-            //services.AddTransient<IReferenceDataService, ReferenceDataService>();
-            //services.AddScoped<ITaskApiClient, TaskApiClient>();
-            //services.AddTransient<ITaskService, TaskService>();
-            //services.AddTransient<IPensionRegulatorService, PensionRegulatorService>();
+            services.AddTransient<IExcelService, ExcelService>();
 
-            //services.AddScoped<IReferenceDataApiClient, ReferenceDataApiClient>();
-
-            //services.AddTransient<IDateTimeService, DateTimeService>();
-
-            //services.AddTransient<IHashingService>(_ => new HashingService.HashingService(configuration.AllowedHashstringCharacters, configuration.Hashstring));
-
-            //services.AddTransient<IUserAccountRepository, UserAccountRepository>();
+            services.AddTransient<IDateTimeService, DateTimeService>();
+            services.AddTransient<IUserAccountRepository, UserAccountRepository>();
 
             services.AddScoped(typeof(ICookieService<>), typeof(HttpCookieService<>));
             services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
@@ -58,9 +53,12 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddScoped<IEncodingService, EncodingService>();
 
             services.AddTransient<HmrcExecutionPolicy>();
+            services.AddTransient<IHmrcDateService, HmrcDateService>();
+
 
             services.AddTransient<IGenericEventFactory, GenericEventFactory>();
-            //services.AddTransient<IPayeSchemeEventFactory, PayeSchemeEventFactory>();
+            services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<ITransfersService, TransfersService>();
 
             return services;
         }

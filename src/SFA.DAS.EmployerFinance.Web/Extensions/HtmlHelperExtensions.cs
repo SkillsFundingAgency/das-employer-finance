@@ -186,27 +186,5 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
         {
             return input.Replace("'", @"\'");
         }
-
-        // public bool IsValid<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
-        // {
-        //    var expressionText = htmlHelper.GetExpressionText(expression);
-        //     var fullHtmlFieldName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(expressionText);
-        //     if (htmlHelper.ViewData.ModelState.ContainsKey(fullHtmlFieldName))
-        //     {
-        //         var errors = htmlHelper.ViewData.ModelState[fullHtmlFieldName]?.Errors;
-        //         if (errors != null && errors.Any())
-        //             return false;
-        //     }
-        //     return true;
-        // }
-        //
-        // private string GetExpressionText<TModel, TResult>(this IHtmlHelper htmlHelper, Expression<Func<TModel, TResult>> expression)
-        // {
-        //     var expressionProvider = htmlHelper.ViewContext.HttpContext.RequestServices
-        //         .GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
-        //
-        //     return expressionProvider.GetExpressionText(expression);
-        //
-        // }
     }
 }   
