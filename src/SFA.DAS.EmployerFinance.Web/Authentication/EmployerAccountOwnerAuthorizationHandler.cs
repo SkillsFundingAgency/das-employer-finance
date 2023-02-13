@@ -20,7 +20,5 @@ public class EmployerAccountOwnerAuthorizationHandler: AuthorizationHandler<Empl
         }
 
         context.Succeed(requirement);
-
-        return;
     }
 }
