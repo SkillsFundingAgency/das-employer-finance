@@ -11,6 +11,7 @@ using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.NLog.Logger;
 using StructureMap;
 using SFA.DAS.EmployerFinance.AcceptanceTests;
+using SFA.DAS.EmployerFinance.Api.Logging;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
 {

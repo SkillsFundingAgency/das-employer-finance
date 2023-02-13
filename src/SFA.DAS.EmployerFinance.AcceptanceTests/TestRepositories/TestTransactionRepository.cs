@@ -139,5 +139,14 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories
                 transaction: _employerFinanceDbContext.Value.Database.CurrentTransaction.UnderlyingTransaction,
                 commandType: CommandType.StoredProcedure);
         }
+
+        public virtual void AddOrUpdate(T entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException("entity");
+
+            this.DbContext.Update(entity);
+            this.DbContext.SaveChanges();
+        }
     }
 }
