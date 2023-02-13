@@ -19,9 +19,10 @@ namespace SFA.DAS.EmployerFinance.Web
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
         private EmployerFinanceConfiguration _employerFinanceConfiguration;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             var config = new ConfigurationBuilder()
                 .AddConfiguration(configuration)
@@ -44,13 +45,13 @@ namespace SFA.DAS.EmployerFinance.Web
                         options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
                         options.EnvironmentName = configuration["EnvironmentName"];
                         options.PreFixConfigurationKeys = false;
-                        options.ConfigurationKeysRawJsonResult = new[] {"SFA.DAS.Encoding"};
+                        options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
                     }
                 );
             }
 
-            _configuration =config.Build();
-
+            _configuration = config.Build();
+            _environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
