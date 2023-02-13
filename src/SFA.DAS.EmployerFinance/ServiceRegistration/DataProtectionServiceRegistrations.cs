@@ -1,5 +1,6 @@
-﻿using AutoMapper;
+﻿
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.EmployerFinance.Configuration;
 using StackExchange.Redis;
@@ -24,7 +25,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
                     .Connect($"{redisConnectionString},{dataProtectionKeysDatabase}");
 
                 services.AddDataProtection()
-                    .SetApplicationName("das-forecasting-web")
+                    .SetApplicationName("das-employerfinance-web")
                     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
             }
 
