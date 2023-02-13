@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +9,10 @@ using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
+using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace SFA.DAS.EmployerFinance.Web
@@ -74,6 +75,7 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddOrchestrators();
             services.AddAutoMapper(typeof(Startup).Assembly);
+            services.AddAutoConfiguration();
 
             services.AddDatabaseRegistration(_employerFinanceConfiguration, _configuration["Environment"]);
             services.AddDataRepositories();
@@ -82,20 +84,25 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddApplicationServices(_employerFinanceConfiguration);
 
             //TODO replace with EncodingService
-            services.AddHashingServices(_employerFinanceConfiguration);
             services.AddCachesRegistrations();
             services.AddDateTimeServices(_configuration);
             services.AddEventsApi();
-
+            //services.AddNotifications(_configuration);
             services.AddEmployerFinanceApi();
 
+            services.Adde
 #if DEBUG
             services.AddControllersWithViews(o =>
             {
                 o.AddAuthorization();
             }).AddRazorRuntimeCompilation();
 #endif
+            services.AddValidatorsFromAssembly(typeof(Startup).Assembly);
+        }
 
+        public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
+        {
+            serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

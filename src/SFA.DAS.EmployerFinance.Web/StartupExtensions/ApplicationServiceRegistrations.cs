@@ -14,6 +14,7 @@ using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using Microsoft.ApplicationInsights.DataContracts;
+using SFA.DAS.TokenService.Api.Client;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {
@@ -59,6 +60,8 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddTransient<IGenericEventFactory, GenericEventFactory>();
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<ITransfersService, TransfersService>();
+
+            services.AddTransient<ITokenServiceApiClient, TokenServiceApiClient>(); 
 
             return services;
         }
