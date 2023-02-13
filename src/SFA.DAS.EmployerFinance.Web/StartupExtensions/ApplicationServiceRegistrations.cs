@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {
     public static class ApplicationServiceRegistrations
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, EmployerFinanceConfiguration configuration)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             //MAP-192 Needimplementing
 
@@ -29,7 +29,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddScoped<IProviderService, ProviderServiceCache>();
             services.AddScoped<IProviderService, ProviderServiceFromDb>();
 
-            services.AddTransient<IOuterApiClient, OuterApiClient>();
+            services.AddHttpClient<IOuterApiClient, OuterApiClient>();
             services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
             services.AddTransient<IContentApiClient, ContentApiClient>();
             services.AddTransient<IContentApiClient, ContentApiClientWithCaching>();
@@ -38,8 +38,8 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddTransient<IDasForecastingService, DasForecastingService>();
             services.AddTransient<IDasLevyService,DasLevyService>();
 
-
-            services.Decorate<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
+//TODO MAC-192 - was services.Decorate
+            services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
 
             services.AddScoped<IAccountApiClient, AccountApiClient>();
             services.AddTransient<IExcelService, ExcelService>();

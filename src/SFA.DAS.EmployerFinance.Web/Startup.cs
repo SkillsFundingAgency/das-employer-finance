@@ -15,6 +15,7 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Filters;
+using SFA.DAS.EmployerFinance.Web.Handlers;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -79,13 +80,13 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddOrchestrators();
             services.AddAutoMapper(typeof(Startup).Assembly);
-            services.AddAutoConfiguration();
+            //services.AddAutoConfiguration();
 
             services.AddDatabaseRegistration(_employerFinanceConfiguration, _configuration["Environment"]);
             services.AddDataRepositories();
             
             //MAC-192
-            services.AddApplicationServices(_employerFinanceConfiguration);
+            services.AddApplicationServices();
 
             //TODO replace with EncodingService
             services.AddCachesRegistrations();

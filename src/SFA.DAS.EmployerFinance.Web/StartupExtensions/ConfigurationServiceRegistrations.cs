@@ -8,6 +8,7 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerAccounts.Api.Client;
 using SFA.DAS.EmployerAccounts.ReadStore.Configuration;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.Encoding;
 using SFA.DAS.Hmrc.Configuration;
 using SFA.DAS.TokenService.Api.Client;
 
@@ -18,7 +19,10 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
         public static IServiceCollection AddConfigurationOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton(configuration.Get<EmployerFinanceConfiguration>());
-
+            
+            services.Configure<EmployerFinanceConfiguration>(configuration.GetSection(nameof(EmployerFinanceConfiguration)));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<EmployerFinanceConfiguration>>().Value);
+            
             services.Configure<EmployerAccountsReadStoreConfiguration>(configuration.GetSection(nameof(EmployerAccountsReadStoreConfiguration)));
             services.AddSingleton(cfg => cfg.GetService<IOptions<EmployerAccountsReadStoreConfiguration>>().Value);
 
@@ -34,20 +38,20 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             //services.Configure<IAuditApiConfiguration>(configuration.GetSection(ConfigurationKeys.AuditApi));
             //services.AddSingleton(cfg => cfg.GetService<IOptions<IAuditApiConfiguration>>().Value);
 
-            //services.Configure<EncodingConfig>(configuration.GetSection(ConfigurationKeys.EncodingConfig));
-            //services.AddSingleton(cfg => cfg.GetService<IOptions<EncodingConfig>>().Value);
+            services.Configure<EncodingConfig>(configuration.GetSection(ConfigurationKeys.EncodingConfig));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<EncodingConfig>>().Value);
 
 
             //services.Configure<ITokenServiceApiClientConfiguration>(configuration.GetSection(nameof(TokenServiceApiClientConfiguration)));
 
-            //var employerAccountsConfiguration = configuration.GetSection(nameof(EmployerAccountsConfiguration)) as EmployerAccountsConfiguration;
+            var employerFinanceConfiguration = configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
 
             //services.AddSingleton<IHmrcConfiguration>(_ => employerAccountsConfiguration.Hmrc);
             //services.AddSingleton<ITokenServiceApiClientConfiguration>(_ => employerAccountsConfiguration.TokenServiceApi);
             //services.AddSingleton<ITaskApiConfiguration>(_ => employerAccountsConfiguration.TasksApi);
             //services.AddSingleton<CommitmentsApiV2ClientConfiguration>(_ => employerAccountsConfiguration.CommitmentsApi);
             //services.AddSingleton<IProviderRegistrationClientApiConfiguration>(_ => employerAccountsConfiguration.ProviderRegistrationsApi);
-            //services.AddSingleton<EmployerAccountsOuterApiConfiguration>(_ => employerAccountsConfiguration.EmployerAccountsOuterApiConfiguration);
+            services.AddSingleton<EmployerFinanceOuterApiConfiguration>(_ => employerFinanceConfiguration.EmployerFinanceOuterApiConfiguration);
 
             //services.Configure<IEmployerAccountsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.EmployerAccountsApiClient));
             //services.AddSingleton<IEmployerAccountsApiClientConfiguration>(cfg => cfg.GetService<IOptions<EmployerAccountsApiClientConfiguration>>().Value);
