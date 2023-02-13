@@ -1,18 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
-using NServiceBus.ObjectBuilder.MSDependencyInjection;
+using SFA.DAS.GovUK.Auth.AppStart;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace SFA.DAS.EmployerFinance.Web
@@ -90,14 +94,46 @@ namespace SFA.DAS.EmployerFinance.Web
             //services.AddNotifications(_configuration);
             services.AddEmployerFinanceApi();
 
-            services.Adde
+            if (_configuration["EmployerFinanceConfiguration:UseGovSignIn"] != null &&
+               _configuration["EmployerFinanceConfiguration:UseGovSignIn"]
+                   .Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            {
+                services.AddAndConfigureGovUkAuthentication(_configuration,
+                    $"{typeof(Startup).Assembly.GetName().Name}.Auth",
+                    typeof(EmployerAccountPostAuthenticationClaimsHandler));
+            }
+            else
+            {
+                services.AddAndConfigureEmployerAuthentication(identityServerConfiguration);
+            }
+
+            services.Configure<IISServerOptions>(options => { options.AutomaticAuthentication = false; });
+
+            services.Configure<RouteOptions>(options =>
+            {
+
+            }).AddMvc(options =>
+            {
+                options.Filters.Add(new AnalyticsFilter());
+                if (!_configuration.IsDev())
+                {
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                }
+
+            });
+
+            services.AddApplicationInsightsTelemetry();
+
+            if (!_environment.IsDevelopment())
+            {
+                services.AddDataProtection();
+            }
 #if DEBUG
             services.AddControllersWithViews(o =>
             {
                 o.AddAuthorization();
             }).AddRazorRuntimeCompilation();
-#endif
-            services.AddValidatorsFromAssembly(typeof(Startup).Assembly);
+#endif            
         }
 
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
