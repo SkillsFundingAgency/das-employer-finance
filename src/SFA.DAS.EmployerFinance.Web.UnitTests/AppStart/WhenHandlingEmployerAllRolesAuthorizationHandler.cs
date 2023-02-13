@@ -19,13 +19,13 @@ public class WhenHandlingEmployerAllRolesAuthorizationHandler
     public async Task Then_Returns_Succeeded_If_Employer_Is_Authorized_For_Owner_Role(
         string role,
         EmployerIdentifier employerIdentifier,
-        EmployerAccountRequirement requirement,
+        EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         [Frozen] Mock<IEmployerAccountAuthorisationHandler> handler,
         EmployerAccountOwnerAuthorizationHandler authorizationHandler)
     {
         //Arrange
-        var context = new AuthorizationHandlerContext(new [] {requirement}, new ClaimsPrincipal(), null);
+        var context = new AuthorizationHandlerContext(new [] {ownerRequirement}, new ClaimsPrincipal(), null);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         handler.Setup(x => x.IsEmployerAuthorised(context, false)).ReturnsAsync(true);
@@ -40,13 +40,13 @@ public class WhenHandlingEmployerAllRolesAuthorizationHandler
     public async Task Then_Returns_Failed_If_Employer_Is_Not_Authorized_For_Owner_Role(
         string role,
         EmployerIdentifier employerIdentifier,
-        EmployerAccountRequirement requirement,
+        EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         [Frozen] Mock<IEmployerAccountAuthorisationHandler> handler,
         EmployerAccountOwnerAuthorizationHandler authorizationHandler)
     {
         //Arrange
-        var context = new AuthorizationHandlerContext(new [] {requirement}, new ClaimsPrincipal(), null);
+        var context = new AuthorizationHandlerContext(new [] {ownerRequirement}, new ClaimsPrincipal(), null);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         handler.Setup(x => x.IsEmployerAuthorised(context, false)).ReturnsAsync(false);

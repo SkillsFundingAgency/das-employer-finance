@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation;
@@ -18,11 +18,15 @@ using SFA.DAS.EmployerFinance.Queries.GetSentTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Attributes;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using EmployerUserRole = SFA.DAS.Authorization.EmployerUserRoles.Options.EmployerUserRole;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [DasAuthorize("EmployerFeature.TransferConnectionRequests", EmployerUserRole.Any)]
+    //[DasAuthorize("EmployerFeature.TransferConnectionRequests", EmployerUserRole.Any)]
+    //TODO MAC-192 - this should be restricted on some actions to owner role
+    [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
     [Route("accounts/{HashedAccountId}/transfers/connections/requests")]
     public class TransferConnectionInvitationsController : Controller
     {

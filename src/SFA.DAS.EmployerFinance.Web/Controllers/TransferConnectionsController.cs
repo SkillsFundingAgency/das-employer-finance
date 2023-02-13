@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.Authorization.EmployerFeatures.Models;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Features.Services;
@@ -17,12 +18,13 @@ using SFA.DAS.NLog.Logger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.EmployerFinance.Web.Attributes;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [DasAuthorize(EmployerUserRole.Any)]
+    [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
     [Microsoft.AspNetCore.Mvc.Route("accounts/{HashedAccountId}/transfers/connections")]
-    public class TransferConnectionsController : Microsoft.AspNetCore.Mvc.Controller
+    public class TransferConnectionsController : Controller
     {
         private readonly ILog _logger;
         private readonly IMapper _mapper;
