@@ -9,6 +9,7 @@
     <None Remove="Commands\CreateAccountPayeTests\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AutoFixture.NUnit3" Version="4.8.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
     <PackageReference Include="NUnit" Version="3.13.3" />
