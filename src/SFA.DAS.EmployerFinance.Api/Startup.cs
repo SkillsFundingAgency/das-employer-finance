@@ -25,6 +25,10 @@ using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 using SFA.DAS.Validation.Mvc.Extensions;
+using Microsoft.EntityFrameworkCore;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.Pipeline;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
+using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -88,7 +92,7 @@ namespace SFA.DAS.EmployerFinance.Api
       
             services.AddOrchestrators();
 
-            //services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
+            services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
             services.AddNServiceBusClientUnitOfWork();
 
             services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
@@ -119,7 +123,7 @@ namespace SFA.DAS.EmployerFinance.Api
                     opt.Filters.Add<StopwatchFilter>();
                 });
 
-            //services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetry();
         }
 
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
