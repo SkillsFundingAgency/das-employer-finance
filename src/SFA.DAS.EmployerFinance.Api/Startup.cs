@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNetCore.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,23 +10,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using MediatR;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
-using SFA.DAS.Api.Common.AppStart;
-using SFA.DAS.Api.Common.Configuration;
 using SFA.DAS.Api.Common.Infrastructure;
-using SFA.DAS.Authorization.DependencyResolution.Microsoft;
 using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.ErrorHandler;
+using SFA.DAS.EmployerFinance.Api.Filters;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Authorisation;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
+using SFA.DAS.Validation.Mvc.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -75,41 +73,6 @@ namespace SFA.DAS.EmployerFinance.Api
             services.AddApiAuthentication(_configuration, isDevelopment);
             services.AddApiAuthorization(isDevelopment);
 
-            services.AddApiConfigurationSections(_configuration)
-                .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
-                .AddMvc(opt =>
-                {
-                    if (!_configuration.IsDevOrLocal() && !_configuration.IsTest())
-                    {
-                        opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
-                        opt.AddAuthorization();
-                    }
-                });
-            if (_configuration.IsDevOrLocal())
-            {
-                services.AddAuthentication("BasicAuthentication")
-                    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
-
-                services.AddAuthorization(opt =>
-                {
-                    opt.AddPolicy("Default", builder => { builder.AllowAnonymousUser(); });
-                });
-
-                services.AddAuthorizationHandler<LocalAuthorizationHandler>();
-            }
-            else
-            {
-                var azureAdConfiguration = _configuration
-                            .GetSection(ConfigurationKeys.AzureActiveDirectoryApiConfiguration)
-                            .Get<AzureActiveDirectoryConfiguration>();
-
-                var policies = new Dictionary<string, string>
-                {
-                    {PolicyNames.Default, RoleNames.Default},
-                };
-                services.AddAuthentication(azureAdConfiguration, policies);
-                services.AddAuthorization<AuthorizationContextProvider>();
-            }
             services.AddSwaggerGen(c =>
             {
                 c.OperationFilter<AuthorizationHeaderParameterOperationFilter>();
@@ -120,20 +83,48 @@ namespace SFA.DAS.EmployerFinance.Api
                 });
             });
 
-            services.AddHashingServices(employerFinanceConfiguration);
+            services.AddApplicationServices();
+            services.AddDasDistributedMemoryCache(employerFinanceConfiguration,isDevelopment);
+      
+            services.AddOrchestrators();
+
+            //services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
+            services.AddNServiceBusClientUnitOfWork();
+
+            services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
+            services.AddDataRepositories();
+            services.AddEventsApi();
+
+
             services.AddMediatorValidators();
-            //MAC-192-need to implement
             services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+            services.AddNotifications(_configuration);
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
 
-            services.AddApplicationInsightsTelemetry();
+
+            services.AddApiConfigurationSections(_configuration)
+                .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
+                .AddMvc(opt =>
+                {
+                    if (!_configuration.IsDevOrLocal() && !_configuration.IsTest())
+                    {
+                        opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
+                        opt.AddAuthorization();
+                    }
+
+                    opt.AddValidation();
+
+                    opt.Filters.Add<StopwatchFilter>();
+                });
+
+            //services.AddApplicationInsightsTelemetry();
         }
 
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
         {
-            //serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
+            serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
