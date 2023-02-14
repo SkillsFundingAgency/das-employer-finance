@@ -70,6 +70,10 @@ namespace SFA.DAS.EmployerFinance.Api
         public void ConfigureServices(IServiceCollection services)
         {
             var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
+            var isDevelopment = _configuration.IsDevOrLocal();
+
+            services.AddApiAuthentication(_configuration, isDevelopment);
+            services.AddApiAuthorization(isDevelopment);
 
             services.AddApiConfigurationSections(_configuration)
                 .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
@@ -124,7 +128,7 @@ namespace SFA.DAS.EmployerFinance.Api
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
 
-            //services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetry();
         }
 
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
@@ -159,7 +163,7 @@ namespace SFA.DAS.EmployerFinance.Api
                 .UseSwagger()
                 .UseSwaggerUI(opt =>
                 {
-                    opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Employer Accounts API");
+                    opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Employer Finance API");
                     opt.RoutePrefix = "swagger";
                 }
                 );
