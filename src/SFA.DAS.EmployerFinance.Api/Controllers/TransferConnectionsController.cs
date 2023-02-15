@@ -1,13 +1,15 @@
 ﻿using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authorization.WebApi.Attributes;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
 using SFA.DAS.HashingService;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
-    [DasAuthorize(Roles = "ReadUserAccounts")]
+    [Authorize(Policy = ApiRoles.ReadUserAccounts)]
     [Route("api/accounts")]
     public class TransferConnectionsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {

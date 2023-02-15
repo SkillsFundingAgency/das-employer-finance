@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authorization.WebApi.Attributes;
 using SFA.DAS.EmployerFinance.Api.Attributes;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }      
 
         [Route("balances")]
-        [DasAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpPost]
         public async Task<IActionResult> GetAccountBalances(List<string> accountIds)
         {
@@ -33,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("{hashedAccountId}/transferAllowance")]
-        [DasAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         public async Task<IActionResult> GetTransferAllowance(string hashedAccountId)
         {
             var result = await _financeOrchestrator.GetTransferAllowance(hashedAccountId);

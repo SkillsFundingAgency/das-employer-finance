@@ -8,6 +8,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.Authorization.WebApi.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
@@ -24,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("", Name = "GetTransactionSummary")]
-        [DasAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpGet]
         public async Task<IActionResult> Index(string hashedAccountId)
         {
@@ -41,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("{year?}/{month?}", Name = "GetTransactions")]
-        [DasAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpGet]
         public async Task<IActionResult> GetTransactions(string hashedAccountId, int year = 0, int month = 0)
         {

@@ -3,6 +3,8 @@ using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers
 {
@@ -17,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("", Name = "GetLevy")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpGet]
         public async Task<IActionResult> Index(string hashedAccountId)
         {
@@ -32,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("{payrollYear}/{payrollMonth}", Name = "GetLevyForPeriod")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpGet]
         public async Task<IActionResult> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
         {
@@ -47,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("english-fraction-history", Name = "GetEnglishFractionHistory")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpGet]
         public async Task<IActionResult> GetEnglishFractionHistory(string hashedAccountId, string empRef)
         {
@@ -62,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers
         }
 
         [Route("english-fraction-current", Name = "GetEnglishFractionCurrent")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
+        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
         [HttpGet]
         public async Task<IActionResult> GetEnglishFractionCurrent([System.Web.Http.FromUri] string[] empRefs, string hashedAccountId)
         {
