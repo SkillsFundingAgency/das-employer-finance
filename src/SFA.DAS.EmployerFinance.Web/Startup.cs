@@ -82,7 +82,7 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddAutoMapper(typeof(Startup).Assembly);
             //services.AddAutoConfiguration();
 
-            services.AddDatabaseRegistration(_employerFinanceConfiguration, _configuration["Environment"]);
+            services.AddDatabaseRegistration(_employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
             
             //MAC-192

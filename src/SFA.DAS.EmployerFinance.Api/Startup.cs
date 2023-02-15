@@ -26,7 +26,6 @@ using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 using SFA.DAS.Validation.Mvc.Extensions;
 using Microsoft.EntityFrameworkCore;
-using SFA.DAS.UnitOfWork.EntityFrameworkCore.Pipeline;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.EmployerFinance.Data;
 
@@ -39,6 +38,7 @@ namespace SFA.DAS.EmployerFinance.Api
         public Startup(IConfiguration configuration,IHostEnvironment environment)
         {
             _environment= environment;
+            _configuration= configuration;
 
             var config = new ConfigurationBuilder()
                 .AddConfiguration(configuration)
@@ -62,6 +62,7 @@ namespace SFA.DAS.EmployerFinance.Api
                         options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
                         options.EnvironmentName = configuration["EnvironmentName"];
                         options.PreFixConfigurationKeys = false;
+                        options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
                     }
                 );
             }
@@ -88,12 +89,12 @@ namespace SFA.DAS.EmployerFinance.Api
             });
 
             services.AddApplicationServices();
-            services.AddDasDistributedMemoryCache(employerFinanceConfiguration,isDevelopment);
+            services.AddDasDistributedMemoryCache(employerFinanceConfiguration,_environment.IsDevelopment());
       
             services.AddOrchestrators();
 
             services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
-            services.AddNServiceBusClientUnitOfWork();
+            //services.AddNServiceBusClientUnitOfWork();
 
             services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
@@ -141,11 +142,13 @@ namespace SFA.DAS.EmployerFinance.Api
             else
             {
                 app.UseHsts();
+                app.UseAuthentication();
             }
 
             app.UseHttpsRedirection()
                 .UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
                 .UseStaticFiles()
+                .UseUnauthorizedAccessExceptionHandler()
                 .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()

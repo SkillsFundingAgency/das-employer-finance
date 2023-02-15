@@ -1,16 +1,8 @@
-﻿// This application entry point is based on ASP.NET Core new project templates and is included
-// as a starting point for app host configuration.
-// This file may need updated according to the specific scenario of the application being upgraded.
-// For more information on ASP.NET Core hosting, see https://docs.microsoft.com/aspnet/core/fundamentals/host/web-host
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NLog.Web;
+using SFA.DAS.NServiceBus.Configuration.MicrosoftDependencyInjection;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -18,6 +10,8 @@ namespace SFA.DAS.EmployerFinance.Api
     {
         public static void Main(string[] args)
         {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var logger = NLogBuilder.ConfigureNLog(environment == "Development" ? "nlog.Development.config" : "nlog.config").GetCurrentClassLogger();
             CreateHostBuilder(args).Build().Run();
         }
 
