@@ -110,4 +110,7 @@
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\.editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="internal-nlog.txt" />
+  </ItemGroup>
 </Project>
