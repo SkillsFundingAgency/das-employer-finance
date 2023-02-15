@@ -42,6 +42,7 @@
     <PackageReference Include="SFA.DAS.Provider.Events.Api.Client" Version="3.0.1-prerelease-5" />
     <PackageReference Include="SFA.DAS.Sql.Client" Version="1.0.0.44965" />
     <PackageReference Include="SFA.DAS.UnitOfWork" Version="9.0.13" />
+    <PackageReference Include="SFA.DAS.UnitOfWork.NServiceBus" Version="9.0.13" />
     <PackageReference Include="StructureMap" Version="4.7.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="ClosedXML" Version="0.100.3" />

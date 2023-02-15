@@ -6,11 +6,12 @@ using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.NServiceBus.Configuration;
+using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.MicrosoftDependencyInjection;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
-
 using SFA.DAS.NServiceBus.Hosting;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
+using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 using Endpoint = NServiceBus.Endpoint;
 
 namespace SFA.DAS.EmployerFinance.ServiceRegistration
@@ -39,8 +40,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
             //.UseNLogFactory()
             .UseOutbox(true)
             .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(databaseConnectionString))
-            //.UseUnitOfWork()
-                ;
+            .UseUnitOfWork();
 
             if (isDevOrLocal)
             {
@@ -49,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
             else
             {
                 //TODO MAC-192
-                //endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguaration.MessageServiceBusConnectionString, r => { });
+                endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguaration.MessageServiceBusConnectionString, r => { });
             }
 
             if (!string.IsNullOrEmpty(employerFinanceConfiguaration.NServiceBusLicense))
