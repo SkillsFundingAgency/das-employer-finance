@@ -28,3 +28,53 @@
 2023-02-15 13:56:56.1849 Info Registered target NLog.Targets.FileTarget(Name=File)
 2023-02-15 13:56:56.2251 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
 2023-02-15 13:56:56.2365 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 14:12:15.7942 Info Message Template Auto Format enabled
+2023-02-15 14:12:15.8667 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 14:12:15.8865 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 14:12:15.9308 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 14:12:15.9431 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 14:12:37.0763 Info Message Template Auto Format enabled
+2023-02-15 14:12:37.1433 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 14:12:37.1588 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 14:12:37.1985 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 14:12:37.1985 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 14:32:16.0642 Info Message Template Auto Format enabled
+2023-02-15 14:32:16.1564 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 14:32:16.1728 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 14:32:16.2226 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 14:32:16.2365 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 15:00:50.4600 Info Message Template Auto Format enabled
+2023-02-15 15:00:50.5219 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 15:00:50.5902 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 15:00:50.6319 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 15:00:50.6436 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 15:01:52.6591 Info Message Template Auto Format enabled
+2023-02-15 15:01:52.7261 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 15:01:52.7380 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 15:01:52.7718 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 15:01:52.7799 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 15:02:36.8636 Info Message Template Auto Format enabled
+2023-02-15 15:02:36.9263 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 15:02:36.9366 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 15:02:36.9685 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 15:02:36.9685 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 15:05:35.8479 Info Message Template Auto Format enabled
+2023-02-15 15:05:35.8973 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 15:05:35.9094 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 15:05:35.9399 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 15:05:35.9511 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 15:21:43.2877 Info Message Template Auto Format enabled
+2023-02-15 15:21:43.3528 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 15:21:43.3663 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 15:21:43.3996 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 15:21:43.4109 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 15:50:51.8642 Info Message Template Auto Format enabled
+2023-02-15 15:50:51.9147 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 15:50:51.9284 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 15:50:51.9612 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 15:50:51.9612 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-15 16:07:09.8694 Info Message Template Auto Format enabled
+2023-02-15 16:07:09.9256 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-15 16:07:09.9405 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-15 16:07:09.9758 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-15 16:07:09.9861 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console

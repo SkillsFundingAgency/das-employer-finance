@@ -38,6 +38,7 @@
     <PackageReference Include="SFA.DAS.Messaging.AzureServiceBus.StructureMap" Version="3.0.0.63765" />
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
     <PackageReference Include="SFA.DAS.Notifications.Api.Client" Version="2.2.37" />
+    <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.12" />
     <PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="17.0.12" />
     <PackageReference Include="SFA.DAS.Provider.Events.Api.Client" Version="3.0.1-prerelease-5" />
     <PackageReference Include="SFA.DAS.Sql.Client" Version="1.0.0.44965" />
