@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountLevyControllerTests
@@ -18,17 +18,17 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountLevyControlle
         protected Mock<IMediator> Mediator;
         protected Mock<ILog> Logger;
         protected IMapper Mapper;
-        protected Mock<IHashingService> HashingService;       
+        protected Mock<IEncodingService> EncodingService;
 
         [SetUp]
         public void Arrange()
         {
             Mediator = new Mock<IMediator>();
             Logger = new Mock<ILog>();
-            HashingService = new Mock<IHashingService>();            
+            EncodingService = new Mock<IEncodingService>();            
             
             Mapper = ConfigureMapper();
-            var orchestrator = new FinanceOrchestrator(Mediator.Object, Logger.Object, Mapper, HashingService.Object);
+            var orchestrator = new FinanceOrchestrator(Mediator.Object, Logger.Object, Mapper, EncodingService.Object);
             Controller = new FinanceLevyController(orchestrator);
         }
 

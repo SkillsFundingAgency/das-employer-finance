@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.MarkerInterfaces
 {
-    public interface IAccountLegalEntityPublicHashingService : IHashingService
+    public interface IAccountLegalEntityPublicHashingService //: IHashingService
     {
     }
 }
