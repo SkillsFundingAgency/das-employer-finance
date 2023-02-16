@@ -1,12 +1,12 @@
 using System;
 using System.Configuration;
-using Microsoft.Data.SqlClient;
 using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using StructureMap;
 
 namespace SFA.DAS.EmployerFinance.Api.DependencyResolution
@@ -29,7 +29,7 @@ namespace SFA.DAS.EmployerFinance.Api.DependencyResolution
         private EmployerFinanceDbContext GetFinanceDbContext(IContext context)
         {
             var environmentName = ConfigurationManager.AppSettings["EnvironmentName"];
-            var hashingService = context.GetInstance<IHashingService>();
+            var encodingService = context.GetInstance<IEncodingService>();
             var publicHashingService = context.GetInstance<IPublicHashingService>();
 
             var connectionString = GetEmployerFinanceConnectionString(context);
