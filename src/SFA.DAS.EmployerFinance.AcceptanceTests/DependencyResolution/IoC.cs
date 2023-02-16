@@ -22,7 +22,6 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
                 //c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerFinanceDbContext>>();
                 c.AddRegistry<EventsRegistry>();
                 //c.AddRegistry<ExecutionPoliciesRegistry>();
-                c.AddRegistry<HashingRegistry>();
                 c.AddRegistry<LoggerRegistry>();
                 c.AddRegistry<MapperRegistry>();
                 c.AddRegistry<MediatorRegistry>();
