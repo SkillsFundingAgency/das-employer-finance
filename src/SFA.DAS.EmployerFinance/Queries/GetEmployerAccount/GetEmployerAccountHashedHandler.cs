@@ -39,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
                 throw new UnauthorizedAccessException();
             }
 
-            var accountId = _hashingService.DecodeValue(message.HashedAccountId);
+            var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
             var employerAccount = await _employerAccountRepository.Get(accountId);
 
             return new GetEmployerAccountResponse

@@ -62,7 +62,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
             RequestHandler = new FindAccountProviderPaymentsHandler(
                 RequestValidator.Object, 
                 _dasLevyService.Object,
-                _hashingService.Object);
+                _encodingService.Object);
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
             await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
-            _hashingService.Verify(x => x.DecodeValue(_hashedAccountId), Times.Once);
+            _encodingService.Verify(x => x.Decode(_hashedAccountId,EncodingType.AccountId), Times.Once);
             _dasLevyService.Verify(x=>x.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
                                             (_accountId, _ukprn, _fromDate, _toDate));
         }

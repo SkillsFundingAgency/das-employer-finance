@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactionsTests
 {
@@ -28,7 +29,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
         public override GetEmployerAccountTransactionsQuery Query { get; set; }
         public override GetEmployerAccountTransactionsHandler RequestHandler { get; set; }
         public override Mock<IValidator<GetEmployerAccountTransactionsQuery>> RequestValidator { get; set; }
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private Mock<IPublicHashingService> _publicHashingService;
 
 
@@ -43,8 +44,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 ExternalUserId = "3EFR"
             };
 
-            _hashingService = new Mock<IHashingService>();
-            _hashingService.Setup(x => x.DecodeValue(_request.HashedAccountId)).Returns(1);
+            _encodingService = new Mock<IEncodingService>();
+            _encodingService.Setup(x => x.Decode(_request.HashedAccountId, EncodingType.AccountId)).Returns(1);
 
             _publicHashingService = new Mock<IPublicHashingService>();
 
@@ -61,7 +62,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactio
                 _dasLevyService.Object,
                 RequestValidator.Object,
                 _logger.Object,
-                _hashingService.Object,
+                _encodingService.Object,
                 _publicHashingService.Object);
             Query = new GetEmployerAccountTransactionsQuery();
         }

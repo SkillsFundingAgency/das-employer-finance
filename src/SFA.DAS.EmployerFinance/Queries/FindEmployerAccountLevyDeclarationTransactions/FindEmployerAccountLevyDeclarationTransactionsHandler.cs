@@ -7,6 +7,7 @@ using MediatR;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 using SFA.DAS.HashingService;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions
@@ -15,16 +16,16 @@ namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTran
     {
         private readonly IValidator<FindEmployerAccountLevyDeclarationTransactionsQuery> _validator;
         private readonly IDasLevyService _dasLevyService;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
 
         public FindEmployerAccountLevyDeclarationTransactionsHandler(
             IValidator<FindEmployerAccountLevyDeclarationTransactionsQuery> validator, 
             IDasLevyService dasLevyService,
-            IHashingService hashingService)
+            IEncodingService encodingService)
         {
             _validator = validator;
             _dasLevyService = dasLevyService;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<FindEmployerAccountLevyDeclarationTransactionsResponse> Handle(FindEmployerAccountLevyDeclarationTransactionsQuery message,CancellationToken cancellationToken)

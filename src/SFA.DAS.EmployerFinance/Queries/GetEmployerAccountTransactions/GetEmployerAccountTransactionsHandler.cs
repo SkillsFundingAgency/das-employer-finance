@@ -1,19 +1,19 @@
-﻿using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.HashingService;
-using SFA.DAS.NLog.Logger;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
-using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
+using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
 {
@@ -22,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
     {
         private readonly IDasLevyService _dasLevyService;
         private readonly IValidator<GetEmployerAccountTransactionsQuery> _validator;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
         private readonly IPublicHashingService _publicHashingService;
         private readonly ILog _logger;
 
@@ -30,13 +30,13 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
             IDasLevyService dasLevyService,
             IValidator<GetEmployerAccountTransactionsQuery> validator,
             ILog logger,
-            IHashingService hashingService,
+            IEncodingService encodingService,
             IPublicHashingService publicHashingService)
         {
             _dasLevyService = dasLevyService;
             _validator = validator;
             _logger = logger;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
             _publicHashingService = publicHashingService;
         }
 
@@ -57,7 +57,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
             var toDate = CalculateToDate(message);
             var fromDate = new DateTime(toDate.Year, toDate.Month, 1);
 
-            var accountId = _hashingService.DecodeValue(message.HashedAccountId);
+            var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
             var transactions = await _dasLevyService.GetAccountTransactionsByDateRange(accountId, fromDate, toDate);
             var balance = await _dasLevyService.GetAccountBalance(accountId);
 
