@@ -178,3 +178,18 @@
 2023-02-16 11:38:54.9030 Info Registered target NLog.Targets.FileTarget(Name=File)
 2023-02-16 11:38:54.9343 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
 2023-02-16 11:38:54.9343 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-16 12:00:40.6864 Info Message Template Auto Format enabled
+2023-02-16 12:00:40.7952 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-16 12:00:40.8182 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-16 12:00:40.8840 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-16 12:00:40.9026 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-16 13:10:08.2446 Info Message Template Auto Format enabled
+2023-02-16 13:10:08.3056 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-16 13:10:08.3228 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-16 13:10:08.3611 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-16 13:10:08.3718 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console
+2023-02-16 13:20:00.6235 Info Message Template Auto Format enabled
+2023-02-16 13:20:00.6901 Info Registered target NLog.Targets.ConsoleTarget(Name=Console)
+2023-02-16 13:20:00.7065 Info Registered target NLog.Targets.FileTarget(Name=File)
+2023-02-16 13:20:00.7485 Info Validating config: TargetNames=File, ConfigItems=35, FilePath=C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\bin\net6.0\nlog.Development.config
+2023-02-16 13:20:00.7609 Warn Unused target detected. Add a rule for this target to the configuration. TargetName: Console

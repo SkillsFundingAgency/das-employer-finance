@@ -33,10 +33,7 @@ namespace SFA.DAS.EmployerFinance.Configuration
         public string LevyTransferMatchingBaseUrl { get; set; }
         public string MessageServiceBusConnectionString => LegacyServiceBusConnectionString;
         public string NServiceBusLicense { get; set; }
-        public string PublicAllowedHashstringCharacters { get; set; }
-        public string PublicHashstring { get; set; }
-        public string PublicAllowedAccountLegalEntityHashstringCharacters { get; set; }
-        public string PublicAllowedAccountLegalEntityHashstringSalt { get; set; }
+       
         public string ServiceBusConnectionString { get; set; }
         public string RedisConnectionString { get; set; }
         public virtual int FundsExpiryPeriod { get; set; }
@@ -50,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Configuration
         public string ZenDeskSectionId { get; set; }
         public string ZenDeskCobrowsingSnippetKey { get; set; }
         public EmployerFinanceApiClientConfiguration EmployerFinanceApi { get; set; }
-        //public bool UseGovSignIn { get; set; }
-        //public string DataProtectionKeysDatabase { get; set; }
+        public bool UseGovSignIn { get; set; }
+        public string DataProtectionKeysDatabase { get; set; }
     }
 }
