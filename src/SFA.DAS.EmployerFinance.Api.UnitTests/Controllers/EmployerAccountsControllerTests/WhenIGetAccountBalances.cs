@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+using SFA.DAS.Encoding;
 using SFA.DAS.HashingService;
 using SFA.DAS.NLog.Logger;
 
@@ -19,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsCont
         private Mock<IMediator> _mediator;
         private Mock<ILog> _logger;
         private Mock<IMapper> _mapper;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
 
         [SetUp]
         public void Arrange()
@@ -27,9 +28,9 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsCont
             _mediator = new Mock<IMediator>();
             _logger = new Mock<ILog>();
             _mapper = new Mock<IMapper>();
-            _hashingService = new Mock<IHashingService>();
+            _encodingService = new Mock<IEncodingService>();
 
-            var orchestrator = new FinanceOrchestrator(_mediator.Object, _logger.Object, _mapper.Object, _hashingService.Object);
+            var orchestrator = new FinanceOrchestrator(_mediator.Object, _logger.Object, _mapper.Object, _encodingService.Object);
             _employerAccountsController = new EmployerAccountsController(orchestrator);
         }
 
