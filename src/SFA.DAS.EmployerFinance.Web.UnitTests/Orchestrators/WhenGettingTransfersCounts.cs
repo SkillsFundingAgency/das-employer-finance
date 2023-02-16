@@ -11,7 +11,7 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 {
@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
     {
         private TransfersOrchestrator _orchestrator;
         private Mock<IAuthorizationService> _authorisationService;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
@@ -33,14 +33,14 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         public void Setup()
         {
             _authorisationService = new Mock<IAuthorizationService>();
-            _hashingService = new Mock<IHashingService>();
+            _encodingService = new Mock<IEncodingService>();
             _transfersService = new Mock<ITransfersService>();
             _accountApiClient = new Mock<IAccountApiClient>();
             _dateTimeStringFormatter = new Mock<IDateTimeStringFormatter>();
 
-            _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);            
+            _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);            
 
-            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object, _dateTimeStringFormatter.Object);
+            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _dateTimeStringFormatter.Object);
         }
 
         [TestCase(true, true)]

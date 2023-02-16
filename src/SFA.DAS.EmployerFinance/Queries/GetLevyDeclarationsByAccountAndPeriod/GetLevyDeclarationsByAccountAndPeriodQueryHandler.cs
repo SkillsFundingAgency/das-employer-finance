@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,12 +9,12 @@ namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
     public class GetLevyDeclarationsByAccountAndPeriodQueryHandler : IRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>
     {
         private readonly IDasLevyRepository _repository;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
 
-        public GetLevyDeclarationsByAccountAndPeriodQueryHandler(IDasLevyRepository repository, IHashingService hashingService)
+        public GetLevyDeclarationsByAccountAndPeriodQueryHandler(IDasLevyRepository repository, IEncodingService encodingService)
         {
             _repository = repository;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<GetLevyDeclarationsByAccountAndPeriodResponse> Handle(GetLevyDeclarationsByAccountAndPeriodRequest message,CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
 
         private long GetAccountId(string hashedAccountId)
         {
-            return _hashingService.DecodeValue(hashedAccountId);
+            return _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
         }
     }
 }
