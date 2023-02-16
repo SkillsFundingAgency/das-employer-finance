@@ -16,7 +16,7 @@ using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
@@ -32,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         private EmployerAccountTransactionsOrchestrator _orchestrator;
         private GetEmployerAccountResponse _response;
         private Mock<ICurrentDateTime> _currentTime;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
 
         [SetUp]
         public void Arrange()
@@ -40,7 +40,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             _accountApiClient = new Mock<IAccountApiClient>();
             _mediator = new Mock<IMediator>();
             _currentTime = new Mock<ICurrentDateTime>();
-            _hashingService = new Mock<IHashingService>();
+            _encodingService = new Mock<IEncodingService>();
 
             _response = new GetEmployerAccountResponse
             {
@@ -50,12 +50,12 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 }
             };
 
-            _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
+            _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
 
             _mediator.Setup(x => x.Send(It.IsAny<GetEmployerAccountHashedQuery>(), CancellationToken.None))
                 .ReturnsAsync(_response);
 
-            _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
+            _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
 
             SetupGetTransactionsResponse(2017, 5);
 

@@ -7,14 +7,14 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
     public class TransfersOrchestrator
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
         private readonly ITransfersService _transfersService;
         private readonly IAccountApiClient _accountApiClient;
         private readonly IDateTimeStringFormatter _dateTimeStringFormatter;
@@ -25,13 +25,13 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
         public TransfersOrchestrator(
             IAuthorizationService authorizationService,
-            IHashingService hashingService,
+            IEncodingService encodingService,
             ITransfersService transfersService,
             IAccountApiClient accountApiClient,
             IDateTimeStringFormatter dateTimeStringFormatter)
         {
             _authorizationService = authorizationService;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
             _transfersService = transfersService;
             _accountApiClient = accountApiClient;
             _dateTimeStringFormatter = dateTimeStringFormatter;
@@ -39,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
         public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)
         {
-            var accountId = _hashingService.DecodeValue(hashedAccountId);
+            var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
             var indexTask = _transfersService.GetCounts(accountId);
             var accountDetail = _accountApiClient.GetAccount(hashedAccountId);
 
@@ -66,7 +66,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
         public async Task<OrchestratorResponse<FinancialBreakdownViewModel>> GetFinancialBreakdownViewModel(string hashedAccountId) 
         {
-            var accountId = _hashingService.DecodeValue(hashedAccountId);
+            var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
             var financialBreakdownTask = _transfersService.GetFinancialBreakdown(accountId);
             var accountDetailTask = _accountApiClient.GetAccount(hashedAccountId);
             await Task.WhenAll(financialBreakdownTask, accountDetailTask);

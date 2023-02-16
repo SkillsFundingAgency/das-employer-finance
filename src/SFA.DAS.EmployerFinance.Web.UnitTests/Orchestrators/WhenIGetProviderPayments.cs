@@ -7,17 +7,13 @@ using System.Threading.Tasks;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
-using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
@@ -31,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         private readonly DateTime _fromDate = DateTime.Now.AddDays(-20);
         private readonly DateTime _toDate = DateTime.Now.AddDays(-20);
         private Mock<ICurrentDateTime> _currentTime;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
 
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IMediator> _mediator;
@@ -44,7 +40,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             _accountApiClient = new Mock<IAccountApiClient>();
             _mediator = new Mock<IMediator>();
             _currentTime = new Mock<ICurrentDateTime>();
-            _hashingService = new Mock<IHashingService>();
+            _encodingService = new Mock<IEncodingService>();
 
             _response = new FindAccountProviderPaymentsResponse
             {
@@ -59,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             _mediator.Setup(AssertExpressionValidation()).ReturnsAsync(_response);
 
-            _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
+            _encodingService.Setup(h => h.Decode(HashedAccountId,EncodingType.AccountId)).Returns(AccountId);
 
             _accountApiClient.Setup(s => s.GetAccount(HashedAccountId))
                 .Returns(Task.FromResult(new EAS.Account.Api.Types.AccountDetailViewModel

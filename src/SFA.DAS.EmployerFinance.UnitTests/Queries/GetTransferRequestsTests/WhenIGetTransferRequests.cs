@@ -12,6 +12,7 @@ using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
+using SFA.DAS.Encoding;
 using SFA.DAS.HashingService;
 using SFA.DAS.Testing.EntityFramework;
 
@@ -27,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferRequestsTests
         private Mock<IEmployerAccountRepository> _employerAccountsRepository;
         private Mapper _mapper;
         private Mock<ICommitmentsV2ApiClient> _commitmentsV2ApiClient;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private Mock<IPublicHashingService> _publicHashingService;
 
         private TransferRequestSummaryResponse _sentTransferRequest;
@@ -41,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferRequestsTests
         [SetUp]
         public void Arrange()
         {
-            _hashingService = new Mock<IHashingService>();
+            _encodingService = new Mock<IEncodingService>();
             _publicHashingService = new Mock<IPublicHashingService>();
             _commitmentsV2ApiClient = new Mock<ICommitmentsV2ApiClient>();
             

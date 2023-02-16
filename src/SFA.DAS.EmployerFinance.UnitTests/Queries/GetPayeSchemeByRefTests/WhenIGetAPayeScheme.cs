@@ -7,7 +7,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
 {
@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
         public override GetPayeSchemeByRefQuery Query { get; set; }
         public override GetPayeSchemeByRefHandler RequestHandler { get; set; }
         public override Mock<IValidator<GetPayeSchemeByRefQuery>> RequestValidator { get; set; }
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private const long ExpectedAccountId = 342905843;
 
         private PayeSchemeView _expectedPayeScheme;
@@ -35,13 +35,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
                 Ref = "ABC/123"
             };
 
-            _hashingService = new Mock<IHashingService>();
-            _hashingService.Setup(x => x.DecodeValue(Query.HashedAccountId)).Returns(ExpectedAccountId);
+            _encodingService = new Mock<IEncodingService>();
+            _encodingService.Setup(x => x.Decode(Query.HashedAccountId,EncodingType.AccountId)).Returns(ExpectedAccountId);
 
             _payeRepository = new Mock<IPayeRepository>();
             _payeRepository.Setup(x => x.GetPayeForAccountByRef(ExpectedAccountId, Query.Ref)).ReturnsAsync(_expectedPayeScheme);
             
-            RequestHandler = new GetPayeSchemeByRefHandler(RequestValidator.Object,_payeRepository.Object, _hashingService.Object);
+            RequestHandler = new GetPayeSchemeByRefHandler(RequestValidator.Object,_payeRepository.Object, _encodingService.Object);
         }
 
         [Test]
