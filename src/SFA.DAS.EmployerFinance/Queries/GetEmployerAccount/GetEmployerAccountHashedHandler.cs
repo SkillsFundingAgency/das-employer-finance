@@ -3,9 +3,9 @@ using SFA.DAS.EmployerFinance.Data;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using SFA.DAS.HashingService;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
 {
@@ -13,16 +13,16 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
     {
         private readonly IEmployerAccountRepository _employerAccountRepository;
         private readonly IValidator<GetEmployerAccountHashedQuery> _validator;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
 
         public GetEmployerAccountHashedHandler(
             IEmployerAccountRepository employerAccountRepository,
             IValidator<GetEmployerAccountHashedQuery> validator,
-            IHashingService hashingService)
+            IEncodingService encodingService)
         {
             _employerAccountRepository = employerAccountRepository;
             _validator = validator;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<GetEmployerAccountResponse> Handle(GetEmployerAccountHashedQuery message,CancellationToken cancellationToken)

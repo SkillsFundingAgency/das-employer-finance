@@ -7,8 +7,7 @@ using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
-
+using SFA.DAS.Encoding;
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTransactionDetailsTests
 {
     public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccountProviderPaymentsHandler, FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>
@@ -16,7 +15,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
         private const string ProviderName = "Test Provider";
 
         private Mock<IDasLevyService> _dasLevyService;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private DateTime _fromDate;
         private DateTime _toDate;
         private long _accountId;
@@ -40,8 +39,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
             _hashedAccountId = "123ABC";
             _externalUserId = "test";
 
-            _hashingService = new Mock<IHashingService>();
-            _hashingService.Setup(x => x.DecodeValue(It.IsAny<string>())).Returns(_accountId);
+            _encodingService = new Mock<IEncodingService>();
+            _encodingService.Setup(x => x.Decode(It.IsAny<string>(), EncodingType.AccountId)).Returns(_accountId);
 
             _dasLevyService = new Mock<IDasLevyService>();
             _dasLevyService.Setup(x => x.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>

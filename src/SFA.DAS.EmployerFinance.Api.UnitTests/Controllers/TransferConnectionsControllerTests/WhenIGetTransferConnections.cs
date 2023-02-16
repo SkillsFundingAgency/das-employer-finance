@@ -8,7 +8,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsControllerTests
 {
@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
     {
         private TransferConnectionsController _controller;
         private Mock<IMediator> _mediator;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private GetTransferConnectionsResponse _response;
         private IEnumerable<TransferConnection> _transferConnections;
         private readonly string _hashedAccountId = "GF3XWP";
@@ -35,15 +35,15 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
             };
             _response = new GetTransferConnectionsResponse { TransferConnections = _transferConnections };
 
-            _hashingService = new Mock<IHashingService>();
-            _hashingService.Setup(x => x.DecodeValue(_hashedAccountId)).Returns(_accountId);
+            _encodingService = new Mock<IEncodingService>();
+            _encodingService.Setup(x => x.Decode(_hashedAccountId,EncodingType.AccountId)).Returns(_accountId);
 
             _mediator.Setup(
                     m => m.Send(
                         It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(_accountId)),It.IsAny<CancellationToken>()))
                 .ReturnsAsync(_response);
 
-            _controller = new TransferConnectionsController(_mediator.Object, _hashingService.Object);
+            _controller = new TransferConnectionsController(_mediator.Object, _encodingService.Object);
         }
 
         [Test]

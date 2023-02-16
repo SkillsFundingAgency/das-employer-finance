@@ -8,14 +8,14 @@ using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDeclarationTransactionDetailsTests
 {
     public class WhenIGetEmployerLevyDeclarationTransactionDetails : QueryBaseTest<FindEmployerAccountLevyDeclarationTransactionsHandler, FindEmployerAccountLevyDeclarationTransactionsQuery, FindEmployerAccountLevyDeclarationTransactionsResponse>
     {
         private Mock<IDasLevyService> _dasLevyService;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         private DateTime _fromDate;
         private DateTime _toDate;
         private long _accountId;
@@ -36,8 +36,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             _hashedAccountId = "123ABC";
             _externalUserId = "test";
 
-            _hashingService = new Mock<IHashingService>();
-            _hashingService.Setup(x => x.DecodeValue(It.IsAny<string>())).Returns(_accountId);
+            _encodingService = new Mock<IEncodingService>();
+            _encodingService.Setup(x => x.Decode(It.IsAny<string>(), EncodingType.AccountId)).Returns(_accountId);
 
             _dasLevyService = new Mock<IDasLevyService>();
             _dasLevyService.Setup(x => x.GetAccountLevyTransactionsByDateRange<LevyDeclarationTransactionLine>
@@ -58,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             RequestHandler = new FindEmployerAccountLevyDeclarationTransactionsHandler(
                 RequestValidator.Object, 
                 _dasLevyService.Object,
-                _hashingService.Object);
+                _encodingService.Object);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
-            _hashingService.Verify(x => x.DecodeValue(_hashedAccountId), Times.Once);
+            _encodingService.Verify(x => x.Decode(_hashedAccountId,EncodingType.AccountId), Times.Once);
             _dasLevyService.Verify(x=>x.GetAccountLevyTransactionsByDateRange<LevyDeclarationTransactionLine>
                                             (_accountId, _fromDate, _toDate));
         }
