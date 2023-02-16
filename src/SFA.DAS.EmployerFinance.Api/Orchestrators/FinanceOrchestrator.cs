@@ -10,6 +10,7 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
+using SFA.DAS.Encoding;
 using SFA.DAS.HashingService;
 using SFA.DAS.NLog.Logger;
 
@@ -20,18 +21,18 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
         private readonly IMediator _mediator;
         private readonly ILog _logger;
         private readonly IMapper _mapper;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
 
         public FinanceOrchestrator(
             IMediator mediator,
             ILog logger,
             IMapper mapper,
-            IHashingService hashingService)
+            IEncodingService encodingService)
         {
             _mediator = mediator;
             _logger = logger;
             _mapper = mapper;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId)
@@ -106,7 +107,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
             {
                 try
                 {
-                    decodedAccountIds.Add(_hashingService.DecodeValue(id));
+                    decodedAccountIds.Add(_encodingService.Decode(id, EncodingType.AccountId));
                 }
                 catch
                 {
@@ -132,7 +133,7 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators
 
             var response = await _mediator.Send(new GetTransferAllowanceQuery
             {
-                AccountId = _hashingService.DecodeValue(hashedAccountId)
+                AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId)
             });
 
             var result = _mapper.Map<TransferAllowance>(response.TransferAllowance);
