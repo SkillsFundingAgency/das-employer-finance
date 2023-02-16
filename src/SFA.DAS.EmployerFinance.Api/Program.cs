@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .UseNServiceBusContainer()
+            .UseNServiceBusContainer()            
             .UseNLog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

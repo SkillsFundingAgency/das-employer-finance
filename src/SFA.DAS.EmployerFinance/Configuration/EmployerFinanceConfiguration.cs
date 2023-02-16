@@ -50,7 +50,7 @@ namespace SFA.DAS.EmployerFinance.Configuration
         public string ZenDeskSectionId { get; set; }
         public string ZenDeskCobrowsingSnippetKey { get; set; }
         public EmployerFinanceApiClientConfiguration EmployerFinanceApi { get; set; }
-        public bool UseGovSignIn { get; set; }
-        public string DataProtectionKeysDatabase { get; set; }
+        //public bool UseGovSignIn { get; set; }
+        //public string DataProtectionKeysDatabase { get; set; }
     }
 }

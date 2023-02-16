@@ -13,6 +13,8 @@ using SFA.DAS.NServiceBus.Hosting;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 using Endpoint = NServiceBus.Endpoint;
+using StructureMap;
+using System.Data.Common;
 
 namespace SFA.DAS.EmployerFinance.ServiceRegistration
 {
@@ -23,6 +25,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
         public static void StartNServiceBus(this UpdateableServiceProvider services, IConfiguration configuaration, bool isDevOrLocal)
         {
             var employerFinanceConfiguaration = configuaration.Get<EmployerFinanceConfiguration>();
+
 
             var databaseConnectionString = employerFinanceConfiguaration.DatabaseConnectionString;
 
@@ -39,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
             .UseNewtonsoftJsonSerializer()
             //.UseNLogFactory()
             .UseOutbox(true)
-            .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(databaseConnectionString))
+            .UseSqlServerPersistence(()=>DatabaseExtensions.GetSqlConnection(databaseConnectionString))
             .UseUnitOfWork();
 
             if (isDevOrLocal)

@@ -21,13 +21,13 @@ using SFA.DAS.EmployerFinance.Api.Filters;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Authorisation;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 using SFA.DAS.Validation.Mvc.Extensions;
-using Microsoft.EntityFrameworkCore;
-using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
-using SFA.DAS.EmployerFinance.Data;
+using StructureMap;
 
 namespace SFA.DAS.EmployerFinance.Api
 {
@@ -94,7 +94,7 @@ namespace SFA.DAS.EmployerFinance.Api
             services.AddOrchestrators();
 
             services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
-            //services.AddNServiceBusClientUnitOfWork();
+            services.AddNServiceBusClientUnitOfWork();
 
             services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
@@ -107,7 +107,6 @@ namespace SFA.DAS.EmployerFinance.Api
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
-
 
             services.AddApiConfigurationSections(_configuration)
                 .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
