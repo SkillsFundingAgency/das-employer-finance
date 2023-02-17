@@ -416,7 +416,7 @@
                                     "value": "[reference(concat('ApiAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
                                 },
                                 {
-                                    "name": "Tenant",
+                                    "name": "IdaTenant",
                                     "value": "[parameters('tenant')]"
                                 },
                                 {
