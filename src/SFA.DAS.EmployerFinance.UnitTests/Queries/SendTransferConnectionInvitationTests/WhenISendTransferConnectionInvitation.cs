@@ -32,17 +32,18 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvita
         [SetUp]
         public void Arrange()
         {
+            var hashedAccountId = "ABC123";
             _receiverAccount = new Account
             {
                 Id = 111111,
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 
             _senderAccount = new Account
             {
                 Id = 222222,
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 

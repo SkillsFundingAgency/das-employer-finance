@@ -1,13 +1,13 @@
 ﻿using System;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.UnitOfWork.Context;
 
 namespace SFA.DAS.EmployerFinance.Models
 {
     public abstract class Entity
     {
-        protected IHashingService _hashingService;
+        protected IEncodingService _encodingService;
         protected IPublicHashingService _publicHashingService;
 
         protected void Publish<T>(Action<T> action) where T : new()
@@ -20,9 +20,9 @@ namespace SFA.DAS.EmployerFinance.Models
             });
         }
 
-        public IHashingService HashingService
+        public IEncodingService EncodingService
         {
-            set { _hashingService = value; }
+            set { _encodingService = value; }
         }
 
         public IPublicHashingService PublicHashingService

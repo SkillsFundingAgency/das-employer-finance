@@ -8,7 +8,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferRequests
 {
@@ -17,28 +17,28 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferRequests
         private readonly IEmployerAccountRepository _employerAccountsRepository;
         private readonly IMapper _mapper;
         private readonly ICommitmentsV2ApiClient _commitmentV2ApiClient;
-        private readonly IHashingService _hashingService;        
+        private readonly IEncodingService _encodingService;        
 
         public GetTransferRequestsQueryHandler(
             IEmployerAccountRepository employerAccountsRepository,
             IMapper mapper,
             ICommitmentsV2ApiClient commitmentsV2Apiclient,
-            IHashingService hashingService)
+            IEncodingService encodingService)
         {
             _employerAccountsRepository = employerAccountsRepository;
             _mapper = mapper;
             _commitmentV2ApiClient = commitmentsV2Apiclient;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<GetTransferRequestsResponse> Handle(GetTransferRequestsQuery message,CancellationToken cancellationToken)
         {
-            var accountHashedId = _hashingService.HashValue(message.AccountId);
+            var accountHashedId = _encodingService.Encode(message.AccountId,EncodingType.AccountId);
             var transferRequests = await _commitmentV2ApiClient.GetTransferRequests(message.AccountId);
 
             var accountIds = transferRequests.TransferRequestSummaryResponse
                 .SelectMany(r => new[] { r.HashedSendingEmployerAccountId, r.HashedReceivingEmployerAccountId })
-                .Select(h => _hashingService.DecodeValue(h))
+                .Select(h => _encodingService.Decode(h, EncodingType.AccountId))
                 .ToList();
 
             var accounts = _mapper.Map<List<AccountDto>>(await _employerAccountsRepository.Get(accountIds))

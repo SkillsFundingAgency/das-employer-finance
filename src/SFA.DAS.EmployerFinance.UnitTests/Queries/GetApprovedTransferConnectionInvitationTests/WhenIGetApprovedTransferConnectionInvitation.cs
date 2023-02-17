@@ -31,11 +31,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetApprovedTransferConnectio
         [SetUp]
         public void Arrange()
         {
+            var hashedAccountId = "ABC123";
+
             _senderAccount = new Account
             {
                 Id = 444444,
                 Name = "Sender",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 
@@ -43,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetApprovedTransferConnectio
             {
                 Id = 333333,
                 Name = "Receiver",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 

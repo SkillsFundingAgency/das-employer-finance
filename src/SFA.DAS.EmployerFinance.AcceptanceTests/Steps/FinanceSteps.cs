@@ -16,7 +16,7 @@ using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using TechTalk.SpecFlow;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
@@ -111,7 +111,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             return _objectContainer.ScopeAsync(async c =>
             {
                 var account = _objectContext.Get<Account>();
-                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), year, month, "userRef");
+                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id,EncodingType.AccountId), year, month, "userRef");
 
                 Assert.AreEqual(balance, actual.Data.Model.CurrentBalance);
             });
@@ -123,7 +123,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             return _objectContainer.ScopeAsync(async c =>
             {
                 var account = _objectContext.Get<Account>();
-                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), year, month, "userRef");
+                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id,EncodingType.AccountId), year, month, "userRef");
 
                 Assert.AreEqual(totalLevy, actual.Data.Model.Data.TransactionLines.Where(t => t.TransactionType == TransactionItemType.Declaration).Sum(t => t.Amount));
             });
@@ -135,7 +135,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             return _objectContainer.ScopeAsync(async c =>
             {
                 var account = _objectContext.Get<Account>();
-                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), year, month, "userRef");
+                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id, EncodingType.AccountId), year, month, "userRef");
 
                 Assert.AreEqual(totalPayment, actual.Data.Model.Data.TransactionLines.Where(t => t.TransactionType == TransactionItemType.Payment).Sum(t => t.Amount));
             });
@@ -147,7 +147,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             return _objectContainer.ScopeAsync(async c =>
             {
                 var account = _objectContext.Get<Account>();
-                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), year, month, "userRef");
+                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id, EncodingType.AccountId), year, month, "userRef");
 
                 Assert.AreEqual(totalTransfer, actual.Data.Model.Data.TransactionLines.Where(t => t.TransactionType == TransactionItemType.Transfer).Sum(t => t.Amount));
             });
@@ -159,7 +159,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             return _objectContainer.ScopeAsync(async c =>
             {
                 var account = _objectContext.Get<Account>();
-                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), year, month, "userRef");
+                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id, EncodingType.AccountId), year, month, "userRef");
 
                 Assert.AreEqual(levyDeclared, actual.Data.Model.Data.TransactionLines.Sum(t => t.Amount));
             });
@@ -173,7 +173,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                 var account = _objectContext.Get<Account>();
                 var fromDate = new DateTime(year, month, 1);
                 var toDate = new DateTime(year, month + 1, 1).AddMilliseconds(-1);
-                var viewModel = await c.Resolve<EmployerAccountTransactionsOrchestrator>().FindAccountLevyDeclarationTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), fromDate, toDate, "userRef");
+                var viewModel = await c.Resolve<EmployerAccountTransactionsOrchestrator>().FindAccountLevyDeclarationTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id, EncodingType.AccountId), fromDate, toDate, "userRef");
 
                 Assert.AreEqual(levyDeclared, viewModel.Data.Amount - viewModel.Data.SubTransactions.Sum(x => x.TopUp));
             });
@@ -185,7 +185,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             return _objectContainer.ScopeAsync(async c =>
             {
                 var account = _objectContext.Get<Account>();
-                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), year, month, "userRef");
+                var actual = await c.Resolve<EmployerAccountTransactionsOrchestrator>().GetAccountTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id, EncodingType.AccountId), year, month, "userRef");
 
                 Assert.AreEqual(expiredLevy, actual.Data.Model.Data.TransactionLines.Where(t => t.TransactionType == TransactionItemType.ExpiredFund).Sum(t => t.Amount));
             });
@@ -199,7 +199,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                 var account = _objectContext.Get<Account>();
                 var fromDate = new DateTime(year, month, 1);
                 var toDate = new DateTime(year, month + 1, 1).AddMilliseconds(-1);
-                var viewModel = await c.Resolve<EmployerAccountTransactionsOrchestrator>().FindAccountLevyDeclarationTransactions(_objectContainer.Resolve<IHashingService>().HashValue(account.Id), fromDate, toDate, "userRef");
+                var viewModel = await c.Resolve<EmployerAccountTransactionsOrchestrator>().FindAccountLevyDeclarationTransactions(_objectContainer.Resolve<IEncodingService>().Encode(account.Id, EncodingType.AccountId), fromDate, toDate, "userRef");
                 var topUpTotal = viewModel.Data.SubTransactions.Sum(x => x.TopUp);
 
                 Assert.AreEqual(topUp, topUpTotal);

@@ -36,6 +36,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.ApproveTransferConnectionIn
             _employerAccountRepository = new Mock<IEmployerAccountRepository>();
             _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
             _userRepository = new Mock<IUserAccountRepository>();
+            
+            var hashedAccountId = "ABC123";
 
             _receiverUser = new User
             {
@@ -49,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.ApproveTransferConnectionIn
             {
                 Id = 333333,
                 Name = "Sender",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 
@@ -57,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.ApproveTransferConnectionIn
             {
                 Id = 222222,
                 Name = "Receiver",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 

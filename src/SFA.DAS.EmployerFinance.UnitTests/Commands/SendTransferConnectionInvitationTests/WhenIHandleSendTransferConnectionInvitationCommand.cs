@@ -111,11 +111,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetReceiverAccount()
         {
+            var hashedAccountId = "ABC123";
             ReceiverAccount = new Account
             {
                 Id = 222222,
                 Name = "Receiver",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 
@@ -124,11 +125,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetSenderAccount()
         {
+            var hashedAccountId = "ABC123";
             SenderAccount = new Account
             {
                 Id = 333333,
                 Name = "Sender",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 

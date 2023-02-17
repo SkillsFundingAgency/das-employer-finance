@@ -191,11 +191,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public DeleteTransferConnectionInvitationTestFixture WithSenderAccount(long senderAccountId)
         {
+            var hashedAccountId = "ABC123";
+
             SenderAccount = new Account
             {
                 Id = senderAccountId,
                 Name = "Sender",
-                HashingService = new TestHashingService()
+                HashedId = hashedAccountId
             };
 
             EmployerAccountRepositoryMock
@@ -207,11 +209,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public DeleteTransferConnectionInvitationTestFixture WithReceiverAccount(long receiverAccountId)
         {
+            var hashedAccountId = "ABC123";
             ReceiverAccount = new Account
             {
                 Id = receiverAccountId,
                 Name = "Receiver",
-                HashingService = new TestHashingService()
+                HashedId = hashedAccountId
             };
 
             EmployerAccountRepositoryMock

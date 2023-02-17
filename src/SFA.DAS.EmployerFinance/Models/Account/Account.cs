@@ -14,9 +14,9 @@ namespace SFA.DAS.EmployerFinance.Models.Account
         
         public virtual string Name { get; set; }
 
-        public string HashedId => _hashingService.HashValue(Id);
+        public string HashedId; //=> _hashingService.HashValue(Id);
 
-        public string PublicHashedId => _publicHashingService.HashValue(Id);
+        public string PublicHashedId;// => _publicHashingService.HashValue(Id);
         
         public virtual ICollection<TransferConnectionInvitation> ReceivedTransferConnectionInvitations { get; set; } = new List<TransferConnectionInvitation>();
         

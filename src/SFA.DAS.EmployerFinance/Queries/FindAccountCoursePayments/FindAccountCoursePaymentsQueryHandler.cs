@@ -7,7 +7,7 @@ using MediatR;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
 {
@@ -16,16 +16,16 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
     {
         private readonly IValidator<FindAccountCoursePaymentsQuery> _validator;
         private readonly IDasLevyService _dasLevyService;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
 
         public FindAccountCoursePaymentsQueryHandler(
             IValidator<FindAccountCoursePaymentsQuery> validator,
             IDasLevyService dasLevyService,
-            IHashingService hashingService)
+            IEncodingService encodingService)
         {
             _validator = validator;
             _dasLevyService = dasLevyService;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<FindAccountCoursePaymentsResponse> Handle(FindAccountCoursePaymentsQuery message, CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments
                 throw new UnauthorizedAccessException();
             }
 
-            var accountId = _hashingService.DecodeValue(message.HashedAccountId);
+            var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
             var transactions = await _dasLevyService.GetAccountCoursePaymentsByDateRange<PaymentTransactionLine>
                 (accountId, message.UkPrn, message.CourseName, message.CourseLevel, message.PathwayCode, message.FromDate, message.ToDate);
 

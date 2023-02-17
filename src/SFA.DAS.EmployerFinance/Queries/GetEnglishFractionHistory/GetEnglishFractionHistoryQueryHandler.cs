@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
 {
@@ -12,13 +12,13 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
     {
         private readonly IValidator<GetEnglishFractionHistoryQuery> _validator;
         private readonly IDasLevyRepository _dasLevyRepository;
-        private readonly IHashingService _hashingService;
+        private readonly IEncodingService _encodingService;
 
-        public GetEnglishFractionHistoryQueryHandler(IValidator<GetEnglishFractionHistoryQuery> validator, IDasLevyRepository dasLevyRepository, IHashingService hashingService)
+        public GetEnglishFractionHistoryQueryHandler(IValidator<GetEnglishFractionHistoryQuery> validator, IDasLevyRepository dasLevyRepository, IEncodingService encodingService)
         {
             _validator = validator;
             _dasLevyRepository = dasLevyRepository;
-            _hashingService = hashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<GetEnglishFractionHistoryResposne> Handle(GetEnglishFractionHistoryQuery message,CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
                 throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
             }
 
-            var accountId = _hashingService.DecodeValue(message.HashedAccountId);
+            var accountId =     _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
             var fractionDetail = await _dasLevyRepository.GetEnglishFractionHistory(accountId, message.EmpRef);
 
             return new GetEnglishFractionHistoryResposne {FractionDetail = fractionDetail};

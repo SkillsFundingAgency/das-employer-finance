@@ -35,13 +35,15 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
         [SetUp]
         public void Arrange()
         {
-            _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
+            _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>(); 
+            
+            var hashedAccountId = "ABC123";
 
             _accountA = new Account
             {
                 Id = 111111,
                 Name = "Account A",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 
@@ -49,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
             {
                 Id = 222222,
                 Name = "Account B",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 
@@ -57,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
             {
                 Id = 333333,
                 Name = "Account C",
-                HashingService = new TestHashingService(),
+                HashedId = hashedAccountId,
                 PublicHashingService = new TestPublicHashingService()
             };
 

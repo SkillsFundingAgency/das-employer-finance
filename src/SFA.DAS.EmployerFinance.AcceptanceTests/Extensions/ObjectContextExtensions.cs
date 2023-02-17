@@ -8,7 +8,7 @@ using SFA.DAS.EmployerFinance.AcceptanceTests.Models;
 using SFA.DAS.EmployerFinance.AcceptanceTests.Steps;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Models.Account;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 using TechTalk.SpecFlow;
 
@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
         {
             try
             {
-                var hashingService = objectContainer.Resolve<IHashingService>();
+                var encodingService = objectContainer.Resolve<IEncodingService>();
 
                 objectContainer.Resolve<ILog>().Info("Getting maximum account id.");
 
