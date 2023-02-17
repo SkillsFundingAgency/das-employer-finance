@@ -13,6 +13,7 @@ using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetailsTests
 {
@@ -38,6 +39,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
         private Mock<EmployerFinanceDbContext> _db;
         private List<AccountTransfer> _transfers;
         private Mock<IPublicHashingService> _publicHashingService;
+        private Mock<IEncodingService> _encodingService;
         private PeriodEnd _periodEnd;
         private TransactionLineEntity _senderTranferTransaction;
         private TransactionLineEntity _recieverTranferTransaction;
@@ -81,6 +83,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
 
             _publicHashingService = new Mock<IPublicHashingService>();
 
+            _encodingService= new Mock<IEncodingService>();
+
             _query = new GetTransferTransactionDetailsQuery
             {
                 AccountId = ReceiverAccountId,
@@ -90,7 +94,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
 
             _response = new GetTransferTransactionDetailsResponse();
 
-            _handler = new GetTransferTransactionDetailsQueryHandler(_db.Object, _publicHashingService.Object);
+            _handler = new GetTransferTransactionDetailsQueryHandler(_db.Object, _encodingService.Object);
 
             _transfers = new List<AccountTransfer>
                 {

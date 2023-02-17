@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
@@ -44,19 +46,23 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
                 Data = new List<TransactionSummary> { new TransactionSummary { Month = 1, Year = 2017 }, new TransactionSummary { Month = 2, Year = 2017 } }
             };
             _mediator.Setup(x => x.Send(It.Is<GetAccountTransactionSummaryRequest>(q => q.HashedAccountId == hashedAccountId),It.IsAny<CancellationToken>())).ReturnsAsync(transactionSummaryResponse);
-
+             
 
             var firstExpectedUri = "someuri";
             _urlHelper.Setup(
                     x =>
-                        x.RouteUrl("GetTransactions",
-                            It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, year = transactionSummaryResponse.Data.First().Year, month = transactionSummaryResponse.Data.First().Month }))))
+                        x.RouteUrl(
+                            It.Is<UrlRouteContext>(c =>
+                            c.RouteName == "GetTransactions" && c.Values.IsEquivalentTo(new { hashedAccountId, year = transactionSummaryResponse.Data.First().Year, month = transactionSummaryResponse.Data.First().Month }))))
                 .Returns(firstExpectedUri);
+
             var secondExpectedUri = "someotheruri";
+
             _urlHelper.Setup(
                     x =>
-                        x.RouteUrl("GetTransactions",
-                            It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, year = transactionSummaryResponse.Data.Last().Year, month = transactionSummaryResponse.Data.Last().Month }))))
+                        x.RouteUrl(
+                            It.Is<UrlRouteContext>(c =>
+                            c.RouteName== "GetTransactions" && c.Values.IsEquivalentTo(new { hashedAccountId, year = transactionSummaryResponse.Data.Last().Year, month = transactionSummaryResponse.Data.Last().Month }))))
                 .Returns(secondExpectedUri);
 
             //Act

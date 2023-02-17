@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
@@ -27,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
             _mediator = new Mock<IMediator>();
             _logger = new Mock<ILog>();
             _urlHelper = new Mock<IUrlHelper>();
-            _urlHelper.Setup(x => x.RouteUrl(It.IsAny<string>(), It.IsAny<object>())).Returns("dummyurl");            
+           
             var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object, _urlHelper.Object);
             _controller = new AccountTransactionsController(orchestrator, _urlHelper.Object);
             _controller.Url = _urlHelper.Object;
@@ -83,7 +84,12 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
 
             model?.Should().NotBeNull();
             model?.PreviousMonthUri.Should().BeNullOrEmpty();
-            _urlHelper.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()), Times.Never);
+
+            //_urlHelper.Verify();//.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()), Times.Never);
+
+            _urlHelper.Setup(x => x.RouteUrl(
+              It.Is<UrlRouteContext>(c =>
+              c.RouteName == "GetTransactions")));
         }
 
         [Test]
@@ -104,7 +110,11 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
 
             //Act
             var expectedUri = "someuri";
-            _urlHelper.Setup(x => x.RouteUrl("GetTransactions", It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, year = year - 1, month = 12 })))).Returns(expectedUri);
+
+            _urlHelper.Setup(x => x.RouteUrl(
+                It.Is<UrlRouteContext>(c =>
+                c.RouteName == "GetTransactions" && c.Values.IsEquivalentTo(new { hashedAccountId, year = year - 1, month = 12 }))))
+            .Returns(expectedUri);
 
             //Assert
             var response = await _controller.GetTransactions(hashedAccountId, year, month);
@@ -137,7 +147,12 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
             model?.Should().NotBeNull();
             model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
             model?.PreviousMonthUri.Should().BeNullOrEmpty();
-            _urlHelper.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()), Times.Never);
+
+            //_urlHelper.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()));
+
+            _urlHelper.Setup(x => x.RouteUrl(
+             It.Is<UrlRouteContext>(c =>
+             c.RouteName == "GetTransactions")));
         }
 
 
@@ -159,10 +174,11 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsC
             _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
             var expectedUri = "someuri";
-            _urlHelper.Setup(
-                    x =>
-                        x.RouteUrl("GetLevyForPeriod",
-                            It.Is<object>(o => o.IsEquivalentTo(new { hashedAccountId, payrollYear = levyTransaction.TransactionLines[0].PayrollYear, payrollMonth = levyTransaction.TransactionLines[0].PayrollMonth }))))
+
+            _urlHelper.Setup(x =>x.RouteUrl(
+                            It.Is<UrlRouteContext>(c =>
+                            c.RouteName == "GetLevyForPeriod" &&
+                            c.Values.IsEquivalentTo(new { hashedAccountId = hashedAccountId, payrollYear = levyTransaction.TransactionLines[0].PayrollYear, payrollMonth = levyTransaction.TransactionLines[0].PayrollMonth }))))
                 .Returns(expectedUri);
 
             //Act

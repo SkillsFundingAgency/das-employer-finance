@@ -71,8 +71,9 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
         {
             var result = await _controller.GetTransferConnections(_hashedAccountId) as OkObjectResult;
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.SameAs(_transferConnections));
+            Assert.IsNotNull(result);
+
+            Assert.That(result.Value, Is.SameAs(_transferConnections));
         }
 
         [Test]
@@ -80,8 +81,8 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferConnectionsC
         {
             var result = await _controller.GetTransferConnections(_accountId) as OkObjectResult;
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.SameAs(_transferConnections));
+            Assert.That(result.Value, Is.Not.Null);
+            Assert.That(result.Value, Is.SameAs(_transferConnections));
         }
     }
 }

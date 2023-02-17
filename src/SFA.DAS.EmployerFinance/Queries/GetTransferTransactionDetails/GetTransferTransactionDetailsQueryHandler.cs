@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using System.Threading;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
 {
@@ -15,17 +16,18 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
     {
         private readonly EmployerFinanceDbContext _dbContext;
         private readonly IPublicHashingService _publicHashingService;
+        private readonly IEncodingService _encodingService;
 
         public GetTransferTransactionDetailsQueryHandler(EmployerFinanceDbContext dbContext,
-            IPublicHashingService publicHashingService)
+            IEncodingService encodingService)
         {
             _dbContext = dbContext;
-            _publicHashingService = publicHashingService;
+            _encodingService = encodingService;
         }
 
         public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query,CancellationToken cancellationToken)
         {
-            var targetAccountId = _publicHashingService.DecodeValue(query.TargetAccountPublicHashedId);
+            var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
 
             var result = await _dbContext.GetTransfersByTargetAccountId(
                                     query.AccountId.GetValueOrDefault(),
