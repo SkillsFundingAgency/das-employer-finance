@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.EmployerFinance.Services;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
 

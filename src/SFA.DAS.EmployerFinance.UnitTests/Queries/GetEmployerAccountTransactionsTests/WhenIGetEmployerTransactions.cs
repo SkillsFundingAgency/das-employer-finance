@@ -5,7 +5,6 @@ using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
-using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.HashingService;
 using SFA.DAS.NLog.Logger;
 using System;
@@ -17,6 +16,7 @@ using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactionsTests
 {

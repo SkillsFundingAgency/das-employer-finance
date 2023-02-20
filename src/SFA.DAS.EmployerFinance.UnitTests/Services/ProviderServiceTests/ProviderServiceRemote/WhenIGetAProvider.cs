@@ -6,7 +6,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Providers;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Providers;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
-using SFA.DAS.EmployerFinance.Services;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Services.ProviderServiceTests.ProviderServiceRemote

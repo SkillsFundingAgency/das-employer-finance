@@ -12,7 +12,7 @@ using SFA.DAS.EmployerFinance.Models.HmrcLevy;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
-using SFA.DAS.EmployerFinance.Services;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers

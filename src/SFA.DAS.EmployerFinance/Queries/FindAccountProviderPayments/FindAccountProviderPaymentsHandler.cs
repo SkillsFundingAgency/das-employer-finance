@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 

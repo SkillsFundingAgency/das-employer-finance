@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 using SFA.DAS.EmployerFinance.Models.Transfers;
-using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Messaging.Interfaces;
 using SFA.DAS.NLog.Logger;
 using System;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Validation;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTests
 {

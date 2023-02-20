@@ -1,49 +1,47 @@
-﻿
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Extensions.Configuration;
 using SFA.DAS.Authentication.Extensions.Legacy;
 using SFA.DAS.EmployerFinance.Interfaces;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Microsoft.Azure.Services.AppAuthentication;
-using NLog.Internal;
-using ConfigurationManager = System.Configuration.ConfigurationManager;
 
-namespace SFA.DAS.EmployerFinance.Services
+namespace SFA.DAS.EmployerFinance.Services;
+
+public class ContentApiClient : ApiClientBase, IContentApiClient
 {
-    public class ContentApiClient : ApiClientBase, IContentApiClient
+    private readonly string _apiBaseUrl;
+    private readonly string _identifierUri;
+    private readonly HttpClient _client;
+    private readonly IConfiguration _configuration;
+
+    public ContentApiClient(HttpClient client, IContentClientApiConfiguration contentClientConfiguration, IConfiguration configuration) : base(client) 
     {
-        private readonly string _apiBaseUrl;
-        private readonly string _identifierUri;
-        private readonly HttpClient _client;
+        _apiBaseUrl = contentClientConfiguration.ApiBaseUrl.EndsWith("/")
+            ? contentClientConfiguration.ApiBaseUrl
+            : contentClientConfiguration.ApiBaseUrl + "/";
 
-        public ContentApiClient(HttpClient client, IContentClientApiConfiguration configuration) : base(client) 
+        _identifierUri = contentClientConfiguration.IdentifierUri;
+        _client = client;
+        _configuration = configuration;
+    }
+
+    private async Task AddAuthenticationHeader()
+    {
+        if (_configuration["EnvironmentName"] != "LOCAL")
         {
-            _apiBaseUrl = configuration.ApiBaseUrl.EndsWith("/")
-                ? configuration.ApiBaseUrl
-                : configuration.ApiBaseUrl + "/";
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(_identifierUri);
 
-            _identifierUri = configuration.IdentifierUri;
-            _client = client;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
+    }
 
-        private async Task AddAuthenticationHeader()
-        {
-            if (ConfigurationManager.AppSettings["EnvironmentName"].ToUpper() != "LOCAL")
-            {
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(_identifierUri);
+    public async Task<string> Get(string type, string applicationId)
+    {
+        await AddAuthenticationHeader();
 
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            }
-        }
-
-        public async Task<string> Get(string type, string applicationId)
-        {
-            await AddAuthenticationHeader();
-
-            var uri = $"{_apiBaseUrl}api/content?applicationId={applicationId}&type={type}";
+        var uri = $"{_apiBaseUrl}api/content?applicationId={applicationId}&type={type}";
             
-            return await GetAsync(uri); 
-        }
+        return await GetAsync(uri); 
     }
 }
