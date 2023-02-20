@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.EmployerFinance.Data;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd
 {

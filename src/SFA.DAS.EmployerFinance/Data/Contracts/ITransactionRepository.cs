@@ -1,10 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFinance.Data;
+namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface ITransactionRepository
 {
@@ -19,5 +16,5 @@ public interface ITransactionRepository
     Task<TransactionDownloadLine[]> GetAllTransactionDetailsForAccountByDate(long accountId, DateTime fromDate, DateTime toDate);
     Task<decimal> GetTotalSpendForLastYear(long accountId);
 
-    Task<List<SFA.DAS.EmployerFinance.Api.Types.TransactionSummary>> GetAccountTransactionSummary(long accountId);
+    Task<List<Api.Types.TransactionSummary>> GetAccountTransactionSummary(long accountId);
 }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -15,19 +8,19 @@ public class LevyFundsInRepository : BaseRepository, ILevyFundsInRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public LevyFundsInRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+    public LevyFundsInRepository(EmployerFinanceConfiguration configuration, ILogger<LevyFundsInRepository> logger, Lazy<EmployerFinanceDbContext> db)
         : base(configuration.DatabaseConnectionString, logger)
     {
         _db = db;
     }
 
-    public async Task<IEnumerable<LevyFundsIn>> GetLevyFundsIn(long accountId)
+    public Task<IEnumerable<LevyFundsIn>> GetLevyFundsIn(long accountId)
     {
         var parameters = new DynamicParameters();
 
         parameters.Add("@AccountId", accountId, DbType.Int64);
 
-        return await _db.Value.Database.GetDbConnection().QueryAsync<LevyFundsIn>(
+        return _db.Value.Database.GetDbConnection().QueryAsync<LevyFundsIn>(
             "[employer_financial].[GetLevyFundsIn]",
             param: parameters,
             commandType: CommandType.StoredProcedure

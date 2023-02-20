@@ -1,12 +1,6 @@
-﻿using System;
-using System.Data;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -14,13 +8,13 @@ public class UserRepository : BaseRepository, IUserRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public UserRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+    public UserRepository(EmployerFinanceConfiguration configuration, ILogger<UserRepository> logger, Lazy<EmployerFinanceDbContext> db)
         : base(configuration.DatabaseConnectionString, logger)
     {
         _db = db;
     }
 
-    public async Task Upsert(User user)
+    public Task Upsert(User user)
     {
         var parameters = new DynamicParameters();
 
@@ -30,7 +24,7 @@ public class UserRepository : BaseRepository, IUserRepository
         parameters.Add("@lastName", user.LastName, DbType.String);
         parameters.Add("@correlationId", user.CorrelationId, DbType.String);
 
-        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+        return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[UpsertUser] @userRef, @email, @firstName, @lastName, @correlationId",
             param: parameters,
             commandType: CommandType.Text);

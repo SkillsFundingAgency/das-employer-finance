@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MediatR;
-using SFA.DAS.EmployerFinance.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
 {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
+﻿using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 
-namespace SFA.DAS.EmployerFinance.Data;
+namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface IExpiredFundsRepository
 {

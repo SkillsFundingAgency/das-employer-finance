@@ -5,7 +5,6 @@ using NUnit.Framework;
 using SFA.DAS.EAS.Account.Api.Types.Events.Levy;
 using SFA.DAS.EmployerFinance.Commands.PublishGenericEvent;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Services;
@@ -24,6 +23,7 @@ using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NServiceBus.Testing.Services;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTests
 {

@@ -1,5 +1,4 @@
 using MediatR;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.NLog.Logger;
 using System;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions
 {

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Data;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
+﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -13,7 +7,7 @@ public class AccountLegalEntityRepository : BaseRepository, IAccountLegalEntityR
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public AccountLegalEntityRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+    public AccountLegalEntityRepository(EmployerFinanceConfiguration configuration, ILogger<AccountLegalEntityRepository> logger, Lazy<EmployerFinanceDbContext> db)
         : base(configuration.DatabaseConnectionString, logger)
     {
         _db = db;

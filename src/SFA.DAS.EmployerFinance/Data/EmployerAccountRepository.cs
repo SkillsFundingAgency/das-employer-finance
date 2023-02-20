@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
-using SFA.DAS.HashingService;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.Data;
 

@@ -10,7 +10,6 @@ using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFinance.Web.Controllers;
@@ -19,6 +18,7 @@ using SFA.DAS.Events.Api.Client;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.UnitOfWork.Managers;
 using StructureMap;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
 {

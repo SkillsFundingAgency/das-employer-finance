@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Models.Account;
+﻿using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Paye;
 
-namespace SFA.DAS.EmployerFinance.Data;
+namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface IPayeRepository
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace SFA.DAS.EmployerFinance.Data;
+﻿namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface IAccountLegalEntityRepository
 {

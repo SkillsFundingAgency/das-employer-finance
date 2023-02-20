@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.NLog.Logger;
 

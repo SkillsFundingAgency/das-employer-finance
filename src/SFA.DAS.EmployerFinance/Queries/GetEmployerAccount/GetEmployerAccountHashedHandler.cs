@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using SFA.DAS.EmployerFinance.Data;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
 {

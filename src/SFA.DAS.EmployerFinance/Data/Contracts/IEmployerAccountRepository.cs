@@ -1,8 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Account;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFinance.Data;
+namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface IEmployerAccountRepository
 {

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired

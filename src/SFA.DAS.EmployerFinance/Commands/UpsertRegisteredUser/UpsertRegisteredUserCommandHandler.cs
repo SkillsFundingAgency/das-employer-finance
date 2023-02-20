@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;

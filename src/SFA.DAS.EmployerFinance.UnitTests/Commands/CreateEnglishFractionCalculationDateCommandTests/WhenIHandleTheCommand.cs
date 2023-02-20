@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NLog.Logger;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;

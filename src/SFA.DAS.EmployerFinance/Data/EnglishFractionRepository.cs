@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -16,7 +9,7 @@ public class EnglishFractionRepository : BaseRepository, IEnglishFractionReposit
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public EnglishFractionRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+    public EnglishFractionRepository(EmployerFinanceConfiguration configuration, ILogger<EnglishFractionRepository> logger, Lazy<EmployerFinanceDbContext> db)
         : base(configuration.DatabaseConnectionString, logger)
     {
         _db = db;

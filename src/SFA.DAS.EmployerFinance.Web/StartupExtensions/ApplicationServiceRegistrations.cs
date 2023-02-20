@@ -15,6 +15,7 @@ using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using Microsoft.ApplicationInsights.DataContracts;
 using SFA.DAS.TokenService.Api.Client;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {

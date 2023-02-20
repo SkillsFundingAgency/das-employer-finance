@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -34,7 +30,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
             .SingleOrDefaultAsync();
     }
 
-    public async Task<TransferConnectionInvitation> GetBySender(int id, long senderAccountId, TransferConnectionInvitationStatus status)
+    public Task<TransferConnectionInvitation> GetBySender(int id, long senderAccountId, TransferConnectionInvitationStatus status)
     {
         var query = _db.Value.TransferConnectionInvitations
             .Where(i =>
@@ -42,11 +38,11 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
                 i.SenderAccount.Id == senderAccountId &&
                 i.Status == status);
 
-        return await query
+        return query
             .SingleOrDefaultAsync();
     }
 
-    public async Task<TransferConnectionInvitation> GetByReceiver(int id, long receiverAccountId, TransferConnectionInvitationStatus status)
+    public Task<TransferConnectionInvitation> GetByReceiver(int id, long receiverAccountId, TransferConnectionInvitationStatus status)
     {
         var query = _db.Value.TransferConnectionInvitations
             .Where(i =>
@@ -54,33 +50,33 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
                 i.ReceiverAccount.Id == receiverAccountId &&
                 i.Status == status);
 
-        return await query
+        return query
             .SingleOrDefaultAsync();
     }
 
-    public async Task<List<TransferConnectionInvitation>> GetByReceiver(long recieverAccountId, TransferConnectionInvitationStatus status)
+    public Task<List<TransferConnectionInvitation>> GetByReceiver(long recieverAccountId, TransferConnectionInvitationStatus status)
     {
-        return await _db.Value.TransferConnectionInvitations
+        return _db.Value.TransferConnectionInvitations
             .Where(
-                i => i.ReceiverAccount.Id == recieverAccountId && 
+                i => i.ReceiverAccount.Id == recieverAccountId &&
                      i.Status == TransferConnectionInvitationStatus.Approved)
             .OrderBy(i => i.SenderAccount.Name)
             .ToListAsync();
     }
 
-    public async Task<TransferConnectionInvitation> GetLatestByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
+    public Task<TransferConnectionInvitation> GetLatestByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
     {
-        return await _db.Value.TransferConnectionInvitations
+        return _db.Value.TransferConnectionInvitations
             .Where(
-                i => i.ReceiverAccountId == receiverAccountId && 
-                     i.Status ==  status)
+                i => i.ReceiverAccountId == receiverAccountId &&
+                     i.Status == status)
             .OrderByDescending(i => i.CreatedDate)
             .FirstOrDefaultAsync();
     }
 
-    public async Task<TransferConnectionInvitation> GetBySenderOrReceiver(int id, long accountId)
+    public Task<TransferConnectionInvitation> GetBySenderOrReceiver(int id, long accountId)
     {
-        return await _db.Value.TransferConnectionInvitations
+        return _db.Value.TransferConnectionInvitations
             .Where(i =>
                 i.Id == id && (
                     i.SenderAccount.Id == accountId && !i.DeletedBySender ||
@@ -88,7 +84,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
             .SingleOrDefaultAsync();
     }
 
-    public async Task<List<TransferConnectionInvitation>> GetBySenderOrReceiver(long accountId)
+    public Task<List<TransferConnectionInvitation>> GetBySenderOrReceiver(long accountId)
     {
         var query = _db.Value.TransferConnectionInvitations
             .Include(i => i.ReceiverAccount)
@@ -99,15 +95,15 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
             .OrderBy(i => i.ReceiverAccount.Id == accountId ? i.SenderAccount.Name : i.ReceiverAccount.Name)
             .ThenBy(i => i.CreatedDate);
 
-        return await query
+        return query
             .ToListAsync();
     }
 
-    public async Task<bool> AnyTransferConnectionInvitations(long senderAccountId, long receiverAccountId, List<TransferConnectionInvitationStatus> statuses)
+    public Task<bool> AnyTransferConnectionInvitations(long senderAccountId, long receiverAccountId, List<TransferConnectionInvitationStatus> statuses)
     {
-        return await _db.Value.TransferConnectionInvitations.AnyAsync(i =>
-            i.SenderAccount.Id == senderAccountId && 
-            i.ReceiverAccount.Id == receiverAccountId && 
+        return _db.Value.TransferConnectionInvitations.AnyAsync(i =>
+            i.SenderAccount.Id == senderAccountId &&
+            i.ReceiverAccount.Id == receiverAccountId &&
             statuses.Contains(i.Status));
     }
 }

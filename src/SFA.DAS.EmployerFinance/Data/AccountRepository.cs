@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -15,7 +8,7 @@ public class AccountRepository : BaseRepository, IAccountRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public AccountRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+    public AccountRepository(EmployerFinanceConfiguration configuration, ILogger<AccountRepository> logger, Lazy<EmployerFinanceDbContext> db)
         : base(configuration.DatabaseConnectionString, logger)
     {
         _db = db;

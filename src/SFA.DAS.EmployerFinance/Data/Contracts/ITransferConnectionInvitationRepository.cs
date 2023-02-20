@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Models.TransferConnections;
+﻿using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
-namespace SFA.DAS.EmployerFinance.Data;
+namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface ITransferConnectionInvitationRepository
 {

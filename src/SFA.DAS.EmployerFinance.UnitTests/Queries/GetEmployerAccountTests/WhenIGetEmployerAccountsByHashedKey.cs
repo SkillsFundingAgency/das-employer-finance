@@ -1,6 +1,5 @@
 ﻿using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using System;
 using System.Threading.Tasks;
@@ -9,6 +8,7 @@ using SFA.DAS.HashingService;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
 {

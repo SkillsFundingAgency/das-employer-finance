@@ -6,7 +6,7 @@ using HMRC.ESFA.Levy.Api.Types;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Paye;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Hmrc;

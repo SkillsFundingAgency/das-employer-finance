@@ -1,7 +1,7 @@
 ﻿using System;
 using BoDi;
 using Moq;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions

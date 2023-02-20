@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -21,7 +16,7 @@ public static class EmployerFinanceDbContextExtensions
         var result = await db.Database.GetDbConnection().QueryAsync<AccountTransfer>(
             sql: "[employer_financial].[GetTransferTransactionDetails]",
             param: parameters,
-            commandType: System.Data.CommandType.StoredProcedure
+            commandType: CommandType.StoredProcedure
         );
 
         return result.ToList();

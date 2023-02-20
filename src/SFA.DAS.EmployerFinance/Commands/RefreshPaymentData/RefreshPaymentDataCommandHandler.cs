@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using MediatR;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Events.ProcessPayment;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -15,6 +14,7 @@ using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.Provider.Events.Api.Types;
 using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData
 {

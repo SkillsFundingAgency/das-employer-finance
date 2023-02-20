@@ -1,20 +1,13 @@
-﻿using AutoMapper;
-using Dapper;
+﻿using System.Linq;
+using AutoMapper;
+using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Sql.Client;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.EmployerFinance.Api.Types;
-using Microsoft.EntityFrameworkCore;
 using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.TransactionItemType;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -24,7 +17,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
     private readonly IMapper _mapper;
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public TransactionRepository(EmployerFinanceConfiguration configuration, IMapper mapper, ILog logger,
+    public TransactionRepository(EmployerFinanceConfiguration configuration, IMapper mapper, ILogger<TransactionRepository> logger,
         Lazy<EmployerFinanceDbContext> db)
         : base(configuration.DatabaseConnectionString, logger)
     {
@@ -32,7 +25,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         _db = db;
     }
 
-    public async Task CreateTransferTransactions(IEnumerable<TransferTransactionLine> transactions)
+    public Task CreateTransferTransactions(IEnumerable<TransferTransactionLine> transactions)
     {
         var transactionTable = CreateTransferTransactionDataTable(transactions);
         var parameters = new DynamicParameters();
@@ -40,7 +33,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         parameters.Add("@transferTransactions",
             transactionTable.AsTableValuedParameter("[employer_financial].[TransferTransactionsTable]"));
 
-        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+        return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[CreateAccountTransferTransactions]",
             param: parameters,
             commandType: CommandType.StoredProcedure);
@@ -78,7 +71,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
             param: parameters,
             commandType: CommandType.Text);
     }
-    
+
     public async Task<TransactionLine[]> GetAccountTransactionsByDateRange(long accountId, DateTime fromDate, DateTime toDate)
     {
         var parameters = new DynamicParameters();
@@ -150,7 +143,8 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
 
     private TransactionLine[] MapTransactions(IEnumerable<TransactionEntity> transactionEntities)
     {
-        return transactionEntities.Select(entity => { 
+        return transactionEntities.Select(entity =>
+        {
             switch (entity.TransactionType)
             {
                 case TransactionItemType.Declaration:
@@ -209,9 +203,9 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
 
         return MapTransactions(result);
     }
-		
 
-    public async Task<string> GetProviderName(long ukprn, long accountId, string periodEnd)
+
+    public Task<string> GetProviderName(long ukprn, long accountId, string periodEnd)
     {
         var parameters = new DynamicParameters();
 
@@ -219,11 +213,11 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         parameters.Add("@accountId", accountId, DbType.Int64);
         parameters.Add("@periodEnd", periodEnd, DbType.String);
 
-        return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<string>(
+        return _db.Value.Database.GetDbConnection().ExecuteScalarAsync<string>(
             sql: "[employer_financial].[GetProviderName]",
             param: parameters,
             commandType: CommandType.StoredProcedure);
-            
+
     }
     public async Task<TransactionDownloadLine[]> GetAllTransactionDetailsForAccountByDate(long accountId, DateTime fromDate, DateTime toDate)
     {
@@ -249,13 +243,13 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         return transactionDownloadLines.OrderByDescending(txn => txn.DateCreated).ToArray();
     }
 
-    public async Task<decimal> GetTotalSpendForLastYear(long accountId)
+    public Task<decimal> GetTotalSpendForLastYear(long accountId)
     {
         var parameters = new DynamicParameters();
         parameters.Add("@AccountId", accountId, DbType.Int64);
 
-        return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
-    }       
+        return _db.Value.Database.GetDbConnection().ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
+    }
 
     public async Task<List<TransactionSummary>> GetAccountTransactionSummary(long accountId)
     {

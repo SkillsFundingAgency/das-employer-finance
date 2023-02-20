@@ -8,7 +8,7 @@ using NServiceBus.MessageInterfaces.MessageMapper.Reflection;
 using NServiceBus.Testing;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 using SFA.DAS.EmployerFinance.Messages.Commands;

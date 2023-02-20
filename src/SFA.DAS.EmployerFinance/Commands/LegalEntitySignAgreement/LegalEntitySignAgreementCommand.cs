@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using MediatR.Pipeline;
 using SFA.DAS.Authorization.ModelBinding;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement

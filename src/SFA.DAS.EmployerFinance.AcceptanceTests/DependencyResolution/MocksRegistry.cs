@@ -4,7 +4,7 @@ using Moq;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.Events.Api.Client;
 using SFA.DAS.TokenService.Api.Client;

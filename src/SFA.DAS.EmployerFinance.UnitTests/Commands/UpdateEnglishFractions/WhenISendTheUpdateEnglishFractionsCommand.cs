@@ -8,7 +8,7 @@ using HMRC.ESFA.Levy.Api.Types;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
 using SFA.DAS.Hmrc;
