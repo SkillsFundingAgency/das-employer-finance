@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Headers;
 
-namespace SFA.DAS.EmployerFinance.Http
+namespace SFA.DAS.EmployerFinance.Http;
+
+public interface IHttpClientWrapper
 {
-    public interface IHttpClientWrapper
-    {
-        Task<string> SendMessage<T>(T content, string url);
-        Task<T> Get<T>(string authToken, string url);
-        Task<string> GetString(string url, string accessToken);
-        string BaseUrl { get; set; }
-        List<MediaTypeWithQualityHeaderValue> MediaTypeWithQualityHeaderValueList { get; set; }
-        string AuthScheme { get; set; }
-    }
+    Task<string> SendMessage<T>(T content, string url);
+    Task<T> Get<T>(string authToken, string url);
+    Task<string> GetString(string url, string accessToken);
+    string BaseUrl { get; set; }
+    List<MediaTypeWithQualityHeaderValue> MediaTypeWithQualityHeaderValueList { get; set; }
+    string AuthScheme { get; set; }
 }

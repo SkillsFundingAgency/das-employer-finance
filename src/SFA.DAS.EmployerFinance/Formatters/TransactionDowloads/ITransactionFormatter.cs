@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-using SFA.DAS.Common.Domain.Types;
+﻿using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
-namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
+namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+
+public interface ITransactionFormatter
 {
-    public interface ITransactionFormatter
-    {
-        byte[] GetFileData(IEnumerable<TransactionDownloadLine> dataPayments);
+    byte[] GetFileData(IEnumerable<TransactionDownloadLine> dataPayments);
 
-        string MimeType { get; }
+    string MimeType { get; }
 
-        string FileExtension { get; }
+    string FileExtension { get; }
 
-        DownloadFormatType DownloadFormatType { get; }
-        ApprenticeshipEmployerType ApprenticeshipEmployerType { get; }
-    }
+    DownloadFormatType DownloadFormatType { get; }
+    ApprenticeshipEmployerType ApprenticeshipEmployerType { get; }
 }

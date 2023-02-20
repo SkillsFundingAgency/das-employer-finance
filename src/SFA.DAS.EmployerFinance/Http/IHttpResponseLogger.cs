@@ -1,11 +1,8 @@
 using System.Net.Http;
-using System.Threading.Tasks;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.Http
+namespace SFA.DAS.EmployerFinance.Http;
+
+public interface IHttpResponseLogger
 {
-    public interface IHttpResponseLogger
-    {
-        Task LogResponseAsync(ILog logger, HttpResponseMessage response);
-    }
+    Task LogResponseAsync(HttpResponseMessage response);
 }

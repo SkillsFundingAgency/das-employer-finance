@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
 {

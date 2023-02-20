@@ -1,9 +1,8 @@
 ﻿using SFA.DAS.Events.Api.Types;
 
-namespace SFA.DAS.EmployerFinance.Factories
+namespace SFA.DAS.EmployerFinance.Factories;
+
+public interface IGenericEventFactory
 {
-    public interface IGenericEventFactory
-    {
-        GenericEvent Create<T>(T value);
-    }
+    GenericEvent Create<T>(T value);
 }

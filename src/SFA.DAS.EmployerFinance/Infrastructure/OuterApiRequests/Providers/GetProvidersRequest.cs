@@ -1,9 +1,8 @@
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 
-namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Providers
+namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Providers;
+
+public class GetProvidersRequest: IGetApiRequest
 {
-    public class GetProvidersRequest: IGetApiRequest
-    {
-        public string GetUrl => "providers";
-    }
+    public string GetUrl => "providers";
 }

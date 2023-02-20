@@ -1,9 +1,8 @@
-﻿namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
+﻿namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+
+public enum DownloadFormatType
 {
-    public enum DownloadFormatType
-    {
-        // ReSharper disable once InconsistentNaming Must be capital!
-        CSV,
-        Excel,
-    }
+    // ReSharper disable once InconsistentNaming Must be capital!
+    CSV,
+    Excel,
 }
