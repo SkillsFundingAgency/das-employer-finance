@@ -3,7 +3,6 @@ using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.NLog.Logger;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsTests;
@@ -231,6 +230,6 @@ public class WhenICreateTransferTransactions
 
         //Act + Assert
         Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command, CancellationToken.None));
-        _logger.Verify(x => x.LogError(expectedException, It.IsAny<string>()), Times.Once);
+        _logger.VerifyLogging($"Failed to create transfer transaction for accountId {_command.ReceiverAccountId} and period end {_command.PeriodEnd}", LogLevel.Error, Times.Once());
     }
 }

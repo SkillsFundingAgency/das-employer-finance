@@ -38,6 +38,6 @@ public class WhenIProcessPaymentData
         await _eventHandler.Handle(new ProcessPaymentEvent(), CancellationToken.None);
 
         //Assert
-        _logger.Verify(x => x.LogInformation("Process Payments Called"));
+        _logger.VerifyLogging("Process Payments Called", LogLevel.Information);
     }
 }

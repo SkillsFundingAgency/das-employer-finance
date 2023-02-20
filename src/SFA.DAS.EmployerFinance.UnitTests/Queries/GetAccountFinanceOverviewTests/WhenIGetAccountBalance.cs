@@ -114,6 +114,6 @@ public class WhenIGetAccountBalance
 
         Assert.ThrowsAsync<Exception>(() => _handler.Handle(_query, CancellationToken.None));
 
-        _logger.Verify(l => l.LogError(expectedException, It.IsAny<string>()), Times.Once);
+        _logger.VerifyLogging($"Failed to get account's current balance for account ID: {_query.AccountId}", LogLevel.Error, Times.Once());
     }
 }

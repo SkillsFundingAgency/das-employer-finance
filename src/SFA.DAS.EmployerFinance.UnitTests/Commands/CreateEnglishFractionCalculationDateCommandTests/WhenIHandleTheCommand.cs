@@ -59,6 +59,6 @@ public class WhenIHandleTheCommand
         await _handler.Handle(new CreateEnglishFractionCalculationDateCommand { DateCalculated = _expectedDate }, CancellationToken.None);
 
         //Assert
-        _logger.Verify(x => x.LogInformation($"English Fraction CalculationDate updated to {_expectedDate.ToString("dd MMM yyyy")}"), Times.Once());
+        _logger.VerifyLogging($"English Fraction CalculationDate updated to {_expectedDate:dd MMM yyyy}", LogLevel.Information, Times.Once());
     }
 }

@@ -9,7 +9,6 @@ using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTransactionsTests;
 
@@ -250,7 +249,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        _logger.Verify(x => x.LogInformation(It.Is<string>(y => y.StartsWith("Provider not found for UkPrn:1254545"))));
+        _logger.VerifyLogging(It.Is<string>(y => y.StartsWith("Provider not found for UkPrn:1254545")), LogLevel.Information);
     }
 
     [Test]
@@ -317,7 +316,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             TransactionType = TransactionItemType.Payment,
             Amount = 123.45M
         };
-      
+
         _dasLevyService.Setup(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(new TransactionLine[]
             {

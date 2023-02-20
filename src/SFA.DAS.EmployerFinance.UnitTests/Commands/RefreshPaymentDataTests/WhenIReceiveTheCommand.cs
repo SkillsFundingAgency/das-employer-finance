@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
-using MediatR;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Events.ProcessPayment;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Testing.Services;
 using SFA.DAS.Provider.Events.Api.Types;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
@@ -184,8 +182,7 @@ public class WhenIReceiveTheCommand
         _dasLevyRepository.Verify(x => x.GetAccountPaymentIds(_command.AccountId), Times.Never);
         _mediator.Verify(x => x.Publish(It.IsAny<ProcessPaymentEvent>(), CancellationToken.None), Times.Never);
 
-        _logger.Verify(x => x.LogError(It.IsAny<WebException>(),
-            $"Unable to get payment information for AccountId = '{AccountId}' and PeriodEnd = '{_command.PeriodEnd}' CorrelationId: {_command.CorrelationId}"));
+        _logger.VerifyLogging($"Unable to get payment information for AccountId = '{AccountId}' and PeriodEnd = '{_command.PeriodEnd}' CorrelationId: {_command.CorrelationId}", LogLevel.Error);
     }
 
     [Test]
