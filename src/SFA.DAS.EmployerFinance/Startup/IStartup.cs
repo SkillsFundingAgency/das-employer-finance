@@ -1,10 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿namespace SFA.DAS.EmployerFinance.Startup;
 
-namespace SFA.DAS.EmployerFinance.Startup
+public interface IStartup
 {
-    public interface IStartup
-    {
-        Task StartAsync();
-        Task StopAsync();
-    }
+    Task StartAsync();
+    Task StopAsync();
 }
