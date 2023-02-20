@@ -37,14 +37,16 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvita
             {
                 Id = 111111,
                 HashedId = hashedAccountId,
-                PublicHashingService = new TestPublicHashingService()
+                PublicHashedId = "XYZ987"
+                //PublicHashingService = new TestPublicHashingService()
             };
 
             _senderAccount = new Account
             {
                 Id = 222222,
                 HashedId = hashedAccountId,
-                PublicHashingService = new TestPublicHashingService()
+                PublicHashedId="DEF678"
+                //PublicHashingService = new TestPublicHashingService()
             };
 
             _employerAccountRepository = new Mock<IEmployerAccountRepository>();

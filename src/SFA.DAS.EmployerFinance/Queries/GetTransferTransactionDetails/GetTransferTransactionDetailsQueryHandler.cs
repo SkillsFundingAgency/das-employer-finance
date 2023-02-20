@@ -12,12 +12,12 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
     private readonly IPublicHashingService _publicHashingService;
     private readonly IEncodingService _encodingService;
 
-    public GetTransferTransactionDetailsQueryHandler(EmployerFinanceDbContext dbContext,
-        IEncodingService encodingService)
-    {
-        _dbContext = dbContext;
-        _encodingService = encodingService;
-    }
+        public GetTransferTransactionDetailsQueryHandler(Lazy<EmployerFinanceDbContext> dbContext,
+            IEncodingService encodingService)
+        {
+            _dbContext = dbContext;
+            _encodingService = encodingService;
+        }
 
     public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query,CancellationToken cancellationToken)
     {
@@ -50,16 +50,16 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
             ApprenticeCount = (uint)ct.DistinctBy(t => t.ApprenticeshipId).Count()
         }).ToArray();
 
-        //NOTE: We should only get one transfer transaction per sender per period end
-        // as this is how transfers are grouped together when creating transfer transactions
-        var transferTransaction = _dbContext.Transactions.Single(t =>
-            t.AccountId == query.AccountId &&
-            t.TransactionType == TransactionItemType.Transfer &&
-            t.TransferSenderAccountId != null &&
-            t.TransferReceiverAccountId != null &&
-            t.TransferSenderAccountId == firstTransfer.SenderAccountId &&
-            t.TransferReceiverAccountId == firstTransfer.ReceiverAccountId &&
-            t.PeriodEnd.Equals(query.PeriodEnd));
+            //NOTE: We should only get one transfer transaction per sender per period end
+            // as this is how transfers are grouped together when creating transfer transactions
+            var transferTransaction = _dbContext.Value.Transactions.Single(t =>
+                t.AccountId == query.AccountId &&
+                t.TransactionType == TransactionItemType.Transfer &&
+                t.TransferSenderAccountId != null &&
+                t.TransferReceiverAccountId != null &&
+                t.TransferSenderAccountId == firstTransfer.SenderAccountId &&
+                t.TransferReceiverAccountId == firstTransfer.ReceiverAccountId &&
+                t.PeriodEnd.Equals(query.PeriodEnd));
 
         var transferDate = transferTransaction.DateCreated;
         var transfersPaymentTotal = transferDetails.Sum(t => t.PaymentTotal);
