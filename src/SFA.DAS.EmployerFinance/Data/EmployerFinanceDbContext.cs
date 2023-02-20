@@ -75,5 +75,6 @@ public class EmployerFinanceDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("employer_financial");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployerFinanceDbContext).Assembly);
+        modelBuilder.Ignore<PaymentDetails>();
     }
 }

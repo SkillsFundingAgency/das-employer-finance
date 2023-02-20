@@ -56,7 +56,4 @@
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Messages\SFA.DAS.EmployerFinance.Messages.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Configuration\" />
-  </ItemGroup>
 </Project>
