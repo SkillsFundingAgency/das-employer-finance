@@ -3,17 +3,16 @@ using SFA.DAS.Events.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
 using StructureMap;
 
-namespace SFA.DAS.EmployerFinance.DependencyResolution
+namespace SFA.DAS.EmployerFinance.DependencyResolution;
+
+public class EventsRegistry : Registry
 {
-    public class EventsRegistry : Registry
+    public EventsRegistry()
     {
-        public EventsRegistry()
-        {
-            For<IEventsApi>()
-                .Use<EventsApi>()
-                .Ctor<IEventsApiClientConfiguration>()
-                .Is(c => c.GetInstance<EmployerFinanceConfiguration>().EventsApi)
-                .SelectConstructor(() => new EventsApi(null));
-        }
+        For<IEventsApi>()
+            .Use<EventsApi>()
+            .Ctor<IEventsApiClientConfiguration>()
+            .Is(c => c.GetInstance<EmployerFinanceConfiguration>().EventsApi)
+            .SelectConstructor(() => new EventsApi(null));
     }
 }

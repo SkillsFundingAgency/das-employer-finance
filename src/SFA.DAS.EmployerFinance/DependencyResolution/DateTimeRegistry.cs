@@ -1,13 +1,11 @@
 ﻿using StructureMap;
-using StructureMap.Pipeline;
 
-namespace SFA.DAS.EmployerFinance.DependencyResolution
+namespace SFA.DAS.EmployerFinance.DependencyResolution;
+
+public class DateTimeRegistry :Registry
 {
-    public class DateTimeRegistry :Registry
+    public DateTimeRegistry()
     {
-        public DateTimeRegistry()
-        {
-            Policies.Add<CurrentDatePolicy>();
-        }
+        Policies.Add<CurrentDatePolicy>();
     }
 }

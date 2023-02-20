@@ -1,13 +1,11 @@
-﻿using MediatR;
-using StructureMap;
+﻿using StructureMap;
 
-namespace SFA.DAS.EmployerFinance.DependencyResolution
+namespace SFA.DAS.EmployerFinance.DependencyResolution;
+
+public class MediatorRegistry : Registry
 {
-    public class MediatorRegistry : Registry
+    public MediatorRegistry()
     {
-        public MediatorRegistry()
-        {
-            For<IMediator>().Use<Mediator>();
-        }
+        For<IMediator>().Use<Mediator>();
     }
 }

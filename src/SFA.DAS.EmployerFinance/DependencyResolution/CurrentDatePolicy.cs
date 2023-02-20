@@ -1,30 +1,27 @@
-﻿using System;
-using System.Configuration;
-using System.Linq;
+﻿using System.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Time;
 using StructureMap;
 using StructureMap.Pipeline;
 
-namespace SFA.DAS.EmployerFinance.DependencyResolution
+namespace SFA.DAS.EmployerFinance.DependencyResolution;
+
+public class CurrentDatePolicy : ConfiguredInstancePolicy
 {
-    public class CurrentDatePolicy : ConfiguredInstancePolicy
+    protected override void apply(Type pluginType, IConfiguredInstance instance)
     {
-        protected override void apply(Type pluginType, IConfiguredInstance instance)
+        var currentDateTime = instance?.Constructor?.GetParameters().FirstOrDefault(p => p.ParameterType == typeof(ICurrentDateTime));
+
+        if (currentDateTime != null)
         {
-            var currentDateTime = instance?.Constructor?.GetParameters().FirstOrDefault(p => p.ParameterType == typeof(ICurrentDateTime));
+            var cloudCurrentTime = ConfigurationManager.AppSettings["CurrentTime"];
 
-            if (currentDateTime != null)
+            if (!DateTime.TryParse(cloudCurrentTime, out var currentTime))
             {
-                var cloudCurrentTime = ConfigurationManager.AppSettings["CurrentTime"];
-
-                if (!DateTime.TryParse(cloudCurrentTime, out var currentTime))
-                {
-                    currentTime = DateTime.Now;
-                }
-
-                instance.Dependencies.AddForConstructorParameter(currentDateTime, new CurrentDateTime(currentTime));
+                currentTime = DateTime.Now;
             }
+
+            instance.Dependencies.AddForConstructorParameter(currentDateTime, new CurrentDateTime(currentTime));
         }
     }
 }

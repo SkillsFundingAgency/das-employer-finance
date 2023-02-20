@@ -1,13 +1,12 @@
 ﻿using StructureMap;
 using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.DependencyResolution
+namespace SFA.DAS.EmployerFinance.DependencyResolution;
+
+public class LoggerRegistry :Registry
 {
-    public class LoggerRegistry :Registry
+    public LoggerRegistry()
     {
-        public LoggerRegistry()
-        {
-            For<ILog>().Use(c => new NLogLogger(c.ParentType, c.GetInstance<ILoggingContext>(), null)).AlwaysUnique();
-        }
+        For<ILog>().Use(c => new NLogLogger(c.ParentType, c.GetInstance<ILoggingContext>(), null)).AlwaysUnique();
     }
 }
