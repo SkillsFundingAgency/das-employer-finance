@@ -1,15 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using MediatR;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.Authorization.Mvc.Extensions;
@@ -27,143 +16,139 @@ using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 using SFA.DAS.Validation.Mvc.Extensions;
-using StructureMap;
 
-namespace SFA.DAS.EmployerFinance.Api
+namespace SFA.DAS.EmployerFinance.Api;
+
+public class Startup
 {
-    public class Startup
+    private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment _environment;
+    public Startup(IConfiguration configuration,IHostEnvironment environment)
     {
-        private readonly IConfiguration _configuration;
-        private readonly IHostEnvironment _environment;
-        public Startup(IConfiguration configuration,IHostEnvironment environment)
-        {
-            _environment= environment;
-            _configuration= configuration;
+        _environment= environment;
+        _configuration= configuration;
 
-            var config = new ConfigurationBuilder()
-                .AddConfiguration(configuration)
-                .SetBasePath(Directory.GetCurrentDirectory());
+        var config = new ConfigurationBuilder()
+            .AddConfiguration(configuration)
+            .SetBasePath(Directory.GetCurrentDirectory());
 
 #if DEBUG
-            if (!_configuration.IsDev())
-            {
-                config.AddJsonFile("appsettings.json", false)
-                    .AddJsonFile("appsettings.Development.json", true);
-            }
+        if (!_configuration.IsDev())
+        {
+            config.AddJsonFile("appsettings.json", false)
+                .AddJsonFile("appsettings.Development.json", true);
+        }
 #endif
 
-            config.AddEnvironmentVariables();
+        config.AddEnvironmentVariables();
 
-            if (!configuration.IsTest())
-            {
-                config.AddAzureTableStorage(options =>
-                    {
-                        options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
-                        options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
-                        options.EnvironmentName = configuration["EnvironmentName"];
-                        options.PreFixConfigurationKeys = false;
-                        options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
-                    }
-                );
-            }
-            _configuration = config.Build();
-        }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        if (!configuration.IsTest())
         {
-            var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
-            var isDevelopment = _configuration.IsDevOrLocal();
-
-            services.AddApiAuthentication(_configuration, isDevelopment);
-            services.AddApiAuthorization(isDevelopment);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.OperationFilter<AuthorizationHeaderParameterOperationFilter>();
-                c.SwaggerDoc("v1", new OpenApiInfo
+            config.AddAzureTableStorage(options =>
                 {
-                    Version = "v1",
-                    Title = "Employer Finance API"
-                });
+                    options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
+                    options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
+                    options.EnvironmentName = configuration["EnvironmentName"];
+                    options.PreFixConfigurationKeys = false;
+                    options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
+                }
+            );
+        }
+        _configuration = config.Build();
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
+        var isDevelopment = _configuration.IsDevOrLocal();
+
+        services.AddApiAuthentication(_configuration, isDevelopment);
+        services.AddApiAuthorization(isDevelopment);
+
+        services.AddSwaggerGen(c =>
+        {
+            c.OperationFilter<AuthorizationHeaderParameterOperationFilter>();
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Employer Finance API"
+            });
+        });
+
+        services.AddApplicationServices();
+        services.AddDasDistributedMemoryCache(employerFinanceConfiguration,_environment.IsDevelopment());
+      
+        services.AddOrchestrators();
+
+        services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
+        services.AddNServiceBusClientUnitOfWork();
+
+        services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
+        services.AddDataRepositories();
+        services.AddEventsApi();
+
+
+        services.AddMediatorValidators();
+        services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddNotifications(_configuration);
+
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+        services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
+
+        services.AddApiConfigurationSections(_configuration)
+            .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
+            .AddMvc(opt =>
+            {
+                if (!_configuration.IsDevOrLocal() && !_configuration.IsTest())
+                {
+                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
+                    opt.AddAuthorization();
+                }
+
+                opt.AddValidation();
+
+                opt.Filters.Add<StopwatchFilter>();
             });
 
-            services.AddApplicationServices();
-            services.AddDasDistributedMemoryCache(employerFinanceConfiguration,_environment.IsDevelopment());
-      
-            services.AddOrchestrators();
+        services.AddApplicationInsightsTelemetry();
+    }
 
-            services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
-            services.AddNServiceBusClientUnitOfWork();
+    public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
+    {
+        serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
+    }
 
-            services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
-            services.AddDataRepositories();
-            services.AddEventsApi();
-
-
-            services.AddMediatorValidators();
-            services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
-            services.AddNotifications(_configuration);
-
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
-
-            services.AddApiConfigurationSections(_configuration)
-                .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
-                .AddMvc(opt =>
-                {
-                    if (!_configuration.IsDevOrLocal() && !_configuration.IsTest())
-                    {
-                        opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
-                        opt.AddAuthorization();
-                    }
-
-                    opt.AddValidation();
-
-                    opt.Filters.Add<StopwatchFilter>();
-                });
-
-            services.AddApplicationInsightsTelemetry();
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseHsts();
+            app.UseAuthentication();
         }
 
-        public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
-        {
-            serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
-        {
-            if (env.IsDevelopment())
+        app.UseHttpsRedirection()
+            .UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
+            .UseStaticFiles()
+            .UseUnauthorizedAccessExceptionHandler()
+            .UseRouting()
+            .UseAuthentication()
+            .UseAuthorization()
+            .UseEndpoints(endpoints =>
             {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-                app.UseAuthentication();
-            }
-
-            app.UseHttpsRedirection()
-                .UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
-                .UseStaticFiles()
-                .UseUnauthorizedAccessExceptionHandler()
-                .UseRouting()
-                .UseAuthentication()
-                .UseAuthorization()
-                .UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllerRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                })
-                .UseSwagger()
-                .UseSwaggerUI(opt =>
+            })
+            .UseSwagger()
+            .UseSwaggerUI(opt =>
                 {
                     opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Employer Finance API");
                     opt.RoutePrefix = "swagger";
                 }
-                );
-        }
+            );
     }
 }

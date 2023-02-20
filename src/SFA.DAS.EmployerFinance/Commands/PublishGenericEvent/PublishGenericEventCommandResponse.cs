@@ -1,6 +1,5 @@
-﻿namespace SFA.DAS.EmployerFinance.Commands.PublishGenericEvent
+﻿namespace SFA.DAS.EmployerFinance.Commands.PublishGenericEvent;
+
+public class PublishGenericEventCommandResponse
 {
-    public class PublishGenericEventCommandResponse
-    {
-    }
 }

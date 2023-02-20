@@ -1,58 +1,51 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using MediatR.Pipeline;
-using SFA.DAS.Authorization.ModelBinding;
+﻿using SFA.DAS.Authorization.ModelBinding;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement
+namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
+
+public class LegalEntitySignAgreementCommand : IAuthorizationContextModel,IRequest<Unit>
 {
-    public class LegalEntitySignAgreementCommand : IAuthorizationContextModel,IRequest<Unit>
+    public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId,
+        long legalEntityId)
     {
-        public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId,
-            long legalEntityId)
-        {
-            SignedAgreementId = signedAgreementId;
-            SignedAgreementVersion = signedAgreementVersion;
-            AccountId = accountId;
-            LegalEntityId = legalEntityId;
-        }
-
-
-        public long SignedAgreementId { get; set; }
-        public int SignedAgreementVersion { get; set; }
-        public long AccountId { get; set; }
-        public long LegalEntityId { get; set; }
+        SignedAgreementId = signedAgreementId;
+        SignedAgreementVersion = signedAgreementVersion;
+        AccountId = accountId;
+        LegalEntityId = legalEntityId;
     }
 
-    public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand,Unit>
+
+    public long SignedAgreementId { get; set; }
+    public int SignedAgreementVersion { get; set; }
+    public long AccountId { get; set; }
+    public long LegalEntityId { get; set; }
+}
+
+public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand,Unit>
+{
+    private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
+    private readonly ILogger<LegalEntitySignAgreementCommandHandler> _logger;
+
+    public LegalEntitySignAgreementCommandHandler(IAccountLegalEntityRepository accountLegalEntityRepository, ILogger<LegalEntitySignAgreementCommandHandler> logger)
     {
-        private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
-        private readonly ILog _logger;
+        _accountLegalEntityRepository = accountLegalEntityRepository;
+        _logger = logger;
+    }
 
-        public LegalEntitySignAgreementCommandHandler(IAccountLegalEntityRepository accountLegalEntityRepository, ILog logger)
+    public async Task<Unit> Handle(LegalEntitySignAgreementCommand message, CancellationToken cancellationToken)
+    {
+        try
         {
-            _accountLegalEntityRepository = accountLegalEntityRepository;
-            _logger = logger;
+            await _accountLegalEntityRepository.SignAgreement(message.SignedAgreementId, message.SignedAgreementVersion,
+                message.AccountId, message.LegalEntityId);
+            _logger.LogInformation($"Signed agreement on legal entity {message.LegalEntityId}");
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not sign agreement on legal entity");
+            throw;
         }
 
-        public async Task<Unit> Handle(LegalEntitySignAgreementCommand message, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _accountLegalEntityRepository.SignAgreement(message.SignedAgreementId, message.SignedAgreementVersion,
-                    message.AccountId, message.LegalEntityId);
-                _logger.Info($"Signed agreement on legal entity {message.LegalEntityId}");
-            }
-            catch (Exception exception)
-            {
-                _logger.Error(exception, "Could not sign agreement on legal entity");
-                throw;
-            }
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

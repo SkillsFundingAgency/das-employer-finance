@@ -1,43 +1,37 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity
+namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity;
+
+public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAccountLegalEntityCommand,Unit>
 {
-    public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAccountLegalEntityCommand,Unit>
+    private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
+    private readonly ILogger<CreateAccountLegalEntityCommandHandler> _logger;
+
+    public CreateAccountLegalEntityCommandHandler(IAccountLegalEntityRepository accountLegalEntityRepository, ILogger<CreateAccountLegalEntityCommandHandler> logger)
     {
-        private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
-        private readonly ILog _logger;
+        _accountLegalEntityRepository = accountLegalEntityRepository;
+        _logger = logger;
+    }
 
-        public CreateAccountLegalEntityCommandHandler(IAccountLegalEntityRepository accountLegalEntityRepository, ILog logger)
+    public async Task<Unit> Handle(CreateAccountLegalEntityCommand request,CancellationToken cancellationToken)
+    {
+        try
         {
-            _accountLegalEntityRepository = accountLegalEntityRepository;
-            _logger = logger;
+            await _accountLegalEntityRepository.CreateAccountLegalEntity(
+                request.Id,
+                request.PendingAgreementId,
+                request.SignedAgreementId,
+                request.SignedAgreementVersion,
+                request.AccountId,
+                request.LegalEntityId
+            );
+            _logger.LogInformation($"Account Legal Entity {request.Id} created");
         }
-
-        public async Task<Unit> Handle(CreateAccountLegalEntityCommand request,CancellationToken cancellationToken)
+        catch (Exception exception)
         {
-            try
-            {
-                await _accountLegalEntityRepository.CreateAccountLegalEntity(
-                    request.Id,
-                    request.PendingAgreementId,
-                    request.SignedAgreementId,
-                    request.SignedAgreementVersion,
-                    request.AccountId,
-                    request.LegalEntityId
-                );
-                _logger.Info($"Account Legal Entity {request.Id} created");
-            }
-            catch (Exception exception)
-            {
-                _logger.Error(exception, "Could not create Account Legal Entity");
-                throw;
-            }
-            return Unit.Value;
+            _logger.LogError(exception, "Could not create Account Legal Entity");
+            throw;
         }
+        return Unit.Value;
     }
 }

@@ -1,24 +1,22 @@
-﻿using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation
+namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+
+public class UpdatePayeInformationValidator : IValidator<UpdatePayeInformationCommand>
 {
-    public class UpdatePayeInformationValidator : IValidator<UpdatePayeInformationCommand>
+    public ValidationResult Validate(UpdatePayeInformationCommand item)
     {
-        public ValidationResult Validate(UpdatePayeInformationCommand item)
+        var validationResult = new ValidationResult();
+        if (string.IsNullOrEmpty(item.PayeRef))
         {
-            var validationResult = new ValidationResult();
-            if (string.IsNullOrEmpty(item.PayeRef))
-            {
-                validationResult.AddError(nameof(item.PayeRef));
-            }
-
-            return validationResult;
+            validationResult.AddError(nameof(item.PayeRef));
         }
 
-        public Task<ValidationResult> ValidateAsync(UpdatePayeInformationCommand item)
-        {
-            throw new System.NotImplementedException();
-        }
+        return validationResult;
+    }
+
+    public Task<ValidationResult> ValidateAsync(UpdatePayeInformationCommand item)
+    {
+        throw new NotImplementedException();
     }
 }

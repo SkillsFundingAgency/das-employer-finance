@@ -1,38 +1,32 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Commands.RenameAccount
+namespace SFA.DAS.EmployerFinance.Commands.RenameAccount;
+
+public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,Unit>
 {
-    public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,Unit>
+    private readonly IAccountRepository _accountRepository;
+    private readonly ILogger<RenameAccountCommandHandler> _logger;
+
+    public RenameAccountCommandHandler(IAccountRepository accountRepository, ILogger<RenameAccountCommandHandler> logger)
     {
-        private readonly IAccountRepository _accountRepository;
-        private readonly ILog _logger;
+        _accountRepository = accountRepository;
+        _logger = logger;
+    }
 
-        public RenameAccountCommandHandler(IAccountRepository accountRepository, ILog logger)
+    public async Task<Unit> Handle(RenameAccountCommand request,CancellationToken cancellationToken)
+    {
+        try
         {
-            _accountRepository = accountRepository;
-            _logger = logger;
+            await _accountRepository.RenameAccount(request.Id, request.Name);
+
+            _logger.LogInformation($"Account {request.Id} renamed");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not rename account");
+            throw;
         }
 
-        public async Task<Unit> Handle(RenameAccountCommand request,CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _accountRepository.RenameAccount(request.Id, request.Name);
-
-                _logger.Info($"Account {request.Id} renamed");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Could not rename account");
-                throw;
-            }
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

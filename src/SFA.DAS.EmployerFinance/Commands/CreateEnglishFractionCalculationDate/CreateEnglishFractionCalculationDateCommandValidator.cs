@@ -1,26 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
+namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+
+public class CreateEnglishFractionCalculationDateCommandValidator : IValidator<CreateEnglishFractionCalculationDateCommand>
 {
-    public class CreateEnglishFractionCalculationDateCommandValidator : IValidator<CreateEnglishFractionCalculationDateCommand>
+    public ValidationResult Validate(CreateEnglishFractionCalculationDateCommand item)
     {
-        public ValidationResult Validate(CreateEnglishFractionCalculationDateCommand item)
+        var validationResult = new ValidationResult();
+
+        if (item.DateCalculated == DateTime.MinValue)
         {
-            var validationResult = new ValidationResult();
-
-            if (item.DateCalculated == DateTime.MinValue)
-            {
-                validationResult.AddError(nameof(item.DateCalculated));
-            }
-
-            return validationResult;
+            validationResult.AddError(nameof(item.DateCalculated));
         }
 
-        public Task<ValidationResult> ValidateAsync(CreateEnglishFractionCalculationDateCommand item)
-        {
-            throw new NotImplementedException();
-        }
+        return validationResult;
+    }
+
+    public Task<ValidationResult> ValidateAsync(CreateEnglishFractionCalculationDateCommand item)
+    {
+        throw new NotImplementedException();
     }
 }

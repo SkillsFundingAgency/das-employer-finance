@@ -1,10 +1,8 @@
-﻿using MediatR;
-using SFA.DAS.Authorization.ModelBinding;
+﻿using SFA.DAS.Authorization.ModelBinding;
 
-namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation
+namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+
+public class UpdatePayeInformationCommand : IAuthorizationContextModel,IRequest<Unit>
 {
-    public class UpdatePayeInformationCommand : IAuthorizationContextModel,IRequest<Unit>
-    {
-        public string PayeRef { get; set; }
-    }
+    public string PayeRef { get; set; }
 }
