@@ -11,7 +11,6 @@ using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.UnitTests.ObjectMothers;
 using SFA.DAS.Hmrc;
-using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 

@@ -46,13 +46,9 @@ public class EmployerFinanceDbContext : DbContext
 
         var connection = new SqlConnection
         {
-<<<<<<< HEAD
-            //optionsBuilder.UseLazyLoadingProxies();
-=======
             ConnectionString = _configuration.DatabaseConnectionString,
             AccessToken = _azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result,
         };
->>>>>>> 39069e7626affab60ab1e0fb22c8537867d2005b
 
         optionsBuilder.UseSqlServer(connection, options =>
             options.EnableRetryOnFailure(

@@ -1,49 +1,43 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Events.ProcessPayment;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Events.ProcessPaymentTests
+namespace SFA.DAS.EmployerFinance.UnitTests.Events.ProcessPaymentTests;
+
+public class WhenIProcessPaymentData
 {
-    public class WhenIProcessPaymentData
+    private ProcessPaymentEventHandler _eventHandler;
+    private Mock<IDasLevyRepository> _dasLevyRepository;
+    private Mock<ILogger<ProcessPaymentEventHandler>> _logger;
+
+    [SetUp]
+    public void Arrange()
     {
-        private ProcessPaymentEventHandler _eventHandler;
-        private Mock<IDasLevyRepository> _dasLevyRepository;
-        private Mock<ILog> _logger;
+        _dasLevyRepository = new Mock<IDasLevyRepository>();
+        _logger = new Mock<ILogger<ProcessPaymentEventHandler>>();
 
-        [SetUp]
-        public void Arrange()
-        {
-            _dasLevyRepository = new Mock<IDasLevyRepository>();
-            _logger = new Mock<ILog>();
+        _eventHandler = new ProcessPaymentEventHandler(_dasLevyRepository.Object, _logger.Object);
+    }
 
-            _eventHandler = new ProcessPaymentEventHandler(_dasLevyRepository.Object,_logger.Object);
-        }
+    [Test]
+    public async Task ThenTheProcessDeclarationsRepositoryCallIsMade()
+    {
+        //Arrange
+        const int accountId = 10;
 
-        [Test]
-        public async Task ThenTheProcessDeclarationsRepositoryCallIsMade()
-        {
-            //Arrange
-            const int accountId = 10;
+        //Act
+        await _eventHandler.Handle(new ProcessPaymentEvent{AccountId = accountId }, CancellationToken.None);
 
-            //Act
-            await _eventHandler.Handle(new ProcessPaymentEvent{AccountId = accountId }, CancellationToken.None);
+        //Assert
+        _dasLevyRepository.Verify(x => x.ProcessPaymentData(accountId), Times.Once);
+    }
 
-            //Assert
-            _dasLevyRepository.Verify(x => x.ProcessPaymentData(accountId), Times.Once);
-        }
+    [Test]
+    public async Task ThenTheLoggerIsCalledWithInfoLevel()
+    {
+        //Act
+        await _eventHandler.Handle(new ProcessPaymentEvent(), CancellationToken.None);
 
-        [Test]
-        public async Task ThenTheLoggerIsCalledWithInfoLevel()
-        {
-            //Act
-            await _eventHandler.Handle(new ProcessPaymentEvent(), CancellationToken.None);
-
-            //Assert
-            _logger.Verify(x => x.Info("Process Payments Called"));
-        }
+        //Assert
+        _logger.Verify(x => x.LogInformation("Process Payments Called"));
     }
 }

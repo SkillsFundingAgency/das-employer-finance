@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.Authorization.Mvc.Extensions;

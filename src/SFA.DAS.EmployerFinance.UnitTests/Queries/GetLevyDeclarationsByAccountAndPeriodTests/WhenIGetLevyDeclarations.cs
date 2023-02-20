@@ -7,7 +7,6 @@ using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.Encoding;
 using SFA.DAS.HashingService;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationsByAccountAndPeriodTests

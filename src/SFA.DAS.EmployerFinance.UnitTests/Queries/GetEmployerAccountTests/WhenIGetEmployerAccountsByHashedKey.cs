@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.HashingService;
-using System.Threading;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFinance.Data.Contracts;

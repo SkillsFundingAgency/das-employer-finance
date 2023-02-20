@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;

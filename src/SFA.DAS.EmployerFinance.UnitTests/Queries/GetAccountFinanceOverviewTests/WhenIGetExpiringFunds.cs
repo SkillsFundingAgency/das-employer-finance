@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -29,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         private Mock<ICurrentDateTime> _currentDateTime;
         private Mock<IDasForecastingService> _dasForecastingService;
         private Mock<IDasLevyService> _levyService;
-        private Mock<ILog> _logger;
+        private Mock<ILogger<GetAccountFinanceOverviewQueryHandler>> _logger;
         private Mock<IValidator<GetAccountFinanceOverviewQuery>> _validator;
         private GetAccountFinanceOverviewQuery _query;
         private AccountProjectionSummary _accountProjectionSummary;
@@ -38,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         public void Setup()
         {
             _now = DateTime.UtcNow;
-            _logger = new Mock<ILog>();
+            _logger = new Mock<ILogger<GetAccountFinanceOverviewQueryHandler>>();
             _currentDateTime = new Mock<ICurrentDateTime>();
             _dasForecastingService = new Mock<IDasForecastingService>();
             _levyService = new Mock<IDasLevyService>();
