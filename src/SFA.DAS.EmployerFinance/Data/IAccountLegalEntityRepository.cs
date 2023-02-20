@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public interface IAccountLegalEntityRepository
 {
-    public interface IAccountLegalEntityRepository
-    {
-        Task CreateAccountLegalEntity(long id, long? pendingAgreementId, long? signedAgreementId,
-            int? signedAgreementVersion, long accountId, long legalEntityId);
+    Task CreateAccountLegalEntity(long id, long? pendingAgreementId, long? signedAgreementId,
+        int? signedAgreementVersion, long accountId, long legalEntityId);
 
-        Task SignAgreement(long signedAgreementId, int signedAgreementVersion, long accountId, long legalEntityId);
+    Task SignAgreement(long signedAgreementId, int signedAgreementVersion, long accountId, long legalEntityId);
 
-        Task RemoveAccountLegalEntity(long id);
-    }
+    Task RemoveAccountLegalEntity(long id);
 }

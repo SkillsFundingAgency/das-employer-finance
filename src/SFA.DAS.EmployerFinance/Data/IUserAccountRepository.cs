@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public interface IUserAccountRepository
 {
-    public interface IUserAccountRepository
-    {
-        Task<User> Get(Guid @ref);
-    }
+    Task<User> Get(Guid @ref);
 }

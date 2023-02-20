@@ -9,29 +9,28 @@ using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.Sql.Client;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public class PaymentFundsOutRepository : BaseRepository, IPaymentFundsOutRepository
 {
-    public class PaymentFundsOutRepository : BaseRepository, IPaymentFundsOutRepository
+    private readonly Lazy<EmployerFinanceDbContext> _db;
+
+    public PaymentFundsOutRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+        : base(configuration.DatabaseConnectionString, logger)
     {
-        private readonly Lazy<EmployerFinanceDbContext> _db;
+        _db = db;
+    }
 
-        public PaymentFundsOutRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
-            : base(configuration.DatabaseConnectionString, logger)
-        {
-            _db = db;
-        }
+    public async Task<IEnumerable<PaymentFundsOut>> GetPaymentFundsOut(long accountId)
+    {
+        var parameters = new DynamicParameters();
 
-        public async Task<IEnumerable<PaymentFundsOut>> GetPaymentFundsOut(long accountId)
-        {
-            var parameters = new DynamicParameters();
+        parameters.Add("@AccountId", accountId, DbType.Int64);
 
-            parameters.Add("@AccountId", accountId, DbType.Int64);
-
-            return await _db.Value.Database.GetDbConnection().QueryAsync<PaymentFundsOut>(
-                "[employer_financial].[GetPaymentFundsOut]",
-                param: parameters,
-                commandType: CommandType.StoredProcedure
-            );
-        }
+        return await _db.Value.Database.GetDbConnection().QueryAsync<PaymentFundsOut>(
+            "[employer_financial].[GetPaymentFundsOut]",
+            param: parameters,
+            commandType: CommandType.StoredProcedure
+        );
     }
 }

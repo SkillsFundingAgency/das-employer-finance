@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.Payments;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public interface IPaymentFundsOutRepository
 {
-    public interface IPaymentFundsOutRepository
-    {
-        Task<IEnumerable<PaymentFundsOut>> GetPaymentFundsOut(long accountId);
-    }
+    Task<IEnumerable<PaymentFundsOut>> GetPaymentFundsOut(long accountId);
 }

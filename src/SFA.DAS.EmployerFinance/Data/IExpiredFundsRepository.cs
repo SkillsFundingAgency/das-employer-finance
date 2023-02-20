@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public interface IExpiredFundsRepository
 {
-    public interface IExpiredFundsRepository
-    {
-        Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now);
-        Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now);
-        Task<IEnumerable<ExpiredFund>> Get(long accountId);
-        Task<IEnumerable<ExpiredFund>> GetDraft(long accountId);
-    }
+    Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now);
+    Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now);
+    Task<IEnumerable<ExpiredFund>> Get(long accountId);
+    Task<IEnumerable<ExpiredFund>> GetDraft(long accountId);
 }

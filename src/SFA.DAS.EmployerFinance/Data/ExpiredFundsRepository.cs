@@ -10,74 +10,73 @@ using SFA.DAS.Sql.Client;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 using Microsoft.EntityFrameworkCore;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
 {
-    public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
+    private readonly Lazy<EmployerFinanceDbContext> _db;
+
+    public ExpiredFundsRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
+        : base(configuration.DatabaseConnectionString, logger)
     {
-        private readonly Lazy<EmployerFinanceDbContext> _db;
+        _db = db;
+    }
 
-        public ExpiredFundsRepository(EmployerFinanceConfiguration configuration, ILog logger, Lazy<EmployerFinanceDbContext> db)
-            : base(configuration.DatabaseConnectionString, logger)
-        {
-            _db = db;
-        }
+    public async Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now)
+    {
+        var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
 
-        public async Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now)
-        {
-            var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
+        var parameters = new DynamicParameters();
 
-            var parameters = new DynamicParameters();
+        parameters.Add("@accountId", accountId);
+        parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
+        parameters.Add("@now", now);
 
-            parameters.Add("@accountId", accountId);
-            parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
-            parameters.Add("@now", now);
+        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+            sql: "[employer_financial].[CreateDraftExpiredFunds]",
+            param: parameters,
+            commandType: CommandType.StoredProcedure);
+    }
 
-            await _db.Value.Database.GetDbConnection().ExecuteAsync(
-                sql: "[employer_financial].[CreateDraftExpiredFunds]",
-                param: parameters,
-                commandType: CommandType.StoredProcedure);
-        }
+    public async Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now)
+    {
+        var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
 
-        public async Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now)
-        {
-            var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
+        var parameters = new DynamicParameters();
 
-            var parameters = new DynamicParameters();
+        parameters.Add("@accountId", accountId);
+        parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
+        parameters.Add("@now", now);
 
-            parameters.Add("@accountId", accountId);
-            parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
-            parameters.Add("@now", now);
+        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+            sql: "[employer_financial].[CreateExpiredFunds]",
+            param: parameters,
+            commandType: CommandType.StoredProcedure);
+    }
 
-            await _db.Value.Database.GetDbConnection().ExecuteAsync(
-                sql: "[employer_financial].[CreateExpiredFunds]",
-                param: parameters,
-                commandType: CommandType.StoredProcedure);
-        }
+    public async Task<IEnumerable<ExpiredFund>> Get(long accountId)
+    {
+        var parameters = new DynamicParameters();
 
-        public async Task<IEnumerable<ExpiredFund>> Get(long accountId)
-        {
-            var parameters = new DynamicParameters();
+        parameters.Add("@AccountId", accountId);
 
-            parameters.Add("@AccountId", accountId);
+        return await _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
+            "[employer_financial].[GetExpiredFunds]",
+            param: parameters,
+            commandType: CommandType.StoredProcedure
+        );
+    }
 
-            return await _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
-                "[employer_financial].[GetExpiredFunds]",
-                param: parameters,
-                commandType: CommandType.StoredProcedure
-            );
-        }
+    public async Task<IEnumerable<ExpiredFund>> GetDraft(long accountId)
+    {
+        var parameters = new DynamicParameters();
 
-        public async Task<IEnumerable<ExpiredFund>> GetDraft(long accountId)
-        {
-            var parameters = new DynamicParameters();
+        parameters.Add("@AccountId", accountId);
 
-            parameters.Add("@AccountId", accountId);
-
-            return await _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
-                "[employer_financial].[GetDraftExpiredFunds]",
-                param: parameters,
-                commandType: CommandType.StoredProcedure
-            );
-        }
+        return await _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
+            "[employer_financial].[GetDraftExpiredFunds]",
+            param: parameters,
+            commandType: CommandType.StoredProcedure
+        );
     }
 }

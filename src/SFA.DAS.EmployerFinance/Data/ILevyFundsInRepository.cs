@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Models.Levy;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public interface ILevyFundsInRepository
 {
-    public interface ILevyFundsInRepository
-    {
-        Task<IEnumerable<LevyFundsIn>> GetLevyFundsIn(long accountId);
-    }
+    Task<IEnumerable<LevyFundsIn>> GetLevyFundsIn(long accountId);
 }
