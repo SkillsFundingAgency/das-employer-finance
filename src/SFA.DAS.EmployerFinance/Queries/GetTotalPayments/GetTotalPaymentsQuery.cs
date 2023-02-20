@@ -1,8 +1,5 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments
+public class GetTotalPaymentsQuery : IRequest<GetTotalPaymentsResponse>
 {
-    public class GetTotalPaymentsQuery : IRequest<GetTotalPaymentsResponse>
-    {
-    }
 }

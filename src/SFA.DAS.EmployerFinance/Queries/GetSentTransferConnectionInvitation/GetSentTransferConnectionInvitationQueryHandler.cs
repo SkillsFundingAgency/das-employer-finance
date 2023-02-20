@@ -1,38 +1,31 @@
-﻿using System.Data.Entity;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using MediatR;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetSentTransferConnectionInvitation
+namespace SFA.DAS.EmployerFinance.Queries.GetSentTransferConnectionInvitation;
+
+public class GetSentTransferConnectionInvitationQueryHandler : IRequestHandler<GetSentTransferConnectionInvitationQuery, GetSentTransferConnectionInvitationResponse>
 {
-    public class GetSentTransferConnectionInvitationQueryHandler : IRequestHandler<GetSentTransferConnectionInvitationQuery, GetSentTransferConnectionInvitationResponse>
+    private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
+    private readonly IMapper _mapper;
+
+    public GetSentTransferConnectionInvitationQueryHandler(ITransferConnectionInvitationRepository transferConnectionInvitationRepository, IMapper mapper)
     {
-        private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
-        private readonly IMapper _mapper;
+        _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
+        _mapper = mapper;
+    }
 
-        public GetSentTransferConnectionInvitationQueryHandler(ITransferConnectionInvitationRepository transferConnectionInvitationRepository, IMapper mapper)
+    public async Task<GetSentTransferConnectionInvitationResponse> Handle(GetSentTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
+    {
+        var transferConnectionInvitation = await _transferConnectionInvitationRepository.GetBySender(
+            message.TransferConnectionInvitationId.Value,
+            message.AccountId,
+            TransferConnectionInvitationStatus.Pending);
+
+        return new GetSentTransferConnectionInvitationResponse
         {
-            _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
-            _mapper = mapper;
-        }
-
-        public async Task<GetSentTransferConnectionInvitationResponse> Handle(GetSentTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
-        {
-            var transferConnectionInvitation = await _transferConnectionInvitationRepository.GetBySender(
-                message.TransferConnectionInvitationId.Value,
-                message.AccountId,
-                TransferConnectionInvitationStatus.Pending);
-
-            return new GetSentTransferConnectionInvitationResponse
-            {
-                TransferConnectionInvitation = _mapper.Map<TransferConnectionInvitationDto>(transferConnectionInvitation)
-            };
-        }
+            TransferConnectionInvitation = _mapper.Map<TransferConnectionInvitationDto>(transferConnectionInvitation)
+        };
     }
 }

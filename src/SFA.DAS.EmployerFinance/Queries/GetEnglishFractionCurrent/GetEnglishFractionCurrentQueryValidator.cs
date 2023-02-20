@@ -1,32 +1,28 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent
+namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
+
+public class GetEnglishFractionCurrentQueryValidator : IValidator<GetEnglishFractionCurrentQuery>
 {
-    public class GetEnglishFractionCurrentQueryValidator : IValidator<GetEnglishFractionCurrentQuery>
+    public ValidationResult Validate(GetEnglishFractionCurrentQuery item)
     {
-        public ValidationResult Validate(GetEnglishFractionCurrentQuery item)
+        var validationResult = new ValidationResult();
+
+        if (string.IsNullOrEmpty(item.HashedAccountId))
         {
-            var validationResult = new ValidationResult();
+            validationResult.AddError(nameof(item.HashedAccountId));
+        }
 
-            if (string.IsNullOrEmpty(item.HashedAccountId))
-            {
-                validationResult.AddError(nameof(item.HashedAccountId));
-            }
-
-            if (item.EmpRefs == null || item.EmpRefs.Any(p => string.IsNullOrEmpty(p)))
-            {
-                validationResult.AddError(nameof(item.EmpRefs));
-            }
+        if (item.EmpRefs == null || item.EmpRefs.Any(p => string.IsNullOrEmpty(p)))
+        {
+            validationResult.AddError(nameof(item.EmpRefs));
+        }
            
-            return validationResult;
-        }
+        return validationResult;
+    }
 
-        public Task<ValidationResult> ValidateAsync(GetEnglishFractionCurrentQuery item)
-        {
-            throw new NotImplementedException();
-        }
+    public Task<ValidationResult> ValidateAsync(GetEnglishFractionCurrentQuery item)
+    {
+        throw new NotImplementedException();
     }
 }

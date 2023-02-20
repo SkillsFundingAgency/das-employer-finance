@@ -1,10 +1,7 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent
+public class GetEnglishFractionCurrentQuery : IRequest<GetEnglishFractionCurrentResponse>
 {
-    public class GetEnglishFractionCurrentQuery : IRequest<GetEnglishFractionCurrentResponse>
-    {
-        public string HashedAccountId { get; set; }
-        public string[] EmpRefs { get; set; }
-    }
+    public string HashedAccountId { get; set; }
+    public string[] EmpRefs { get; set; }
 }

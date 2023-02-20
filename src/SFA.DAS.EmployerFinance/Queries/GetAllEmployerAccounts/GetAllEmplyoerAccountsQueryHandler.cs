@@ -1,24 +1,20 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts
+namespace SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
+
+public class GetAllEmplyoerAccountsQueryHandler : IRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>
 {
-    public class GetAllEmplyoerAccountsQueryHandler : IRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>
+    private readonly IEmployerAccountRepository _employerAccountRepository;
+
+    public GetAllEmplyoerAccountsQueryHandler(IEmployerAccountRepository employerAccountRepository)
     {
-        private readonly IEmployerAccountRepository _employerAccountRepository;
+        _employerAccountRepository = employerAccountRepository;
+    }
 
-        public GetAllEmplyoerAccountsQueryHandler(IEmployerAccountRepository employerAccountRepository)
-        {
-            _employerAccountRepository = employerAccountRepository;
-        }
+    public async Task<GetAllEmployerAccountsResponse> Handle(GetAllEmployerAccountsRequest message,CancellationToken cancellationToken)
+    {
+        var result = await _employerAccountRepository.GetAll();
 
-        public async Task<GetAllEmployerAccountsResponse> Handle(GetAllEmployerAccountsRequest message,CancellationToken cancellationToken)
-        {
-            var result = await _employerAccountRepository.GetAll();
-
-            return new GetAllEmployerAccountsResponse {Accounts = result };
-        }
+        return new GetAllEmployerAccountsResponse {Accounts = result };
     }
 }

@@ -1,32 +1,28 @@
-﻿using MediatR;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.Encoding;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
+namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
+
+public class GetLevyDeclarationsByAccountAndPeriodQueryHandler : IRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>
 {
-    public class GetLevyDeclarationsByAccountAndPeriodQueryHandler : IRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>
+    private readonly IDasLevyRepository _repository;
+    private readonly IEncodingService _encodingService;
+
+    public GetLevyDeclarationsByAccountAndPeriodQueryHandler(IDasLevyRepository repository, IEncodingService encodingService)
     {
-        private readonly IDasLevyRepository _repository;
-        private readonly IEncodingService _encodingService;
+        _repository = repository;
+        _encodingService = encodingService;
+    }
 
-        public GetLevyDeclarationsByAccountAndPeriodQueryHandler(IDasLevyRepository repository, IEncodingService encodingService)
-        {
-            _repository = repository;
-            _encodingService = encodingService;
-        }
+    public async Task<GetLevyDeclarationsByAccountAndPeriodResponse> Handle(GetLevyDeclarationsByAccountAndPeriodRequest message,CancellationToken cancellationToken)
+    {
+        var accountId = GetAccountId(message.HashedAccountId);
+        var declarations = await _repository.GetAccountLevyDeclarations(accountId, message.PayrollYear, message.PayrollMonth);
+        return new GetLevyDeclarationsByAccountAndPeriodResponse { Declarations = declarations };
+    }
 
-        public async Task<GetLevyDeclarationsByAccountAndPeriodResponse> Handle(GetLevyDeclarationsByAccountAndPeriodRequest message,CancellationToken cancellationToken)
-        {
-            var accountId = GetAccountId(message.HashedAccountId);
-            var declarations = await _repository.GetAccountLevyDeclarations(accountId, message.PayrollYear, message.PayrollMonth);
-            return new GetLevyDeclarationsByAccountAndPeriodResponse { Declarations = declarations };
-        }
-
-        private long GetAccountId(string hashedAccountId)
-        {
-            return _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        }
+    private long GetAccountId(string hashedAccountId)
+    {
+        return _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
     }
 }

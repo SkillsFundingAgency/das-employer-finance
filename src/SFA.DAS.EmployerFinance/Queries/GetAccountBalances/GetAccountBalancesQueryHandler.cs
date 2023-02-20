@@ -1,35 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
+namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+
+public class GetAccountBalancesQueryHandler : IRequestHandler<GetAccountBalancesRequest, GetAccountBalancesResponse>
 {
-    public class GetAccountBalancesQueryHandler : IRequestHandler<GetAccountBalancesRequest, GetAccountBalancesResponse>
+    private readonly IDasLevyRepository _dasLevyRepository;
+    private readonly IValidator<GetAccountBalancesRequest> _validator;
+
+    public GetAccountBalancesQueryHandler(IDasLevyRepository dasLevyRepository, IValidator<GetAccountBalancesRequest> validator)
     {
-        private readonly IDasLevyRepository _dasLevyRepository;
-        private readonly IValidator<GetAccountBalancesRequest> _validator;
+        _dasLevyRepository = dasLevyRepository;
+        _validator = validator;
+    }
 
-        public GetAccountBalancesQueryHandler(IDasLevyRepository dasLevyRepository, IValidator<GetAccountBalancesRequest> validator)
+    public async Task<GetAccountBalancesResponse> Handle(GetAccountBalancesRequest message,CancellationToken cancellationToken)
+    {
+
+        var validationResult = _validator.Validate(message);
+        if (!validationResult.IsValid())
         {
-            _dasLevyRepository = dasLevyRepository;
-            _validator = validator;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        public async Task<GetAccountBalancesResponse> Handle(GetAccountBalancesRequest message,CancellationToken cancellationToken)
-        {
+        var result = await _dasLevyRepository.GetAccountBalances(message.AccountIds);
 
-            var validationResult = _validator.Validate(message);
-            if (!validationResult.IsValid())
-            {
-                throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
-            }
-
-            var result = await _dasLevyRepository.GetAccountBalances(message.AccountIds);
-
-            return new GetAccountBalancesResponse { Accounts = result };
-        }
+        return new GetAccountBalancesResponse { Accounts = result };
     }
 }

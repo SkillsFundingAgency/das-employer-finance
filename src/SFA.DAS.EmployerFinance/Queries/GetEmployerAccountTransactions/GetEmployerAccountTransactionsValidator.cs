@@ -1,25 +1,23 @@
-﻿using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions
-{
-    public class GetEmployerAccountTransactionsValidator : IValidator<GetEmployerAccountTransactionsQuery>
-    {   
-        public ValidationResult Validate(GetEmployerAccountTransactionsQuery item)
+namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
+
+public class GetEmployerAccountTransactionsValidator : IValidator<GetEmployerAccountTransactionsQuery>
+{   
+    public ValidationResult Validate(GetEmployerAccountTransactionsQuery item)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public async Task<ValidationResult> ValidateAsync(GetEmployerAccountTransactionsQuery item)
+    {
+        var result = new ValidationResult();
+
+        if (string.IsNullOrEmpty(item.HashedAccountId))
         {
-            throw new System.NotImplementedException();
+            result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
         }
 
-        public async Task<ValidationResult> ValidateAsync(GetEmployerAccountTransactionsQuery item)
-        {
-            var result = new ValidationResult();
-
-            if (string.IsNullOrEmpty(item.HashedAccountId))
-            {
-                result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
-            }
-
-            return result;
-        }
+        return result;
     }
 }

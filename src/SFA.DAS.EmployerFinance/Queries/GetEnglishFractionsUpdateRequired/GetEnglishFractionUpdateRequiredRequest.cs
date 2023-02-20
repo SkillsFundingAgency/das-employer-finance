@@ -1,8 +1,5 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired
+public class GetEnglishFractionUpdateRequiredRequest : IRequest<GetEnglishFractionUpdateRequiredResponse>
 {
-    public class GetEnglishFractionUpdateRequiredRequest : IRequest<GetEnglishFractionUpdateRequiredResponse>
-    {
-    }
 }

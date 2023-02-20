@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using MediatR;
 using SFA.DAS.Authorization.ModelBinding;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferAllowance
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
+
+public class GetTransferAllowanceQuery : IAuthorizationContextModel, IRequest<GetTransferAllowanceResponse>
 {
-    public class GetTransferAllowanceQuery : IAuthorizationContextModel, IRequest<GetTransferAllowanceResponse>
-    {
-        [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
-    }
+    [IgnoreMap]
+    [Required]
+    public long AccountId { get; set; }
 }

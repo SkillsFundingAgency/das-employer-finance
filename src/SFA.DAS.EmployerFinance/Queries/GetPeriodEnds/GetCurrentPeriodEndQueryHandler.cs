@@ -1,28 +1,23 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds
+namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
+
+public class GetPeriodEndQueryHandler : IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>
 {
-    public class GetPeriodEndQueryHandler : IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>
+    private readonly IDasLevyRepository _dasLevyRepository;
+
+    public GetPeriodEndQueryHandler(IDasLevyRepository dasLevyRepository)
     {
-        private readonly IDasLevyRepository _dasLevyRepository;
+        _dasLevyRepository = dasLevyRepository;
+    }
 
-        public GetPeriodEndQueryHandler(IDasLevyRepository dasLevyRepository)
-        {
-            _dasLevyRepository = dasLevyRepository;
-        }
+    public async Task<GetPeriodEndsResponse> Handle(GetPeriodEndsRequest message,CancellationToken cancellationToken)
+    {
+        var response = new GetPeriodEndsResponse();
 
-        public async Task<GetPeriodEndsResponse> Handle(GetPeriodEndsRequest message,CancellationToken cancellationToken)
-        {
-            var response = new GetPeriodEndsResponse();
+        var result = await _dasLevyRepository.GetAllPeriodEnds();
+        response.CurrentPeriodEnds = result.ToList();
 
-            var result = await _dasLevyRepository.GetAllPeriodEnds();
-            response.CurrentPeriodEnds = result.ToList();
-
-            return response;
-        }
+        return response;
     }
 }

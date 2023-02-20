@@ -1,26 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration
+namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
+
+public class GetLevyDeclarationValidator : IValidator<GetLevyDeclarationRequest>
 {
-    public class GetLevyDeclarationValidator : IValidator<GetLevyDeclarationRequest>
+    public ValidationResult Validate(GetLevyDeclarationRequest item)
     {
-        public ValidationResult Validate(GetLevyDeclarationRequest item)
+        var result = new ValidationResult();
+
+        if (string.IsNullOrEmpty(item.HashedAccountId))
         {
-            var result = new ValidationResult();
-
-            if (string.IsNullOrEmpty(item.HashedAccountId))
-            {
-                result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
-            }
-
-            return result;
+            result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
         }
 
-        public Task<ValidationResult> ValidateAsync(GetLevyDeclarationRequest item)
-        {
-            throw new NotImplementedException();
-        }
+        return result;
+    }
+
+    public Task<ValidationResult> ValidateAsync(GetLevyDeclarationRequest item)
+    {
+        throw new NotImplementedException();
     }
 }

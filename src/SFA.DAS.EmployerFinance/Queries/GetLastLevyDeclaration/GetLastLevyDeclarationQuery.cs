@@ -1,9 +1,6 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration
+public class GetLastLevyDeclarationQuery : IRequest<GetLastLevyDeclarationResponse>
 {
-    public class GetLastLevyDeclarationQuery : IRequest<GetLastLevyDeclarationResponse>
-    {
-        public string EmpRef { get; set; }
-    }
+    public string EmpRef { get; set; }
 }

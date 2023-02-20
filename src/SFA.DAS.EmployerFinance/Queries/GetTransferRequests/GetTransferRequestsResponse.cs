@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using SFA.DAS.EmployerFinance.Dtos;
+﻿using SFA.DAS.EmployerFinance.Dtos;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferRequests
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
+
+public class GetTransferRequestsResponse
 {
-    public class GetTransferRequestsResponse
-    {
-        public IEnumerable<TransferRequestDto> TransferRequests { get; set; }
-        public long AccountId { get; set; }
-    }
+    public IEnumerable<TransferRequestDto> TransferRequests { get; set; }
+    public long AccountId { get; set; }
 }

@@ -1,9 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Account;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
+namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
+
+public class GetEmployerAccountResponse
 {
-    public class GetEmployerAccountResponse
-    {
-        public Account Account { get; set; }
-    }
+    public Account Account { get; set; }
 }

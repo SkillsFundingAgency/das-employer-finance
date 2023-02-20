@@ -1,27 +1,24 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
+namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+
+public class GetAccountBalancesValidator : IValidator<GetAccountBalancesRequest>
 {
-    public class GetAccountBalancesValidator : IValidator<GetAccountBalancesRequest>
+    public ValidationResult Validate(GetAccountBalancesRequest item)
     {
-        public ValidationResult Validate(GetAccountBalancesRequest item)
+        var validationResult = new ValidationResult();
+
+        if (item.AccountIds == null || !item.AccountIds.Any())
         {
-            var validationResult = new ValidationResult();
-
-            if (item.AccountIds == null || !item.AccountIds.Any())
-            {
-                validationResult.AddError(nameof(item.AccountIds), "AccountIds has not been supplied");
-            }
-
-            return validationResult;
-
+            validationResult.AddError(nameof(item.AccountIds), "AccountIds has not been supplied");
         }
 
-        public Task<ValidationResult> ValidateAsync(GetAccountBalancesRequest item)
-        {
-            throw new System.NotImplementedException();
-        }
+        return validationResult;
+
+    }
+
+    public Task<ValidationResult> ValidateAsync(GetAccountBalancesRequest item)
+    {
+        throw new System.NotImplementedException();
     }
 }

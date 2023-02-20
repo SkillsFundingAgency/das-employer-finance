@@ -1,26 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration
+namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
+
+public class GetHMRCLevyDeclarationQueryValidator : IValidator<GetHMRCLevyDeclarationQuery>
 {
-    public class GetHMRCLevyDeclarationQueryValidator : IValidator<GetHMRCLevyDeclarationQuery>
+    public ValidationResult Validate(GetHMRCLevyDeclarationQuery item)
     {
-        public ValidationResult Validate(GetHMRCLevyDeclarationQuery item)
+        var validationResult = new ValidationResult();
+
+        if (string.IsNullOrEmpty(item.EmpRef))
         {
-            var validationResult = new ValidationResult();
-
-            if (string.IsNullOrEmpty(item.EmpRef))
-            {
-                validationResult.AddError(nameof(item.EmpRef), "The EmpRef field has not been supplied");    
-            }
-
-            return validationResult;
+            validationResult.AddError(nameof(item.EmpRef), "The EmpRef field has not been supplied");    
         }
 
-        public Task<ValidationResult> ValidateAsync(GetHMRCLevyDeclarationQuery item)
-        {
-            throw new NotImplementedException();
-        }
+        return validationResult;
+    }
+
+    public Task<ValidationResult> ValidateAsync(GetHMRCLevyDeclarationQuery item)
+    {
+        throw new NotImplementedException();
     }
 }

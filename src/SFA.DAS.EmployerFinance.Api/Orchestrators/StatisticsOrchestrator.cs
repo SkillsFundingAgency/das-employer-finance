@@ -1,5 +1,4 @@
-﻿using MediatR;
-using SFA.DAS.EmployerFinance.Api.Types;
+﻿using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
 using SFA.DAS.NLog.Logger;
 using System.Threading.Tasks;
