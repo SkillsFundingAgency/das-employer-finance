@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 
 public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTransferTransactionDetailsQuery, GetTransferTransactionDetailsResponse>
 {
-    private readonly EmployerFinanceDbContext _dbContext;
+    private readonly Lazy<EmployerFinanceDbContext> _dbContext;
     private readonly IPublicHashingService _publicHashingService;
     private readonly IEncodingService _encodingService;
 
@@ -23,7 +23,7 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
     {
         var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
 
-        var result = await _dbContext.GetTransfersByTargetAccountId(
+        var result = await _dbContext.Value.GetTransfersByTargetAccountId(
             query.AccountId.GetValueOrDefault(),
             targetAccountId,
             query.PeriodEnd);

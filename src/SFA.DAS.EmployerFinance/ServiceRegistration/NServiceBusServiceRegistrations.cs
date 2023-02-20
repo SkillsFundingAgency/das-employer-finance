@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
 using NServiceBus;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -13,28 +11,25 @@ using SFA.DAS.NServiceBus.Hosting;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 using Endpoint = NServiceBus.Endpoint;
-using StructureMap;
-using System.Data.Common;
 
-namespace SFA.DAS.EmployerFinance.ServiceRegistration
+namespace SFA.DAS.EmployerFinance.ServiceRegistration;
+
+public static class NServiceBusServiceRegistrations
 {
-    public static class NServiceBusServiceRegistrations
+    private const string EndPointName = "SFA.DAS.EmployerFinance";
+
+    public static void StartNServiceBus(this UpdateableServiceProvider services, IConfiguration configuration, bool isDevOrLocal)
     {
-        private const string EndPointName = "SFA.DAS.EmployerFinance";
+        var employerFinanceConfiguration = configuration.Get<EmployerFinanceConfiguration>();
 
-        public static void StartNServiceBus(this UpdateableServiceProvider services, IConfiguration configuaration, bool isDevOrLocal)
+        var databaseConnectionString = employerFinanceConfiguration.DatabaseConnectionString;
+
+        if(string.IsNullOrWhiteSpace(databaseConnectionString))
         {
-            var employerFinanceConfiguaration = configuaration.Get<EmployerFinanceConfiguration>();
+            throw new Exception("DatabaseConnectionString configuration value is empty.");
+        }
 
-
-            var databaseConnectionString = employerFinanceConfiguaration.DatabaseConnectionString;
-
-            if(string.IsNullOrWhiteSpace(databaseConnectionString))
-            {
-                throw new Exception("DatabaseConnectionString configuration value is empty.");
-            }
-
-            var endpointConfiguration = new EndpointConfiguration(EndPointName)
+        var endpointConfiguration = new EndpointConfiguration(EndPointName)
             .UseErrorQueue($"{EndPointName}-errors")
             .UseInstallers()
             .UseMessageConventions()
@@ -45,26 +40,25 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration
             .UseSqlServerPersistence(()=>DatabaseExtensions.GetSqlConnection(databaseConnectionString))
             .UseUnitOfWork();
 
-            if (isDevOrLocal)
-            {
-                endpointConfiguration.UseLearningTransport();
-            }
-            else
-            {
-                //TODO MAC-192
-                endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguaration.MessageServiceBusConnectionString, r => { });
-            }
-
-            if (!string.IsNullOrEmpty(employerFinanceConfiguaration.NServiceBusLicense))
-            {
-                endpointConfiguration.License(employerFinanceConfiguaration.NServiceBusLicense);
-            }
-
-            var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
-
-            services.AddSingleton(p => endpoint)
-                .AddSingleton<IMessageSession>(p => p.GetService<IEndpointInstance>())
-                .AddHostedService<NServiceBusHostedService>();
+        if (isDevOrLocal)
+        {
+            endpointConfiguration.UseLearningTransport();
         }
+        else
+        {
+            //TODO MAC-192
+            endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguration.MessageServiceBusConnectionString, r => { });
+        }
+
+        if (!string.IsNullOrEmpty(employerFinanceConfiguration.NServiceBusLicense))
+        {
+            endpointConfiguration.License(employerFinanceConfiguration.NServiceBusLicense);
+        }
+
+        var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
+
+        services.AddSingleton(p => endpoint)
+            .AddSingleton<IMessageSession>(p => p.GetService<IEndpointInstance>())
+            .AddHostedService<NServiceBusHostedService>();
     }
 }

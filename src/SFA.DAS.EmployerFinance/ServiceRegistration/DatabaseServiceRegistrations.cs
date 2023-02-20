@@ -1,22 +1,18 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Extensions;
 
-namespace SFA.DAS.EmployerFinance.ServiceRegistration
+namespace SFA.DAS.EmployerFinance.ServiceRegistration;
+
+public static class DatabaseServiceRegistrations
 {
-    public static class DatabaseServiceRegistrations
+    public static IServiceCollection AddDatabaseRegistration(this IServiceCollection services, string databaseConnectionString)
     {
-        public static IServiceCollection AddDatabaseRegistration(this IServiceCollection services, string databaseConnectionString)
-        {
-            var dbConnection = DatabaseExtensions.GetSqlConnection(databaseConnectionString);
+        var dbConnection = DatabaseExtensions.GetSqlConnection(databaseConnectionString);
 
-            services.AddDbContext<EmployerFinanceDbContext>(options => options.UseSqlServer(dbConnection), ServiceLifetime.Transient);
+        services.AddDbContext<EmployerFinanceDbContext>(options => options.UseSqlServer(dbConnection), ServiceLifetime.Transient);
 
-            services.AddTransient(provider => new Lazy<EmployerFinanceDbContext>(provider.GetService<EmployerFinanceDbContext>()));
+        services.AddTransient(provider => new Lazy<EmployerFinanceDbContext>(provider.GetService<EmployerFinanceDbContext>()));
 
-            return services;
-        }
+        return services;
     }
 }
