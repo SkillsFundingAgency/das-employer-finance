@@ -30,22 +30,18 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<TransferConnectionInvitation> TransferConnectionInvitations { get; set; }
     public virtual DbSet<User> Users { get; set; }
 
+    public EmployerFinanceDbContext() { }
+
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
 
-    public EmployerFinanceDbContext(IOptions<EmployerFinanceConfiguration> configuaration, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider)
+    public EmployerFinanceDbContext(IOptions<EmployerFinanceConfiguration> configuration, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider) : base(options)
     {
-        _configuration=configuaration.Value;
+        _configuration = configuration.Value;
         _azureServiceTokenProvider = azureServiceTokenProvider;
-    }        
-
-    protected EmployerFinanceDbContext()
-    {
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseLazyLoadingProxies();
-
         if (_configuration == null || _azureServiceTokenProvider == null)
         {
             optionsBuilder.UseSqlServer().UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
