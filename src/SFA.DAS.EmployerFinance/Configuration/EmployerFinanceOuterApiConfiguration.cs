@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 
-namespace SFA.DAS.EmployerFinance.Configuration
+namespace SFA.DAS.EmployerFinance.Configuration;
+
+public class EmployerFinanceOuterApiConfiguration
 {
-    public class EmployerFinanceOuterApiConfiguration
-    {
-        public string BaseUrl { get ; set ; }
-        public string Key { get ; set ; }
-    }
+    public string BaseUrl { get ; set ; }
+    public string Key { get ; set ; }
 }
