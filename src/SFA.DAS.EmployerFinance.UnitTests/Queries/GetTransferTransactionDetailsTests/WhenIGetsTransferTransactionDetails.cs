@@ -94,7 +94,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
 
             _response = new GetTransferTransactionDetailsResponse();
 
-            _handler = new GetTransferTransactionDetailsQueryHandler(_db.Object, _encodingService.Object);
+            _handler = new GetTransferTransactionDetailsQueryHandler(new Lazy<EmployerFinanceDbContext>(() => _db.Object), _encodingService.Object);
 
             _transfers = new List<AccountTransfer>
                 {

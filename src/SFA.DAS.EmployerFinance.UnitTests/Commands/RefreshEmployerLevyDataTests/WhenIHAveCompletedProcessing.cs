@@ -59,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
         private readonly Mock<IHmrcDateService> _hmrcDateService;
         private readonly RefreshEmployerLevyDataCommandHandler _handler;
         private readonly Mock<ICurrentDateTime> _currentDateTime;
-
+        private readonly Mock<IEncodingService> _encodingService;
         private long _accountId = 999;
         private ICollection<EmployerLevyData> _employerLevyData;
 
@@ -67,7 +67,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
         {
             _dasLevyRepository = new Mock<IDasLevyRepository>();
             var genericEventFactory = new Mock<IGenericEventFactory>();
-            var hashingService = new Mock<EncodingService>();
+            _encodingService = new Mock<IEncodingService>();
             var levyEventFactory = new Mock<ILevyEventFactory>();
             var logger = new Mock<ILog>();
             var mediator = new Mock<IMediator>();
@@ -82,7 +82,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
             var levyImportCleanerStrategy = new LevyImportCleanerStrategy(_dasLevyRepository.Object, _hmrcDateService.Object, logger.Object, _currentDateTime.Object);
 
             _handler = new RefreshEmployerLevyDataCommandHandler(validator.Object, _dasLevyRepository.Object, mediator.Object,
-                levyEventFactory.Object, genericEventFactory.Object, hashingService.Object, levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILog>());
+                levyEventFactory.Object, genericEventFactory.Object, _encodingService.Object, levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILog>());
         }
 
         public RefreshEmployerLevyDataCommandHandlerTestsFixture SetAccountId(long accountId)

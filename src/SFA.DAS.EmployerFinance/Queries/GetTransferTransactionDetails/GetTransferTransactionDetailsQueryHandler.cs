@@ -1,24 +1,25 @@
-﻿using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.MarkerInterfaces;
 //using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
-using System.Threading;
 using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
 {
     public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTransferTransactionDetailsQuery, GetTransferTransactionDetailsResponse>
     {
-        private readonly EmployerFinanceDbContext _dbContext;
+        private readonly Lazy<EmployerFinanceDbContext> _dbContext;
         private readonly IPublicHashingService _publicHashingService;
         private readonly IEncodingService _encodingService;
 
-        public GetTransferTransactionDetailsQueryHandler(EmployerFinanceDbContext dbContext,
+        public GetTransferTransactionDetailsQueryHandler(Lazy<EmployerFinanceDbContext> dbContext,
             IEncodingService encodingService)
         {
             _dbContext = dbContext;
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
         {
             var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
 
-            var result = await _dbContext.GetTransfersByTargetAccountId(
+            var result = await new Lazy<EmployerFinanceDbContext>(() => _dbContext.Value).GetTransfersByTargetAccountId(
                                     query.AccountId.GetValueOrDefault(),
                                     targetAccountId,
                                     query.PeriodEnd);
@@ -58,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
 
             //NOTE: We should only get one transfer transaction per sender per period end
             // as this is how transfers are grouped together when creating transfer transactions
-            var transferTransaction = _dbContext.Transactions.Single(t =>
+            var transferTransaction = _dbContext.Value.Transactions.Single(t =>
                 t.AccountId == query.AccountId &&
                 t.TransactionType == TransactionItemType.Transfer &&
                 t.TransferSenderAccountId != null &&
