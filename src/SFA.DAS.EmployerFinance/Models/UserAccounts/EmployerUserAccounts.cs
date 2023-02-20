@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 
 namespace SFA.DAS.EmployerFinance.Models.UserAccounts;

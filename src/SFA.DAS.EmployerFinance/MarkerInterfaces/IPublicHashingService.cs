@@ -1,9 +1,8 @@
 ﻿using SFA.DAS.HashingService;
 
-namespace SFA.DAS.EmployerFinance.MarkerInterfaces
+namespace SFA.DAS.EmployerFinance.MarkerInterfaces;
+
+public interface IPublicHashingService : IHashingService
 {
-    public interface IPublicHashingService : IHashingService
-    {
         
-    }
 }

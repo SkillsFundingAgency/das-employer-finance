@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 
-namespace SFA.DAS.EmployerFinance.Models.ExpiringFunds
+public class ExpiringAccountFunds
 {
-    public class ExpiringAccountFunds
-    {
-        public List<ExpiringFunds> ExpiryAmounts { get; set; }
-    }
+    public List<ExpiringFunds> ExpiryAmounts { get; set; }
 }

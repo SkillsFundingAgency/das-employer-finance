@@ -1,8 +1,7 @@
 ﻿using SFA.DAS.Http.Configuration;
 
-namespace SFA.DAS.EmployerFinance.Interfaces
+namespace SFA.DAS.EmployerFinance.Interfaces;
+
+public interface IContentClientApiConfiguration : IAzureActiveDirectoryClientConfiguration
 {
-    public interface IContentClientApiConfiguration : IAzureActiveDirectoryClientConfiguration
-    {
-    }
 }

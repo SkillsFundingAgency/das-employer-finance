@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace SFA.DAS.EmployerFinance.Interfaces;
 
-namespace SFA.DAS.EmployerFinance.Interfaces
+public interface IDateTimeStringFormatter
 {
-    public interface IDateTimeStringFormatter
-    {
-        string FinancialYearStringFor(DateTime dateTime);
-    }
+    string FinancialYearStringFor(DateTime dateTime);
 }

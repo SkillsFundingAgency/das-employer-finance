@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace SFA.DAS.EmployerFinance.Models.UserProfile;
 
-namespace SFA.DAS.EmployerFinance.Models.UserProfile
+public class Users
 {
-    public class Users
-    {
-        public List<User> UserList { get; set; }
-    }
+    public List<User> UserList { get; set; }
 }

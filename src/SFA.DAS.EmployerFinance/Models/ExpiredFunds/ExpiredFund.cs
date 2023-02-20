@@ -1,10 +1,9 @@
 ﻿
-namespace SFA.DAS.EmployerFinance.Models.ExpiredFunds
+namespace SFA.DAS.EmployerFinance.Models.ExpiredFunds;
+
+public class ExpiredFund
 {
-    public class ExpiredFund
-    {
-        public int CalendarPeriodYear { get; set; }
-        public int CalendarPeriodMonth { get; set; }
-        public decimal Amount { get; set; }
-    }
+    public int CalendarPeriodYear { get; set; }
+    public int CalendarPeriodMonth { get; set; }
+    public decimal Amount { get; set; }
 }

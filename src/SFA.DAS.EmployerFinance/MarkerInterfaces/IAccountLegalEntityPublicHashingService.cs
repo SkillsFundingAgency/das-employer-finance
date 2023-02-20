@@ -1,8 +1,5 @@
-﻿using SFA.DAS.HashingService;
+﻿namespace SFA.DAS.EmployerFinance.MarkerInterfaces;
 
-namespace SFA.DAS.EmployerFinance.MarkerInterfaces
+public interface IAccountLegalEntityPublicHashingService 
 {
-    public interface IAccountLegalEntityPublicHashingService 
-    {
-    }
 }

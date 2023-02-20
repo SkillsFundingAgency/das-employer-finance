@@ -1,23 +1,20 @@
-﻿using System;
+﻿namespace SFA.DAS.EmployerFinance.Messages;
 
-namespace SFA.DAS.EmployerFinance.Messages
+public class MonthYear : DayMonthYear
 {
-    public class MonthYear : DayMonthYear
+    public override string Day => 1.ToString();
+
+    public static implicit operator MonthYear(DateTime dateTime)
     {
-        public override string Day => 1.ToString();
-
-        public static implicit operator MonthYear(DateTime dateTime)
+        return new MonthYear
         {
-            return new MonthYear
-            {
-                Month = dateTime.Month.ToString(),
-                Year = dateTime.Year.ToString()
-            };
-        }
+            Month = dateTime.Month.ToString(),
+            Year = dateTime.Year.ToString()
+        };
+    }
 
-        public static implicit operator DateTime(MonthYear monthYear)
-        {
-            return monthYear.ToDate();
-        }
+    public static implicit operator DateTime(MonthYear monthYear)
+    {
+        return monthYear.ToDate();
     }
 }
