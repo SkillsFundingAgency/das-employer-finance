@@ -298,10 +298,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.PaymentServiceTests
                 .Returns(() => _frameworkPayment);
 
             // Act
-            var details = await _paymentService.GetAccountPayments(PeriodEnd, AccountId, Guid.NewGuid());
+            await _paymentService.GetAccountPayments(PeriodEnd, AccountId, Guid.NewGuid());
 
             // Assert
-            _logger.Verify(x => x.LogWarning(It.IsAny<string>()), Times.Once);
+            _logger.Verify(x => x.Log(LogLevel.Warning,0,
+                It.Is<It.IsAnyType>((message, type) => message.ToString().Contains("No framework code or standard code set on payment. Cannot get course details") && type.Name == "FormattedLogValues"),
+                It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+            ), Times.Once);
         }
 
         [Test]
@@ -327,9 +330,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.PaymentServiceTests
             await _paymentService.GetAccountPayments(PeriodEnd, AccountId, Guid.NewGuid());
 
             //Assert
-            _logger.Verify(x => x.LogWarning(It.IsAny<Exception>(),
-                $"Unable to get Apprenticeship with Employer Account ID {AccountId} and " +
-                $"apprenticeship ID {_standardPayment.ApprenticeshipId} from commitments API."), Times.Once);
+            _logger.Verify(x => x.Log(LogLevel.Warning,0,
+                It.Is<It.IsAnyType>((message, type) => message.ToString() == $"Unable to get Apprenticeship with Employer Account ID {AccountId} and " +
+                    $"apprenticeship ID {_standardPayment.ApprenticeshipId} from commitments API." && type.Name == "FormattedLogValues"),
+                It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+            ), Times.Once);
         }
 
         [Test]
@@ -343,8 +348,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.PaymentServiceTests
             await _paymentService.GetAccountPayments(PeriodEnd, AccountId, Guid.NewGuid());
 
             //Assert
-            _logger.Verify(x => x.LogError(It.IsAny<Exception>(),
-                $"Unable to get payment information for {PeriodEnd} accountid {AccountId}"), Times.Once);
+            _logger.Verify(x => x.Log(LogLevel.Error,0,
+                It.Is<It.IsAnyType>((message, type) => message.ToString() == "Unable to get payment information for R12-13 accountid 2" && type.Name == "FormattedLogValues"),
+                It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+                ), Times.Once);
         }
 
         [Test]
@@ -358,7 +365,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.PaymentServiceTests
             await _paymentService.GetAccountPayments(PeriodEnd, AccountId, Guid.NewGuid());
 
             //Assert
-            _logger.Verify(x => x.LogWarning(It.IsAny<Exception>(), "Could not get standards from apprenticeship API."), Times.Once);
+            _logger.Verify(x => x.Log(LogLevel.Warning,0,
+                It.Is<It.IsAnyType>((message, type) => message.ToString() == "Could not get standards from apprenticeship API."),
+                It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+            ), Times.Once);
         }
 
         [Test]
@@ -374,7 +384,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.PaymentServiceTests
             await _paymentService.GetAccountPayments(PeriodEnd, AccountId, Guid.NewGuid());
 
             //Assert
-            _logger.Verify(x => x.LogWarning(It.IsAny<Exception>(), "Could not get frameworks from apprenticeship API."), Times.Once);
+            _logger.Verify(x => x.Log(LogLevel.Warning,0,
+                It.Is<It.IsAnyType>((message, type) => message.ToString() == "Could not get frameworks from apprenticeship API." && type.Name == "FormattedLogValues"),
+                It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+            ), Times.Once);
         }
 
         [Test]
@@ -406,8 +419,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.PaymentServiceTests
         private void SetupLoggerMock()
         {
             _logger = new Mock<ILogger<PaymentService>>();
-            _logger.Setup(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>()));
-            _logger.Setup(x => x.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()));
         }
 
         private void SetupMapperMock()

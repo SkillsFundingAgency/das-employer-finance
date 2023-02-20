@@ -192,7 +192,10 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         //Assert
         Assert.AreEqual("Training provider - name not recognised", actual.Data.TransactionLines.First().Description);
-        _logger.Verify(x => x.LogInformation(It.Is<string>(y => y.StartsWith("Provider not found for UkPrn:1254545"))));
+        _logger.Verify(x => x.Log(LogLevel.Information,0,
+            It.Is<It.IsAnyType>((message, type) => message.ToString().StartsWith("Provider not found for UkPrn:1254545")),
+            It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Once);
     }
 
     [Test]
@@ -249,7 +252,10 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        _logger.VerifyLogging(It.Is<string>(y => y.StartsWith("Provider not found for UkPrn:1254545")), LogLevel.Information);
+        _logger.Verify(x => x.Log(LogLevel.Information,0,
+            It.Is<It.IsAnyType>((message, type) => message.ToString().StartsWith("Provider not found for UkPrn:1254545")),
+            It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Once);
     }
 
     [Test]

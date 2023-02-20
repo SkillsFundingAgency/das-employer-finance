@@ -34,10 +34,7 @@ internal class WhenIGetAProvider
             .Setup(m => m.Get<GetProviderResponse>(It.IsAny<GetProviderRequest>()))
             .ReturnsAsync(_provider);
 
-        _mockLog
-            .Setup(m => m.LogWarning(It.IsAny<Exception>(), It.IsAny<string>()))
-            .Verifiable();
-
+        
         _sut = new EmployerFinance.Services.ProviderServiceRemote(_mockProviderService.Object, _mockApiClient.Object, _mockLog.Object);
     }
 
@@ -93,7 +90,10 @@ internal class WhenIGetAProvider
         await _sut.Get(ukPrn);
 
         // assert
-        _mockLog.Verify(m => m.LogWarning(exception, $"Unable to get provider details with UKPRN {ukPrn} from apprenticeship API."), Times.Once);
+        _mockLog.Verify(x => x.Log(LogLevel.Warning,0,
+            It.Is<It.IsAnyType>((message, type) => message.ToString() == $"Unable to get provider details with UKPRN {ukPrn} from apprenticeship API."),
+            It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+        ), Times.Once);
     }
 
     [Test]
