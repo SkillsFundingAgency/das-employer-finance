@@ -21,12 +21,13 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
     {
         var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
 
-        var result = await _dbContext.Value.GetTransfersByTargetAccountId(
-            query.AccountId.GetValueOrDefault(),
-            targetAccountId,
-            query.PeriodEnd);
-
-        var transfers = result as List<AccountTransfer> ?? result.ToList();
+        var transfers = await _dbContext.Value.AccountTransfers
+            .Where(x =>
+                        (x.SenderAccountId == query.AccountId.GetValueOrDefault() && x.ReceiverAccountId == targetAccountId)
+                        ||
+                        (x.SenderAccountId == targetAccountId && x.ReceiverAccountId == query.AccountId.GetValueOrDefault())
+                        && x.PeriodEnd == query.PeriodEnd)
+            .ToListAsync(cancellationToken);
 
         var firstTransfer = transfers.First();
 

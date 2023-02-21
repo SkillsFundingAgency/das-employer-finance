@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
-using FluentAssertions;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
+using SFA.DAS.EmployerFinance.TestCommon.DatabaseMock;
 using SFA.DAS.EmployerFinance.UnitTests.Builders;
 using SFA.DAS.Testing;
-using SFA.DAS.Testing.EntityFramework;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries
 {

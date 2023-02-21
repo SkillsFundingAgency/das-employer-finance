@@ -29,7 +29,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return Redirect(_urlHelper.LegacyEasAction(string.Empty));
         }
 
-        [DasAuthorize]
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
         public IActionResult SignedIn()
         {
             return View();

@@ -508,7 +508,9 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
                 transaction
             });
 
-
+        _encodingService.Setup(x => x.Encode(transaction.ReceiverAccountId, EncodingType.PublicAccountId))
+            .Returns(expectedPublicHashedId);
+        
         //Act
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
