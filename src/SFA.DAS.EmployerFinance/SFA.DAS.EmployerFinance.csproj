@@ -13,10 +13,12 @@
     <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="MediatR" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.6" />
+    <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="3.0.5" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
     <PackageReference Include="Polly" Version="5.7.0" />
+    <PackageReference Include="SFA.DAS.Account.Api.Client" Version="1.6.3195" />
     <PackageReference Include="SFA.DAS.ActiveDirectory" Version="1.0.3" />
     <PackageReference Include="SFA.DAS.Audit.Client" Version="1.0.0.20553" />
     <PackageReference Include="SFA.DAS.Authentication" Version="1.1.2" />
@@ -58,8 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SFA.DAS.Account.Api.Client\SFA.DAS.EAS.Account.Api.Client.csproj" />
-    <ProjectReference Include="..\SFA.DAS.EAS.Account.Api.Types\SFA.DAS.EAS.Account.Api.Types.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Api.Client\SFA.DAS.EmployerFinance.Api.Client.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Api.Types\SFA.DAS.EmployerFinance.Api.Types.csproj" />
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Messages\SFA.DAS.EmployerFinance.Messages.csproj" />

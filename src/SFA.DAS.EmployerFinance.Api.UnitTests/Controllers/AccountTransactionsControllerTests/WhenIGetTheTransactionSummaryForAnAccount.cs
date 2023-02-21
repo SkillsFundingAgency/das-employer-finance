@@ -1,19 +1,17 @@
-﻿using FluentAssertions;
-using MediatR;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Api.Types;
-using SFA.DAS.EAS.TestCommon.Extensions;
-using SFA.DAS.EmployerFinance.Api.Controllers;
-using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using SFA.DAS.EmployerFinance.Models.Transaction;
-using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
-using SFA.DAS.NLog.Logger;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using System.Web.Http.Routing;
+using FluentAssertions;
+using MediatR;
+using Moq;
+using NUnit.Framework;
+using SFA.DAS.EmployerFinance.Api.Controllers;
+using SFA.DAS.EmployerFinance.Api.Orchestrators;
+using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
+using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsControllerTests
 {

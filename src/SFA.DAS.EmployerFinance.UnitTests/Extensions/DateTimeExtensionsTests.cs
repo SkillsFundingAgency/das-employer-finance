@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Extensions;
-using System;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Extensions
 {

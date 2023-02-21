@@ -33,8 +33,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             _authorisationService = new Mock<IAuthorizationService>();
             _hashingService = new Mock<IHashingService>();
             _transfersService = new Mock<ITransfersService>();
-            _accountApiClient = new Mock<IAccountApiClient>();            
-
+            _accountApiClient = new Mock<IAccountApiClient>();
             _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);            
 
             _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);

@@ -8,12 +8,12 @@
 | Build | ![Build Status](https://sfa-gov-uk.visualstudio.com/_apis/public/build/definitions/c39e0c0b-7aff-4606-b160-3566f3bbce23/101/badge) |
 | Web  | https://manage-apprenticeships.service.gov.uk/  |
 
-## Account Api
+## Finance Api
 
 |               |               |
 | ------------- | ------------- |
-|![crest](https://assets.publishing.service.gov.uk/government/assets/crests/org_crest_27px-916806dcf065e7273830577de490d5c7c42f36ddec83e907efe62086785f24fb.png)| Account API |
-| Client  | [![NuGet Badge](https://buildstats.info/nuget/SFA.DAS.Account.Api.Client)](https://www.nuget.org/packages/SFA.DAS.Account.Api.Client)  |
+|![crest](https://assets.publishing.service.gov.uk/government/assets/crests/org_crest_27px-916806dcf065e7273830577de490d5c7c42f36ddec83e907efe62086785f24fb.png)| Finance API |
+| Client  | [![NuGet Badge](https://buildstats.info/nuget/SFA.DAS.EmployerFinance.Api.Client)](https://www.nuget.org/packages/SFA.DAS.EmployerFinance.Api.Client)  |
 
 
 ### Developer Setup
@@ -45,7 +45,6 @@
 - Open Visual Studio as an administrator
 - Open the solution
 - Set the following as the startup projects:
-	- SFA.DAS.EmployerAccounts.Web
 	- SFA.DAS.EmployerFinance.Web
 - Running the solution will launch the site in your browser
 
@@ -53,8 +52,7 @@
 
 Repeat these steps for:
 
-1. SFA.DAS.EAS.Employer_Account.Database
-2. SFA.DAS.EAS.Employer_Financial.Database
+1. SFA.DAS.EAS.Employer_Financial.Database
 
 Note: If you have an existing database you may need to drop it first, to avoid the script aborting after an error on truncating data.
 
@@ -70,7 +68,7 @@ Steps:
 
 ![Select Local > ProjectsV13](/docs/img/db2.PNG)
 
-* Add the project name in again as the Database name (i.e. SFA.DAS.EAS.Employer_Account.Database)
+* Add the project name in again as the Database name (i.e. SFA.DAS.EAS.Employer_Finance.Database)
 * Click publish
 
 ![Select Local > ProjectsV13](/docs/img/db3.PNG)
@@ -92,7 +90,6 @@ The configuration is loaded from azure table storage.
 - Create a table called Configuration and copy across these 4 rows from the employer config setup above changing the PartitionKey to "Development" from "LOCAL":
 * SFA.DAS.EmployerApprenticeshipsService._1.0
 * SFA.DAS.EmployerFinance_1.0
-* SFA.DAS.EmployerAccounts_1.0
 * SFA.DAS.EmployerApprenticeshipsService.FeaturesV2_1.0
 * SFA.DAS.EmployerApprenticeshipsService.MultiVariantTesting_1.0
 

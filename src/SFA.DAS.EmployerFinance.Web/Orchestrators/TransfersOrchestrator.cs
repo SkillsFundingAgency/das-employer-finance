@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.HashingService;
-using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Common.Domain.Types;
-using SFA.DAS.Authorization.Features.Services;
-using SFA.DAS.Authorization.EmployerFeatures.Models;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Extensions;
+using SFA.DAS.EmployerFinance.Services;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+using SFA.DAS.HashingService;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
@@ -18,7 +16,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         private readonly IAuthorizationService _authorizationService;
         private readonly IHashingService _hashingService;
         private readonly ITransfersService _transfersService;
-        private readonly IAccountApiClient _accountApiClient;        
+        private readonly IAccountApiClient _accountApiClient;
 
         protected TransfersOrchestrator()
         {
@@ -33,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             _authorizationService = authorizationService;
             _hashingService = hashingService;
             _transfersService = transfersService;
-            _accountApiClient = accountApiClient;            
+            _accountApiClient = accountApiClient;
         }
 
         public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)

@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using AutoFixture;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Authorization.EmployerFeatures.Models;
@@ -10,7 +11,6 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.HashingService;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 {
