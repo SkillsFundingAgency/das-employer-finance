@@ -16,7 +16,6 @@ public class HttpResponseLogger : IHttpResponseLogger
         {
             var content = await response.Content.ReadAsStringAsync();
 
-            //_logger.LogDebug("Logged response. StatusCode: '{StatusCode}'. Reason: '{Reason}'. Content: '{Content}'", response.StatusCode, response.ReasonPhrase, content);
             _logger.LogDebug("Logged response. StatusCode: '{StatusCode}'. Reason: '{Reason}'. Content: '{Content}'.", response.StatusCode, response.ReasonPhrase, content);
         }
     }
