@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
+using SFA.DAS.EmployerFinance.TestCommon.DatabaseMock;
 using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetailsTests;
@@ -121,13 +121,7 @@ class WhenAReceiverGetsTransferTransactionDetails
             }
         };
 
-        _db.Setup(d => d.SqlQueryAsync<AccountTransfer>(
-                It.IsAny<string>(), SenderAccountId, ReceiverAccountId, PeriodEnd))
-            .ReturnsAsync(_transfers);
-
-        _db.Setup(d => d.SqlQueryAsync<AccountTransfer>(
-                It.IsAny<string>(), ReceiverAccountId, SenderAccountId, PeriodEnd))
-            .ReturnsAsync(_transfers);
+        _db.Setup(x => x.AccountTransfers).ReturnsDbSet(_transfers);
 
         _db.Setup(x => x.PeriodEnds).ReturnsDbSet(new List<PeriodEnd>{_periodEnd});
 

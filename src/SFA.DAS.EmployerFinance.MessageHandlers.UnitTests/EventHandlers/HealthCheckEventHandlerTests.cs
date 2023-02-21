@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NServiceBus;
 using NUnit.Framework;
-using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models;
+using SFA.DAS.EmployerFinance.TestCommon.DatabaseMock;
 using SFA.DAS.EmployerFinance.UnitTests.Builders;
 using SFA.DAS.Testing;
-using SFA.DAS.Testing.EntityFramework;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
 {

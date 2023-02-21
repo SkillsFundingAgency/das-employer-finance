@@ -7,6 +7,7 @@ using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
+using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -19,6 +20,7 @@ public class EmployerFinanceDbContext : DbContext
     private const string AzureResource = "https://database.windows.net/";
 
     public virtual DbSet<Account> Accounts { get; set; }
+    public virtual DbSet<AccountTransfer> AccountTransfers { get; set; }
     public virtual DbSet<HealthCheck> HealthChecks { get; set; }
     public virtual DbSet<PeriodEnd> PeriodEnds { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
