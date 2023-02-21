@@ -1,31 +1,29 @@
-﻿using SFA.DAS.EmployerFinance.Api.Types;
+﻿using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
-using SFA.DAS.NLog.Logger;
-using System.Threading.Tasks;
 
-namespace SFA.DAS.EmployerFinance.Api.Orchestrators
+namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
+
+public class StatisticsOrchestrator
 {
-    public class StatisticsOrchestrator
+    private readonly IMediator _mediator;
+    private readonly ILogger<StatisticsOrchestrator> _logger;
+
+    public StatisticsOrchestrator(IMediator mediator, ILogger<StatisticsOrchestrator> logger)
     {
-        private readonly IMediator _mediator;
-        private readonly ILog _logger;
+        _mediator = mediator;
+        _logger = logger;
+    }
 
-        public StatisticsOrchestrator(IMediator mediator, ILog logger)
-        {
-            _mediator = mediator;
-            _logger = logger;
-        }
+    public virtual async Task<TotalPaymentsModel> Get()
+    {
+        _logger.LogInformation($"Requesting Finance statistics");
 
-        public virtual async Task<TotalPaymentsModel> Get()
-        {
-            _logger.Info($"Requesting Finance statistics");
+        var financialStatisticsQueryTask = _mediator.Send(new GetTotalPaymentsQuery());
 
-            var financialStatisticsQueryTask = _mediator.Send(new GetTotalPaymentsQuery());
-
-            return new TotalPaymentsModel
-            {            
-                TotalPayments = (await financialStatisticsQueryTask).TotalPayments
-            };
-        }
+        return new TotalPaymentsModel
+        {            
+            TotalPayments = (await financialStatisticsQueryTask).TotalPayments
+        };
     }
 }

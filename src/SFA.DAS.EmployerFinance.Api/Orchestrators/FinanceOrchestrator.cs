@@ -9,135 +9,133 @@ using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.Api.Orchestrators
+namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
+
+public class FinanceOrchestrator
 {
-    public class FinanceOrchestrator
+    private readonly IMediator _mediator;
+    private readonly ILogger<FinanceOrchestrator> _logger;
+    private readonly IMapper _mapper;
+    private readonly IEncodingService _encodingService;
+
+    public FinanceOrchestrator(
+        IMediator mediator,
+        ILogger<FinanceOrchestrator> logger,
+        IMapper mapper,
+        IEncodingService encodingService)
     {
-        private readonly IMediator _mediator;
-        private readonly ILog _logger;
-        private readonly IMapper _mapper;
-        private readonly IEncodingService _encodingService;
+        _mediator = mediator;
+        _logger = logger;
+        _mapper = mapper;
+        _encodingService = encodingService;
+    }
 
-        public FinanceOrchestrator(
-            IMediator mediator,
-            ILog logger,
-            IMapper mapper,
-            IEncodingService encodingService)
+    public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId)
+    {
+        _logger.LogInformation($"Requesting levy declaration for account {hashedAccountId}");
+
+        var response = await _mediator.Send(new GetLevyDeclarationRequest { HashedAccountId = hashedAccountId });
+        if (response.Declarations == null)
         {
-            _mediator = mediator;
-            _logger = logger;
-            _mapper = mapper;
-            _encodingService = encodingService;
+            return null;
         }
 
-        public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId)
+        var levyDeclarations = response.Declarations.Select(x => _mapper.Map<LevyDeclaration>(x)).ToList();
+        levyDeclarations.ForEach(x => x.HashedAccountId = hashedAccountId);
+        _logger.LogInformation($"Received response for levy declaration for account {hashedAccountId}");
+
+        return levyDeclarations;
+    }
+
+    public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
+    {
+        _logger.LogInformation($"Requesting levy declaration for account {hashedAccountId}, year {payrollYear} and month {payrollMonth}");
+
+        var response = await _mediator.Send(new GetLevyDeclarationsByAccountAndPeriodRequest { HashedAccountId = hashedAccountId, PayrollYear = payrollYear, PayrollMonth = payrollMonth });
+        if (response.Declarations == null)
         {
-            _logger.Info($"Requesting levy declaration for account {hashedAccountId}");
-
-            var response = await _mediator.Send(new GetLevyDeclarationRequest { HashedAccountId = hashedAccountId });
-            if (response.Declarations == null)
-            {
-                return null;
-            }
-
-            var levyDeclarations = response.Declarations.Select(x => _mapper.Map<LevyDeclaration>(x)).ToList();
-            levyDeclarations.ForEach(x => x.HashedAccountId = hashedAccountId);
-            _logger.Info($"Received response for levy declaration for account {hashedAccountId}");
-
-            return levyDeclarations;
+            return null;
         }
 
-        public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
+        var levyDeclarations = response.Declarations.Select(x => _mapper.Map<LevyDeclaration>(x)).ToList();
+        levyDeclarations.ForEach(x => x.HashedAccountId = hashedAccountId);
+        _logger.LogInformation($"Received response for levy declaration for account  {hashedAccountId}, year {payrollYear} and month {payrollMonth}");
+        return levyDeclarations;
+    }
+
+    public async Task<List<DasEnglishFraction>> GetEnglishFractionHistory(string hashedAccountId, string empRef)
+    {
+        _logger.LogInformation($"Requesting english fraction history for account {hashedAccountId}, empRef {empRef}");
+
+        var response = await _mediator.Send(new GetEnglishFractionHistoryQuery { HashedAccountId = hashedAccountId, EmpRef = empRef });
+        if (response.FractionDetail == null)
         {
-            _logger.Info($"Requesting levy declaration for account {hashedAccountId}, year {payrollYear} and month {payrollMonth}");
-
-            var response = await _mediator.Send(new GetLevyDeclarationsByAccountAndPeriodRequest { HashedAccountId = hashedAccountId, PayrollYear = payrollYear, PayrollMonth = payrollMonth });
-            if (response.Declarations == null)
-            {
-                return null;
-            }
-
-            var levyDeclarations = response.Declarations.Select(x => _mapper.Map<LevyDeclaration>(x)).ToList();
-            levyDeclarations.ForEach(x => x.HashedAccountId = hashedAccountId);
-            _logger.Info($"Received response for levy declaration for account  {hashedAccountId}, year {payrollYear} and month {payrollMonth}");
-            return levyDeclarations;
+            return null;
         }
 
-        public async Task<List<DasEnglishFraction>> GetEnglishFractionHistory(string hashedAccountId, string empRef)
+        var dasEnglishFractions = response.FractionDetail.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
+        _logger.LogInformation($"Received response for english fraction history for account  {hashedAccountId}, empRef {empRef}");
+        return dasEnglishFractions;
+    }
+
+    public async Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(string hashedAccountId, string[] empRefs)
+    {
+        _logger.LogInformation($"Requesting current english fractions for account {hashedAccountId}, empRefs {string.Join(", ", empRefs)}");
+
+        var response = await _mediator.Send(new GetEnglishFractionCurrentQuery { HashedAccountId = hashedAccountId, EmpRefs = empRefs });
+        if (response.Fractions == null)
         {
-            _logger.Info($"Requesting english fraction history for account {hashedAccountId}, empRef {empRef}");
-
-            var response = await _mediator.Send(new GetEnglishFractionHistoryQuery { HashedAccountId = hashedAccountId, EmpRef = empRef });
-            if (response.FractionDetail == null)
-            {
-                return null;
-            }
-
-            var dasEnglishFractions = response.FractionDetail.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
-            _logger.Info($"Received response for english fraction history for account  {hashedAccountId}, empRef {empRef}");
-            return dasEnglishFractions;
+            return null;
         }
 
-        public async Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(string hashedAccountId, string[] empRefs)
+        var dasEnglishFractions = response.Fractions.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
+        _logger.LogInformation($"Received response for current english fractions for account  {hashedAccountId}, empRefs {string.Join(", ", empRefs)}");
+        return dasEnglishFractions;
+    }
+
+    public async Task<List<AccountBalance>> GetAccountBalances(List<string> accountIds)
+    {
+        _logger.LogInformation($"Requesting GetAccountBalances for the accounts");
+
+        var decodedAccountIds = new List<long>();
+        foreach (var id in accountIds)
         {
-            _logger.Info($"Requesting current english fractions for account {hashedAccountId}, empRefs {string.Join(", ", empRefs)}");
-
-            var response = await _mediator.Send(new GetEnglishFractionCurrentQuery { HashedAccountId = hashedAccountId, EmpRefs = empRefs });
-            if (response.Fractions == null)
+            try
             {
-                return null;
+                decodedAccountIds.Add(_encodingService.Decode(id, EncodingType.AccountId));
             }
-
-            var dasEnglishFractions = response.Fractions.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
-            _logger.Info($"Received response for current english fractions for account  {hashedAccountId}, empRefs {string.Join(", ", empRefs)}");
-            return dasEnglishFractions;
+            catch
+            {
+                _logger.LogInformation($"Exception thrown while decode hashedAccountId : { id}");
+            }                
         }
-
-        public async Task<List<AccountBalance>> GetAccountBalances(List<string> accountIds)
-        {
-            _logger.Info($"Requesting GetAccountBalances for the accounts");
-
-            var decodedAccountIds = new List<long>();
-            foreach (var id in accountIds)
-            {
-                try
-                {
-                    decodedAccountIds.Add(_encodingService.Decode(id, EncodingType.AccountId));
-                }
-                catch
-                {
-                    _logger.Info($"Exception thrown while decode hashedAccountId : { id}");
-                }                
-            }
             
-            var response = await _mediator.Send(new GetAccountBalancesRequest
-            {
-                AccountIds = decodedAccountIds
-            });
-
-            var result = response?.Accounts.Select(x => _mapper.Map<AccountBalance>(x)).ToList();
-            
-            _logger.Info($"Received response - GetAccountBalances for the accounts { response?.Accounts.Count()}");
-            
-            return result;
-        }
-
-        public async Task<TransferAllowance> GetTransferAllowance(string hashedAccountId)
+        var response = await _mediator.Send(new GetAccountBalancesRequest
         {
-            _logger.Info($"Requesting GetTransferAllowance for the hashedAccountId {hashedAccountId} ");
+            AccountIds = decodedAccountIds
+        });
 
-            var response = await _mediator.Send(new GetTransferAllowanceQuery
-            {
-                AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId)
-            });
+        var result = response?.Accounts.Select(x => _mapper.Map<AccountBalance>(x)).ToList();
+            
+        _logger.LogInformation($"Received response - GetAccountBalances for the accounts { response?.Accounts.Count()}");
+            
+        return result;
+    }
 
-            var result = _mapper.Map<TransferAllowance>(response.TransferAllowance);
+    public async Task<TransferAllowance> GetTransferAllowance(string hashedAccountId)
+    {
+        _logger.LogInformation($"Requesting GetTransferAllowance for the hashedAccountId {hashedAccountId} ");
 
-            _logger.Info($"Received response - GetTransferAllowance for the hashedAccountId {hashedAccountId} ");
+        var response = await _mediator.Send(new GetTransferAllowanceQuery
+        {
+            AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId)
+        });
 
-            return result;
-        }
+        var result = _mapper.Map<TransferAllowance>(response.TransferAllowance);
+
+        _logger.LogInformation($"Received response - GetTransferAllowance for the hashedAccountId {hashedAccountId} ");
+
+        return result;
     }
 }

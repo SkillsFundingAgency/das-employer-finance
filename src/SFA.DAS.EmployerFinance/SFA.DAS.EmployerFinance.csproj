@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-    <PackageReference Include="AutoMapper" Version="5.1.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Client" Version="2.0.4" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Types" Version="2.0.4" />
