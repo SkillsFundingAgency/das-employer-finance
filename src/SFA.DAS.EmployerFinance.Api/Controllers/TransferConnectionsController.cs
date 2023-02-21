@@ -19,6 +19,7 @@ public class TransferConnectionsController : ControllerBase
         _encodingService = encodingService;
     }
 
+    [HttpGet]
     [Route("{hashedAccountId}/transfers/connections")]
     public async Task<IActionResult> GetTransferConnections(string hashedAccountId)
     {
@@ -28,6 +29,7 @@ public class TransferConnectionsController : ControllerBase
         return Ok(response.TransferConnections);
     }
 
+    [HttpGet]
     [Route("internal/{accountId}/transfers/connections")]
     public async Task<IActionResult> GetTransferConnections(long accountId)
     {

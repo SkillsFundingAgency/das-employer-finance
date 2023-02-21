@@ -30,6 +30,7 @@ public class EmployerAccountsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet]
     [Route("{hashedAccountId}/transferAllowance")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetTransferAllowance(string hashedAccountId)
