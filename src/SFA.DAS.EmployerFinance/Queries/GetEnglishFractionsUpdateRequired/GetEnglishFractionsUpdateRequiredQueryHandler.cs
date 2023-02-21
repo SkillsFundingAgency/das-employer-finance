@@ -1,5 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.Hmrc;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
 

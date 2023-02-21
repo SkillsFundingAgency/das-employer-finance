@@ -2,9 +2,9 @@
 using HMRC.ESFA.Levy.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
-using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdateEnglishFractions;
 

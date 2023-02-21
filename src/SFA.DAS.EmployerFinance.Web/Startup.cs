@@ -84,7 +84,8 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddDatabaseRegistration(_employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
-            
+            services.AddHmrcServices();
+
             //MAC-192
             services.AddApplicationServices();
 

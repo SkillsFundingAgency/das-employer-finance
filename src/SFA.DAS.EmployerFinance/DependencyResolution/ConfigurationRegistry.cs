@@ -2,7 +2,7 @@
 using SFA.DAS.AutoConfiguration;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.Hmrc.Configuration;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using StructureMap;
 
 namespace SFA.DAS.EmployerFinance.DependencyResolution;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
-using SFA.DAS.Hmrc;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
