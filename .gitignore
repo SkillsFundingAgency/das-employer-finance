@@ -278,3 +278,4 @@ SonarQube.Analysis.xml
 #Upgrade Assistant files
 *.sarif
 *.clef
+/src/SFA.DAS.EmployerFinance.Api/*nlog.txt

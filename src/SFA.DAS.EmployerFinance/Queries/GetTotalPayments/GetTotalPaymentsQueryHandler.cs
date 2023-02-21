@@ -1,10 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Data;
-using System.Data.Entity;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
 
-public class GetTotalPaymentsQueryHandler
-    : IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
+public class GetTotalPaymentsQueryHandler : IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
 {
     private readonly EmployerFinanceDbContext _financeDb;
 
@@ -15,9 +13,11 @@ public class GetTotalPaymentsQueryHandler
 
     public async Task<GetTotalPaymentsResponse> Handle(GetTotalPaymentsQuery message,CancellationToken cancellationToken)
     {
+        var paymentsCount = await _financeDb.Payments.CountAsync(cancellationToken);
+
         return new GetTotalPaymentsResponse
         {
-            TotalPayments = await _financeDb.Payments.CountAsync()
+            TotalPayments = paymentsCount
         };
     }
 }

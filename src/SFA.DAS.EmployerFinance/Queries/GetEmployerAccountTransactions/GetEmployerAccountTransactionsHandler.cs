@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -16,21 +15,18 @@ public class GetEmployerAccountTransactionsHandler :
     private readonly IDasLevyService _dasLevyService;
     private readonly IValidator<GetEmployerAccountTransactionsQuery> _validator;
     private readonly IEncodingService _encodingService;
-    private readonly IPublicHashingService _publicHashingService;
     private readonly ILogger<GetEmployerAccountTransactionsHandler> _logger;
 
     public GetEmployerAccountTransactionsHandler(
         IDasLevyService dasLevyService,
         IValidator<GetEmployerAccountTransactionsQuery> validator,
         ILogger<GetEmployerAccountTransactionsHandler> logger,
-        IEncodingService encodingService,
-        IPublicHashingService publicHashingService)
+        IEncodingService encodingService)
     {
         _dasLevyService = dasLevyService;
         _validator = validator;
         _logger = logger;
         _encodingService = encodingService;
-        _publicHashingService = publicHashingService;
     }
 
     public async Task<GetEmployerAccountTransactionsResponse> Handle(GetEmployerAccountTransactionsQuery message,CancellationToken  cancellationToken)
@@ -165,10 +161,10 @@ public class GetEmployerAccountTransactionsHandler :
         foreach (var transaction in transferTransactions)
         {
             transaction.ReceiverAccountPublicHashedId =
-                _publicHashingService.HashValue(transaction.ReceiverAccountId);
+                _encodingService.Encode(transaction.ReceiverAccountId, EncodingType.PublicAccountId);
 
             transaction.SenderAccountPublicHashedId =
-                _publicHashingService.HashValue(transaction.SenderAccountId);
+                _encodingService.Encode(transaction.SenderAccountId, EncodingType.PublicAccountId);
         }
     }
 }

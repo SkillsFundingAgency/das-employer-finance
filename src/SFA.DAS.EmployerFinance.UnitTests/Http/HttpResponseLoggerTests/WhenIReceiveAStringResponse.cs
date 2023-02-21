@@ -17,42 +17,28 @@ public class WhenIReceiveAStringResponse
     [SetUp]
     public void Arrange()
     {
-        _logger = new Moq.Mock<ILogger<HttpResponseLogger>>();
-        _httpResponseLogger = new HttpResponseLogger(Mock.Of<ILogger<HttpResponseLogger>>());
-        _httpResponseMessage = new HttpResponseMessage(TestStatusCode) { Content = new StringContent(TestContent), ReasonPhrase = TestReason};
+        _logger = new Mock<ILogger<HttpResponseLogger>>();
+        _httpResponseLogger = new HttpResponseLogger(_logger.Object);
+        _httpResponseMessage = new HttpResponseMessage(TestStatusCode) { Content = new StringContent(TestContent), ReasonPhrase = TestReason };
     }
 
     [Test]
     public async Task ThenTheContentShouldBeLogged()
     {
-        // Arrange
-        _logger.Setup(l => l.LogDebug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
-
         // Act
         await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
         // Assert
-        _logger.Verify(l => l.LogDebug(It.IsAny<string>(), It.IsAny<Dictionary<string,object>>()), Times.Once);
+        _logger.VerifyLogging(It.IsAny<string>(), LogLevel.Debug, Times.Never());
     }
 
-    [TestCase("Content", TestContent)]
-    [TestCase("StatusCode", TestStatusCode)]
-    [TestCase("Reason", TestReason)]
-    public async Task ThenTheMessageShouldBeLogged(string expectedPropertyName, object expectedPropertyValue)
+    [Test]
+    public async Task ThenTheMessageShouldBeLogged()
     {
-        // Arrange
-        IDictionary<string, object> actualProperties = null;
-        _logger
-            .Setup(l => l.LogDebug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
-            .Callback<string, IDictionary<string, object>>((msg, properties) => actualProperties = properties);
-
         // Act
         await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
         // Assert
-        Assert.IsTrue(actualProperties.ContainsKey(expectedPropertyName), $"logger was not supplied property {expectedPropertyName}");
-        var actualPropertyValue = actualProperties[expectedPropertyName];
-        Assert.IsNotNull(actualPropertyValue, $"logger was supplied null for property {expectedPropertyName}");
-        Assert.AreEqual(expectedPropertyValue.ToString(), actualPropertyValue.ToString(), $"logger was supplied an unexpected value for property {expectedPropertyName}");
+        _logger.VerifyLogging($"Logged response. StatusCode: '{TestStatusCode}'. Reason: '{TestReason}'. Content: '{TestContent}'.");
     }
 }

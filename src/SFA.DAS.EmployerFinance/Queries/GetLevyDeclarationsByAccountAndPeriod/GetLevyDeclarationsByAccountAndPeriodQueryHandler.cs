@@ -16,13 +16,9 @@ public class GetLevyDeclarationsByAccountAndPeriodQueryHandler : IRequestHandler
 
     public async Task<GetLevyDeclarationsByAccountAndPeriodResponse> Handle(GetLevyDeclarationsByAccountAndPeriodRequest message,CancellationToken cancellationToken)
     {
-        var accountId = GetAccountId(message.HashedAccountId);
+        var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
         var declarations = await _repository.GetAccountLevyDeclarations(accountId, message.PayrollYear, message.PayrollMonth);
+        
         return new GetLevyDeclarationsByAccountAndPeriodResponse { Declarations = declarations };
-    }
-
-    private long GetAccountId(string hashedAccountId)
-    {
-        return _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
     }
 }

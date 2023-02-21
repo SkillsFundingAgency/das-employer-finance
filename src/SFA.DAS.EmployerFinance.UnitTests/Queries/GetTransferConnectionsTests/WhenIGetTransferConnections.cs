@@ -1,16 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Moq;
-using NUnit.Framework;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
 using SFA.DAS.EmployerFinance.TestCommon.Builders;
-using SFA.DAS.EmployerFinance.TestCommon.Helpers;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
 {
@@ -22,7 +16,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
         private GetTransferConnectionsResponse _response;
         private Mock<ITransferConnectionInvitationRepository> _transferConnectionInvitationRepository;
         private IMapper _mapper;
-        private List<TransferConnectionInvitation> _transferConnectionInvitations;
         private TransferConnectionInvitation _approvedTransferConnectionAtoB;
         private TransferConnectionInvitation _rejectedTransferConnectionAtoC;
         private TransferConnectionInvitation _approvedTransferConnectionAtoC;
@@ -42,24 +35,21 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
             {
                 Id = 111111,
                 Name = "Account A",
-                HashedId = hashedAccountId,
-                PublicHashingService = new TestPublicHashingService()
+                HashedId = hashedAccountId
             };
 
             _accountB = new Account
             {
                 Id = 222222,
                 Name = "Account B",
-                HashedId = hashedAccountId,
-                PublicHashingService = new TestPublicHashingService()
+                HashedId = hashedAccountId
             };
 
             _accountC = new Account
             {
                 Id = 333333,
                 Name = "Account C",
-                HashedId = hashedAccountId,
-                PublicHashingService = new TestPublicHashingService()
+                HashedId = hashedAccountId
             };
 
             _approvedTransferConnectionAtoB = new TransferConnectionInvitationBuilder()
@@ -89,14 +79,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferConnectionsTests
                 .WithReceiverAccount(_accountC)
                 .WithStatus(TransferConnectionInvitationStatus.Approved)
                 .Build();
-
-            _transferConnectionInvitations = new List<TransferConnectionInvitation>
-            {
-                _approvedTransferConnectionAtoB,
-                _rejectedTransferConnectionAtoC,
-                _approvedTransferConnectionAtoC,
-                _approvedTransferConnectionBtoC 
-            };
 
             _transferConnectionInvitationRepository
                 .Setup(s => s.GetByReceiver(_accountC.Id, TransferConnectionInvitationStatus.Approved))

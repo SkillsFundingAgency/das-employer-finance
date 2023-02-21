@@ -2,10 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "resourceEnvironmentName": {
+        "serviceName": {
             "type": "string"
         },
-        "serviceName": {
+        "resourceEnvironmentName": {
             "type": "string"
         },
         "sharedFrontendAppServicePlanName": {
@@ -23,6 +23,9 @@
         "sharedEnvResourceGroup": {
             "type": "string"
         },
+        "sharedManagementResourceGroup": {
+            "type": "string"
+        },
         "sharedServiceBusName": {
             "type": "string"
         },
@@ -38,8 +41,11 @@
         "loggingRedisKey": {
             "type": "string"
         },
-        "storageConnectionString": {
+        "sharedStorageAccountConnectionString": {
             "type": "securestring"
+        },
+        "employerUsersTokenSigningCertificateThumbprint": {
+            "type": "string"
         },
         "uiCustomHostname": {
             "type": "string",
@@ -55,43 +61,72 @@
         "apiCertificateName": {
             "type": "string"
         },
-        "supportCustomHostname": {
+        "logAnalyticsWorkspaceName": {
+            "type": "string"
+        },
+        "elasticPoolName": {
             "type": "string",
             "defaultValue": ""
         },
-        "supportCertificateName": {
+        "databaseName": {
+            "type": "string"
+        },
+        "databaseSkuName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "S0"
         },
-        "keyVaultResourceGroupName": {
+        "databaseTier": {
+            "type": "string",
+            "defaultValue": "Standard"
+        },
+        "logAnalyticsSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]"
+        },
+        "sharedKeyVaultName": {
             "type": "string"
         },
-        "keyVaultName": {
+        "sharedApimResourceGroup": {
             "type": "string"
         },
-        "deploySupportSite": {
-            "type": "bool",
-            "defaultValue": true
-        },
-        "tokenCertificateName": {
+        "sharedApimName": {
             "type": "string"
         },
-        "apiIdaAudience": {
+        "backEndAccessRestrictions": {
+            "type": "array"
+        },
+        "frontEndAccessRestrictions": {
+            "type": "array"
+        },
+        "sharedSQLServerName": {
             "type": "string"
         },
-        "apiIdaTenant": {
+        "sharedEnvVirtualNetworkName": {
             "type": "string"
         },
-        "appServiceAllowedIPs": {
-            "type": "array",
-            "defaultValue": [
-            ]
+        "financeWorkerSubnetObject": {
+            "type": "object"
+        },
+        "subnetServiceEndpointList": {
+            "type": "array"
+        },
+        "subnetDelegations": {
+            "type": "array"
+        },
+        "workerAccessRestrictions": {
+            "type": "array"
         },
         "resourceGroupLocation": {
             "type": "string"
         },
         "tags": {
             "type": "object"
+        },
+        "tenant": {
+            "type": "string"
+        },
+        "financeApiIdaAudience": {
+            "type": "string"
         },
         "utcValue": {
             "type": "string",
@@ -100,25 +135,24 @@
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-        "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-'))]",
-        "uiAppServiceName": "[concat(variables('resourceNamePrefix'), parameters('serviceName'), 'ui-as')]",
-        "apiAppServiceName": "[concat(variables('resourceNamePrefix'), parameters('serviceName'), 'api-as')]",
-        "supportAppServiceName": "[concat(variables('resourceNamePrefix'), 's', parameters('serviceName'), '-as')]",
-        "resourceGroupName": "[concat(variables('resourceNamePrefix'), parameters('serviceName'), '-rg')]"
+        "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+        "uiAppServiceName": "[concat(variables('resourceNamePrefix'), 'ui-as')]",
+        "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
+        "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
+        "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
+        "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]"
     },
-    "resources": [
-        {
+    "resources": [{
             "apiVersion": "2020-06-01",
             "name": "[variables('resourceGroupName')]",
             "type": "Microsoft.Resources/resourceGroups",
             "location": "[parameters('resourceGroupLocation')]",
             "tags": "[parameters('tags')]",
-            "properties": {
-            }
+            "properties": {}
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('ui-app-insights-', parameters('utcValue'))]",
+            "name": "[concat('UIAppInsights-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -135,11 +169,14 @@
                         "value": "[variables('uiAppServiceName')]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "[variables('resourceGroupName')]"
+            ]
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('api-app-insights-', parameters('utcValue'))]",
+            "name": "[concat('ApiAppInsights-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -158,10 +195,35 @@
                 }
             },
             "dependsOn": [
+                "[variables('resourceGroupName')]"
             ]
         },
         {
-            "condition": "[greater(length(parameters('uiCustomHostname')), 0)]",
+            "apiVersion": "2020-06-01",
+            "name": "[concat('WorkerAppInsights-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appInsightsName": {
+                        "value": "[variables('workerAppServiceName')]"
+                    },
+                    "attachedService": {
+                        "value": "[variables('workerAppServiceName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('resourceGroupName')]"
+            ]
+        },
+        {
+            "condition": "[greater(length(parameters('uiCustomHostName')), 0)]",
             "apiVersion": "2020-06-01",
             "name": "[concat('ui-app-service-certificate-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
@@ -177,41 +239,17 @@
                         "value": "[parameters('uiCertificateName')]"
                     },
                     "keyVaultName": {
-                        "value": "[parameters('keyVaultName')]"
+                        "value": "[parameters('sharedKeyVaultName')]"
                     },
                     "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroupName')]"
+                        "value": "[parameters('sharedManagementResourceGroup')]"
                     }
                 }
             }
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('ui-token-signing-certificate-', parameters('utcValue'))]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'app-service-certificate.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "keyVaultCertificateName": {
-                        "value": "[parameters('tokenCertificateName')]"
-                    },
-                    "keyVaultName": {
-                        "value": "[parameters('keyVaultName')]"
-                    },
-                    "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroupName')]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2020-06-01",
-            "name": "[concat('ui-app-service-', parameters('utcValue'))]",
+            "name": "[concat('UIAppService-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -235,8 +273,7 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [
-                                {
+                            "array": [{
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -254,19 +291,19 @@
                                 },
                                 {
                                     "name": "StorageConnectionString",
-                                    "value": "[parameters('storageConnectionString')]"
+                                    "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[reference(concat('ui-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                                    "name": "InstrumentationKey",
+                                    "value": "[reference(concat('UIAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
                                 },
                                 {
                                     "name": "WEBSITE_LOAD_CERTIFICATES",
-                                    "value": "[reference(concat('ui-token-signing-certificate-', parameters('utcValue')), '2018-11-01').outputs.certificateThumbprint.value]"
+                                    "value": "[parameters('employerUsersTokenSigningCertificateThumbprint')]"
                                 },
                                 {
                                     "name": "TokenCertificateThumbprint",
-                                    "value": "[reference(concat('ui-token-signing-certificate-', parameters('utcValue')), '2018-11-01').outputs.certificateThumbprint.value]"
+                                    "value": "[parameters('employerUsersTokenSigningCertificateThumbprint')]"
                                 }
                             ]
                         }
@@ -278,7 +315,31 @@
                         "value": "[if(greater(length(parameters('uiCustomHostname')), 0), reference(concat('ui-app-service-certificate-', parameters('utcValue')), '2018-11-01').outputs.certificateThumbprint.value, '')]"
                     },
                     "ipSecurityRestrictions": {
-                        "value": "[parameters('appServiceAllowedIPs')]"
+                        "value": "[parameters('frontEndAccessRestrictions')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[concat('apim-ui-product-subscription-', parameters('utcValue'))]",
+            "resourceGroup": "[parameters('sharedApimResourceGroup')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-subscription.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "apimName": {
+                        "value": "[parameters('sharedApimName')]"
+                    },
+                    "subscriptionName": {
+                        "value": "[variables('uiAppServiceName')]"
+                    },
+                    "subscriptionScope": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('sharedApimResourceGroup'), '/providers/Microsoft.ApiManagement/service/', parameters('sharedApimName'), '/products/EmployerFinanceOuterApi')]"
                     }
                 }
             }
@@ -300,17 +361,17 @@
                         "value": "[parameters('apiCertificateName')]"
                     },
                     "keyVaultName": {
-                        "value": "[parameters('keyVaultName')]"
+                        "value": "[parameters('sharedKeyVaultName')]"
                     },
                     "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroupName')]"
+                        "value": "[parameters('sharedManagementResourceGroup')]"
                     }
                 }
             }
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('api-app-service-', parameters('utcValue'))]",
+            "name": "[concat('ApiAppService-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -334,8 +395,7 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [
-                                {
+                            "array": [{
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -352,16 +412,16 @@
                                     "value": "[parameters('environmentName')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                                    "name": "InstrumentationKey",
+                                    "value": "[reference(concat('ApiAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
                                 },
                                 {
-                                    "name": "idaAudience",
-                                    "value": "[parameters('apiIdaAudience')]"
+                                    "name": "IdaTenant",
+                                    "value": "[parameters('tenant')]"
                                 },
                                 {
-                                    "name": "idaTenant",
-                                    "value": "[parameters('apiIdaTenant')]"
+                                    "name": "FinanceApiIdaAudience",
+                                    "value": "[parameters('financeApiIdaAudience')]"
                                 }
                             ]
                         }
@@ -373,62 +433,95 @@
                         "value": "[if(greater(length(parameters('apiCustomHostname')), 0), reference(concat('api-app-service-certificate-', parameters('utcValue')), '2018-11-01').outputs.certificateThumbprint.value, '')]"
                     },
                     "ipSecurityRestrictions": {
-                        "value": "[parameters('appServiceAllowedIPs')]"
+                        "value": "[parameters('backEndAccessRestrictions')]"
                     }
                 }
             }
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('support-app-insights-', parameters('utcValue'))]",
-            "condition": "[parameters('deploySupportSite')]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('resourceGroupName')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appInsightsName": {
-                        "value": "[variables('supportAppServiceName')]"
-                    },
-                    "attachedService": {
-                        "value": "[variables('supportAppServiceName')]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2020-06-01",
-            "name": "[concat('support-app-service-certificate-', parameters('utcValue'))]",
-            "condition": "[and(greater(length(parameters('supportCustomHostname')), 0), parameters('deploySupportSite'))]",            
+            "name": "[concat('eas-finance-worker-subnet-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'app-service-certificate.json')]",
+                    "uri": "[concat(variables('deploymentUrlBase'),'subnet.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "keyVaultCertificateName": {
-                        "value": "[parameters('supportCertificateName')]"
+                    "virtualNetworkName": {
+                        "value": "[parameters('sharedEnvVirtualNetworkName')]"
                     },
-                    "keyVaultName": {
-                        "value": "[parameters('keyVaultName')]"
+                    "subnetName": {
+                        "value": "[parameters('financeWorkerSubnetObject').name]"
                     },
-                    "keyVaultResourceGroup": {
-                        "value": "[parameters('keyVaultResourceGroupName')]"
+                    "subnetAddressPrefix": {
+                        "value": "[parameters('financeWorkerSubnetObject').addressSpace]"
+                    },
+                    "serviceEndpointList": {
+                        "value": "[parameters('subnetServiceEndpointList')]"
+                    },
+                    "delegations": {
+                        "value": "[parameters('subnetDelegations')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2021-04-01",
+            "name": "[concat('eas-finance-worker-sql-firewall-rule-', parameters('utcValue'))]",
+            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'sql-server-firewall-rules.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serverName": {
+                        "value": "[parameters('sharedSQLServerName')]"
+                    },
+                    "subnetResourceIdList": {
+                        "value": "[createArray(reference(concat('eas-finance-worker-subnet-', parameters('utcValue'))).outputs.SubnetResourceId.value)]"
                     }
                 }
             }
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('support-app-service-', parameters('utcValue'))]",
-            "condition": "[parameters('deploySupportSite')]",
+            "name": "[concat('WorkerAppServicePlan-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServicePlanName": {
+                        "value": "[variables('workerAppServicePlanName')]"
+                    },
+                    "aspSize": {
+                        "value": "1"
+                    },
+                    "aspInstances": {
+                        "value": 1
+                    },
+                    "nonASETier": {
+                        "value": "Standard"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[variables('resourceGroupName')]"
+            ]
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[concat('WorkerAppService-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -439,21 +532,20 @@
                 },
                 "parameters": {
                     "appServiceName": {
-                        "value": "[variables('supportAppServiceName')]"
+                        "value": "[variables('workerAppServiceName')]"
                     },
                     "appServicePlanName": {
-                        "value": "[parameters('sharedBackendAppServicePlanName')]"
+                        "value": "[variables('workerAppServicePlanName')]"
                     },
                     "appServicePlanResourceGroup": {
-                        "value": "[parameters('sharedEnvResourceGroup')]"
+                        "value": "[variables('resourceGroupName')]"
                     },
                     "subnetResourceId": {
-                        "value": "[parameters('sharedBackEndSubnetResourceId')]"
+                        "value": "[reference(concat('eas-finance-worker-subnet-', parameters('utcValue'))).outputs.SubnetResourceId.value]"
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [
-                                {
+                            "array": [{
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -471,34 +563,45 @@
                                 },
                                 {
                                     "name": "StorageConnectionString",
-                                    "value": "[parameters('storageConnectionString')]"
+                                    "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
                                     "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[if(parameters('deploySupportSite'), reference(concat('support-app-insights-', parameters('utcValue')), '2018-11-01').outputs.InstrumentationKey.value, '')]"
+                                    "value": "[reference(concat('WorkerAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
                                 }
                             ]
                         }
                     },
-                    "customHostName": {
-                        "value": "[parameters('supportCustomHostname')]"
+                    "appServiceConnectionStrings": {
+                        "value": {
+                            "array": [{
+                                    "name": "AzureWebJobsDashboard",
+                                    "connectionString": "[parameters('sharedStorageAccountConnectionString')]",
+                                    "type": "Custom"
+                                },
+                                {
+                                    "name": "AzureWebJobsStorage",
+                                    "connectionString": "[parameters('sharedStorageAccountConnectionString')]",
+                                    "type": "Custom"
+                                }
+                            ]
+                        }
                     },
-                    "certificateThumbprint": {
-                        "value": "[if(greater(length(parameters('supportCustomHostname')), 0), reference(concat('support-app-service-certificate-', parameters('utcValue')), '2018-11-01').outputs.certificateThumbprint.value, '')]"
+                    "deployStagingSlot": {
+                        "value": false
                     },
                     "ipSecurityRestrictions": {
-                        "value": "[parameters('appServiceAllowedIPs')]"
+                        "value": "[parameters('workerAccessRestrictions')]"
                     }
                 }
             },
             "dependsOn": [
-                "[concat('support-app-insights-', parameters('utcValue'))]",
-                "[concat('support-app-service-certificate-', parameters('utcValue'))]"
+                "[concat('WorkerAppServicePlan-', parameters('utcValue'))]"
             ]
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('role-assignments-eas', copyIndex(), '-', parameters('utcValue'))]",
+            "name": "[concat('role-assignments-fin', copyIndex(), '-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "properties": {
@@ -509,7 +612,7 @@
                 },
                 "parameters": {
                     "principalId": {
-                        "value": "[createArray(reference(concat('ui-app-service-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('ui-app-service-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('api-app-service-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('api-app-service-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value)[copyIndex()]]"
+                        "value": "[createArray(reference(concat('UIAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('UIAppService-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('ApiAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('ApiAppService-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('WorkerAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value)[copyIndex()]]"
                     },
                     "assignmentType": {
                         "value": "ServiceBusOwner"
@@ -521,26 +624,89 @@
             },
             "copy": {
                 "name": "role-assignments",
-                "count": 4
+                "count": 5
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[concat('apim-worker-product-subscription-', parameters('utcValue'))]",
+            "resourceGroup": "[parameters('sharedApimResourceGroup')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-subscription.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "apimName": {
+                        "value": "[parameters('sharedApimName')]"
+                    },
+                    "subscriptionName": {
+                        "value": "[variables('workerAppServiceName')]"
+                    },
+                    "subscriptionScope": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('sharedApimResourceGroup'), '/providers/Microsoft.ApiManagement/service/', parameters('sharedApimName'), '/products/EmployerFinanceOuterApi')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2021-04-01",
+            "name": "[concat(parameters('databaseName'), '-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'sql-database.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "databaseName": {
+                        "value": "[parameters('databaseName')]"
+                    },
+                    "sqlServerName": {
+                        "value": "[parameters('sharedSQLServerName')]"
+                    },
+                    "elasticPoolName": {
+                        "value": "[parameters('elasticPoolName')]"
+                    },
+                    "databaseSkuName": {
+                        "value": "[parameters('databaseSkuName')]"
+                    },
+                    "databaseTier": {
+                        "value": "[parameters('databaseTier')]"
+                    },
+                    "logAnalyticsSubscriptionId": {
+                        "value": "[parameters('logAnalyticsSubscriptionId')]"
+                    },
+                    "logAnalyticsResourceGroup": {
+                        "value": "[parameters('sharedManagementResourceGroup')]"
+                    },
+                    "logAnalyticsWorkspaceName": {
+                        "value": "[parameters('logAnalyticsWorkspaceName')]"
+                    }
+                }
             }
         }
     ],
     "outputs": {
-        "LegacyResourceGroupName": {
+        "ResourceGroupName": {
             "type": "string",
             "value": "[variables('resourceGroupName')]"
         },
-        "LegacyUIAppServiceName": {
+        "UiAppServiceName": {
             "type": "string",
             "value": "[variables('uiAppServiceName')]"
         },
-        "LegacyApiAppServiceName": {
+        "ApiAppServiceName": {
             "type": "string",
             "value": "[variables('apiAppServiceName')]"
         },
-        "LegacySupportAppServiceName": {
+        "WorkerAppServiceName": {
             "type": "string",
-            "value": "[variables('supportAppServiceName')]"
+            "value": "[variables('workerAppServiceName')]"
         }
     }
 }

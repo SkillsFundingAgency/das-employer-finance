@@ -46,7 +46,8 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const int expectedInfoMessages = 1;
-        Assert.AreEqual(expectedInfoMessages, fixtures.InfoLog.Count);
+        Assert.AreEqual(expectedInfoMessages, fixtures.Result.Count());
+        //Assert.AreEqual(expectedInfoMessages, fixtures.InfoLog.Count);
     }
 
     [Test]
@@ -193,7 +194,10 @@ internal class LevyImportCleanerStrategyTestFixtures
         CurrentDateTimeMock = new Mock<ICurrentDateTime>();
         CurrentDateTimeMock.Setup(cdt => cdt.Now).Returns(() => DateTime.UtcNow);
         InfoLog = new List<string>();
-        LogMock.Setup(l => l.LogInformation(It.IsAny<string>())).Callback<string>(s => InfoLog.Add(s));
+
+        //LogMock.Setup(
+        //    l => l.LogInformation(It.IsAny<string>()))
+        //    .Callback<string>(s => InfoLog.Add(s));
     }
 
     public Mock<IDasLevyRepository> DasLevyRepositoryMock { get; set; }

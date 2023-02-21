@@ -8,6 +8,7 @@ public static class DataRepositoryServiceRegistrations
     public static IServiceCollection AddDataRepositories(this IServiceCollection services)
     {
         services.AddScoped<IAccountLegalEntityRepository, AccountLegalEntityRepository>();
+        services.AddScoped<IDasLevyRepository, DasLevyRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IEmployerAccountRepository, EmployerAccountRepository>();
         services.AddScoped<IEnglishFractionRepository, EnglishFractionRepository>();

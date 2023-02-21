@@ -24,7 +24,7 @@ public static class NServiceBusServiceRegistrations
 
         var databaseConnectionString = employerFinanceConfiguration.DatabaseConnectionString;
 
-        if(string.IsNullOrWhiteSpace(databaseConnectionString))
+        if (string.IsNullOrWhiteSpace(databaseConnectionString))
         {
             throw new Exception("DatabaseConnectionString configuration value is empty.");
         }
@@ -37,7 +37,7 @@ public static class NServiceBusServiceRegistrations
             .UseNewtonsoftJsonSerializer()
             //.UseNLogFactory()
             .UseOutbox(true)
-            .UseSqlServerPersistence(()=>DatabaseExtensions.GetSqlConnection(databaseConnectionString))
+            .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(databaseConnectionString))
             .UseUnitOfWork();
 
         if (isDevOrLocal)

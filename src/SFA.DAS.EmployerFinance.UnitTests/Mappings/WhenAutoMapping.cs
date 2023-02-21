@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Mappings;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Mappings
@@ -10,7 +9,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Mappings
         [Test]
         public void ThenShouldUseValidConfiguration()
         {
-            var config = new MapperConfiguration(c => c.AddProfiles(typeof(HealthCheckMappings), typeof(PaymentMappings)));
+            var config = new MapperConfiguration(c => {
+                c.AddProfile(typeof(HealthCheckMappings));
+                c.AddProfile(typeof(PaymentMappings));
+            });
 
             config.AssertConfigurationIsValid();
         }

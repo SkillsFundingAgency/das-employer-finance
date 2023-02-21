@@ -5,6 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Client" Version="2.0.4" />
@@ -42,8 +44,8 @@
     <PackageReference Include="SFA.DAS.Messaging.AzureServiceBus.StructureMap" Version="3.0.0.63765" />
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
     <PackageReference Include="SFA.DAS.Notifications.Api.Client" Version="2.2.37" />
-    <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.12" />
-    <PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="17.0.12" />
+    <PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
+    <PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="16.0.20" />
     <PackageReference Include="SFA.DAS.Provider.Events.Api.Client" Version="3.0.1-prerelease-5" />
     <PackageReference Include="SFA.DAS.TokenService.Api.Client" Version="2.3.0" />
     <PackageReference Include="SFA.DAS.UnitOfWork" Version="9.0.13" />

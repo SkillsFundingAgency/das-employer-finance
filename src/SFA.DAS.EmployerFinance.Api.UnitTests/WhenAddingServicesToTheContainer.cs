@@ -10,7 +10,16 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
+using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
+using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
+using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
+using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+using SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
+using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests;
@@ -41,34 +50,25 @@ public class WhenAddingServicesToTheContainer
     //    var type = provider.GetService(toResolve);
     //    Assert.IsNotNull(type);
     //}
-    
-    //[TestCase(typeof(IRequestHandler<GetTransferRequestsQuery, GetTransferRequestsResponse>))]
-    //[TestCase(typeof(IRequestHandler<FindAccountCoursePaymentsQuery, FindAccountCoursePaymentsResponse>))]
-    //public void Then_The_Dependencies_Are_Correctly_Resolved_For_Handlers(Type toResolve)
-    //{
-    //    var services = new ServiceCollection();
-    //    SetupServiceCollection(services);
-    //    var provider = services.BuildServiceProvider();
 
-    //    var type = provider.GetService(toResolve);
-    //    Assert.IsNotNull(type);
-    //}
-    
-    //[Test]
-    //public void Then_Resolves_Authorization_Handlers()
-    //{
-    //    var services = new ServiceCollection();
-    //    SetupServiceCollection(services);
-    //    var provider = services.BuildServiceProvider();
-            
-    //    var type = provider.GetServices(typeof(IAuthorizationHandler)).ToList();
-            
-    //    Assert.IsNotNull(type);
-    //    type.Count.Should().Be(3);
-    //    type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountAllRolesAuthorizationHandler));
-    //    type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountOwnerAuthorizationHandler));
-    //}
+    [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAccountTransactionSummaryRequest, GetAccountTransactionSummaryResponse>))]
+    [TestCase(typeof(IRequestHandler<GetLevyDeclarationRequest, GetLevyDeclarationResponse>))]
+    [TestCase(typeof(IRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>))]
+    [TestCase(typeof(IRequestHandler<GetEnglishFractionHistoryQuery, GetEnglishFractionHistoryResposne>))]
+    [TestCase(typeof(IRequestHandler<GetEnglishFractionCurrentQuery, GetEnglishFractionCurrentResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAccountBalancesRequest, GetAccountBalancesResponse>))]
+    [TestCase(typeof(IRequestHandler<GetTransferAllowanceQuery, GetTransferAllowanceResponse>))]
+    [TestCase(typeof(IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>))]
+    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Query_Handlers(Type toResolve)
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+        var provider = services.BuildServiceProvider();
 
+        var type = provider.GetService(toResolve);
+        Assert.IsNotNull(type);
+    }
 
     private static void SetupServiceCollection(IServiceCollection services)
     {
@@ -87,7 +87,9 @@ public class WhenAddingServicesToTheContainer
         services.AddDataRepositories();
         services.AddOrchestrators();
         services.AddLogging();
+        services.AddHmrcServices();
         services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddMediatorValidators();
         services.AddAutoMapper(typeof(Startup), typeof(GetPayeSchemeByRefHandler));
 
     }
