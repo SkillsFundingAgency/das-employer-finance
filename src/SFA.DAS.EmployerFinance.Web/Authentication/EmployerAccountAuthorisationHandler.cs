@@ -20,6 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.Authentication;
 public interface IEmployerAccountAuthorisationHandler
 {
     Task<bool> IsEmployerAuthorised(AuthorizationHandlerContext context, bool allowAllUserRoles);
+    bool CheckUserAccountAccess(ClaimsPrincipal user, EmployerUserRole userRoleRequired);
 }
 
 public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisationHandler
@@ -111,6 +112,56 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
 
         return true;
     }
+
+    public bool CheckUserAccountAccess(ClaimsPrincipal user, EmployerUserRole userRoleRequired)
+    {
+        if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.AccountHashedId))
+        {
+            return false;
+        }
+        
+        Dictionary<string, EmployerUserAccountItem> employerAccounts;
+        var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.AccountHashedId].ToString().ToUpper();
+        var employerAccountClaim = user.FindFirst(c=>c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
+        try
+        {
+            employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim.Value);
+        }
+        catch (JsonSerializationException e)
+        {
+            _logger.LogError(e, "Could not deserialize employer account claim for user");
+            return false;
+        }
+
+        if (employerAccounts == null)
+        {
+            return false;
+        }
+        
+        var employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl) 
+                ? employerAccounts[accountIdFromUrl] : null;
+
+        if (employerIdentifier == null)
+        {
+            return false;
+        }
+        
+        if (!Enum.TryParse<EmployerUserRole>(employerIdentifier.Role, true, out var claimUserRole))
+        {
+            return false;
+        }
+
+        switch (userRoleRequired)
+        {
+            case EmployerUserRole.Owner when claimUserRole == EmployerUserRole.Owner:
+            case EmployerUserRole.Transactor when claimUserRole is EmployerUserRole.Owner or EmployerUserRole.Transactor:
+            case EmployerUserRole.Viewer when claimUserRole is EmployerUserRole.Owner or EmployerUserRole.Transactor or EmployerUserRole.Viewer:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
     private static bool CheckUserRoleForAccess(EmployerUserAccountItem employerIdentifier, bool allowAllUserRoles)
     {
         if (!Enum.TryParse<EmployerUserRole>(employerIdentifier.Role, true, out var userRole))
