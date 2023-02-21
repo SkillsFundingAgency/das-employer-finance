@@ -70,22 +70,6 @@ public class WhenAddingServicesToTheContainer
         Assert.IsNotNull(type);
     }
 
-    //[Test]
-    //public void Then_Resolves_Authorization_Handlers()
-    //{
-    //    var services = new ServiceCollection();
-    //    SetupServiceCollection(services);
-    //    var provider = services.BuildServiceProvider();
-
-    //    var type = provider.GetServices(typeof(IAuthorizationHandler)).ToList();
-
-    //    Assert.IsNotNull(type);
-    //    type.Count.Should().Be(3);
-    //    type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountAllRolesAuthorizationHandler));
-    //    type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountOwnerAuthorizationHandler));
-    //}
-
-
     private static void SetupServiceCollection(IServiceCollection services)
     {
         var configuration = GenerateConfiguration();
