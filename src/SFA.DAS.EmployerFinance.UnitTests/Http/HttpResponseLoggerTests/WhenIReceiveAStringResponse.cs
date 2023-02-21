@@ -26,7 +26,7 @@ public class WhenIReceiveAStringResponse
     public async Task ThenTheContentShouldBeLogged()
     {
         // Arrange
-        _logger.Setup(l => l.LogDebug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
+        _logger.Setup(l => l.LogTrace(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
 
         // Act
         await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
