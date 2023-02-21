@@ -1,55 +1,54 @@
 ﻿using AutoMapper;
+using Castle.Core.Logging;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.Authentication;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
-using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Api.Logging;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using SFA.DAS.EmployerFinance.Web.Logging;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.NLog.Logger;
 using StructureMap;
-using SFA.DAS.EmployerFinance.AcceptanceTests;
-using SFA.DAS.EmployerFinance.Api.Logging;
 
-namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution
+namespace SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution;
+
+public class DefaultRegistry : Registry
 {
-    public class DefaultRegistry : Registry
+    public DefaultRegistry()
     {
-        public DefaultRegistry()
+        //For<ILoggingContext>().Use(c => HttpContextHelper.Current == null ? null : new LoggingContext(new HttpContextWrapper(HttpContextHelper.Current)));
+        For<ILoggingContext>().Use<LoggingContext>();
+        For<ITestTransactionRepository>().Use<TestTransactionRepository>();
+
+        RegisterEmployerAccountTransactionsController();
+
+        Scan(s =>
         {
-            //For<ILoggingContext>().Use(c => HttpContextHelper.Current == null ? null : new LoggingContext(new HttpContextWrapper(HttpContextHelper.Current)));
-            For<ILoggingContext>().Use<LoggingContext>();
-            For<ITestTransactionRepository>().Use<TestTransactionRepository>();
+            s.AssembliesFromApplicationBaseDirectory(a => a.GetName().Name.StartsWith("SFA.DAS"));
+            s.RegisterConcreteTypesAgainstTheFirstInterface();
+        });
+    }
 
-            RegisterEmployerAccountTransactionsController();
+    private void RegisterEmployerAccountTransactionsController()
+    {
+        RegisterEmployerAccountTransactionsOrchestrator();
 
-            Scan(s =>
-            {
-                s.AssembliesFromApplicationBaseDirectory(a => a.GetName().Name.StartsWith("SFA.DAS"));
-                s.RegisterConcreteTypesAgainstTheFirstInterface();
-            });
-        }
+        For<EmployerAccountTransactionsController>().Use(c => new EmployerAccountTransactionsController(
+            c.GetInstance<IAuthenticationService>(),
+            c.GetInstance<EmployerAccountTransactionsOrchestrator>(), 
+            c.GetInstance<IMapper>(), 
+            c.GetInstance<IMediator>(),
+            c.GetInstance<ILog>()));
+    }
 
-        private void RegisterEmployerAccountTransactionsController()
-        {
-            RegisterEmployerAccountTransactionsOrchestrator();
-
-            For<EmployerAccountTransactionsController>().Use(c => new EmployerAccountTransactionsController(
-                c.GetInstance<IAuthenticationService>(),
-                c.GetInstance<EmployerAccountTransactionsOrchestrator>(), 
-                c.GetInstance<IMapper>(), 
-                c.GetInstance<IMediator>(),
-                c.GetInstance<ILog>()));
-        }
-
-        private void RegisterEmployerAccountTransactionsOrchestrator()
-        {
-            For<EmployerAccountTransactionsOrchestrator>().Use(c => new EmployerAccountTransactionsOrchestrator(
-                c.GetInstance<IAccountApiClient>(),
-                c.GetInstance<IMediator>(),
-                c.GetInstance<ICurrentDateTime>(), c.GetInstance<ILog>()));
-        }
+    private void RegisterEmployerAccountTransactionsOrchestrator()
+    {
+        For<EmployerAccountTransactionsOrchestrator>().Use(c => new EmployerAccountTransactionsOrchestrator(
+            c.GetInstance<IAccountApiClient>(),
+            c.GetInstance<IMediator>(),
+            c.GetInstance<ICurrentDateTime>(), 
+            c.GetInstance<ILogger<EmployerAccountTransactionsOrchestrator>>()));
     }
 }

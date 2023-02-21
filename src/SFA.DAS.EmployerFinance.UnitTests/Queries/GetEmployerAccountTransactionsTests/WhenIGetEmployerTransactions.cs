@@ -22,8 +22,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
     public override GetEmployerAccountTransactionsHandler RequestHandler { get; set; }
     public override Mock<IValidator<GetEmployerAccountTransactionsQuery>> RequestValidator { get; set; }
     private Mock<IEncodingService> _encodingService;
-    private Mock<IPublicHashingService> _publicHashingService;
-
+    
 
     [SetUp]
     public void Arrange()
@@ -39,8 +38,6 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         _encodingService = new Mock<IEncodingService>();
         _encodingService.Setup(x => x.Decode(_request.HashedAccountId, EncodingType.AccountId)).Returns(1);
 
-        _publicHashingService = new Mock<IPublicHashingService>();
-
         _dasLevyService = new Mock<IDasLevyService>();
         _dasLevyService.Setup(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(new TransactionLine[0]);
@@ -54,8 +51,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             _dasLevyService.Object,
             RequestValidator.Object,
             _logger.Object,
-            _encodingService.Object,
-            _publicHashingService.Object);
+            _encodingService.Object);
         Query = new GetEmployerAccountTransactionsQuery();
     }
 
@@ -513,8 +509,6 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
                 transaction
             });
 
-        _publicHashingService.Setup(x => x.HashValue(transaction.ReceiverAccountId))
-            .Returns(expectedPublicHashedId);
 
         //Act
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);

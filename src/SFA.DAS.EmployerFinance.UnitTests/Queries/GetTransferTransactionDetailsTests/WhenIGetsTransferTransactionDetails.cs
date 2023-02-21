@@ -34,10 +34,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
 
         private GetTransferTransactionDetailsQueryHandler _handler;
         private GetTransferTransactionDetailsQuery _query;
-        private GetTransferTransactionDetailsResponse _response;
         private Mock<EmployerFinanceDbContext> _db;
         private List<AccountTransfer> _transfers;
-        private Mock<IPublicHashingService> _publicHashingService;
         private Mock<IEncodingService> _encodingService;
         private PeriodEnd _periodEnd;
         private TransactionLineEntity _senderTranferTransaction;
@@ -80,7 +78,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
                 TransactionType = TransactionItemType.Transfer
             };
 
-            _publicHashingService = new Mock<IPublicHashingService>();
 
             _encodingService= new Mock<IEncodingService>();
 
@@ -90,8 +87,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
                 TargetAccountPublicHashedId = SenderPublicHashedId,
                 PeriodEnd = PeriodEnd
             };
-
-            _response = new GetTransferTransactionDetailsResponse();
 
             _handler = new GetTransferTransactionDetailsQueryHandler(new Lazy<EmployerFinanceDbContext>(() => _db.Object), _encodingService.Object);
 
@@ -147,16 +142,16 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferTransactionDetail
                 _senderTranferTransaction,
                 _recieverTranferTransaction});
 
-            _publicHashingService.Setup(x => x.DecodeValue(SenderPublicHashedId))
+            _encodingService.Setup(x => x.Decode(SenderPublicHashedId, EncodingType.PublicAccountId))
                 .Returns(SenderAccountId);
 
-            _publicHashingService.Setup(x => x.DecodeValue(ReceiverPublicHashedId))
+            _encodingService.Setup(x => x.Decode(ReceiverPublicHashedId, EncodingType.PublicAccountId))
                 .Returns(ReceiverAccountId);
 
-            _publicHashingService.Setup(x => x.HashValue(SenderAccountId))
+            _encodingService.Setup(x => x.Encode(SenderAccountId, EncodingType.PublicAccountId))
                 .Returns(SenderPublicHashedId);
 
-            _publicHashingService.Setup(x => x.HashValue(ReceiverAccountId))
+            _encodingService.Setup(x => x.Encode(ReceiverAccountId, EncodingType.PublicAccountId))
                 .Returns(ReceiverPublicHashedId);
         }
 
