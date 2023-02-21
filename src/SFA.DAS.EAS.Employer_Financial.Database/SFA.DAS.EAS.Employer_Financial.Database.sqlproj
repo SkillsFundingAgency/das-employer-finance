@@ -128,7 +128,6 @@
     <Build Include="StoredProcedures\GetAllPeriodEnds.sql" />
     <Build Include="Tables\AccountTransfers.sql" />
     <Build Include="Types\TransferTransactionsTable.sql" />
-    <Build Include="StoredProcedures\GetTransferTransactionDetails.sql" />
     <Build Include="StoredProcedures\GetAccountTransfersByPeriodEnd.sql" />
     <Build Include="StoredProcedures\CreateAccountTransfers.sql" />
     <Build Include="StoredProcedures\GetTransferPaymentDetails.sql" />
