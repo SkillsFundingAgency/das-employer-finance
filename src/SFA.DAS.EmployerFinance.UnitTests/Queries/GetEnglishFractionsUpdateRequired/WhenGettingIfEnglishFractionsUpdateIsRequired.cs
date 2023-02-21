@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
-using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateRequired
 {

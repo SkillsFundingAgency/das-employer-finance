@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 

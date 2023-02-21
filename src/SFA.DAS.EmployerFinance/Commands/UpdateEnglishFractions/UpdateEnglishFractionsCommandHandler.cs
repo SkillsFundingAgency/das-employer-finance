@@ -1,6 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 

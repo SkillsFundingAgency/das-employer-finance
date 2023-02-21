@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -6,12 +6,9 @@ using SFA.DAS.Audit.Client;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.EmployerFeatures.Configuration;
 using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EmployerAccounts.Api.Client;
 using SFA.DAS.EmployerAccounts.ReadStore.Configuration;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.Encoding;
-using SFA.DAS.Hmrc.Configuration;
-using SFA.DAS.TokenService.Api.Client;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {
