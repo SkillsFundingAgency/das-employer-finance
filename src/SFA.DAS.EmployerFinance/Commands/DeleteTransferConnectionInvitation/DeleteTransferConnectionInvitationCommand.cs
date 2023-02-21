@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
 
 public class DeleteTransferConnectionInvitationCommand : IAuthorizationContextModel, IRequest<Unit>
 {
-    [IgnoreMap]
+    [Ignore]
     [Required]
     public long AccountId { get; set; }
 
-    [IgnoreMap]
+    [Ignore]
     [Required]
     public Guid UserRef { get; set; }
 

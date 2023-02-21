@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 
 public class GetTransferConnectionInvitationQuery : IAuthorizationContextModel, IRequest<GetTransferConnectionInvitationResponse>
 {
-    [IgnoreMap]
+    [Ignore]
     [Required]
     public long AccountId { get; set; }
 

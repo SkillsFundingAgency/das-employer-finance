@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetRejectedTransferConnectionInvitation;
 
 public class GetRejectedTransferConnectionInvitationQuery : IAuthorizationContextModel, IRequest<GetRejectedTransferConnectionInvitationResponse>
 {
-    [IgnoreMap]
+    [Ignore]
     [Required]
     public long AccountId { get; set; }
 

@@ -1,81 +1,77 @@
-﻿using SFA.DAS.EmployerFinance.Api.Attributes;
-using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
+using SFA.DAS.EmployerFinance.Api.Orchestrators;
 
-namespace SFA.DAS.EmployerFinance.Api.Controllers
+namespace SFA.DAS.EmployerFinance.Api.Controllers;
+
+[Route("api/accounts/{hashedAccountId}/levy")]
+public class FinanceLevyController : ControllerBase
 {
-    [Route("api/accounts/{hashedAccountId}/levy")]
-    public class FinanceLevyController : Microsoft.AspNetCore.Mvc.ControllerBase
+    private readonly FinanceOrchestrator _orchestrator;
+
+    public FinanceLevyController(FinanceOrchestrator orchestrator)
     {
-        private readonly FinanceOrchestrator _orchestrator;
+        _orchestrator = orchestrator;
+    }
 
-        public FinanceLevyController(FinanceOrchestrator orchestrator)
+    [Route("", Name = "GetLevy")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [HttpGet]
+    public async Task<IActionResult> Index(string hashedAccountId)
+    {
+        var result = await _orchestrator.GetLevy(hashedAccountId);
+
+        if (result == null)
         {
-            _orchestrator = orchestrator;
+            return NotFound();
         }
 
-        [Route("", Name = "GetLevy")]
-        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-        [HttpGet]
-        public async Task<IActionResult> Index(string hashedAccountId)
+        return Ok(result);
+    }
+
+    [Route("{payrollYear}/{payrollMonth}", Name = "GetLevyForPeriod")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [HttpGet]
+    public async Task<IActionResult> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
+    {
+        var result = await _orchestrator.GetLevy(hashedAccountId, payrollYear, payrollMonth);
+
+        if (result == null)
         {
-            var result = await _orchestrator.GetLevy(hashedAccountId);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return NotFound();
         }
 
-        [Route("{payrollYear}/{payrollMonth}", Name = "GetLevyForPeriod")]
-        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-        [HttpGet]
-        public async Task<IActionResult> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
+        return Ok(result);
+    }
+
+    [Route("english-fraction-history", Name = "GetEnglishFractionHistory")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [HttpGet]
+    public async Task<IActionResult> GetEnglishFractionHistory(string hashedAccountId, string empRef)
+    {
+        var result = await _orchestrator.GetEnglishFractionHistory(hashedAccountId, empRef);
+
+        if (result == null)
         {
-            var result = await _orchestrator.GetLevy(hashedAccountId, payrollYear, payrollMonth);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return NotFound();
         }
 
-        [Route("english-fraction-history", Name = "GetEnglishFractionHistory")]
-        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-        [HttpGet]
-        public async Task<IActionResult> GetEnglishFractionHistory(string hashedAccountId, string empRef)
+        return Ok(result);
+    }
+
+    [Route("english-fraction-current", Name = "GetEnglishFractionCurrent")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [HttpGet]
+    public async Task<IActionResult> GetEnglishFractionCurrent([System.Web.Http.FromUri] string[] empRefs, string hashedAccountId)
+    {
+        var result = await _orchestrator.GetEnglishFractionCurrent(hashedAccountId, empRefs);
+
+        if (result == null)
         {
-            var result = await _orchestrator.GetEnglishFractionHistory(hashedAccountId, empRef);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return NotFound();
         }
 
-        [Route("english-fraction-current", Name = "GetEnglishFractionCurrent")]
-        [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-        [HttpGet]
-        public async Task<IActionResult> GetEnglishFractionCurrent([System.Web.Http.FromUri] string[] empRefs, string hashedAccountId)
-        {
-            var result = await _orchestrator.GetEnglishFractionCurrent(hashedAccountId, empRefs);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
-        }
+        return Ok(result);
     }
 }
