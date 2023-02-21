@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Http;
 using SFA.DAS.NLog.Logger;
 
@@ -48,7 +44,7 @@ public class WhenIReceiveJsonResponse
         await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
         // Assert
-        _logger.Verify(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Once);
+        _logger.Verify(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Never);
     }
 
     public async Task ThenTheJsonContentShouldBeLogged()

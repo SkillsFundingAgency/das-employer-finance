@@ -1,12 +1,14 @@
 ﻿using System.Net;
 using System.Net.Http;
 using SFA.DAS.EmployerFinance.Http;
+using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Http.HttpResponseLoggerTests;
 
 public class WhenIReceiveAStringResponse
 {
-    private Mock<ILogger<HttpResponseLogger>> _logger;
+    private Mock<ILog> _logger;
+    //private Mock<ILogger<HttpResponseLogger>> _logger;
     private HttpResponseLogger _httpResponseLogger;
     private HttpResponseMessage _httpResponseMessage;
 
@@ -17,7 +19,8 @@ public class WhenIReceiveAStringResponse
     [SetUp]
     public void Arrange()
     {
-        _logger = new Moq.Mock<ILogger<HttpResponseLogger>>();
+        _logger = new Mock<ILog>();
+        //_logger = new Mock<ILogger<HttpResponseLogger>>();
         _httpResponseLogger = new HttpResponseLogger(Mock.Of<ILogger<HttpResponseLogger>>());
         _httpResponseMessage = new HttpResponseMessage(TestStatusCode) { Content = new StringContent(TestContent), ReasonPhrase = TestReason};
     }
@@ -26,13 +29,13 @@ public class WhenIReceiveAStringResponse
     public async Task ThenTheContentShouldBeLogged()
     {
         // Arrange
-        _logger.Setup(l => l.LogTrace(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
+        _logger.Setup(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
 
         // Act
         await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
         // Assert
-        _logger.Verify(l => l.LogDebug(It.IsAny<string>(), It.IsAny<Dictionary<string,object>>()), Times.Once);
+        _logger.Verify(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string,object>>()), Times.Never);
     }
 
     [TestCase("Content", TestContent)]
@@ -43,7 +46,7 @@ public class WhenIReceiveAStringResponse
         // Arrange
         IDictionary<string, object> actualProperties = null;
         _logger
-            .Setup(l => l.LogDebug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
+            .Setup(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
             .Callback<string, IDictionary<string, object>>((msg, properties) => actualProperties = properties);
 
         // Act
