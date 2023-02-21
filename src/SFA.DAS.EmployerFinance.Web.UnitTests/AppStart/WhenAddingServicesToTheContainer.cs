@@ -12,6 +12,10 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
+using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
+using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
+using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Authentication;
@@ -23,7 +27,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
 public class WhenAddingServicesToTheContainer
 {
-    [TestCase(typeof(AuthenticationOrchestrator))]
     [TestCase(typeof(EmployerAccountTransactionsOrchestrator))]
     [TestCase(typeof(HomeOrchestrator))]
     [TestCase(typeof(TransfersOrchestrator))]
@@ -50,6 +53,10 @@ public class WhenAddingServicesToTheContainer
     
     [TestCase(typeof(IRequestHandler<GetTransferRequestsQuery, GetTransferRequestsResponse>))]
     [TestCase(typeof(IRequestHandler<FindAccountCoursePaymentsQuery, FindAccountCoursePaymentsResponse>))]
+    [TestCase(typeof(IRequestHandler<FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>))]
+    [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
+    [TestCase(typeof(IRequestHandler<FindEmployerAccountLevyDeclarationTransactionsQuery, FindEmployerAccountLevyDeclarationTransactionsResponse>))]
+    [TestCase(typeof(IRequestHandler<GetPayeSchemeByRefQuery, GetPayeSchemeByRefResponse>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Handlers(Type toResolve)
     {
         var serviceCollection = new ServiceCollection();

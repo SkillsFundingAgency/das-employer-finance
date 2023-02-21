@@ -29,7 +29,7 @@ public static class ApplicationServiceRegistrations
         services.AddDateTimeServices(configuration);
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddMediatR(typeof(GetTransferRequestsQuery));
-        services.AddMediatorValidators();
+        services.AddWebMediatorValidators();
         //MAP-192 Needimplementing
 
         services.AddScoped<IHtmlHelperExtensions, HtmlHelperExtensions>();

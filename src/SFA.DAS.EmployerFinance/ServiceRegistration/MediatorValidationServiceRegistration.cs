@@ -1,4 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
+using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
+using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
@@ -12,7 +14,7 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration;
 
 public static class MediatorValidationServiceRegistration
 {
-    public static IServiceCollection AddMediatorValidators(this IServiceCollection services)
+    public static void AddMediatorValidators(this IServiceCollection services)
     {
         services.AddTransient<IValidator<GetPayeSchemeByRefQuery>, GetPayeSchemeByRefValidator>();
         services.AddTransient<IValidator<GetEmployerAccountDetailByHashedIdQuery>, GetEmployerAccountDetailByHashedIdValidator>();
@@ -22,7 +24,17 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<GetEnglishFractionCurrentQuery>, GetEnglishFractionCurrentQueryValidator>();
         services.AddTransient<IValidator<GetEnglishFractionHistoryQuery>, GetEnglishFractionHistoryQueryValidator>();
         services.AddTransient<IValidator<GetLevyDeclarationRequest>, GetLevyDeclarationValidator>();
+        services.AddTransient<IValidator<FindAccountProviderPaymentsQuery>, FindAccountProviderPaymentsQueryValidator>();
 
-        return services;
+        
+    }
+
+    public static void AddWebMediatorValidators(this IServiceCollection services)
+    {
+        services.AddTransient<IValidator<FindAccountCoursePaymentsQuery>, FindAccountCoursePaymentsQueryValidator>();
+        services.AddTransient<IValidator<FindAccountProviderPaymentsQuery>, FindAccountProviderPaymentsQueryValidator>();
+        services.AddTransient<IValidator<FindEmployerAccountLevyDeclarationTransactionsQuery>, FindEmployerAccountLevyDeclarationTransactionsQueryValidator>();
+        services.AddTransient<IValidator<GetEmployerAccountTransactionsQuery>, GetEmployerAccountTransactionsValidator>();
+        services.AddTransient<IValidator<GetPayeSchemeByRefQuery> , GetPayeSchemeByRefValidator>();
     }
 }

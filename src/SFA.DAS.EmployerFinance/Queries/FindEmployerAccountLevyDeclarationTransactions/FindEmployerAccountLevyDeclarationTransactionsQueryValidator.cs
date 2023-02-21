@@ -6,13 +6,6 @@ namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTran
 
 public class FindEmployerAccountLevyDeclarationTransactionsQueryValidator : IValidator<FindEmployerAccountLevyDeclarationTransactionsQuery>
 {
-    private readonly IAuthorizationService _authorizationService;
-
-    public FindEmployerAccountLevyDeclarationTransactionsQueryValidator(IAuthorizationService authorizationService)
-    {
-        _authorizationService = authorizationService;
-    }
-
     public ValidationResult Validate(FindEmployerAccountLevyDeclarationTransactionsQuery item)
     {
         throw new NotImplementedException();
@@ -38,11 +31,6 @@ public class FindEmployerAccountLevyDeclarationTransactionsQueryValidator : IVal
         {
             result.AddError(nameof(item.ExternalUserId), "ExternalUserId has not been supplied");
         }
-
-        if (!result.IsValid())
-            return result;
-
-        result.IsUnauthorized = !_authorizationService.IsAuthorized(EmployerUserRole.Any);
 
         return result;
     }

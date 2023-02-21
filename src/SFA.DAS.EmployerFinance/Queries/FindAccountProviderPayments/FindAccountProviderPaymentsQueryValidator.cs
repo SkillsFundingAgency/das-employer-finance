@@ -1,18 +1,9 @@
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 
 public class FindAccountProviderPaymentsQueryValidator : IValidator<FindAccountProviderPaymentsQuery>
 {
-    private readonly IAuthorizationService _authorizationService;
-
-    public FindAccountProviderPaymentsQueryValidator(IAuthorizationService authorizationService)
-    {
-        _authorizationService = authorizationService;
-    }
-
     public ValidationResult Validate(FindAccountProviderPaymentsQuery item)
     {
         throw new NotImplementedException();
@@ -43,12 +34,7 @@ public class FindAccountProviderPaymentsQueryValidator : IValidator<FindAccountP
         {
             result.AddError(nameof(item.ExternalUserId), "ExternalUserId has not been supplied");
         }
-
-        if (!result.IsValid())
-            return result;
-
-        result.IsUnauthorized = !_authorizationService.IsAuthorized(EmployerUserRole.Any);
-
+        
         return result;
     }
 }
