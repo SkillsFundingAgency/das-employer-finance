@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
+﻿using System.Diagnostics.CodeAnalysis;
 using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
 using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
