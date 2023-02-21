@@ -103,7 +103,9 @@ public class WhenAddingServicesToTheContainer
         services.AddDataRepositories();
         services.AddOrchestrators();
         services.AddLogging();
+        services.AddHmrcServices();
         services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddMediatorValidators();
         services.AddAutoMapper(typeof(Startup), typeof(GetPayeSchemeByRefHandler));
 
     }
