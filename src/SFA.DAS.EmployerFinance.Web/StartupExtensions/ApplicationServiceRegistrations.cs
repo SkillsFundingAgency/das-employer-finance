@@ -29,15 +29,14 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
 public static class ApplicationServiceRegistrations
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDateTimeServices(configuration);
-            services.AddAutoMapper(typeof(Startup).Assembly);
-            services.AddMediatR(typeof(GetTransferRequestsQuery));
-            services.AddMediatorValidators();
-            //MAP-192 Needimplementing
+        services.AddDateTimeServices(configuration);
+        services.AddAutoMapper(typeof(Startup).Assembly);
+        services.AddMediatR(typeof(GetTransferRequestsQuery));
+        services.AddMediatorValidators();
+        //MAP-192 Needimplementing
 
         services.AddScoped<IHtmlHelperExtensions, HtmlHelperExtensions>();
 
@@ -53,7 +52,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IDasForecastingService, DasForecastingService>();
         services.AddTransient<IDasLevyService,DasLevyService>();
 
-//TODO MAC-192 - was services.Decorate
+    //TODO MAC-192 - was services.Decorate
         services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
 
         services.AddScoped<IAccountApiClient, AccountApiClient>();
@@ -78,9 +77,8 @@ public static class ApplicationServiceRegistrations
 
         services.AddTransient<ITokenServiceApiClient, TokenServiceApiClient>(); 
 
-            services.AddTransient<IEncodingService, EncodingService>();
-            
-            return services;
-        }
+        services.AddTransient<IEncodingService, EncodingService>();
+        
+        return services;
     }
 }
