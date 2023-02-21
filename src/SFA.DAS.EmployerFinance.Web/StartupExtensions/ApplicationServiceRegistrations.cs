@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -14,16 +15,23 @@ using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.Configuration;
 using SFA.DAS.TokenService.Api.Client;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
+using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 {
     public static class ApplicationServiceRegistrations
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddDateTimeServices(configuration);
+            services.AddAutoMapper(typeof(Startup).Assembly);
+            services.AddMediatR(typeof(GetTransferRequestsQuery));
+            services.AddMediatorValidators();
             //MAP-192 Needimplementing
 
             services.AddScoped<IHtmlHelperExtensions, HtmlHelperExtensions>();
@@ -53,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
             services.AddScoped<IUrlActionHelper, UrlActionHelper>();
 
-            services.AddScoped<IEncodingService, EncodingService>();
+            //services.AddScoped<IEncodingService, EncodingService>();
 
             services.AddTransient<HmrcExecutionPolicy>();
             services.AddTransient<IHmrcDateService, HmrcDateService>();
@@ -65,6 +73,8 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
 
             services.AddTransient<ITokenServiceApiClient, TokenServiceApiClient>(); 
 
+            services.AddTransient<IEncodingService, EncodingService>();
+            
             return services;
         }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Common.Domain.Types;
@@ -49,7 +50,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 _accountApiMock.Object, 
                 _mediatorMock.Object, 
                 _currentTimeMock.Object,
-                Mock.Of<ILog>());
+                Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>());
         }
 
         [Test]

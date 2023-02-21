@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
+﻿using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
+using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Validation;
 
@@ -10,6 +11,7 @@ public static class MediatorValidationServiceRegistration
     {
         services.AddTransient<IValidator<GetPayeSchemeByRefQuery>, GetPayeSchemeByRefValidator>();
         services.AddTransient<IValidator<GetEmployerAccountDetailByHashedIdQuery>, GetEmployerAccountDetailByHashedIdValidator>();
+        services.AddTransient<IValidator<FindAccountCoursePaymentsQuery>, FindAccountCoursePaymentsQueryValidator>();
             
         return services;
     }

@@ -1,23 +1,16 @@
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 
 public class FindAccountCoursePaymentsQueryValidator : IValidator<FindAccountCoursePaymentsQuery>
 {
-    private readonly IAuthorizationService _authorizationService;
-
-    public FindAccountCoursePaymentsQueryValidator(IAuthorizationService authorizationService)
-    {
-        _authorizationService = authorizationService;
-    }
-
+    
     public ValidationResult Validate(FindAccountCoursePaymentsQuery item)
     {
         throw new NotImplementedException();
     }
 
+    //TODO this is not tested
     public async Task<ValidationResult> ValidateAsync(FindAccountCoursePaymentsQuery item)
     {
         var validationResult = new ValidationResult();
@@ -52,16 +45,7 @@ public class FindAccountCoursePaymentsQueryValidator : IValidator<FindAccountCou
         {
             validationResult.AddError(nameof(item.ToDate), "To date has not been supplied");
         }
-
-        if (!validationResult.IsValid())
-            return validationResult;
-
-        var isAuthorized = _authorizationService.IsAuthorized(EmployerUserRole.Any);
-
-        if (isAuthorized)
-            return validationResult;
-
-        validationResult.AddError("Membership", "User is not a member of this Account");
+        
         validationResult.IsUnauthorized = true;
 
         return validationResult;

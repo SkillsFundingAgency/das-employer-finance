@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SFA.DAS.Audit.Client;
 using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.EmployerFeatures.Configuration;
@@ -49,13 +50,15 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             //services.AddSingleton<IHmrcConfiguration>(_ => employerAccountsConfiguration.Hmrc);
             //services.AddSingleton<ITokenServiceApiClientConfiguration>(_ => employerAccountsConfiguration.TokenServiceApi);
             //services.AddSingleton<ITaskApiConfiguration>(_ => employerAccountsConfiguration.TasksApi);
-            //services.AddSingleton<CommitmentsApiV2ClientConfiguration>(_ => employerAccountsConfiguration.CommitmentsApi);
+            services.AddSingleton<CommitmentsApiV2ClientConfiguration>(_ => employerFinanceConfiguration.CommitmentsApi);
             //services.AddSingleton<IProviderRegistrationClientApiConfiguration>(_ => employerAccountsConfiguration.ProviderRegistrationsApi);
             services.AddSingleton<EmployerFinanceOuterApiConfiguration>(_ => employerFinanceConfiguration.EmployerFinanceOuterApiConfiguration);
 
             //services.Configure<IEmployerAccountsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.EmployerAccountsApiClient));
             //services.AddSingleton<IEmployerAccountsApiClientConfiguration>(cfg => cfg.GetService<IOptions<EmployerAccountsApiClientConfiguration>>().Value);
-
+            var encodingConfigJson = configuration.GetSection("SFA.DAS.Encoding").Value;
+            var encodingConfig = JsonConvert.DeserializeObject<EncodingConfig>(encodingConfigJson);
+            services.AddSingleton(encodingConfig);
             return services;
         }
     }

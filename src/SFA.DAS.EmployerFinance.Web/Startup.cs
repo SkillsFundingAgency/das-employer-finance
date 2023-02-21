@@ -79,22 +79,24 @@ namespace SFA.DAS.EmployerFinance.Web
              .Get<IdentityServerConfiguration>();
 
             services.AddOrchestrators();
-            services.AddAutoMapper(typeof(Startup).Assembly);
+            
             //services.AddAutoConfiguration();
 
             services.AddDatabaseRegistration(_employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
             
             //MAC-192
-            services.AddApplicationServices();
+            services.AddApplicationServices(_configuration);
 
             //TODO replace with EncodingService
             services.AddCachesRegistrations();
-            services.AddDateTimeServices(_configuration);
+            
             services.AddEventsApi();
             //services.AddNotifications(_configuration);
             services.AddEmployerFinanceApi();
 
+            services.AddAuthenticationServices();
+            
             if (_configuration["EmployerFinanceConfiguration:UseGovSignIn"] != null &&
                _configuration["EmployerFinanceConfiguration:UseGovSignIn"]
                    .Equals("true", StringComparison.CurrentCultureIgnoreCase))

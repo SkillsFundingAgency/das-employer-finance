@@ -19,10 +19,6 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         private readonly IAccountApiClient _accountApiClient;
         private readonly IDateTimeStringFormatter _dateTimeStringFormatter;
 
-        protected TransfersOrchestrator()
-        {
-        }
-
         public TransfersOrchestrator(
             IAuthorizationService authorizationService,
             IEncodingService encodingService,

@@ -6,6 +6,7 @@ using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 
+//TODO this is not tested
 public class FindAccountCoursePaymentsQueryHandler : IRequestHandler<FindAccountCoursePaymentsQuery,
     FindAccountCoursePaymentsResponse>
 {
@@ -30,11 +31,6 @@ public class FindAccountCoursePaymentsQueryHandler : IRequestHandler<FindAccount
         if (!validationResult.IsValid())
         {
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
-        }
-
-        if (validationResult.IsUnauthorized)
-        {
-            throw new UnauthorizedAccessException();
         }
 
         var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
