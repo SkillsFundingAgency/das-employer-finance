@@ -1,14 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Authorization.EmployerFeatures.Models;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Features.Services;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 
@@ -18,11 +16,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
     public class WhenGettingTransfersCounts
     {
         private TransfersOrchestrator _orchestrator;
-        private Mock<IAuthorizationService> _authorisationService;
+        private Mock<IEmployerAccountAuthorisationHandler> _authorisationService;
         private Mock<IEncodingService> _encodingService;
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
-        private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
 
         private const string HashedAccountId = "123ABC";
         private const long AccountId = 1234;
@@ -30,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         [SetUp]
         public void Setup()
         {
-            _authorisationService = new Mock<IAuthorizationService>();
+            _authorisationService = new Mock<IEmployerAccountAuthorisationHandler>();
             _encodingService = new Mock<IEncodingService>();
             _transfersService = new Mock<ITransfersService>();
             _accountApiClient = new Mock<IAccountApiClient>();
@@ -61,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             SetupTheAccountApiClient(true);
 
-            _authorisationService.Setup(o => o.IsAuthorizedAsync(EmployerUserRole.OwnerOrTransactor)).ReturnsAsync(isAuthorised);
+            _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(),Authentication.EmployerUserRole.Transactor)).Returns(isAuthorised);
 
             var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 

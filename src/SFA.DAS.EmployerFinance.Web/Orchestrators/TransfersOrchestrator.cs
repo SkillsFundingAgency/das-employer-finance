@@ -1,25 +1,27 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
+using EmployerUserRole = SFA.DAS.Authorization.EmployerUserRoles.Options.EmployerUserRole;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
     public class TransfersOrchestrator
     {
-        private readonly IAuthorizationService _authorizationService;
+        private readonly IEmployerAccountAuthorisationHandler _authorizationService;
         private readonly IEncodingService _encodingService;
         private readonly ITransfersService _transfersService;
         private readonly IAccountApiClient _accountApiClient;
 
         public TransfersOrchestrator(
-            IAuthorizationService authorizationService,
+            IEmployerAccountAuthorisationHandler authorizationService,
             IEncodingService encodingService,
             ITransfersService transfersService,
             IAccountApiClient accountApiClient)
@@ -36,9 +38,9 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             var indexTask = _transfersService.GetCounts(accountId);
             var accountDetail = _accountApiClient.GetAccount(hashedAccountId);
 
-            var renderCreateTransfersPledgeButtonTask = _authorizationService.IsAuthorizedAsync(EmployerUserRole.OwnerOrTransactor);            
+            var renderCreateTransfersPledgeButton = _authorizationService.CheckUserAccountAccess(ClaimsPrincipal.Current, Authentication.EmployerUserRole.Transactor);            
 
-            await Task.WhenAll(indexTask, renderCreateTransfersPledgeButtonTask, accountDetail);
+            await Task.WhenAll(indexTask, accountDetail);
 
             Enum.TryParse(accountDetail.Result.ApprenticeshipEmployerType, true, out ApprenticeshipEmployerType employerType);
 
@@ -49,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
                     PledgesCount = indexTask.Result.PledgesCount,
                     ApplicationsCount = indexTask.Result.ApplicationsCount,
-                    RenderCreateTransfersPledgeButton = renderCreateTransfersPledgeButtonTask.Result,                    
+                    RenderCreateTransfersPledgeButton = renderCreateTransfersPledgeButton,                    
                     StartingTransferAllowance = accountDetail.Result.StartingTransferAllowance,
                     FinancialYearString = DateTime.UtcNow.ToFinancialYearString(),
                     HashedAccountID = hashedAccountId

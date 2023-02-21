@@ -4,11 +4,11 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.Authorization.EmployerFeatures.Models;
 using SFA.DAS.Authorization.Features.Services;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 
@@ -18,7 +18,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
     public class WhenGettingTransfersFinancialBreakdown
     {
         private TransfersOrchestrator _orchestrator;
-        private Mock<IAuthorizationService> _authorisationService;
         private Mock<IEncodingService> _encodingService;
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
@@ -33,7 +32,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         {
             var fixture = new Fixture();
 
-            _authorisationService = new Mock<IAuthorizationService>();
             _encodingService = new Mock<IEncodingService>();
             _transfersService = new Mock<ITransfersService>();
             _accountApiClient = new Mock<IAccountApiClient>();
@@ -48,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 AccountId = AccountId
             });
 
-            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+            _orchestrator = new TransfersOrchestrator(Mock.Of<IEmployerAccountAuthorisationHandler>(), _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
         }
         [Test]
         public async Task CheckFinancialBreakdownViewModel()

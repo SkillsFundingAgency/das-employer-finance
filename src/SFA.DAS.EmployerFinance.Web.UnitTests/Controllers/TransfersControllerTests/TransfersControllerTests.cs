@@ -10,6 +10,7 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
@@ -20,9 +21,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
     public class TransfersControllerTests
     {
         private TransfersController _controller;
-        private Mock<TransfersOrchestrator> _orchestrator;
+        private TransfersOrchestrator _orchestrator;
         private Mock<IEncodingService> _encodingService;
-        private Mock<IAuthorizationService> _authorisationService;
+        private Mock<IEmployerAccountAuthorisationHandler> _authorisationService;
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
@@ -37,7 +38,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         {
             var fixture = new Fixture();
 
-            _authorisationService = new Mock<IAuthorizationService>();
+            _authorisationService = new Mock<IEmployerAccountAuthorisationHandler>();
             _encodingService = new Mock<IEncodingService>();
             _transfersService = new Mock<ITransfersService>();
             _accountApiClient = new Mock<IAccountApiClient>();
@@ -50,9 +51,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _featureTogglesService.Setup(x => x.GetFeatureToggle(It.IsAny<string>())).Returns(new EmployerFeatureToggle { IsEnabled = true });
             _accountDetailViewModel = fixture.Create<AccountDetailViewModel>();
             _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
-            _orchestrator = new Mock<TransfersOrchestrator>(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
 
-            _controller = new TransfersController(_orchestrator.Object);
+            _controller = new TransfersController(_orchestrator);
         }
 
         [Test]
