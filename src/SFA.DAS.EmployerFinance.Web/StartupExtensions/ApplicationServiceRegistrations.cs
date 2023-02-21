@@ -23,6 +23,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
 public static class ApplicationServiceRegistrations
 {
+    
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDateTimeServices(configuration);
@@ -71,7 +72,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ITokenServiceApiClient, TokenServiceApiClient>();
 
         services.AddTransient<IEncodingService, EncodingService>();
-
+        
         return services;
     }
 }
