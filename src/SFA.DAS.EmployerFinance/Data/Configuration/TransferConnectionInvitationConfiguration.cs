@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 namespace SFA.DAS.EmployerFinance.Data.Configuration;
@@ -8,12 +7,12 @@ public class TransferConnectionInvitationConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<TransferConnectionInvitation> builder)
     {
-       builder
-           .Property(i => i.ReceiverAccount)
-           .IsRequired();
+       builder.HasOne(x=> x.ReceiverAccount)
+           .WithMany()
+           .HasForeignKey(k => k.ReceiverAccountId);
 
-       builder
-           .Property(i => i.SenderAccount)
-           .IsRequired();
+        builder.HasOne(x => x.SenderAccount)
+            .WithMany()
+            .HasForeignKey(k => k.SenderAccountId);
     }
 }
