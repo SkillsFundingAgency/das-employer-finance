@@ -8,343 +8,342 @@ using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public class DasLevyRepository : BaseRepository, IDasLevyRepository
 {
-    public class DasLevyRepository : BaseRepository, IDasLevyRepository
+    private readonly EmployerFinanceConfiguration _configuration;
+    private readonly Lazy<EmployerFinanceDbContext> _db;
+    private readonly ICurrentDateTime _currentDateTime;
+
+    public DasLevyRepository(EmployerFinanceConfiguration configuration, ILogger<DasLevyRepository> logger, Lazy<EmployerFinanceDbContext> db, ICurrentDateTime currentDateTime)
+        : base(configuration.DatabaseConnectionString, logger)
     {
-        private readonly EmployerFinanceConfiguration _configuration;
-        private readonly Lazy<EmployerFinanceDbContext> _db;
-        private readonly ICurrentDateTime _currentDateTime;
+        _configuration = configuration;
+        _db = db;
+        _currentDateTime = currentDateTime;
+    }
 
-        public DasLevyRepository(EmployerFinanceConfiguration configuration, ILogger<DasLevyRepository> logger, Lazy<EmployerFinanceDbContext> db, ICurrentDateTime currentDateTime)
-            : base(configuration.DatabaseConnectionString, logger)
-        {
-            _configuration = configuration;
-            _db = db;
-            _currentDateTime = currentDateTime;
-        }
-
-        public async Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId)
-        {
-            foreach (var dasDeclaration in declarations)
-            {
-                var parameters = new DynamicParameters();
-
-                parameters.Add("@LevyDueYtd", dasDeclaration.LevyDueYtd, DbType.Decimal);
-                parameters.Add("@LevyAllowanceForYear", dasDeclaration.LevyAllowanceForFullYear, DbType.Decimal);
-                parameters.Add("@AccountId", accountId, DbType.Int64);
-                parameters.Add("@EmpRef", empRef, DbType.String);
-                parameters.Add("@PayrollYear", dasDeclaration.PayrollYear, DbType.String);
-                parameters.Add("@PayrollMonth", dasDeclaration.PayrollMonth, DbType.Int16);
-                parameters.Add("@SubmissionDate", dasDeclaration.SubmissionDate, DbType.DateTime);
-                parameters.Add("@SubmissionId", dasDeclaration.Id, DbType.Int64);
-                parameters.Add("@HmrcSubmissionId", dasDeclaration.SubmissionId, DbType.Int64);
-                parameters.Add("@CreatedDate", DateTime.UtcNow, DbType.DateTime);
-
-                if (dasDeclaration.DateCeased.HasValue && dasDeclaration.DateCeased != DateTime.MinValue)
-                {
-                    parameters.Add("@DateCeased", dasDeclaration.DateCeased, DbType.DateTime);
-                }
-
-                if (dasDeclaration.InactiveFrom.HasValue && dasDeclaration.InactiveFrom != DateTime.MinValue)
-                {
-                    parameters.Add("@InactiveFrom", dasDeclaration.InactiveFrom, DbType.DateTime);
-                }
-
-                if (dasDeclaration.InactiveTo.HasValue && dasDeclaration.InactiveTo != DateTime.MinValue)
-                {
-                    parameters.Add("@InactiveTo", dasDeclaration.InactiveTo, DbType.DateTime);
-                }
-
-                parameters.Add("@EndOfYearAdjustment", dasDeclaration.EndOfYearAdjustment, DbType.Boolean);
-                parameters.Add("@EndOfYearAdjustmentAmount", dasDeclaration.EndOfYearAdjustmentAmount, DbType.Decimal);
-                parameters.Add("@NoPaymentForPeriod", dasDeclaration.NoPaymentForPeriod, DbType.Boolean);
-
-                await _db.Value.Database.GetDbConnection().ExecuteAsync(
-                    sql: "[employer_financial].[CreateDeclaration]",
-                    param: parameters,
-                    transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                    commandType: CommandType.StoredProcedure);
-            }
-        }
-
-        public Task CreateNewPeriodEnd(PeriodEnd periodEnd)
+    public async Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId)
+    {
+        foreach (var dasDeclaration in declarations)
         {
             var parameters = new DynamicParameters();
 
-            parameters.Add("@PeriodEndId", periodEnd.PeriodEndId, DbType.String);
-            parameters.Add("@CalendarPeriodMonth", periodEnd.CalendarPeriodMonth, DbType.Int32);
-            parameters.Add("@CalendarPeriodYear", periodEnd.CalendarPeriodYear, DbType.Int32);
-            parameters.Add("@AccountDataValidAt", periodEnd.AccountDataValidAt, DbType.DateTime);
-            parameters.Add("@CommitmentDataValidAt", periodEnd.CommitmentDataValidAt, DbType.DateTime);
-            parameters.Add("@CompletionDateTime", periodEnd.CompletionDateTime, DbType.DateTime);
-            parameters.Add("@PaymentsForPeriod", periodEnd.PaymentsForPeriod, DbType.String);
-
-            return _db.Value.Database.GetDbConnection().ExecuteAsync(
-                sql: "[employer_financial].[CreatePeriodEnd]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task CreatePayments(IEnumerable<PaymentDetails> payments)
-        {
-            var batches = payments.Batch(1000).Select(b => b.ToPaymentsDataTable());
-
-            foreach (var batch in batches)
-            {
-                var parameters = new DynamicParameters();
-
-                parameters.Add("@payments", batch.AsTableValuedParameter("[employer_financial].[PaymentsTable]"));
-
-                await _db.Value.Database.GetDbConnection().ExecuteAsync(
-                    sql: "[employer_financial].[CreatePayments]",
-                    param: parameters,
-                    transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                    commandType: CommandType.StoredProcedure);
-            }
-        }
-
-        public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
-        {
-            var parameters = new DynamicParameters();
-
-            parameters.Add("@accountId", accountId, DbType.Int64);
-
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<Guid>(
-                sql: "[employer_financial].[GetAccountPaymentIds]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-
-            return new HashSet<Guid>(result);
-        }
-
-        public Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef)
-        {
-            var parameters = new DynamicParameters();
-
-            parameters.Add("@empRef", empRef, DbType.String);
-
-            return _db.Value.Database.GetDbConnection().QueryAsync<long>(
-                sql: "[employer_financial].[GetLevyDeclarationSubmissionIdsByEmpRef]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<DasDeclaration> GetLastSubmissionForScheme(string empRef)
-        {
-            var parameters = new DynamicParameters();
-
-            parameters.Add("@empRef", empRef, DbType.String);
-
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
-                sql: "[employer_financial].[GetLastLevyDeclarations_ByEmpRef]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-
-            return result.SingleOrDefault();
-        }
-
-        public async Task<PeriodEnd> GetLatestPeriodEnd()
-        {
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
-                sql: "[employer_financial].[GetLatestPeriodEnd]",
-                param: null,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-
-            return result.SingleOrDefault();
-        }
-
-        public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
-        {
-            return _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
-                sql: "[employer_financial].[GetAllPeriodEnds]",
-                param: null,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth)
-        {
-            var parameters = new DynamicParameters();
-
-            parameters.Add("@empRef", empRef, DbType.String);
-            parameters.Add("@payrollYear", payrollYear, DbType.String);
-            parameters.Add("@payrollMonth", payrollMonth, DbType.Int32);
-
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
-                sql: "[employer_financial].[GetLevyDeclaration_ByEmpRefPayrollMonthPayrollYear]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-
-            return result.SingleOrDefault();
-        }
-
-        public async Task<DasDeclaration> GetEffectivePeriod12Declaration(string empRef, string payrollYear, DateTime yearEndAdjustmentCutOff)
-        {
-            var parameters = new DynamicParameters();
-
-            parameters.Add("@empRef", empRef, DbType.String);
-            parameters.Add("@payrollYear", payrollYear, DbType.String);
-            parameters.Add("@yearEndAdjustmentCutOff", yearEndAdjustmentCutOff, DbType.DateTime);
-
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
-                sql: "[employer_financial].[GetEffectivePeriod12Declaration]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
-
-            return result.SingleOrDefault();
-        }
-
-        public Task<decimal> ProcessDeclarations(long accountId, string empRef)
-        {
-            var parameters = new DynamicParameters();
-
+            parameters.Add("@LevyDueYtd", dasDeclaration.LevyDueYtd, DbType.Decimal);
+            parameters.Add("@LevyAllowanceForYear", dasDeclaration.LevyAllowanceForFullYear, DbType.Decimal);
             parameters.Add("@AccountId", accountId, DbType.Int64);
             parameters.Add("@EmpRef", empRef, DbType.String);
-            parameters.Add("@currentDate", _currentDateTime.Now, DbType.DateTime);
-            parameters.Add("@expiryPeriod", _configuration.FundsExpiryPeriod, DbType.Int32);
+            parameters.Add("@PayrollYear", dasDeclaration.PayrollYear, DbType.String);
+            parameters.Add("@PayrollMonth", dasDeclaration.PayrollMonth, DbType.Int16);
+            parameters.Add("@SubmissionDate", dasDeclaration.SubmissionDate, DbType.DateTime);
+            parameters.Add("@SubmissionId", dasDeclaration.Id, DbType.Int64);
+            parameters.Add("@HmrcSubmissionId", dasDeclaration.SubmissionId, DbType.Int64);
+            parameters.Add("@CreatedDate", DateTime.UtcNow, DbType.DateTime);
 
-            return _db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
-                sql: "[employer_financial].[ProcessDeclarationsTransactions]",
+            if (dasDeclaration.DateCeased.HasValue && dasDeclaration.DateCeased != DateTime.MinValue)
+            {
+                parameters.Add("@DateCeased", dasDeclaration.DateCeased, DbType.DateTime);
+            }
+
+            if (dasDeclaration.InactiveFrom.HasValue && dasDeclaration.InactiveFrom != DateTime.MinValue)
+            {
+                parameters.Add("@InactiveFrom", dasDeclaration.InactiveFrom, DbType.DateTime);
+            }
+
+            if (dasDeclaration.InactiveTo.HasValue && dasDeclaration.InactiveTo != DateTime.MinValue)
+            {
+                parameters.Add("@InactiveTo", dasDeclaration.InactiveTo, DbType.DateTime);
+            }
+
+            parameters.Add("@EndOfYearAdjustment", dasDeclaration.EndOfYearAdjustment, DbType.Boolean);
+            parameters.Add("@EndOfYearAdjustmentAmount", dasDeclaration.EndOfYearAdjustmentAmount, DbType.Decimal);
+            parameters.Add("@NoPaymentForPeriod", dasDeclaration.NoPaymentForPeriod, DbType.Boolean);
+
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
+                sql: "[employer_financial].[CreateDeclaration]",
                 param: parameters,
-                commandTimeout: 120,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
         }
+    }
 
-        public Task ProcessPaymentData(long accountId)
+    public Task CreateNewPeriodEnd(PeriodEnd periodEnd)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@PeriodEndId", periodEnd.PeriodEndId, DbType.String);
+        parameters.Add("@CalendarPeriodMonth", periodEnd.CalendarPeriodMonth, DbType.Int32);
+        parameters.Add("@CalendarPeriodYear", periodEnd.CalendarPeriodYear, DbType.Int32);
+        parameters.Add("@AccountDataValidAt", periodEnd.AccountDataValidAt, DbType.DateTime);
+        parameters.Add("@CommitmentDataValidAt", periodEnd.CommitmentDataValidAt, DbType.DateTime);
+        parameters.Add("@CompletionDateTime", periodEnd.CompletionDateTime, DbType.DateTime);
+        parameters.Add("@PaymentsForPeriod", periodEnd.PaymentsForPeriod, DbType.String);
+
+        return _db.Value.Database.GetDbConnection().ExecuteAsync(
+            sql: "[employer_financial].[CreatePeriodEnd]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task CreatePayments(IEnumerable<PaymentDetails> payments)
+    {
+        var batches = payments.Batch(1000).Select(b => b.ToPaymentsDataTable());
+
+        foreach (var batch in batches)
         {
             var parameters = new DynamicParameters();
 
-            parameters.Add("@accountId", accountId, DbType.Int64);
+            parameters.Add("@payments", batch.AsTableValuedParameter("[employer_financial].[PaymentsTable]"));
 
-            return _db.Value.Database.GetDbConnection().ExecuteAsync(
-                sql: "[employer_financial].[ProcessPaymentDataTransactions]",
+            await _db.Value.Database.GetDbConnection().ExecuteAsync(
+                sql: "[employer_financial].[CreatePayments]",
                 param: parameters,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
         }
+    }
 
-        public async Task<string> FindHistoricalProviderName(long ukprn)
-        {
-            var parameters = new DynamicParameters();
+    public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
+    {
+        var parameters = new DynamicParameters();
 
-            parameters.Add("@ukprn", ukprn, DbType.Int64);
+        parameters.Add("@accountId", accountId, DbType.Int64);
 
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<string>(
-                sql: "[employer_financial].[GetLastKnownProviderNameForUkprn]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<Guid>(
+            sql: "[employer_financial].[GetAccountPaymentIds]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
-            return result.FirstOrDefault();
-        }
+        return new HashSet<Guid>(result);
+    }
 
-        public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId)
-        {
-            var parameters = new DynamicParameters();
+    public Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef)
+    {
+        var parameters = new DynamicParameters();
 
-            parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@empRef", empRef, DbType.String);
 
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
-                sql: "[employer_financial].[GetLevyDeclarations_ByAccountId]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+        return _db.Value.Database.GetDbConnection().QueryAsync<long>(
+            sql: "[employer_financial].[GetLevyDeclarationSubmissionIdsByEmpRef]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
 
-            return result.ToList();
-        }
+    public async Task<DasDeclaration> GetLastSubmissionForScheme(string empRef)
+    {
+        var parameters = new DynamicParameters();
 
-        public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth)
-        {
-            var parameters = new DynamicParameters();
+        parameters.Add("@empRef", empRef, DbType.String);
 
-            parameters.Add("@accountId", accountId, DbType.Int64);
-            parameters.Add("@payrollYear", payrollYear, DbType.String);
-            parameters.Add("@payrollMonth", payrollMonth, DbType.Int16);
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
+            sql: "[employer_financial].[GetLastLevyDeclarations_ByEmpRef]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
-                sql: "[employer_financial].[GetLevyDeclarations_ByAccountPayrollMonthPayrollYear]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+        return result.SingleOrDefault();
+    }
 
-            return result.ToList();
-        }
+    public async Task<PeriodEnd> GetLatestPeriodEnd()
+    {
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
+            sql: "[employer_financial].[GetLatestPeriodEnd]",
+            param: null,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
-        public async Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds)
-        {
-            var accountParametersTable = new AccountIdUserTableParam(accountIds);
+        return result.SingleOrDefault();
+    }
 
-            accountParametersTable.Add("@allowancePercentage", _configuration.TransferAllowancePercentage, DbType.Decimal);
+    public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
+    {
+        return _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
+            sql: "[employer_financial].[GetAllPeriodEnds]",
+            param: null,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
 
-            var result = await _db.Value.Database.GetDbConnection().QueryAsync<AccountBalance>(
-                sql: "[employer_financial].[GetAccountBalance_ByAccountIds]",
-                param: accountParametersTable,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+    public async Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth)
+    {
+        var parameters = new DynamicParameters();
 
-            return result.ToList();
-        }
+        parameters.Add("@empRef", empRef, DbType.String);
+        parameters.Add("@payrollYear", payrollYear, DbType.String);
+        parameters.Add("@payrollMonth", payrollMonth, DbType.Int32);
 
-        public async Task<TransferAllowance> GetTransferAllowance(long accountId)
-        {
-            var parameters = new DynamicParameters();
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
+            sql: "[employer_financial].[GetLevyDeclaration_ByEmpRefPayrollMonthPayrollYear]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
-            parameters.Add("@accountId", accountId, DbType.Int64);
-            parameters.Add("@allowancePercentage", _configuration.TransferAllowancePercentage, DbType.Decimal);
+        return result.SingleOrDefault();
+    }
 
-            var transferAllowance = await _db.Value.Database.GetDbConnection().QueryAsync<TransferAllowance>(
-                sql: "[employer_financial].[GetAccountTransferAllowance]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+    public async Task<DasDeclaration> GetEffectivePeriod12Declaration(string empRef, string payrollYear, DateTime yearEndAdjustmentCutOff)
+    {
+        var parameters = new DynamicParameters();
 
-            return transferAllowance.SingleOrDefault() ?? new TransferAllowance();
-        }
+        parameters.Add("@empRef", empRef, DbType.String);
+        parameters.Add("@payrollYear", payrollYear, DbType.String);
+        parameters.Add("@yearEndAdjustmentCutOff", yearEndAdjustmentCutOff, DbType.DateTime);
 
-        public Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef)
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
+            sql: "[employer_financial].[GetEffectivePeriod12Declaration]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result.SingleOrDefault();
+    }
+
+    public Task<decimal> ProcessDeclarations(long accountId, string empRef)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@AccountId", accountId, DbType.Int64);
+        parameters.Add("@EmpRef", empRef, DbType.String);
+        parameters.Add("@currentDate", _currentDateTime.Now, DbType.DateTime);
+        parameters.Add("@expiryPeriod", _configuration.FundsExpiryPeriod, DbType.Int32);
+
+        return _db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
+            sql: "[employer_financial].[ProcessDeclarationsTransactions]",
+            param: parameters,
+            commandTimeout: 120,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public Task ProcessPaymentData(long accountId)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+
+        return _db.Value.Database.GetDbConnection().ExecuteAsync(
+            sql: "[employer_financial].[ProcessPaymentDataTransactions]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<string> FindHistoricalProviderName(long ukprn)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@ukprn", ukprn, DbType.Int64);
+
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<string>(
+            sql: "[employer_financial].[GetLastKnownProviderNameForUkprn]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result.FirstOrDefault();
+    }
+
+    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+            sql: "[employer_financial].[GetLevyDeclarations_ByAccountId]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result.ToList();
+    }
+
+    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@payrollYear", payrollYear, DbType.String);
+        parameters.Add("@payrollMonth", payrollMonth, DbType.Int16);
+
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+            sql: "[employer_financial].[GetLevyDeclarations_ByAccountPayrollMonthPayrollYear]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result.ToList();
+    }
+
+    public async Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds)
+    {
+        var accountParametersTable = new AccountIdUserTableParam(accountIds);
+
+        accountParametersTable.Add("@allowancePercentage", _configuration.TransferAllowancePercentage, DbType.Decimal);
+
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<AccountBalance>(
+            sql: "[employer_financial].[GetAccountBalance_ByAccountIds]",
+            param: accountParametersTable,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result.ToList();
+    }
+
+    public async Task<TransferAllowance> GetTransferAllowance(long accountId)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@allowancePercentage", _configuration.TransferAllowancePercentage, DbType.Decimal);
+
+        var transferAllowance = await _db.Value.Database.GetDbConnection().QueryAsync<TransferAllowance>(
+            sql: "[employer_financial].[GetAccountTransferAllowance]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return transferAllowance.SingleOrDefault() ?? new TransferAllowance();
+    }
+
+    public Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@empRef", empRef, DbType.String);
+
+        return _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
+            sql: "[employer_financial].[GetEnglishFraction_ByEmpRef]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(long accountId, string[] empRefs)
+    {
+        var currentFractions = new List<DasEnglishFraction>();
+
+        foreach (var empRef in empRefs)
         {
             var parameters = new DynamicParameters();
 
             parameters.Add("@accountId", accountId, DbType.Int64);
             parameters.Add("@empRef", empRef, DbType.String);
 
-            return _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
-                sql: "[employer_financial].[GetEnglishFraction_ByEmpRef]",
+            var currentFraction = await _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
+                sql: "[employer_financial].[GetCurrentFractionForScheme]",
                 param: parameters,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
+
+            currentFractions.Add(currentFraction.FirstOrDefault());
         }
 
-        public async Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(long accountId, string[] empRefs)
-        {
-            var currentFractions = new List<DasEnglishFraction>();
-
-            foreach (var empRef in empRefs)
-            {
-                var parameters = new DynamicParameters();
-
-                parameters.Add("@accountId", accountId, DbType.Int64);
-                parameters.Add("@empRef", empRef, DbType.String);
-
-                var currentFraction = await _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
-                    sql: "[employer_financial].[GetCurrentFractionForScheme]",
-                    param: parameters,
-                    transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                    commandType: CommandType.StoredProcedure);
-
-                currentFractions.Add(currentFraction.FirstOrDefault());
-            }
-
-            return currentFractions;
-        }
+        return currentFractions;
     }
 }
