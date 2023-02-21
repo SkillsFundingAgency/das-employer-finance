@@ -1,6 +1,4 @@
-﻿using System.Data.Entity;
-using System.Linq;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 
 namespace SFA.DAS.EmployerFinance.Data;

@@ -1,7 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Data;
 

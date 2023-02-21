@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -227,7 +226,12 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         parameters.Add("@fromDate", fromDate, DbType.DateTime);
         parameters.Add("@toDate", toDate, DbType.DateTime);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionDownloadLine>(sql: "[employer_financial].[GetAllTransactionDetailsForAccountByDate]", param: parameters, commandType: CommandType.StoredProcedure);
+        var result = await _db.Value.Database
+            .GetDbConnection()
+            .QueryAsync<TransactionDownloadLine>(
+                sql: "[employer_financial].[GetAllTransactionDetailsForAccountByDate]",
+                param: parameters,
+                commandType: CommandType.StoredProcedure);
 
         var hmrcDateService = new HmrcDateService();
         var transactionDownloadLines = result as TransactionDownloadLine[] ?? result.ToArray();
@@ -248,7 +252,11 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         var parameters = new DynamicParameters();
         parameters.Add("@AccountId", accountId, DbType.Int64);
 
-        return _db.Value.Database.GetDbConnection().ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
+        return _db.Value.Database
+            .GetDbConnection()
+            .ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]",
+                param: parameters, 
+                commandType: CommandType.StoredProcedure);
     }
 
     public async Task<List<TransactionSummary>> GetAccountTransactionSummary(long accountId)
@@ -257,7 +265,12 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
 
         parameters.Add("@AccountId", accountId, DbType.Int64);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionSummary>(sql: "[employer_financial].[GetTransactionSummary_ByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
+        var result = await _db.Value.Database
+            .GetDbConnection()
+            .QueryAsync<TransactionSummary>(
+                sql: "[employer_financial].[GetTransactionSummary_ByAccountId]",
+                param: parameters,
+                commandType: CommandType.StoredProcedure);
 
         return result.ToList();
     }

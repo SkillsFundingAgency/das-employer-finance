@@ -2,8 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
 
-public class GetTotalPaymentsQueryHandler
-    : IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
+public class GetTotalPaymentsQueryHandler : IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
 {
     private readonly EmployerFinanceDbContext _financeDb;
 

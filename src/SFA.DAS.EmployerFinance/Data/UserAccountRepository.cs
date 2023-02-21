@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
