@@ -36,13 +36,18 @@ public class EmployerFinanceConfiguration : ITopicMessagePublisherConfiguration
     public CommitmentsApiV2ClientConfiguration CommitmentsApi { get; set; }
     public PaymentsEventsApiClientLocalConfiguration PaymentsEventsApi { get; set; } 
     public string ReservationsBaseUrl { get; set; }
+    
+    public EmployerFinanceApiClientConfiguration EmployerFinanceApi { get; set; }
+    public bool UseGovSignIn { get; set; }
+    public string DataProtectionKeysDatabase { get; set; }
+}
+
+public class ZenDeskConfiguration
+{
     public string ZenDeskHelpCentreUrl { get; set; }
     public string ZenDeskSnippetKey { get; set; }
     public string ZenDeskSectionId { get; set; }
     public string ZenDeskCobrowsingSnippetKey { get; set; }
-    public EmployerFinanceApiClientConfiguration EmployerFinanceApi { get; set; }
-    public bool UseGovSignIn { get; set; }
-    public string DataProtectionKeysDatabase { get; set; }
 }
 
 public class IdentityServerConfiguration

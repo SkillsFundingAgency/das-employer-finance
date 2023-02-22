@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SFA.DAS.EmployerFinance.Models.Account;
 
 namespace SFA.DAS.EmployerFinance.Data.Configuration;

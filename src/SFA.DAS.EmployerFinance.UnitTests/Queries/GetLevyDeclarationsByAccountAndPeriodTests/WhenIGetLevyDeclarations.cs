@@ -1,13 +1,7 @@
-﻿using FluentAssertions;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.Encoding;
-using SFA.DAS.HashingService;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationsByAccountAndPeriodTests
 {

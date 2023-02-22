@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;

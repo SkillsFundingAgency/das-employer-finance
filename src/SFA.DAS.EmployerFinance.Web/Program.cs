@@ -16,7 +16,6 @@ public class Program
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder
-                    .UseStartup<Startup>()
-                    .UseNServiceBusContainer();
-            });
+                    .UseStartup<Startup>();
+            }).UseNServiceBusContainer();
 }

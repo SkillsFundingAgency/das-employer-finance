@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Transfers;
+﻿using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Transfers;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Services;

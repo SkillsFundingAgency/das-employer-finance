@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using HMRC.ESFA.Levy.Api.Types;
+﻿using HMRC.ESFA.Levy.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.ObjectMothers
 {

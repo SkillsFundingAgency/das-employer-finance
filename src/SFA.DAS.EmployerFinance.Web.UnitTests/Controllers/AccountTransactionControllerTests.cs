@@ -1,7 +1,5 @@
 ﻿using Moq;
 using NUnit.Framework;
-using SFA.DAS.Authentication;
-using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;

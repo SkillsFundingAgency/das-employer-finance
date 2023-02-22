@@ -4,7 +4,6 @@ using SFA.DAS.EmployerFinance.Models.ProjectedCalculations;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests;
 

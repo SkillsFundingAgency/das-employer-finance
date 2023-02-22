@@ -2,7 +2,6 @@
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
-using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Queries.GetApprovedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetReceivedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetRejectedTransferConnectionInvitation;

@@ -2,7 +2,6 @@
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Providers;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Services.Contracts;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Services.ProviderServiceTests.ProviderServiceRemote;
 

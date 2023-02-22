@@ -19,7 +19,6 @@ using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Types.Models;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.Testing;
 using SFA.DAS.Testing.AutoFixture;
 

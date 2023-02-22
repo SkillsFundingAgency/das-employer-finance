@@ -13,7 +13,6 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Services.Contracts;
-using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.Encoding;
 using SFA.DAS.NServiceBus.Services;

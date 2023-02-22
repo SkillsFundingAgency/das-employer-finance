@@ -5,7 +5,6 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.Notifications.Api.Client;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers

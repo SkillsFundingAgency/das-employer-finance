@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
+﻿using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
@@ -22,7 +21,7 @@ public class GetAccountFinanceOverviewQueryValidator : IValidator<GetAccountFina
     {
         var result = new ValidationResult();
 
-        result.IsUnauthorized = !_authorizationService.IsAuthorized(EmployerUserRole.Any);
+        result.IsUnauthorized = true;
 
         return result;
     }

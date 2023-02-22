@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using AutoMapper;
-using NUnit.Framework;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.Provider.Events.Api.Types;
 using StructureMap.TypeRules;

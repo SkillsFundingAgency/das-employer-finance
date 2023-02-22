@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.Api.Common.AppStart;
 using SFA.DAS.Api.Common.Configuration;

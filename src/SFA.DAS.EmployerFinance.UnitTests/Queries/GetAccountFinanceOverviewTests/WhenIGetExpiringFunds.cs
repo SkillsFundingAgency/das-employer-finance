@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Models.ProjectedCalculations;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.NLog.Logger;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests

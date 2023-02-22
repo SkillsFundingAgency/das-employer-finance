@@ -1,6 +1,4 @@
 ﻿using System.Data;
-using FluentAssertions;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 using SFA.DAS.Testing;

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;

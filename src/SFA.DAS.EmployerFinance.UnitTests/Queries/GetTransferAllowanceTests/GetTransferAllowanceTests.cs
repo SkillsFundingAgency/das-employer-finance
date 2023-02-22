@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;

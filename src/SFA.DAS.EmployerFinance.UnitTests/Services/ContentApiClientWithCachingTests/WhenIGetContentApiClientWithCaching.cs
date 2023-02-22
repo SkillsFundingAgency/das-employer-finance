@@ -1,9 +1,6 @@
-﻿using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCachingTests
 {

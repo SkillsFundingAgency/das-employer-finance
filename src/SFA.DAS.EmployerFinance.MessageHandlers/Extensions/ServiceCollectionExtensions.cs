@@ -36,7 +36,7 @@ public static class ServiceCollectionExtensions
                 }
                 else
                 {
-                    endpointConfiguration.UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, container);
+                    endpointConfiguration.UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, container,configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
                 }
 
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();

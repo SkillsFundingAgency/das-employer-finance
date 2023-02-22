@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;

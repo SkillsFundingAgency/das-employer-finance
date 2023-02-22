@@ -21,8 +21,9 @@ public class NServiceBusStartup : IStartup
 
     public async Task StartAsync()
     {
+        var config = _container.GetInstance<IConfiguration>();
         var endpointConfiguration = new EndpointConfiguration("SFA.DAS.EmployerFinance.MessageHandlers")
-            .UseAzureServiceBusTransport(() => _container.GetInstance<EmployerFinanceConfiguration>().ServiceBusConnectionString, _container)
+            .UseAzureServiceBusTransport(() => _container.GetInstance<EmployerFinanceConfiguration>().ServiceBusConnectionString, _container, config["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase))
             .UseErrorQueue("SFA.DAS.EmployerFinance.MessageHandlers-errors")
             .UseInstallers()
             .UseLicense(WebUtility.HtmlDecode(_container.GetInstance<EmployerFinanceConfiguration>().NServiceBusLicense))

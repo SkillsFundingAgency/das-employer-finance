@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Models.Payments;
+﻿using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;

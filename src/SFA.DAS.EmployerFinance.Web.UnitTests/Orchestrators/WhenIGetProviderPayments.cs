@@ -15,7 +15,6 @@ using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 {

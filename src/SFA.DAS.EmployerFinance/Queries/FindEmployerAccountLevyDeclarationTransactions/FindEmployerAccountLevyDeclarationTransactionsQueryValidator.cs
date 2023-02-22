@@ -1,5 +1,3 @@
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;

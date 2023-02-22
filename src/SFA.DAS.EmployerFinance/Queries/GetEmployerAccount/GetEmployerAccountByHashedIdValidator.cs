@@ -1,17 +1,9 @@
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 
 public class GetEmployerAccountByHashedIdValidator : IValidator<GetEmployerAccountHashedQuery>
 {
-    private readonly IAuthorizationService _authorizationService;
-
-    public GetEmployerAccountByHashedIdValidator(IAuthorizationService authorizationService)
-    {
-        _authorizationService = authorizationService;
-    }
 
     public ValidationResult Validate(GetEmployerAccountHashedQuery item)
     {
@@ -31,12 +23,7 @@ public class GetEmployerAccountByHashedIdValidator : IValidator<GetEmployerAccou
             result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
         }
 
-        if (result.IsValid())
-        {
-            result.IsUnauthorized = !_authorizationService.IsAuthorized(EmployerUserRole.Any);
-        }
-
-
+        
         return result;
     }
 }

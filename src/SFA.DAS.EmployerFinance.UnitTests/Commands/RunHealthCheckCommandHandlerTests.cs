@@ -1,14 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Api.Client;
+﻿using SFA.DAS.EmployerFinance.Api.Client;
 using SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.Testing;
-using SFA.DAS.UnitOfWork;
 using SFA.DAS.UnitOfWork.Context;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands

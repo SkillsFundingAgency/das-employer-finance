@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
+﻿using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTests
 {

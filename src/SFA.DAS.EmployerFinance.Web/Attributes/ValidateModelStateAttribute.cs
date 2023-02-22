@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Rest;
 
 namespace SFA.DAS.EmployerFinance.Web.Attributes
 {

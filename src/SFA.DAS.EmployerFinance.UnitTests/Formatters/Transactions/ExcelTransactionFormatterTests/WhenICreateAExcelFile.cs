@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
-using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 

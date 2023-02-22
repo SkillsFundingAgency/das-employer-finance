@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.13" />
@@ -15,25 +16,17 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="SFA.DAS.Audit.Client.Web" Version="1.0.0.20510" />
-    <PackageReference Include="SFA.DAS.Authorization.EmployerFeatures">
-      <Version>6.0.52</Version>
-    </PackageReference>
-    <PackageReference Include="SFA.DAS.Authorization.EmployerUserRoles">
-      <Version>6.0.52</Version>
-    </PackageReference>
-    <PackageReference Include="SFA.DAS.Authorization.WebApi">
-      <Version>6.0.52</Version>
-    </PackageReference>
+    <PackageReference Include="SFA.DAS.Authorization.EmployerFeatures" Version="6.0.52" />
+    <PackageReference Include="SFA.DAS.Authorization.Features" Version="6.0.52" />
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
     <PackageReference Include="SFA.DAS.Employer.Shared.UI" Version="17.1.29" />
-    <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.1.338" />
-    <PackageReference Include="SFA.DAS.GovUK.Auth" Version="0.2.203" />
+    <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.28" />
     <PackageReference Include="SFA.DAS.Logging">
       <Version>1.0.5</Version>
     </PackageReference>
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
     <PackageReference Include="SFA.DAS.NLog.Targets.Redis" Version="1.2.1" />
+    <PackageReference Include="SFA.DAS.NServiceBus" Version="17.0.49" />
     <PackageReference Include="SFA.DAS.NServiceBus.SqlServer">
       <Version>17.0.49</Version>
     </PackageReference>
@@ -41,13 +34,9 @@
     <PackageReference Include="SFA.DAS.UnitOfWork.EntityFramework">
       <Version>9.0.28</Version>
     </PackageReference>
-    <PackageReference Include="SFA.DAS.UnitOfWork.Mvc">
-      <Version>9.0.28</Version>
-    </PackageReference>
     <PackageReference Include="SFA.DAS.UnitOfWork.NServiceBus">
       <Version>9.0.28</Version>
     </PackageReference>
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="SFA.DAS.Web.Policy" Version="1.1.0.63777" />
   </ItemGroup>
   <ItemGroup>
