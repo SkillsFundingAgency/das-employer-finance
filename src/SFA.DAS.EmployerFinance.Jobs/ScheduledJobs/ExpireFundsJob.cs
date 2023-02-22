@@ -12,19 +12,14 @@ public class ExpireFundsJob
     private readonly ICurrentDateTime _currentDateTime;
     private readonly IEmployerAccountRepository _accountRepository;
 
-    public ExpireFundsJob(
-        IMessageSession messageSession, 
-        ICurrentDateTime currentDateTime, 
-        IEmployerAccountRepository accountRepository)
+    public ExpireFundsJob(IMessageSession messageSession, ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository)
     {
         _messageSession = messageSession;
         _currentDateTime = currentDateTime;
         _accountRepository = accountRepository;
     }
 
-    public async Task Run(
-        [TimerTrigger("0 0 0 28 * *")] TimerInfo timer, 
-        ILogger logger)
+    public async Task Run([TimerTrigger("0 0 0 28 * *")] TimerInfo timer, ILogger<ExpireFundsJob> logger)
     {
         logger.LogInformation($"Starting {nameof(ExpireFundsJob)}");
 

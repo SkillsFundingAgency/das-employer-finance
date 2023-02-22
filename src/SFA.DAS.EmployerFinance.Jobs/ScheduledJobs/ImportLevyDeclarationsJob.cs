@@ -25,9 +25,7 @@ public class ImportLevyDeclarationsJob
         _payeRepository = payeRepository;
     }
 
-    public async  Task Run(
-        [TimerTrigger("0 0 15 23 * *")] TimerInfo timer, 
-        ILogger logger)
+    public async  Task Run([TimerTrigger("0 0 15 23 * *")] TimerInfo timer, ILogger<ImportLevyDeclarationsJob> logger)
     {
         var now = _currentDateTime.Now;
         logger.LogInformation($"Starting {nameof(ImportLevyDeclarationsJob)}");

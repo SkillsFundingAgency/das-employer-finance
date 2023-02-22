@@ -4,17 +4,12 @@ namespace SFA.DAS.EmployerFinance.Jobs.DependencyResolution;
 
 public static class IoC
 {
-    public static IContainer Initialize()
+    public static void Initialize(Registry registry)
     {
-        return new Container(c =>
-        {
-            c.AddRegistry<ConfigurationRegistry>();
-            c.AddRegistry<EmployerFinanceOuterApiRegistry>();
-            c.AddRegistry<DataRegistry>();
-            c.AddRegistry<DateTimeRegistry>();
-            c.AddRegistry<LoggerRegistry>();
-            c.AddRegistry<StartupRegistry>();
-            c.AddRegistry<DefaultRegistry>();
-        });
+        registry.IncludeRegistry<ConfigurationRegistry>();
+        registry.IncludeRegistry<EmployerFinanceOuterApiRegistry>();
+        registry.IncludeRegistry<DataRegistry>();
+        registry.IncludeRegistry<DateTimeRegistry>();
+        registry.IncludeRegistry<DefaultRegistry>();
     }
 }
