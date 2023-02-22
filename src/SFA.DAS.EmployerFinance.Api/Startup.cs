@@ -2,7 +2,6 @@
 using Microsoft.OpenApi.Models;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.Infrastructure;
-using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
 using SFA.DAS.EmployerFinance.Api.Authorization;
@@ -24,6 +23,7 @@ public class Startup
 {
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _environment;
+
     public Startup(IConfiguration configuration,IHostEnvironment environment)
     {
         _environment= environment;
@@ -103,7 +103,6 @@ public class Startup
                 if (!_configuration.IsDevOrLocal() && !_configuration.IsTest())
                 {
                     opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
-                    opt.AddAuthorization();
                 }
 
                 opt.AddValidation();
@@ -134,7 +133,6 @@ public class Startup
         app.UseHttpsRedirection()
             .UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
             .UseStaticFiles()
-            .UseUnauthorizedAccessExceptionHandler()
             .UseRouting()
             .UseAuthentication()
             .UseAuthorization()
