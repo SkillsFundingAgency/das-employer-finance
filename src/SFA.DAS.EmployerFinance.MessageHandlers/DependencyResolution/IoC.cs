@@ -9,11 +9,11 @@ public static class IoC
     {
         registry.IncludeRegistry<CachesRegistry>();
         registry.IncludeRegistry<ConfigurationRegistry>();
-        registry.IncludeRegistry<DataRegistry>();
+        //registry.IncludeRegistry<DataRegistry>();
         registry.IncludeRegistry<DefaultRegistry>();
         registry.IncludeRegistry<EventsRegistry>();
-        registry.IncludeRegistry<LoggerRegistry>();
-        registry.IncludeRegistry<MapperRegistry>();
+        //registry.IncludeRegistry<LoggerRegistry>();
+        //registry.IncludeRegistry<MapperRegistry>();
         registry.IncludeRegistry<MediatorRegistry>();
         registry.IncludeRegistry<MessagePublisherRegistry>();
         registry.IncludeRegistry<NotificationsRegistry>();
@@ -23,6 +23,5 @@ public static class IoC
         //c.AddRegistry<ReadStoreMediatorRegistry>();
         //c.AddRegistry<EntityFrameworkUnitOfWorkRegistry<EmployerAccountsDbContext>>();
         //c.AddRegistry<ExecutionPoliciesRegistry>();
-        //c.AddRegistry<HashingRegistry>();
     }
 }

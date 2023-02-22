@@ -65,8 +65,8 @@ public static class HostExtensions
     {
         hostBuilder.ConfigureServices(services =>
         {
-            services.AddNServiceBus();
             services.AddScoped(GetDbContext);
+            services.AddNServiceBus();
             services.AddDataRepositories();
             services.AddScoped<IJobActivator, StructureMapJobActivator>();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));

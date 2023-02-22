@@ -33,17 +33,15 @@ public class DataRegistry : Registry
         For<EmployerFinanceDbContext>().Use(c => GetDbContext(c));
     }
 
-    private EmployerFinanceDbContext GetDbContext(IContext context)
+    private static EmployerFinanceDbContext GetDbContext(IContext context)
     {
-        var unitOfWorkContext = context.GetInstance<IUnitOfWorkContext>();
-
         var optionsBuilder = new DbContextOptionsBuilder<EmployerFinanceDbContext>();
         var connectionString = GetEmployerFinanceConnectionString(context);
         optionsBuilder.UseSqlServer(connectionString);
         return new EmployerFinanceDbContext(optionsBuilder.Options);
     }
 
-    private string GetEmployerFinanceConnectionString(IContext context)
+    private static string GetEmployerFinanceConnectionString(IContext context)
     {
         return context.GetInstance<EmployerFinanceConfiguration>().DatabaseConnectionString;
     }
