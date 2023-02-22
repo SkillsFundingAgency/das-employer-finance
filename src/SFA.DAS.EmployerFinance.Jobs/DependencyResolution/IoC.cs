@@ -8,7 +8,6 @@ public static class IoC
     {
         registry.IncludeRegistry<ConfigurationRegistry>();
         registry.IncludeRegistry<EmployerFinanceOuterApiRegistry>();
-        registry.IncludeRegistry<DataRegistry>();
         registry.IncludeRegistry<DateTimeRegistry>();
         registry.IncludeRegistry<DefaultRegistry>();
     }

@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Extensions;
 
 namespace SFA.DAS.EmployerFinance.ServiceRegistration;

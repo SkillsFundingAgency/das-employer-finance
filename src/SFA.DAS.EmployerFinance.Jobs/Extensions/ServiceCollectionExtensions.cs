@@ -19,15 +19,15 @@ public static class ServiceCollectionExtensions
             .AddSingleton(p =>
             {
                 var container = p.GetService<IContainer>();
-                var hostingEnvironment = p.GetService<IHostEnvironment>();
-                var configuration = p.GetService<EmployerFinanceConfiguration>();
-                var isDevelopment = hostingEnvironment.IsDevelopment();
+                var employerFinanceConfiguration = p.GetService<EmployerFinanceConfiguration>();
+                var configuration = p.GetService<IConfiguration>();
+                var isDevelopment = configuration["EnvironmentName"] == "LOCAL";
 
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
                     .UseErrorQueue($"{EndpointName}-errors")
                     .UseInstallers()
                     .UseSendOnly()
-                    .UseLicense(configuration.NServiceBusLicense)
+                    .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => container.GetInstance<DbConnection>())
@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
                 }
                 else
                 {
-                    endpointConfiguration.UseAzureServiceBusTransport(configuration.ServiceBusConnectionString);
+                    endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguration.ServiceBusConnectionString);
                 }
                     
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();

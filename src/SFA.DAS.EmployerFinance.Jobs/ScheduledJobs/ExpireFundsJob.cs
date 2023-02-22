@@ -19,7 +19,7 @@ public class ExpireFundsJob
         _accountRepository = accountRepository;
     }
 
-    public async Task Run([TimerTrigger("0 0 0 28 * *")] TimerInfo timer, ILogger<ExpireFundsJob> logger)
+    public async Task Run([TimerTrigger("0 0 0 28 * *")] TimerInfo timer, ILogger logger)
     {
         logger.LogInformation($"Starting {nameof(ExpireFundsJob)}");
 

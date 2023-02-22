@@ -8,6 +8,7 @@
     <WebJobType>Continuous</WebJobType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.WebJobs.Host.Storage" Version="4.1.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.24.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.Web" Version="2.11.2" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
@@ -48,12 +49,15 @@
   <ItemGroup>
     <None Remove="ApplicationInsights.config" />
     <None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\4.5.3\contentFiles\any\any\NLog.xsd" />
+    <None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\5.1.2\contentFiles\any\any\NLog.xsd" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Update="nlog.config">
