@@ -18,7 +18,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             //Act
             var actual = await _validator.ValidateAsync(new FindEmployerAccountLevyDeclarationTransactionsQuery
                 {
-                    ExternalUserId = "test",
                     HashedAccountId = "test",
                     FromDate = DateTime.Now.AddDays(-10),
                     ToDate = DateTime.Now.AddDays(-2)
@@ -39,7 +38,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             Assert.Contains(new KeyValuePair<string,string>("FromDate", "From date has not been supplied"), actual.ValidationDictionary);
             Assert.Contains(new KeyValuePair<string,string>("ToDate", "To date has not been supplied"), actual.ValidationDictionary);
             Assert.Contains(new KeyValuePair<string,string>("HashedAccountId", "HashedAccountId has not been supplied"), actual.ValidationDictionary);
-            Assert.Contains(new KeyValuePair<string,string>("ExternalUserId", "ExternalUserId has not been supplied"), actual.ValidationDictionary);
         }
 
     }

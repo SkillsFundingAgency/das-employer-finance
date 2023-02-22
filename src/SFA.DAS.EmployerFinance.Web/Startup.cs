@@ -75,13 +75,11 @@ namespace SFA.DAS.EmployerFinance.Web
             _employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
 
             var identityServerConfiguration = _configuration
-             .GetSection("Identity")
+             .GetSection(nameof(IdentityServerConfiguration))
              .Get<IdentityServerConfiguration>();
 
             services.AddOrchestrators();
             
-            //services.AddAutoConfiguration();
-
             services.AddDatabaseRegistration(_employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
             services.AddHmrcServices();

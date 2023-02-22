@@ -50,8 +50,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             {
                 HashedAccountId = _hashedAccountId,
                 FromDate = _fromDate,
-                ToDate = _toDate,
-                ExternalUserId = _externalUserId
+                ToDate = _toDate
             };
 
             RequestHandler = new FindEmployerAccountLevyDeclarationTransactionsHandler(
@@ -81,16 +80,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountLevyDecla
             //Assert
             Assert.IsNotNull(actual);
             Assert.IsNotEmpty(actual.Transactions);
-        }
-
-        [Test]
-        public void ThenAnUnauhtorizedExceptionIsThrownIfTheValidationResultReturnsUnauthorized()
-        {
-            //Arrange
-            RequestValidator.Setup(x => x.ValidateAsync(It.IsAny<FindEmployerAccountLevyDeclarationTransactionsQuery>())).ReturnsAsync(new ValidationResult {IsUnauthorized = true});
-
-            //Act Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RequestHandler.Handle(new FindEmployerAccountLevyDeclarationTransactionsQuery(), CancellationToken.None));
         }
 
         [Test]

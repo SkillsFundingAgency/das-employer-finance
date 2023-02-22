@@ -25,7 +25,6 @@
     <PackageReference Include="SFA.DAS.Account.Api.Client" Version="1.6.3195" />
     <PackageReference Include="SFA.DAS.ActiveDirectory" Version="1.0.3" />
     <PackageReference Include="SFA.DAS.Audit.Client" Version="1.0.0.20553" />
-    <PackageReference Include="SFA.DAS.Authentication" Version="1.1.2" />
     <PackageReference Include="SFA.DAS.Authorization.EmployerFeatures" Version="6.0.52" />
     <PackageReference Include="SFA.DAS.Authorization.EmployerUserRoles" Version="6.0.52" />
     <PackageReference Include="SFA.DAS.Authorization.WebApi" Version="6.0.52" />

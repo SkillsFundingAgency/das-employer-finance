@@ -9,5 +9,4 @@ public class FindAccountCoursePaymentsQuery : IRequest<FindAccountCoursePayments
     public int? PathwayCode { get; set; }
     public DateTime FromDate { get; set; }
     public DateTime ToDate { get; set; }
-    public string ExternalUserId { get; set; }
 }

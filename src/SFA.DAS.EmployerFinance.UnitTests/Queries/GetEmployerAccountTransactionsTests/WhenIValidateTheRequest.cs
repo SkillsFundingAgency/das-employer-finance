@@ -16,22 +16,12 @@ public class WhenIValidateTheRequest
     public async Task ThenItIsValidIfAllFieldsArePopUlated()
     {
         //Act
-        var result = await _validator.ValidateAsync(new GetEmployerAccountTransactionsQuery { ExternalUserId = "123", HashedAccountId = "AD1" });
+        var result = await _validator.ValidateAsync(new GetEmployerAccountTransactionsQuery { HashedAccountId = "AD1" });
 
         //Assert
         Assert.IsTrue(result.IsValid());
     }        
 
-    [Test]
-    public async Task ThenTheResultIsMarkedAsAuthorizedIfNoUserHasBeenProvided()
-    {
-        //Act
-        var result = await _validator.ValidateAsync(new GetEmployerAccountTransactionsQuery { ExternalUserId = "", HashedAccountId = "AD1" });
-
-        //Assert
-        Assert.IsTrue(result.IsValid());
-        Assert.IsFalse(result.IsUnauthorized);
-    }
 
     [Test]
     public async Task ThenIfTheFieldsArentPopulatedThenTheResultIsNotValidAndTheErrorDictionaryIsPopulated()

@@ -31,11 +31,6 @@ public class FindAccountCoursePaymentsQueryValidator : IValidator<FindAccountCou
         //    validationResult.AddError(nameof(item.CourseName), "Course name has not been supplied");
         //}
 
-        if (string.IsNullOrEmpty(item.ExternalUserId))
-        {
-            validationResult.AddError(nameof(item.ExternalUserId), "External user ID has not been supplied");
-        }
-
         if (item.FromDate == DateTime.MinValue)
         {
             validationResult.AddError(nameof(item.FromDate), "From date has not been supplied");
@@ -46,8 +41,6 @@ public class FindAccountCoursePaymentsQueryValidator : IValidator<FindAccountCou
             validationResult.AddError(nameof(item.ToDate), "To date has not been supplied");
         }
         
-        validationResult.IsUnauthorized = true;
-
         return validationResult;
     }
 }

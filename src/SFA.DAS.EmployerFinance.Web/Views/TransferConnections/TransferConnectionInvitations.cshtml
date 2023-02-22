@@ -2,13 +2,9 @@
 @using SFA.DAS.EmployerFinance.Web.Extensions
 @using SFA.DAS.EmployerFinance.Web.Helpers
 
-@inject HtmlHelperExtensions HtmlHelper
 
 @model SFA.DAS.EmployerFinance.Web.ViewModels.TransferConnectionInvitationsViewModel
 
-@{
-    var transferConnectionRequestsAuthorized = HtmlHelper.IsAuthorized("EmployerFeature.TransferConnectionRequests");
-}
 
 <h3 class="govuk-heading-m">
     Connection requests
@@ -32,12 +28,11 @@
                     <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.ReceiverAccount.Name</td>
                     <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
                     <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @if (transferConnectionRequestsAuthorized)
-                        {
-                            <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.Id })" class="govuk-link">
-                                Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.ReceiverAccount.Name request</span>
-                            </a>
-                        }
+                        
+                        <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.Id })" class="govuk-link">
+                            Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.ReceiverAccount.Name request</span>
+                        </a>
+                    
                     </td>
                 </tr>
             }
@@ -69,21 +64,20 @@
                     <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.SenderAccount.Name</td>
                     <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
                     <td class="govuk-table__cell govuk-table__cell--numeric">
-                        @if (transferConnectionRequestsAuthorized)
+                        
+                        @if (transferConnectionInvitation.Status == TransferConnectionInvitationStatus.Pending)
                         {
-                            if (transferConnectionInvitation.Status == TransferConnectionInvitationStatus.Pending)
-                            {
-                                <a href="@Url.Action("Receive", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.Id })" class="govuk-link">
-                                    Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
-                                </a>
-                            }
-                            else
-                            {
-                                <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.Id })" class="govuk-link">
-                                    Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
-                                </a>
-                            }
+                            <a href="@Url.Action("Receive", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.Id })" class="govuk-link">
+                                Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
+                            </a>
                         }
+                        else
+                        {
+                            <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.Id })" class="govuk-link">
+                                Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
+                            </a>
+                        }
+                        
                     </td>
                 </tr>
             }

@@ -6,7 +6,6 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
 {
     public class UrlActionHelper : IUrlActionHelper
     {
-        private const string AccountsController = "accounts";
         private readonly EmployerFinanceConfiguration _configuration;
         private readonly IActionContextAccessor _actionContextAccessor;
 
@@ -37,13 +36,6 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             return AccountAction(baseUrl, path);
         }
 
-        public string ReservationsAction(string path)
-        {
-            var baseUrl = _configuration.ReservationsBaseUrl;
-
-            return AccountAction(baseUrl, path);
-        }
-
         public string EmployerFinanceAction(string path)
         {
             var baseUrl = _configuration.EmployerFinanceBaseUrl;
@@ -58,21 +50,7 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             return AccountAction(baseUrl, path);
         }
 
-        public string EmployerRecruitAction(string path = "")
-        {
-            var baseUrl = _configuration.EmployerRecruitBaseUrl;
-
-            return AccountAction(baseUrl, path);
-        }
-
-
-        public string LegacyEasAccountAction(string path)
-        {
-            var baseUrl = _configuration.EmployerPortalBaseUrl;
-
-            return AccountAction(baseUrl, path);
-        }
-
+        
         public string LegacyEasAction(string path)
         {
             var baseUrl = _configuration.EmployerPortalBaseUrl;

@@ -26,7 +26,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
         private static readonly byte[] ExpectedFileData = { };
 
         private EmployerAccountTransactionsController _controller;
-        private Mock<IAuthenticationService> _owinWrapper;
         private Mock<IMediator> _mediator;
         private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
         private Mock<ITransactionFormatter> _formatter;
@@ -52,7 +51,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
                 }
             };
 
-            _owinWrapper = new Mock<IAuthenticationService>();
             _mediator = new Mock<IMediator>();
             _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
             _formatter = new Mock<ITransactionFormatter>();
@@ -70,7 +68,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             _formatter.Setup(x => x.DownloadFormatType).Returns(DownloadFormatType.CSV);
 
             _controller = new EmployerAccountTransactionsController(
-                _owinWrapper.Object,
                 _orchestrator.Object,
                 Mock.Of<IMapper>(),
                 _mediator.Object,

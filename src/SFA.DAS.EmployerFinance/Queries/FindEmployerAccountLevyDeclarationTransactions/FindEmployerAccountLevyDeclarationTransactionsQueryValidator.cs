@@ -27,10 +27,6 @@ public class FindEmployerAccountLevyDeclarationTransactionsQueryValidator : IVal
         {
             result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
         }
-        if (string.IsNullOrEmpty(item.ExternalUserId))
-        {
-            result.AddError(nameof(item.ExternalUserId), "ExternalUserId has not been supplied");
-        }
 
         return result;
     }

@@ -30,8 +30,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         _request = new GetEmployerAccountTransactionsQuery
         {
-            HashedAccountId = "RTF34",
-            ExternalUserId = "3EFR"
+            HashedAccountId = "RTF34"
         };
 
         _encodingService = new Mock<IEncodingService>();

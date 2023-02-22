@@ -24,7 +24,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
 
         private EmployerAccountTransactionsController _controller;
         private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
-        private Mock<IAuthenticationService> _owinWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IMediator> _mediator;
         private GetTransferTransactionDetailsQuery _query;
@@ -33,12 +32,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
         public void Arrange()
         {
             _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
-            _owinWrapper = new Mock<IAuthenticationService>();
             _mapper = new Mock<IMapper>();
             _mediator = new Mock<IMediator>();
 
             _controller = new EmployerAccountTransactionsController(
-                _owinWrapper.Object,
                 _orchestrator.Object,
                 _mapper.Object,
                 _mediator.Object,

@@ -11,6 +11,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -26,17 +27,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         private readonly IMediator _mediator;
         private readonly ILog _logger;
 
-        private readonly IAuthenticationService _owinWrapper;
         private readonly EmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
 
         public EmployerAccountTransactionsController(
-            IAuthenticationService owinWrapper,
             EmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
             IMapper mapper,
             IMediator mediator,
             ILog logger)
         {
-            _owinWrapper = owinWrapper;
             _accountTransactionsOrchestrator = accountTransactionsOrchestrator;
 
             _mapper = mapper;
@@ -48,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("balance/provider/summary")]
         public async Task<IActionResult> ProviderPaymentSummary(string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
         {
-            var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate);
 
             return View(ControllerConstants.ProviderPaymentSummaryViewName, viewModel);
         }
@@ -90,7 +88,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("balance/{year}/{month}")]
         public async Task<IActionResult> TransactionsView(string hashedAccountId, int year, int month)
         {
-            var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month);
 
             if (transactionViewResult.Data.Account == null)
             {
@@ -108,7 +106,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("balance/levyDeclaration/details")]
         public async Task<IActionResult> LevyDeclarationDetail(string hashedAccountId, DateTime fromDate, DateTime toDate)
         {
-            var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate);
 
             return View(ControllerConstants.LevyDeclarationDetailViewName, viewModel);
         }
@@ -128,7 +126,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             var orchestratorResponse = await _accountTransactionsOrchestrator.GetCoursePaymentSummary(
                 hashedAccountId, ukprn, courseName, courseLevel, pathwayCode,
-                fromDate, toDate, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+                fromDate, toDate);
 
             return View(ControllerConstants.CoursePaymentSummaryViewName, orchestratorResponse.Data);
         }

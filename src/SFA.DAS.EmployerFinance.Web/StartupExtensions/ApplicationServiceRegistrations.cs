@@ -24,15 +24,12 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 public static class ApplicationServiceRegistrations
 {
     
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDateTimeServices(configuration);
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddMediatR(typeof(GetTransferRequestsQuery));
         services.AddWebMediatorValidators();
-        //MAP-192 Needimplementing
-
-        services.AddScoped<IHtmlHelperExtensions, HtmlHelperExtensions>();
 
         services.AddScoped<IProviderService, ProviderServiceCache>();
         services.AddScoped<IProviderService, ProviderServiceFromDb>();
@@ -59,11 +56,8 @@ public static class ApplicationServiceRegistrations
         services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
         services.AddScoped<IUrlActionHelper, UrlActionHelper>();
 
-        //services.AddScoped<IEncodingService, EncodingService>();
-
         services.AddTransient<HmrcExecutionPolicy>();
         services.AddTransient<IHmrcDateService, HmrcDateService>();
-
 
         services.AddTransient<IGenericEventFactory, GenericEventFactory>();
         services.AddTransient<IPaymentService, PaymentService>();
@@ -73,6 +67,5 @@ public static class ApplicationServiceRegistrations
 
         services.AddTransient<IEncodingService, EncodingService>();
         
-        return services;
     }
 }

@@ -18,16 +18,15 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
     {
         private Web.Controllers.EmployerAccountTransactionsController _controller;
         private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
-        private Mock<IAuthenticationService> _owinWrapper;
+        
 
 
         [SetUp]
         public void Arrange()
         {
             _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
-            _owinWrapper = new Mock<IAuthenticationService>();
-
-            _orchestrator.Setup(x => x.GetAccountTransactions(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+        
+            _orchestrator.Setup(x => x.GetAccountTransactions(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>
                 {
                     Data = new TransactionViewResultViewModel(DateTime.Now)
@@ -42,7 +41,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
                 });
 
             _controller = new Web.Controllers.EmployerAccountTransactionsController(
-                _owinWrapper.Object, _orchestrator.Object, Mock.Of<IMapper>(), Mock.Of<IMediator>(), Mock.Of<ILog>());
+                 _orchestrator.Object, Mock.Of<IMapper>(), Mock.Of<IMediator>(), Mock.Of<ILog>());
         }
 
         [Test]
@@ -52,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
             var result = await _controller.TransactionsView("TEST", 2017, 1);
 
             //Assert
-            _orchestrator.Verify(x => x.GetAccountTransactions(It.Is<string>(s => s == "TEST"), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+            _orchestrator.Verify(x => x.GetAccountTransactions(It.Is<string>(s => s == "TEST"), It.IsAny<int>(), It.IsAny<int>()), Times.Once);
             Assert.IsNotNull(result as ViewResult);
         }
 

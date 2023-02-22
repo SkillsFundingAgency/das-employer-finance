@@ -2,11 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using SFA.DAS.Audit.Client;
-using SFA.DAS.Authentication;
-using SFA.DAS.Authorization.EmployerFeatures.Configuration;
 using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EmployerAccounts.ReadStore.Configuration;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.Encoding;
 
@@ -23,10 +19,6 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             
             services.Configure<IAccountApiConfiguration>(configuration.GetSection(nameof(AccountApiConfiguration)));
             services.AddSingleton<IAccountApiConfiguration, AccountApiConfiguration>();
-
-            services.Configure<IdentityServerConfiguration>(configuration.GetSection("Identity"));
-            services.AddSingleton(cfg => cfg.GetService<IOptions<IdentityServerConfiguration>>().Value);
-
             
 
             var employerFinanceConfiguration = configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
