@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         return services
             .AddSingleton(p =>
             {
+
                 var container = p.GetService<IContainer>();
                 var employerFinanceConfiguration = p.GetService<EmployerFinanceConfiguration>();
                 var configuration = p.GetService<IConfiguration>();
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtensions
                     .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
-                    .UseSqlServerPersistence(() => container.GetInstance<DbConnection>());
+                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString));
 
                 if (isDevelopment)
                 {

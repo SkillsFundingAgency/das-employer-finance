@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
-using SFA.DAS.EmployerFinance.Startup;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
@@ -9,7 +8,7 @@ using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers;
 
-public class NServiceBusStartup : IStartup
+public class NServiceBusStartup 
 {
     private readonly IContainer _container;
     private IEndpointInstance _endpoint;
