@@ -12,13 +12,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
     public class WhenIValidateTheRequest
     {
         private FindEmployerAccountLevyDeclarationTransactionsQueryValidator _validator;
-        private Mock<IAuthorizationService> _authorizationService;
 
         [SetUp]
         public void Arrange()
         {
-            _authorizationService = new Mock<IAuthorizationService>();
-            _validator = new FindEmployerAccountLevyDeclarationTransactionsQueryValidator(_authorizationService.Object);
+            _validator = new FindEmployerAccountLevyDeclarationTransactionsQueryValidator();
         }
 
         [Test]
@@ -49,25 +47,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
             Assert.Contains(new KeyValuePair<string,string>("ToDate", "To date has not been supplied"), actual.ValidationDictionary);
             Assert.Contains(new KeyValuePair<string,string>("HashedAccountId", "HashedAccountId has not been supplied"), actual.ValidationDictionary);
             Assert.Contains(new KeyValuePair<string,string>("ExternalUserId", "ExternalUserId has not been supplied"), actual.ValidationDictionary);
-        }
-
-        [Test]
-        public async Task ThenTheUnauthorizedFlagIsSetWhenTheUserDoesNotValidateAgainstTheAccount()
-        {
-            //Arrange
-            _authorizationService.Setup(x => x.IsAuthorized(EmployerUserRole.Any)).Returns(false);
-
-            //Act
-            var actual = await _validator.ValidateAsync(new FindEmployerAccountLevyDeclarationTransactionsQuery
-            {
-                ExternalUserId = "test",
-                HashedAccountId = "test",
-                FromDate = DateTime.Now.AddDays(-10),
-                ToDate = DateTime.Now.AddDays(-2)
-            });
-
-            //Assert
-            Assert.IsTrue(actual.IsUnauthorized);
         }
     }
 }
