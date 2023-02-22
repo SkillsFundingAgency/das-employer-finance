@@ -134,11 +134,6 @@ namespace SFA.DAS.EmployerFinance.Web
 #endif            
         }
 
-        public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
-        {
-            //serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
