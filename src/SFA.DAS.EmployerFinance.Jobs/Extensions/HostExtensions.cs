@@ -45,6 +45,7 @@ public static class HostExtensions
         hostBuilder.ConfigureServices(services =>
         {
             services.AddNServiceBus();
+            services.AddScoped<IJobActivator, StructureMapJobActivator>();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
             services.AddUnitOfWork();
 #pragma warning disable 618

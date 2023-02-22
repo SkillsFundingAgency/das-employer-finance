@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
@@ -27,9 +26,14 @@ public class ExpireFundsJobTests : FluentTest<ExpireFundsJobTestsFixture>
     public Task Run_WhenRunningJob_ThenShouldSendCommand(int numberOfAccounts)
     {
         return RunAsync(
-            f => f.SetupAccounts(numberOfAccounts),
-            f => f.Run(), 
-            f => f.MessageSession.Verify(s => s.Send(It.IsAny<ExpireAccountFundsCommand>(), It.IsAny<SendOptions>()), Times.Exactly(numberOfAccounts)));
+            fixture => fixture.SetupAccounts(numberOfAccounts),
+            fixture => fixture.Run(),
+            fixture => fixture.MessageSession.Verify(s =>
+                s.Send(
+                    It.IsAny<ExpireAccountFundsCommand>(),
+                    It.IsAny<SendOptions>()),
+                           Times.Exactly(numberOfAccounts)
+                ));
     }
 }
 
@@ -39,12 +43,12 @@ public class ExpireFundsJobTestsFixture
     public Mock<ICurrentDateTime> CurrentDateTime { get; set; }
     public Mock<IEmployerAccountRepository> EmployerAccountRepository;
     public ExpireFundsJob Job { get; set; }
-    private readonly IFixture Fixture;
+    private readonly IFixture _fixture;
 
     public ExpireFundsJobTestsFixture()
     {
-        Fixture = new Fixture();
-            
+        _fixture = new Fixture();
+
         MessageSession = new Mock<IMessageSession>();
         CurrentDateTime = new Mock<ICurrentDateTime>();
         EmployerAccountRepository = new Mock<IEmployerAccountRepository>();
@@ -59,9 +63,9 @@ public class ExpireFundsJobTestsFixture
 
     internal void SetupAccounts(int numberOfAccounts)
     {
-        Fixture.Customize(new AutoMoqCustomization());
+        _fixture.Customize(new AutoMoqCustomization());
 
-        var accounts = Fixture
+        var accounts = _fixture
             .Build<Account>().Without(acc => acc.AccountLegalEntities)
             .CreateMany(numberOfAccounts);
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 
 namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
@@ -9,25 +8,21 @@ namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 public class ImportLevyDeclarationsJob
 {
     private readonly IMessageSession _messageSession;
-    private readonly ICurrentDateTime _currentDateTime;
     private readonly IEmployerAccountRepository _accountRepository;
     private readonly IPayeRepository _payeRepository;
 
     public ImportLevyDeclarationsJob(
         IMessageSession messageSession,
-        ICurrentDateTime currentDateTime,
         IEmployerAccountRepository accountRepository,
         IPayeRepository payeRepository)
     {
         _messageSession = messageSession;
-        _currentDateTime = currentDateTime;
         _accountRepository = accountRepository;
         _payeRepository = payeRepository;
     }
 
-    public async  Task Run([TimerTrigger("0 0 15 23 * *")] TimerInfo timer, ILogger<ImportLevyDeclarationsJob> logger)
+    public async Task Run([TimerTrigger("0 0 15 23 * *")] TimerInfo timer, ILogger<ImportLevyDeclarationsJob> logger)
     {
-        var now = _currentDateTime.Now;
         logger.LogInformation($"Starting {nameof(ImportLevyDeclarationsJob)}");
         var employerAccounts = await _accountRepository.GetAll();
 

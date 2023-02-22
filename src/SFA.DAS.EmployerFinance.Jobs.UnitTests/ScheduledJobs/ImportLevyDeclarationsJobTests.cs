@@ -55,7 +55,6 @@ public class ImportLevyDeclarationsJobTests : FluentTest<ImportLevyDeclarationsJ
 public class ImportLevyDeclarationsJobTestsFixture
 {
     private readonly Mock<IMessageSession> _messageSession;
-    private readonly Mock<ICurrentDateTime> _currentDateTime;
     private readonly Mock<IEmployerAccountRepository> _employerAccountRepository;
     private readonly Mock<IPayeRepository> _payeRepository;
     private readonly ImportLevyDeclarationsJob _job;
@@ -69,11 +68,10 @@ public class ImportLevyDeclarationsJobTestsFixture
         Fixture = new Fixture();
 
         _messageSession = new Mock<IMessageSession>();
-        _currentDateTime = new Mock<ICurrentDateTime>();
         _employerAccountRepository = new Mock<IEmployerAccountRepository>();
         _payeRepository = new Mock<IPayeRepository>();
 
-        _job = new ImportLevyDeclarationsJob(_messageSession.Object, _currentDateTime.Object, _employerAccountRepository.Object, _payeRepository.Object);
+        _job = new ImportLevyDeclarationsJob(_messageSession.Object, _employerAccountRepository.Object, _payeRepository.Object);
     }
 
     public Task Run()
