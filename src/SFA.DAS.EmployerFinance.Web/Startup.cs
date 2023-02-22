@@ -9,8 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
-using SFA.DAS.Authentication;
-using SFA.DAS.Authorization.Mvc.Extensions;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
@@ -131,10 +129,8 @@ namespace SFA.DAS.EmployerFinance.Web
                 services.AddDataProtection();
             }
 #if DEBUG
-            services.AddControllersWithViews(o =>
-            {
-                o.AddAuthorization();
-            }).AddRazorRuntimeCompilation();
+            services.AddControllersWithViews(o => { })
+                    .AddRazorRuntimeCompilation();
 #endif            
         }
 
@@ -150,8 +146,6 @@ namespace SFA.DAS.EmployerFinance.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseUnauthorizedAccessExceptionHandler();
 
             app.UseStaticFiles();
             app.UseRouting();

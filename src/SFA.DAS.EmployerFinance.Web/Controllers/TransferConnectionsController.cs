@@ -3,22 +3,19 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.Authorization.EmployerFeatures.Models;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Features.Services;
-using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
+using SFA.DAS.EmployerFinance.Web.Attributes;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.NLog.Logger;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.EmployerFinance.Web.Attributes;
-using SFA.DAS.EmployerFinance.Web.Authentication;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {

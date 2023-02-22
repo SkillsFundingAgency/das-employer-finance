@@ -4,7 +4,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.Authorization.Mvc.Attributes;
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
@@ -20,7 +19,6 @@ using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using EmployerUserRole = SFA.DAS.Authorization.EmployerUserRoles.Options.EmployerUserRole;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
