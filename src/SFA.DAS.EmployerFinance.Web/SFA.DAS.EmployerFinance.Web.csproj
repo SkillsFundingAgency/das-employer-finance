@@ -16,29 +16,21 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="SFA.DAS.Audit.Client.Web" Version="1.0.0.20510" />
-    <PackageReference Include="SFA.DAS.Authentication">
-      <Version>1.1.2</Version>
-    </PackageReference>
     <PackageReference Include="SFA.DAS.Authorization.EmployerFeatures">
       <Version>6.0.52</Version>
     </PackageReference>
     <PackageReference Include="SFA.DAS.Authorization.EmployerUserRoles">
       <Version>6.0.52</Version>
     </PackageReference>
-    <PackageReference Include="SFA.DAS.Authorization.Mvc">
-      <Version>6.0.52</Version>
-    </PackageReference>
     <PackageReference Include="SFA.DAS.Authorization.WebApi">
       <Version>6.0.52</Version>
     </PackageReference>
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
+    <PackageReference Include="SFA.DAS.Employer.Shared.UI" Version="17.1.29" />
     <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.1.338" />
     <PackageReference Include="SFA.DAS.GovUK.Auth" Version="0.2.203" />
     <PackageReference Include="SFA.DAS.Logging">
       <Version>1.0.5</Version>
-    </PackageReference>
-    <PackageReference Include="SFA.DAS.MA.Shared.UI">
-      <Version>1.2.7</Version>
     </PackageReference>
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
     <PackageReference Include="SFA.DAS.NLog.Targets.Redis" Version="1.2.1" />

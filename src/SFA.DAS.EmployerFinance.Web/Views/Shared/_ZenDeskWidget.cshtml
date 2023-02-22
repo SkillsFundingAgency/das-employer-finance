@@ -1,9 +1,9 @@
-﻿@using SFA.DAS.EmployerFinance.Web.Extensions;
-@using SFA.DAS.EmployerFinance.Web.Helpers;
-@using SFA.DAS.EmployerFinance.Configuration;
+﻿@using SFA.DAS.EmployerFinance.Web.Extensions
 
-@inject HtmlHelperExtensions htmlHelper
-@inject EmployerFinanceConfiguration Configuaration;
+@{
+    var snippetUrl = $"https://static.zdassets.com/ekr/snippet.js?key={Configuration["EmployerFinanceConfiguration:ZenDeskSectionId"]}";
+    var cobrowsingSnippetUrl = $"https://embed-euw1.rcrsv.io/{Configuration["EmployerFinanceConfiguration:ZenDeskSnippetKey"]}?zwwi=1";
+}
 
 <script type="text/javascript">
     window.zESettings = {
@@ -18,12 +18,12 @@
             },
             helpCenter: {
                 filter: {
-                    section: @Configuaration.ZenDeskSectionId
+                    section: @Configuration["EmployerFinanceConfiguration:ZenDeskSectionId"]
                 }
             }
         }
     };
 </script>
-<script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=@Configuaration.ZenDeskSnippetKey"></script>
-<script id="co-snippet" src="https://embed-euw1.rcrsv.io/@Configuaration.ZenDeskCobrowsingSnippetKey?zwwi=1"></script>
-@htmlHelper.SetZenDeskLabels(new string[] { ViewBag.ZenDeskLabel })
+<script id="ze-snippet" src="@snippetUrl"></script>
+<script id="co-snippet" src="@cobrowsingSnippetUrl"></script>
+@Html.SetZenDeskLabels(new string[] { ViewBag.ZenDeskLabel })

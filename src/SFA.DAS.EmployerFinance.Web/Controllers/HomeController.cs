@@ -53,18 +53,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [Route("signOut")]
-        public async Task<IActionResult> SignOut()
+        public async Task<IActionResult> SignOutUser()
         {
             var idToken = await HttpContext.GetTokenAsync("id_token");
 
             var authenticationProperties = new AuthenticationProperties();
             authenticationProperties.Parameters.Clear();
             authenticationProperties.Parameters.Add("id_token", idToken);
-            SignOut(authenticationProperties, CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme);
-
-            var constants = new Constants(_configuration.Identity);
-
-            return new RedirectResult(string.Format(constants.LogoutEndpoint(), idToken));
+            return SignOut(authenticationProperties, CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
         [Route("SignOutCleanup")]

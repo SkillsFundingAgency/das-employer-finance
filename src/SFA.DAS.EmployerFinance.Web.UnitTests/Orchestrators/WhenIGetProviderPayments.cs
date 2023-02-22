@@ -23,7 +23,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
     {
         private const string HashedAccountId = "123ABC";
         private const long AccountId = 1234;
-        private const string ExternalUser = "Test user";
         private const long ExpectedUkPrn = 46789465;
         private readonly DateTime _fromDate = DateTime.Now.AddDays(-20);
         private readonly DateTime _toDate = DateTime.Now.AddDays(-20);
@@ -70,8 +69,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
         private Expression<Func<IMediator, Task<FindAccountProviderPaymentsResponse>>> AssertExpressionValidation()
         {
-            return x => x.Send(It.Is<FindAccountProviderPaymentsQuery>(c => c.ExternalUserId.Equals(ExternalUser)
-                                                                                 && c.FromDate.Equals(_fromDate)
+            return x => x.Send(It.Is<FindAccountProviderPaymentsQuery>(c => 
+                                                                                 c.FromDate.Equals(_fromDate)
                                                                                  && c.ToDate.Equals(_toDate)
                                                                                  && c.HashedAccountId.Equals(
                                                                                      HashedAccountId)
@@ -108,7 +107,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             //Act
             var result = await _orchestrator.GetProviderPaymentSummary(HashedAccountId, ExpectedUkPrn, _fromDate,
-                _toDate, ExternalUser);
+                _toDate);
 
             //Assert
             Assert.AreEqual(expectedTotal, result.Data.CoursePayments.First().SFACoInvestmentAmount);
@@ -143,7 +142,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             //Act
             var result = await _orchestrator.GetProviderPaymentSummary(HashedAccountId, ExpectedUkPrn, _fromDate,
-                _toDate, ExternalUser);
+                _toDate);
 
             //Assert
             Assert.AreEqual(expectedTotal, result.Data.CoursePayments.First().EmployerCoInvestmentAmount);
@@ -176,7 +175,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             //Act
             var result = await _orchestrator.GetProviderPaymentSummary(HashedAccountId, ExpectedUkPrn, _fromDate,
-                _toDate, ExternalUser);
+                _toDate);
 
             //Assert
             Assert.AreEqual(expectedTotal, result.Data.CoursePayments.First().TotalAmount);
@@ -227,7 +226,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             //Act
             var result = await _orchestrator.GetProviderPaymentSummary(HashedAccountId, ExpectedUkPrn, _fromDate,
-                _toDate, ExternalUser);
+                _toDate);
 
             //Assert
             Assert.AreEqual(expectedLevyPaymentsTotal, result.Data.LevyPaymentsTotal);

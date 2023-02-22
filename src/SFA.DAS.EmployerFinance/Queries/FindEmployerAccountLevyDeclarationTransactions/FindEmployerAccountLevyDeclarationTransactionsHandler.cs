@@ -30,12 +30,7 @@ public class FindEmployerAccountLevyDeclarationTransactionsHandler : IRequestHan
         {
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
-
-        if (validationResult.IsUnauthorized)
-        {   
-            throw new UnauthorizedAccessException();
-        }
-
+        
         var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
         var transactions = await _dasLevyService.GetAccountLevyTransactionsByDateRange<LevyDeclarationTransactionLine>
             (accountId, message.FromDate, message.ToDate);

@@ -63,7 +63,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetCoursePaymentsResponse(2019, 9, coursePayments);
 
             // Act
-            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30), "userId");
+            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
             // Assert
             response.Data.ApprenticePayments.Count().Should().Be(numberOfApprentices);
@@ -91,7 +91,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetCoursePaymentsResponse(2019, 9, coursePayments);
 
             // Act
-            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30), "userId");
+            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
             // Assert
             response.Data.ShowNonCoInvesmentPaymentsTotal.Should().BeFalse();
@@ -119,7 +119,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetCoursePaymentsResponse(2019, 9, coursePayments);
 
             // Act
-            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30), "userId");
+            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
             // Assert
             response.Data.ShowNonCoInvesmentPaymentsTotal.Should().BeTrue();
@@ -142,7 +142,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetCoursePaymentsResponse(2019, 9, coursePayments);
 
             // Act
-            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30), "userId");
+            var response = await _sut.GetCoursePaymentSummary("abc123", 888888, "A course", 4, null, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
             // Assert
             response.Data.ShowNonCoInvesmentPaymentsTotal.Should().BeTrue();

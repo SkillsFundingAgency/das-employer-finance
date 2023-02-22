@@ -13,12 +13,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Extensions
             var expected = $"<script type=\"text/javascript\">zE('webWidget', 'helpCenter:setSuggestions', {{ labels: [{keywords}] }});</script>";
 
             // Act
-            var actual = "null";//TODO new HtmlHelperExtensions.SetZenDeskLabels(labels).ToString();
+            var actual = ZenDeskLabelExtensions.SetZenDeskLabels(null, labels).ToString();
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
 
         private static readonly object[] LabelCases =
         {

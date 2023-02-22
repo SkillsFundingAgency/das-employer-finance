@@ -54,8 +54,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
                 HashedAccountId = _hashedAccountId,
                 UkPrn = _ukprn,
                 FromDate = _fromDate,
-                ToDate = _toDate,
-                ExternalUserId = _externalUserId
+                ToDate = _toDate
             };
 
             RequestHandler = new FindAccountProviderPaymentsHandler(

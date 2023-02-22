@@ -71,7 +71,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         public async Task ThenARequestShouldBeMadeForTransactions(int month, int year)
         {
             //Act
-            await _orchestrator.GetAccountTransactions(HashedAccountId, year, month, ExternalUser);
+            await _orchestrator.GetAccountTransactions(HashedAccountId, year, month);
 
             //Assert
             _mediator.Verify(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(
@@ -82,7 +82,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         public async Task ThenARequestShouldBeMadeForTransactionsForCurrentMonthIfNoYearOrMonthHasBeenGiven()
         {
             //Act
-            await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int), ExternalUser);
+            await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int));
 
             //Assert
             _mediator.Verify(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(
@@ -98,7 +98,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetTransactionsResponse(year, month);
 
             //Act
-            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, year, month, ExternalUser);
+            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, year, month);
 
             //Assert
             Assert.AreEqual(year, result.Data.Year);
@@ -113,9 +113,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetTransactionsResponse(DateTime.Now.Year, DateTime.Now.Month);
 
             //Act
-            var resultLatestMonth = await _orchestrator.GetAccountTransactions(HashedAccountId, DateTime.Now.Year, DateTime.Now.Month, ExternalUser);
+            var resultLatestMonth = await _orchestrator.GetAccountTransactions(HashedAccountId, DateTime.Now.Year, DateTime.Now.Month);
             SetupGetTransactionsResponse(2016, 1);
-            var resultHistoricalMonth = await _orchestrator.GetAccountTransactions(HashedAccountId, 2016, 1, ExternalUser);
+            var resultHistoricalMonth = await _orchestrator.GetAccountTransactions(HashedAccountId, 2016, 1);
 
             //Assert
             Assert.AreEqual(true, resultLatestMonth.Data.IsLatestMonth);
@@ -126,7 +126,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         public async Task ThenResultShouldHaveWhetherPreviousTransactionsAreAvailable()
         {
             //Act
-            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 8, ExternalUser);
+            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 8);
 
             //Assert
             Assert.IsTrue(result.Data.AccountHasPreviousTransactions);
@@ -151,7 +151,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetTransactionsResponse(2018, 2, transactions);
 
             //Act
-            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int), ExternalUser);
+            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int));
 
             var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 
@@ -181,7 +181,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetTransactionsResponse(2018, 2, transactions);
 
             //Act
-            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int), ExternalUser);
+            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int));
 
             var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 
@@ -212,7 +212,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetTransactionsResponse(2018, 2, transactions);
 
             //Act
-            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int), ExternalUser);
+            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int));
 
             var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 
@@ -242,7 +242,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             SetupGetTransactionsResponse(2018, 2, transactions);
 
             //Act
-            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int), ExternalUser);
+            var result = await _orchestrator.GetAccountTransactions(HashedAccountId, default(int), default(int));
 
             var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 

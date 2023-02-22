@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Authentication;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -44,7 +43,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
                 });
 
             _controller = new EmployerAccountTransactionsController(
-                Mock.Of<IAuthenticationService>(),
                 _orchestrator.Object,
                 Mock.Of<IMapper>(),
                 Mock.Of<IMediator>(),

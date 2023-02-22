@@ -3,7 +3,6 @@
 @using SFA.DAS.EmployerFinance.Interfaces
 
 @inject IUrlActionHelper UrlHelpers;
-@inject IHtmlHelperExtensions HtmlHelper;
 
 @{
     ViewBag.Title = "Transfers";
@@ -11,7 +10,7 @@
     ViewBag.PageID = "page-transfers";
     ViewBag.GaData.Vpv = "/accounts/transfers";
     ViewBag.ZenDeskLabel = "eas-transfers";
-    Layout = "~/Views/Shared/_Layout_CDN.cshtml";
+    Layout = "~/Views/Shared/_layout.cshtml";
 }
 
 <h1 class="govuk-heading-xl">Transfers</h1>

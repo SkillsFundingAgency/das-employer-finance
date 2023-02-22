@@ -5,5 +5,4 @@ public class GetEmployerAccountTransactionsQuery : IRequest<GetEmployerAccountTr
     public string HashedAccountId { get; set; }
     public int Year { get; set; }
     public int Month { get; set; }
-    public string ExternalUserId { get; set; }
 }
