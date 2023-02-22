@@ -1,17 +1,14 @@
-﻿using System.Linq;
-using MediatR;
-using SFA.DAS.EmployerFinance.Messages.Commands;
+﻿using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 
 public class ProcessPeriodEndPaymentsCommandHandler : IHandleMessages<ProcessPeriodEndPaymentsCommand>
 {
     private readonly IMediator _mediator;
-    private readonly ILog _logger;
+    private readonly ILogger<ProcessPeriodEndPaymentsCommandHandler> _logger;
 
-    public ProcessPeriodEndPaymentsCommandHandler(IMediator mediator, ILog logger)
+    public ProcessPeriodEndPaymentsCommandHandler(IMediator mediator, ILogger<ProcessPeriodEndPaymentsCommandHandler> logger)
     {
         _mediator = mediator;
         _logger = logger;
@@ -19,7 +16,7 @@ public class ProcessPeriodEndPaymentsCommandHandler : IHandleMessages<ProcessPer
 
     public async Task Handle(ProcessPeriodEndPaymentsCommand message, IMessageHandlerContext context)
     {
-        _logger.Info($"Creating payment queue message for all accounts for period end ref: '{message.PeriodEndRef}'");
+        _logger.LogInformation($"Creating payment queue message for all accounts for period end ref: '{message.PeriodEndRef}'");
         var response = await _mediator.Send(new GetAllEmployerAccountsRequest());
         var batchSize = 5000;
 
@@ -32,7 +29,7 @@ public class ProcessPeriodEndPaymentsCommandHandler : IHandleMessages<ProcessPer
         {
             var tasks = batch.Select(account => Task.Run(async () =>
             {
-                _logger.Info($"Creating payment queue message for account ID: '{account.Id}' period end ref: '{message.PeriodEndRef}'");
+                _logger.LogInformation($"Creating payment queue message for account ID: '{account.Id}' period end ref: '{message.PeriodEndRef}'");
 
                 var sendOptions = new SendOptions();
 
@@ -46,6 +43,6 @@ public class ProcessPeriodEndPaymentsCommandHandler : IHandleMessages<ProcessPer
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        _logger.Info($"Completed payment message queuing for period end ref: '{message.PeriodEndRef}'");
+        _logger.LogInformation($"Completed payment message queuing for period end ref: '{message.PeriodEndRef}'");
     }
 }

@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Messages.Events;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.Notifications.Api.Client;
 using SFA.DAS.Notifications.Api.Types;
 
@@ -17,13 +14,13 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
     private readonly EmployerFinanceConfiguration _config;
     private readonly IOuterApiClient _outerApiClient;
-    private readonly ILog _logger;
+    private readonly ILogger<SentTransferConnectionRequestEventNotificationHandler> _logger;
     private readonly INotificationsApi _notificationsApi;
 
     public SentTransferConnectionRequestEventNotificationHandler(
         EmployerFinanceConfiguration config,
         IOuterApiClient outerApiClient,
-        ILog logger,
+        ILogger<SentTransferConnectionRequestEventNotificationHandler> logger,
         INotificationsApi notificationsApi)
     {
         _config = config;
@@ -44,7 +41,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
         if (!users.Any())
         {
-            _logger.Info($"There are no users that receive notifications for ReceiverAccountId '{message.ReceiverAccountId}'");
+            _logger.LogInformation($"There are no users that receive notifications for ReceiverAccountId '{message.ReceiverAccountId}'");
         }
 
         foreach (var user in users)
@@ -71,9 +68,9 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
                 await _notificationsApi.SendEmail(email);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.Error(ex, $"Unable to send sent transfer request notification to UserRef '{user.UserRef}' for ReceiverAccountId '{message.ReceiverAccountId}'");
+                _logger.LogError(exception, $"Unable to send sent transfer request notification to UserRef '{user.UserRef}' for ReceiverAccountId '{message.ReceiverAccountId}'");
             }
         }
     }

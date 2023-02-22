@@ -1,48 +1,29 @@
-﻿using System.Threading;
-using Microsoft.ApplicationInsights.Extensibility;
-using System.Configuration;
+﻿using SFA.DAS.EmployerFinance.MessageHandlers.DependencyResolution;
+using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers;
 
 public class Program
 {
-    public static void Main()
+    public static async Task Main(string[] args)
     {
-        TelemetryConfiguration.Active.InstrumentationKey = ConfigurationManager.AppSettings["APPINSIGHTS_INSTRUMENTATIONKEY"];
+        using var host = CreateHost(args);
 
-        MainAsync().GetAwaiter().GetResult();
+        await host.RunAsync();
     }
 
-    public static async Task MainAsync()
+    private static IHost CreateHost(string[] args)
     {
-        //TODO MAC-192
-        // using (var container = IoC.Initialize())
-        // {
-        //     var config = new JobHostConfiguration();
-        //     var startup = container.GetInstance<IStartup>();
-        //
-        //     if (container.GetInstance<IEnvironmentService>().IsCurrent(DasEnv.LOCAL))
-        //     {
-        //         config.UseDevelopmentSettings();
-        //     }
-        //
-        //     var jobHost = new JobHost(config);
-        //
-        //     await startup.StartAsync();
-        //     await jobHost.CallAsync(typeof(Program).GetMethod(nameof(Block)));
-        //
-        //     jobHost.RunAndBlock();
-        //
-        //     await startup.StopAsync();
-        // }
-    }
+        var builder = new HostBuilder()
+            .UseDasEnvironment()
+            .ConfigureDasAppConfiguration()
+            .ConfigureContainer<Registry>(IoC.Initialize)
+            .UseConsoleLifetime()
+            .ConfigureDasLogging()
+            .ConfigureDasServices()
+            .UseStructureMap();
 
-    [NoAutomaticTrigger]
-    public static async Task Block(CancellationToken cancellationToken)
-    {
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            await Task.Delay(3000, cancellationToken);
-        }
+
+        return builder.Build();
     }
 }

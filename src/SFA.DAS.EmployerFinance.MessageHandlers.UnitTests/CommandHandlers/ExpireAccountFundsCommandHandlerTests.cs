@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture.NUnit3;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NServiceBus;
 using NServiceBus.MessageInterfaces.MessageMapper.Reflection;
@@ -103,7 +104,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
         public Mock<IPaymentFundsOutRepository> MockPaymentFundsOutRepository { get; set; }
         public Mock<IExpiredFunds> MockExpiredFunds { get; set; }
         public Mock<IExpiredFundsRepository> MockExpiredFundsRepository { get; set; }
-        public Mock<ILog> MockLogger { get; set; }
+        public Mock<ILogger<ExpireAccountFundsCommandHandler>> MockLogger { get; set; }
         public EmployerFinanceConfiguration EmployerFinanceConfiguration { get; set; }
 
         public ExpireAccountFundsCommand Command { get; set; }
@@ -161,7 +162,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             MockPaymentFundsOutRepository = new Mock<IPaymentFundsOutRepository>();
             MockExpiredFunds = new Mock<IExpiredFunds>();
             MockExpiredFundsRepository = new Mock<IExpiredFundsRepository>();
-            MockLogger = new Mock<ILog>();
+            MockLogger = new Mock<ILogger<ExpireAccountFundsCommandHandler>>();
             EmployerFinanceConfiguration = new EmployerFinanceConfiguration{ FundsExpiryPeriod = FundsExpiryPeriod };
 
             MockCurrentDateTime.Setup(x => x.Now).Returns(Now);

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NServiceBus.Testing;
 using NUnit.Framework;
@@ -28,7 +29,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
         private ImportPaymentsCommandHandler _sut;
         private Mock<IPaymentsEventsApiClient> _paymentsEventsApiClientMock;
         private Mock<IMediator> _mediatorMock;
-        private Mock<ILog> _loggerMock;
+        private Mock<ILogger<ImportPaymentsCommandHandler>> _loggerMock;
         private TestableMessageHandlerContext _messageHandlerContext;
         private PaymentsEventsApiClientLocalConfiguration _configuration;
         private IFixture Fixture = new Fixture();
@@ -46,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.CommandHandlers
             _messageHandlerContext = new TestableMessageHandlerContext();
             _paymentsEventsApiClientMock = new Mock<IPaymentsEventsApiClient>();
             _mediatorMock = new Mock<IMediator>();
-            _loggerMock = new Mock<ILog>();
+            _loggerMock = new Mock<ILogger<ImportPaymentsCommandHandler>>();
 
             _mediatorMock
                 .Setup(mock => mock.Send(It.IsAny<GetPeriodEndsRequest>(), CancellationToken.None))

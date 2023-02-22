@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
@@ -17,13 +15,13 @@ public class ApprovedTransferConnectionRequestEventNotificationHandler : IHandle
 
     private readonly EmployerFinanceConfiguration _config;
     private readonly IOuterApiClient _outerApiClient;
-    private readonly ILog _logger;
+    private readonly ILogger<ApprovedTransferConnectionRequestEventNotificationHandler> _logger;
     private readonly INotificationsApi _notificationsApi;
 
     public ApprovedTransferConnectionRequestEventNotificationHandler(
         EmployerFinanceConfiguration config,
         IOuterApiClient outerApiClient,
-        ILog logger,
+        ILogger<ApprovedTransferConnectionRequestEventNotificationHandler> logger,
         INotificationsApi notificationsApi)
     {
         _config = config;
@@ -44,7 +42,7 @@ public class ApprovedTransferConnectionRequestEventNotificationHandler : IHandle
 
         if (!users.Any())
         {
-            _logger.Info($"There are no users that receive notifications for SenderAccountId '{message.SenderAccountId}'");
+            _logger.LogInformation($"There are no users that receive notifications for SenderAccountId '{message.SenderAccountId}'");
         }
 
         foreach (var user in users)
@@ -71,9 +69,9 @@ public class ApprovedTransferConnectionRequestEventNotificationHandler : IHandle
 
                 await _notificationsApi.SendEmail(email);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.Error(ex, $"Unable to send approved transfer request notification to UserRef '{user.UserRef}' for SenderAccountId '{message.SenderAccountId}'");
+                _logger.LogError(exception, $"Unable to send approved transfer request notification to UserRef '{user.UserRef}' for SenderAccountId '{message.SenderAccountId}'");
             }
         }
     }

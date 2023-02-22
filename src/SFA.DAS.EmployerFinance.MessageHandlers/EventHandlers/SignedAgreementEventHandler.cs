@@ -1,5 +1,4 @@
-﻿using MediatR;
-using SFA.DAS.EmployerAccounts.Messages.Events;
+﻿using SFA.DAS.EmployerAccounts.Messages.Events;
 using SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;

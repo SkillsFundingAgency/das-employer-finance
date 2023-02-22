@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Types.Models;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 
@@ -16,7 +14,7 @@ public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpire
     private readonly IPaymentFundsOutRepository _paymentFundsOutRepository;
     private readonly IExpiredFunds _expiredFunds;
     private readonly IExpiredFundsRepository _expiredFundsRepository;
-    private readonly ILog _logger;
+    private readonly ILogger<DraftExpireAccountFundsCommandHandler> _logger;
     private readonly EmployerFinanceConfiguration _configuration;
 
     public DraftExpireAccountFundsCommandHandler(
@@ -25,7 +23,7 @@ public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpire
         IPaymentFundsOutRepository paymentFundsOutRepository,
         IExpiredFunds expiredFunds,
         IExpiredFundsRepository expiredFundsRepository,
-        ILog logger,
+        ILogger<DraftExpireAccountFundsCommandHandler> logger,
         EmployerFinanceConfiguration configuration)
     {
         _currentDateTime = currentDateTime;
@@ -39,7 +37,7 @@ public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpire
 
     public async Task Handle(DraftExpireAccountFundsCommand message, IMessageHandlerContext context)
     {
-        _logger.Info($"DRAFT: Expiring funds for account ID '{message.AccountId}' with expiry period '{_configuration.FundsExpiryPeriod}'");
+        _logger.LogInformation($"DRAFT: Expiring funds for account ID '{message.AccountId}' with expiry period '{_configuration.FundsExpiryPeriod}'");
 
         var now = message.DateTo.HasValue ? new DateTime(message.DateTo.Value.Year, message.DateTo.Value.Month, 28) : _currentDateTime.Now;
         var fundsIn = await _levyFundsInRepository.GetLevyFundsIn(message.AccountId);
@@ -78,6 +76,6 @@ public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpire
             
         await _expiredFundsRepository.CreateDraft(message.AccountId, expiredFunds.Where(c=>c.Key.Equals(currentCalendarPeriod)).ToDictionary(key=>key.Key, value=>value.Value).ToExpiredFundsList(), now);
 
-        _logger.Info($"DRAFT: Expired '{expiredFunds.Count}' month(s) of funds for account ID '{message.AccountId}' with expiry period '{_configuration.FundsExpiryPeriod}'");
+        _logger.LogInformation($"DRAFT: Expired '{expiredFunds.Count}' month(s) of funds for account ID '{message.AccountId}' with expiry period '{_configuration.FundsExpiryPeriod}'");
     }
 }

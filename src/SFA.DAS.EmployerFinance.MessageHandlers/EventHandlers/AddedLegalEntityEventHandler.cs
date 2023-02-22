@@ -1,5 +1,4 @@
-﻿using MediatR;
-using SFA.DAS.EmployerAccounts.Messages.Events;
+﻿using SFA.DAS.EmployerAccounts.Messages.Events;
 using SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
@@ -15,7 +14,13 @@ public class AddedLegalEntityEventHandler : IHandleMessages<AddedLegalEntityEven
 
     public Task Handle(AddedLegalEntityEvent message, IMessageHandlerContext context)
     {
-        return _mediator.Send(new CreateAccountLegalEntityCommand(message.AccountLegalEntityId, null, null, null,
-            message.AccountId, message.LegalEntityId));
+        return _mediator.Send(new CreateAccountLegalEntityCommand(
+            message.AccountLegalEntityId, 
+            null,
+            null,
+            null,
+            message.AccountId,
+            message.LegalEntityId)
+        );
     }
 }

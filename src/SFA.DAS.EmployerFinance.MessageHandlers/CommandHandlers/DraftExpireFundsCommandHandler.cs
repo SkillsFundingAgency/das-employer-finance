@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Commands;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 
@@ -10,9 +8,9 @@ public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCo
 {
     private readonly ICurrentDateTime _currentDateTime;
     private readonly IEmployerAccountRepository _accountRepository;
-    private readonly ILog _logger;
+    private readonly ILogger<DraftExpireFundsCommandHandler> _logger;
 
-    public DraftExpireFundsCommandHandler(ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository, ILog logger)
+    public DraftExpireFundsCommandHandler(ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository, ILogger<DraftExpireFundsCommandHandler> logger)
     {
         _currentDateTime = currentDateTime;
         _accountRepository = accountRepository;
@@ -28,7 +26,7 @@ public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCo
             var messageTasks = new List<Task>();
             var sendCounter = 0;
 
-            _logger.Info($"Queueing {nameof(DraftExpireAccountFundsCommand)} messages for {accounts.Count} accounts.");
+            _logger.LogInformation($"Queueing {nameof(DraftExpireAccountFundsCommand)} messages for {accounts.Count} accounts.");
 
             foreach (var account in accounts)
             {
@@ -42,7 +40,7 @@ public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCo
                 if (sendCounter % 1000 == 0)
                 {
                     await Task.WhenAll(messageTasks).ConfigureAwait(false); ;
-                    _logger.Info($"Queued {sendCounter} of {accounts.Count} messages.");
+                    _logger.LogInformation($"Queued {sendCounter} of {accounts.Count} messages.");
                     messageTasks.Clear();
                     await Task.Delay(500).ConfigureAwait(false); ;
                 }
@@ -50,13 +48,13 @@ public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCo
 
             // await final tasks not % 1000
             await Task.WhenAll(messageTasks).ConfigureAwait(false);
-            _logger.Info($"Queued {sendCounter} of {accounts.Count} messages.");
+            _logger.LogInformation($"Queued {sendCounter} of {accounts.Count} messages.");
 
-            _logger.Info($"{nameof(DraftExpireFundsCommandHandler)} completed.");
+            _logger.LogInformation($"{nameof(DraftExpireFundsCommandHandler)} completed.");
         }
-        catch(Exception ex)
+        catch(Exception exception)
         {
-            _logger.Error(ex, $"{nameof(DraftExpireFundsCommandHandler)} failed");
+            _logger.LogError(exception, $"{nameof(DraftExpireFundsCommandHandler)} failed");
             throw;
         }
     }

@@ -14,7 +14,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
     {
         public EmployerFinanceConfiguration Configuration { get; set; }
         public Mock<IOuterApiClient> OuterApiClient { get; set; }
-        public Mock<ILog> Logger { get; set; }
         public Mock<INotificationsApi> NotificationsApiClient { get; set; }
 
         public GetAccountTeamMembersWhichReceiveNotificationsResponse GetAccountTeamMembersWhichReceiveNotificationsResponse { get; set; }
@@ -29,7 +28,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         {
             Configuration = new EmployerFinanceConfiguration();
             OuterApiClient = new Mock<IOuterApiClient>();
-            Logger = new Mock<ILog>();
             NotificationsApiClient = new Mock<INotificationsApi>();
 
             GetAccountTeamMembersWhichReceiveNotificationsResponse = 

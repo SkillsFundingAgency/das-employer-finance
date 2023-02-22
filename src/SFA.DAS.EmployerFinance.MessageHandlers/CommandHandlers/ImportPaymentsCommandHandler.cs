@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using MediatR;
-using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
+﻿using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
@@ -13,13 +11,13 @@ public class ImportPaymentsCommandHandler : IHandleMessages<ImportPaymentsComman
 {
     private readonly IPaymentsEventsApiClient _paymentsEventsApiClient;
     private readonly IMediator _mediator;
-    private readonly ILogger<ImportAccountPaymentsCommandHandler> _logger;
+    private readonly ILogger<ImportPaymentsCommandHandler> _logger;
     private readonly PaymentsEventsApiClientLocalConfiguration _configuration;
 
     public ImportPaymentsCommandHandler(
         IPaymentsEventsApiClient paymentsEventsApiClient,
         IMediator mediator,
-        ILogger<ImportAccountPaymentsCommandHandler> logger,
+        ILogger<ImportPaymentsCommandHandler> logger,
         PaymentsEventsApiClientLocalConfiguration configuration)
     {
         _paymentsEventsApiClient = paymentsEventsApiClient;

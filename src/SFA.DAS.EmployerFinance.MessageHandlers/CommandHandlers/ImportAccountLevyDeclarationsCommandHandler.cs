@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
-using MediatR;
-using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+﻿using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 using SFA.DAS.EmployerFinance.Messages.Commands;
@@ -10,56 +7,54 @@ using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Services.Contracts;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 
 public class ImportAccountLevyDeclarationsCommandHandler : IHandleMessages<ImportAccountLevyDeclarationsCommand>
 {
     private readonly IMediator _mediator;
-    private readonly ILog _logger;
+    private readonly ILogger<ImportAccountLevyDeclarationsCommandHandler> _logger;
     private readonly IDasAccountService _dasAccountService;
+    private readonly string _declarationsEnabledValue;
 
-    private static bool HmrcProcessingEnabled => ConfigurationManager.AppSettings["DeclarationsEnabled"]
-        .Equals("both", StringComparison.CurrentCultureIgnoreCase);
+    private bool HmrcProcessingEnabled => _declarationsEnabledValue.Equals("both", StringComparison.CurrentCultureIgnoreCase);
 
-    private static bool DeclarationProcessingOnly => ConfigurationManager.AppSettings["DeclarationsEnabled"]
-        .Equals("declarations", StringComparison.CurrentCultureIgnoreCase);
+    private bool DeclarationProcessingOnly => _declarationsEnabledValue.Equals("declarations", StringComparison.CurrentCultureIgnoreCase);
 
-    private static bool FractionProcessingOnly => ConfigurationManager.AppSettings["DeclarationsEnabled"]
-        .Equals("fractions", StringComparison.CurrentCultureIgnoreCase);
+    private bool FractionProcessingOnly => _declarationsEnabledValue.Equals("fractions", StringComparison.CurrentCultureIgnoreCase);
 
-    public ImportAccountLevyDeclarationsCommandHandler(IMediator mediator, ILog logger, IDasAccountService dasAccountService)
+    public ImportAccountLevyDeclarationsCommandHandler(IMediator mediator, ILogger<ImportAccountLevyDeclarationsCommandHandler> logger, IDasAccountService dasAccountService, IConfiguration configuration)
     {
         _mediator = mediator;
         _logger = logger;
         _dasAccountService = dasAccountService;
+        _declarationsEnabledValue = configuration.GetValue<string>("DeclarationsEnabled");
     }
 
     public async Task Handle(ImportAccountLevyDeclarationsCommand message, IMessageHandlerContext context)
     {
         try
-        {               
+        {
             var employerAccountId = message.AccountId;
             var payeRef = message.PayeRef;
 
-            _logger.Info($"Getting english fraction updates for employer account {employerAccountId}");
+            _logger.LogInformation($"Getting english fraction updates for employer account {employerAccountId}");
 
             var englishFractionUpdateResponse = await _mediator.Send(new GetEnglishFractionUpdateRequiredRequest());
 
-            _logger.Info($"Getting levy declarations for PAYE scheme {payeRef} for employer account {employerAccountId}");
+            _logger.LogInformation($"Getting levy declarations for PAYE scheme {payeRef} for employer account {employerAccountId}");
 
             var payeSchemeDeclarations = await ProcessScheme(payeRef, englishFractionUpdateResponse);
 
-            _logger.Info($"Adding Levy Declarations of PAYE scheme {payeRef} to employer account {employerAccountId}");
+            _logger.LogInformation($"Adding Levy Declarations of PAYE scheme {payeRef} to employer account {employerAccountId}");
 
             await RefreshEmployerAccountLevyDeclarations(employerAccountId, payeSchemeDeclarations);
 
-            _logger.Info($"{nameof(ImportAccountLevyDeclarationsCommand)} completed PAYE scheme: {payeRef}, employer account: {employerAccountId}");
+            _logger.LogInformation($"{nameof(ImportAccountLevyDeclarationsCommand)} completed PAYE scheme: {payeRef}, employer account: {employerAccountId}");
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            _logger.Error(e, $"An error occurred importing levy for accountid='{message.AccountId}'");
+            _logger.LogError(exception, $"An error occurred importing levy for accountid='{message.AccountId}'");
             throw;
         }
     }
@@ -79,12 +74,12 @@ public class ImportAccountLevyDeclarationsCommandHandler : IHandleMessages<Impor
 
         await UpdateEnglishFraction(payeRef, englishFractionUpdateResponse);
 
-        _logger.Debug($"Getting levy declarations from HMRC for PAYE scheme {payeRef}");
+        _logger.LogDebug($"Getting levy declarations from HMRC for PAYE scheme {payeRef}");
 
         var levyDeclarationQueryResult = HmrcProcessingEnabled || DeclarationProcessingOnly ?
             await _mediator.Send(new GetHMRCLevyDeclarationQuery { EmpRef = payeRef }) : null;
 
-        _logger.Debug($"Processing levy declarations retrieved from HMRC for PAYE scheme {payeRef}");
+        _logger.LogDebug($"Processing levy declarations retrieved from HMRC for PAYE scheme {payeRef}");
 
         if (levyDeclarationQueryResult?.LevyDeclarations?.Declarations != null)
         {
@@ -108,7 +103,7 @@ public class ImportAccountLevyDeclarationsCommandHandler : IHandleMessages<Impor
 
         foreach (var declaration in levyDeclarationQueryResult.LevyDeclarations.Declarations)
         {
-            _logger.Debug($"Creating Levy Declaration with submission Id {declaration.SubmissionId} from HMRC query results");
+            _logger.LogDebug($"Creating Levy Declaration with submission Id {declaration.SubmissionId} from HMRC query results");
 
             var dasDeclaration = new DasDeclaration
             {
@@ -136,20 +131,20 @@ public class ImportAccountLevyDeclarationsCommandHandler : IHandleMessages<Impor
     {
         if (HmrcProcessingEnabled || FractionProcessingOnly)
         {
-            _logger.Debug($"Getting update for english fraction for PAYE scheme {payeRef}");
+            _logger.LogDebug($"Getting update for english fraction for PAYE scheme {payeRef}");
             await _mediator.Send(new UpdateEnglishFractionsCommand
             {
                 EmployerReference = payeRef,
                 EnglishFractionUpdateResponse = englishFractionUpdateResponse
             });
 
-            _logger.Debug($"Updating english fraction for PAYE scheme {payeRef}");
+            _logger.LogDebug($"Updating english fraction for PAYE scheme {payeRef}");
             await _dasAccountService.UpdatePayeScheme(payeRef);
         }
 
         if (englishFractionUpdateResponse.UpdateRequired)
         {
-            _logger.Debug($"Updating english fraction calculation date to " +
+            _logger.LogDebug($"Updating english fraction calculation date to " +
                           $"{englishFractionUpdateResponse.DateCalculated.ToShortDateString()} for PAYE scheme {payeRef}");
 
             await _mediator.Send(new CreateEnglishFractionCalculationDateCommand
