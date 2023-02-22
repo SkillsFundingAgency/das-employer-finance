@@ -2,8 +2,6 @@
 
 public class DefaultRegistry : Registry
 {
-    private const string AzureResource = "https://database.windows.net/";
-
     public DefaultRegistry()
     {
         Scan(s =>

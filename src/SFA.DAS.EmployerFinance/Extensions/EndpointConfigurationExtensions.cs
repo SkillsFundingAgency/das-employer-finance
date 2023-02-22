@@ -1,6 +1,5 @@
 ﻿using NServiceBus;
 using SFA.DAS.AutoConfiguration;
-using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using StructureMap;
@@ -17,25 +16,16 @@ public static class EndpointConfigurationExtensions
         {
             var transport = config.UseTransport<LearningTransport>();
             transport.Transactions(TransportTransactionMode.ReceiveOnly);
-            ConfigureRouting(transport.Routing());
+            transport.Routing().AddRouting();
         }
 
         else
         {
-            config.UseAzureServiceBusTransport(connectionStringBuilder(), ConfigureRouting);
+            config.UseAzureServiceBusTransport(connectionStringBuilder(), s => s.AddRouting());
         }
-            
-        config.UseMessageConventions();
-            
-        return config;
-    }
 
-    private static void ConfigureRouting(RoutingSettings routing)
-    {
-        routing.RouteToEndpoint(
-            typeof(ImportLevyDeclarationsCommand).Assembly,
-            typeof(ImportLevyDeclarationsCommand).Namespace,
-            "SFA.DAS.EmployerFinance.MessageHandlers"
-        );
+        config.UseMessageConventions();
+
+        return config;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using NServiceBus;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
@@ -36,11 +37,11 @@ public static class ServiceCollectionExtensions
 
                 if (isDevelopment)
                 {
-                    endpointConfiguration.UseLearningTransport();
+                    endpointConfiguration.UseLearningTransport(s=> s.AddRouting());
                 }
                 else
                 {
-                    endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguration.ServiceBusConnectionString);
+                    endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguration.ServiceBusConnectionString, s=> s.AddRouting());
                 }
                     
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();

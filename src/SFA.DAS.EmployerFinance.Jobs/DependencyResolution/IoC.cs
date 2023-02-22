@@ -10,5 +10,5 @@ public static class IoC
         registry.IncludeRegistry<EmployerFinanceOuterApiRegistry>();
         registry.IncludeRegistry<DateTimeRegistry>();
         registry.IncludeRegistry<DefaultRegistry>();
-    }
+        }
 }
