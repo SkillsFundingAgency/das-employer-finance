@@ -30,7 +30,6 @@
 		<PackageReference Include="SFA.DAS.Authentication">
 			<Version>1.1.2</Version>
 		</PackageReference>
-		<PackageReference Include="SFA.DAS.Authorization.Mvc" Version="6.0.97" />
 		<PackageReference Include="SFA.DAS.Authorization.WebApi">
 			<Version>6.0.52</Version>
 		</PackageReference>
