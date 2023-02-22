@@ -1,20 +1,16 @@
-﻿using Microsoft.Azure.WebJobs.Host;
-using StructureMap;
+﻿namespace SFA.DAS.EmployerFinance.Jobs.DependencyResolution;
 
-namespace SFA.DAS.EmployerFinance.Jobs.DependencyResolution
+public class StructureMapJobActivator : IJobActivator
 {
-    public class StructureMapJobActivator : IJobActivator
+    private readonly IContainer _container;
+
+    public StructureMapJobActivator(IContainer container)
     {
-        private readonly IContainer _container;
+        _container = container;
+    }
 
-        public StructureMapJobActivator(IContainer container)
-        {
-            _container = container;
-        }
-
-        public T CreateInstance<T>()
-        {
-            return _container.GetInstance<T>();
-        }
+    public T CreateInstance<T>()
+    {
+        return _container.GetInstance<T>();
     }
 }

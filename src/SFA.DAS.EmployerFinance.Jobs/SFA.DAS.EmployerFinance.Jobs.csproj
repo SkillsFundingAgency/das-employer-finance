@@ -58,6 +58,12 @@
     <Content Include="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="nlog.Development.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="settings.job">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
