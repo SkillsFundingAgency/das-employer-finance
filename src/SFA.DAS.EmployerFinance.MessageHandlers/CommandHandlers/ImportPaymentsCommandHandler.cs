@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
-using NServiceBus;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Messages.Commands;

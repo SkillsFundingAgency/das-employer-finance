@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="ApplicationInsights.config" />
+    <None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\4.5.3\contentFiles\any\any\NLog.xsd" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="appsettings.json" />
@@ -61,6 +62,12 @@
     <None Update="App.Release.config">
       <IsTransformFile>true</IsTransformFile>
       <DependentUpon>App.config</DependentUpon>
+    </None>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="nlog.Development.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

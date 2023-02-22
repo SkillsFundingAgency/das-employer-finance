@@ -1,67 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NServiceBus;
+﻿using System.Collections.Generic;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+
+public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCommand>
 {
-    public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCommand>
+    private readonly ICurrentDateTime _currentDateTime;
+    private readonly IEmployerAccountRepository _accountRepository;
+    private readonly ILog _logger;
+
+    public DraftExpireFundsCommandHandler(ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository, ILog logger)
     {
-        private readonly ICurrentDateTime _currentDateTime;
-        private readonly IEmployerAccountRepository _accountRepository;
-        private readonly ILog _logger;
+        _currentDateTime = currentDateTime;
+        _accountRepository = accountRepository;
+        _logger = logger;
+    }
+    public async Task Handle(DraftExpireFundsCommand message, IMessageHandlerContext context)
+    {
+        try
+        {
+            var now = _currentDateTime.Now;
+            var accounts = await _accountRepository.GetAll();
 
-        public DraftExpireFundsCommandHandler(ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository, ILog logger)
-        {
-            _currentDateTime = currentDateTime;
-            _accountRepository = accountRepository;
-            _logger = logger;
-        }
-        public async Task Handle(DraftExpireFundsCommand message, IMessageHandlerContext context)
-        {
-            try
+            var messageTasks = new List<Task>();
+            var sendCounter = 0;
+
+            _logger.Info($"Queueing {nameof(DraftExpireAccountFundsCommand)} messages for {accounts.Count} accounts.");
+
+            foreach (var account in accounts)
             {
-                var now = _currentDateTime.Now;
-                var accounts = await _accountRepository.GetAll();
+                var sendOptions = new SendOptions();
+                sendOptions.RouteToThisEndpoint();
+                sendOptions.RequireImmediateDispatch();
 
-                var messageTasks = new List<Task>();
-                var sendCounter = 0;
+                messageTasks.Add(context.Send(new DraftExpireAccountFundsCommand { AccountId = account.Id, DateTo = message.DateTo }, sendOptions));
+                sendCounter++;
 
-                _logger.Info($"Queueing {nameof(DraftExpireAccountFundsCommand)} messages for {accounts.Count} accounts.");
-
-                foreach (var account in accounts)
+                if (sendCounter % 1000 == 0)
                 {
-                    var sendOptions = new SendOptions();
-                    sendOptions.RouteToThisEndpoint();
-                    sendOptions.RequireImmediateDispatch();
-
-                    messageTasks.Add(context.Send(new DraftExpireAccountFundsCommand { AccountId = account.Id, DateTo = message.DateTo }, sendOptions));
-                    sendCounter++;
-
-                    if (sendCounter % 1000 == 0)
-                    {
-                        await Task.WhenAll(messageTasks).ConfigureAwait(false); ;
-                        _logger.Info($"Queued {sendCounter} of {accounts.Count} messages.");
-                        messageTasks.Clear();
-                        await Task.Delay(500).ConfigureAwait(false); ;
-                    }
+                    await Task.WhenAll(messageTasks).ConfigureAwait(false); ;
+                    _logger.Info($"Queued {sendCounter} of {accounts.Count} messages.");
+                    messageTasks.Clear();
+                    await Task.Delay(500).ConfigureAwait(false); ;
                 }
-
-                // await final tasks not % 1000
-                await Task.WhenAll(messageTasks).ConfigureAwait(false);
-                _logger.Info($"Queued {sendCounter} of {accounts.Count} messages.");
-
-                _logger.Info($"{nameof(DraftExpireFundsCommandHandler)} completed.");
             }
-            catch(Exception ex)
-            {
-                _logger.Error(ex, $"{nameof(DraftExpireFundsCommandHandler)} failed");
-                throw;
-            }
+
+            // await final tasks not % 1000
+            await Task.WhenAll(messageTasks).ConfigureAwait(false);
+            _logger.Info($"Queued {sendCounter} of {accounts.Count} messages.");
+
+            _logger.Info($"{nameof(DraftExpireFundsCommandHandler)} completed.");
+        }
+        catch(Exception ex)
+        {
+            _logger.Error(ex, $"{nameof(DraftExpireFundsCommandHandler)} failed");
+            throw;
         }
     }
 }
