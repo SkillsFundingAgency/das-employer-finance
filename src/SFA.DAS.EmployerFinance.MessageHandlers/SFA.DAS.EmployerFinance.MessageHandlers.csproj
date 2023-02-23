@@ -33,7 +33,9 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<Content Include="appsettings.json" />
+		<Content Include="appsettings.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="App.Debug.config">

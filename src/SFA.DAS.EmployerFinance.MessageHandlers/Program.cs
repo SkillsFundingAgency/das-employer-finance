@@ -1,5 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.MessageHandlers.DependencyResolution;
-using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
+﻿using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
+using SFA.DAS.NServiceBus.Configuration.MicrosoftDependencyInjection;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers;
 
@@ -15,14 +15,13 @@ public class Program
     private static IHost CreateHost(string[] args)
     {
         var builder = new HostBuilder()
-            .UseDasEnvironment()
             .ConfigureDasAppConfiguration()
+            .UseDasEnvironment()
             .UseConsoleLifetime()
             .ConfigureDasLogging()
             .ConfigureDasServices()
-            .UseStructureMap();
-
-
+            .UseNServiceBusContainer();
+        
         return builder.Build();
     }
 }
