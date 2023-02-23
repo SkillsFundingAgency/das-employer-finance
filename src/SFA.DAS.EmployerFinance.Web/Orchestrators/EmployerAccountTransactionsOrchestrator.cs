@@ -34,11 +34,6 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         private readonly IAccountApiClient _accountApiClient;
         private readonly IMediator _mediator;
 
-        protected EmployerAccountTransactionsOrchestrator()
-        {
-
-        }
-
         public EmployerAccountTransactionsOrchestrator(
             IAccountApiClient accountApiClient,
             IMediator mediator,
@@ -80,8 +75,6 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     ProjectedSpend = getAccountFinanceOverview.FundsOut
                 }
             };
-
-            _logger.LogInformation($"viewModel : {viewModel}");
 
             return viewModel;
         }

@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             var indexTask = _transfersService.GetCounts(accountId);
             var accountDetail = _accountApiClient.GetAccount(hashedAccountId);
 
-            var renderCreateTransfersPledgeButton = _authorizationService.CheckUserAccountAccess(ClaimsPrincipal.Current, Authentication.EmployerUserRole.Transactor);            
+            var renderCreateTransfersPledgeButton = _authorizationService.CheckUserAccountAccess(ClaimsPrincipal.Current, EmployerUserRole.Transactor);            
 
             await Task.WhenAll(indexTask, accountDetail);
 

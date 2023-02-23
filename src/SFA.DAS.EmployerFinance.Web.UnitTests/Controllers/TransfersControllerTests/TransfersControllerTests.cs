@@ -3,8 +3,6 @@ using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Authorization.EmployerFeatures.Models;
-using SFA.DAS.Authorization.Features.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
@@ -25,7 +23,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         private Mock<IEmployerAccountAuthorisationHandler> _authorisationService;
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
-        private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
         private GetFinancialBreakdownResponse _financialBreakdownResponse;
         private AccountDetailViewModel _accountDetailViewModel;
 
@@ -41,13 +38,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _encodingService = new Mock<IEncodingService>();
             _transfersService = new Mock<ITransfersService>();
             _accountApiClient = new Mock<IAccountApiClient>();
-            _featureTogglesService = new Mock<IFeatureTogglesService<EmployerFeatureToggle>>();
             _financialBreakdownResponse = fixture.Create<GetFinancialBreakdownResponse>();
 
             _transfersService.Setup(m => m.GetFinancialBreakdown(AccountId)).ReturnsAsync(_financialBreakdownResponse);
 
             _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
-            _featureTogglesService.Setup(x => x.GetFeatureToggle(It.IsAny<string>())).Returns(new EmployerFeatureToggle { IsEnabled = true });
             _accountDetailViewModel = fixture.Create<AccountDetailViewModel>();
             _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
             _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);

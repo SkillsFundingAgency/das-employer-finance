@@ -4,8 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Authorization.EmployerFeatures.Models;
-using SFA.DAS.Authorization.Features.Services;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
@@ -24,7 +22,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         private IConfigurationProvider _mapperConfig;
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
-        private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureToggleService;
         private TransferAllowance _transferAllowance;
         private EmployerFinanceConfiguration _configuration;
 
@@ -43,9 +40,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
             _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
-            _featureToggleService = new Mock<IFeatureTogglesService<EmployerFeatureToggle>>();
-
-            _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, _featureToggleService.Object);
+            
+            _controller = new TransferConnectionsController(null, _mapper, _mediator.Object);
         }
 
         [Test]

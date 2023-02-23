@@ -19,8 +19,6 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="SFA.DAS.Authorization.EmployerFeatures" Version="6.0.52" />
-    <PackageReference Include="SFA.DAS.Authorization.Features" Version="6.0.52" />
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
     <PackageReference Include="SFA.DAS.Employer.Shared.UI" Version="17.1.29" />
     <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.28" />
