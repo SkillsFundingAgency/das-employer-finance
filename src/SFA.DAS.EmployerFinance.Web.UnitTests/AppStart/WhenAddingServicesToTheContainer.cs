@@ -14,6 +14,7 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
+using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
@@ -57,6 +58,7 @@ public class WhenAddingServicesToTheContainer
     [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
     [TestCase(typeof(IRequestHandler<FindEmployerAccountLevyDeclarationTransactionsQuery, FindEmployerAccountLevyDeclarationTransactionsResponse>))]
     [TestCase(typeof(IRequestHandler<GetPayeSchemeByRefQuery, GetPayeSchemeByRefResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAccountFinanceOverviewQuery, GetAccountFinanceOverviewResponse>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Handlers(Type toResolve)
     {
         var serviceCollection = new ServiceCollection();
@@ -107,9 +109,10 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
-                new KeyValuePair<string, string>("EmployerFinanceConfiguration:CommitmentsApiV2ClientConfiguration:ApiBaseUrl", "https://test1.com/"),
-                new KeyValuePair<string, string>("EmployerFinanceConfiguration:EmployerFinanceOuterApiConfiguration:BaseUrl", "https://test.com/"),
-                new KeyValuePair<string, string>("EmployerFinanceConfiguration:EmployerFinanceOuterApiConfiguration:Key", "123edc"),
+                new KeyValuePair<string, string>("CommitmentsApiV2ClientConfiguration:ApiBaseUrl", "https://test1.com/"),
+                new KeyValuePair<string, string>("AccountApiConfiguration:ApiBaseUrl", "https://test1.com/"),
+                new KeyValuePair<string, string>("EmployerFinanceOuterApiConfiguration:BaseUrl", "https://test.com/"),
+                new KeyValuePair<string, string>("EmployerFinanceOuterApiConfiguration:Key", "123edc"),
                 new KeyValuePair<string, string>("EmployerFinanceConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new KeyValuePair<string, string>("EnvironmentName", "test"),
                 new KeyValuePair<string, string>("SFA.DAS.Encoding", "{'Encodings':[{'EncodingType':'AccountId','Salt':'test','MinHashLength':6,'Alphabet':'46789BCDFGHJKLMNPRSTVWXY'}]}")

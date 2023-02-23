@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Configuration.AzureTableStorage;
+using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Filters;
@@ -70,7 +71,7 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddConfigurationOptions(_configuration);
 
-            _employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
+            _employerFinanceConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
 
             var identityServerConfiguration = _configuration
              .GetSection(nameof(IdentityServerConfiguration))
@@ -81,7 +82,8 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddDatabaseRegistration(_employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
             services.AddHmrcServices();
-
+            
+            services.AddMaMenuConfiguration("SignOut", identityServerConfiguration.ClientId,_configuration["ResourceEnvironmentName"]);
             //MAC-192
             services.AddApplicationServices(_configuration);
 
@@ -142,6 +144,7 @@ namespace SFA.DAS.EmployerFinance.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();

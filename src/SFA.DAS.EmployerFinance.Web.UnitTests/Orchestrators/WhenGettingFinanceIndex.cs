@@ -19,7 +19,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
     public class WhenGettingFinanceIndex
     {
         private const string HashedAccountId = "123ABC";
-        private const string ExternalUser = "Test user";
         private const long AccountId = 1234;
 
         private Mock<IAccountApiClient> _accountApiClient;
@@ -53,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
 
-            _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>());
+            _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), _encodingService.Object);
         }
 
         [Test]
@@ -67,18 +66,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 {
                     ApprenticeshipEmployerType = apprenticeshipEmployerType
                 });
-
-            var getAccountFinanceOverviewQuery = new GetAccountFinanceOverviewQuery
-            {
-                AccountHashedId = HashedAccountId,
-                AccountId = AccountId
-            };
-
             _mediator.Setup(m => m.Send(It.IsAny<GetAccountFinanceOverviewQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetAccountFinanceOverviewResponse());
 
             //Act
-            var response = await _orchestrator.Index(getAccountFinanceOverviewQuery);
+            var response = await _orchestrator.Index(HashedAccountId);
 
             //Assert
             response.Should().NotBeNull();

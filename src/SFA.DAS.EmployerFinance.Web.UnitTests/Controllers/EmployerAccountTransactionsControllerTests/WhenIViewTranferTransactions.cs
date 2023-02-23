@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -38,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
                 _orchestrator.Object,
                 _mapper.Object,
                 _mediator.Object,
-                Mock.Of<ILog>());
+                Mock.Of<ILogger<EmployerAccountTransactionsController>>());
 
             _query = new GetTransferTransactionDetailsQuery
             {

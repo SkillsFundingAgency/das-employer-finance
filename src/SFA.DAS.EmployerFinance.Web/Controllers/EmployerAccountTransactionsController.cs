@@ -4,14 +4,13 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -21,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
-        private readonly ILog _logger;
+        private readonly ILogger<EmployerAccountTransactionsController> _logger;
 
         private readonly EmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
 
@@ -29,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             EmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
             IMapper mapper,
             IMediator mediator,
-            ILog logger)
+            ILogger<EmployerAccountTransactionsController> logger)
         {
             _accountTransactionsOrchestrator = accountTransactionsOrchestrator;
 
@@ -40,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance/provider/summary")]
         [Route("balance/provider/summary")]
-        public async Task<IActionResult> ProviderPaymentSummary(string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> ProviderPaymentSummary([FromRoute]string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
         {
             var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate);
 
@@ -49,13 +48,10 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [Route("finance")]
         [Route("balance")]
-        public async Task<IActionResult> Index(GetAccountFinanceOverviewQuery query)
+        public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
         {
-            _logger.Info($"EmployerAccountTransactionsController Index GetAccountFinanceOverviewQuery  AccountHashedId : {query.AccountHashedId} AccountId : {query.AccountId} ");
 
-            var viewModel = await _accountTransactionsOrchestrator.Index(query);
-
-            _logger.Info($"After calling  _accountTransactionsOrchestrator ViewModel : {viewModel} viewModel.RedirectUrl : {viewModel.RedirectUrl} ");
+            var viewModel = await _accountTransactionsOrchestrator.Index(hashedAccountId);
 
             if (viewModel.RedirectUrl != null)
                 return Redirect(viewModel.RedirectUrl);
@@ -65,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [ImportModelStateFromTempData]
         [Route("finance/downloadtransactions")]
-        public Microsoft.AspNetCore.Mvc.ActionResult TransactionsDownload()
+        public ActionResult TransactionsDownload()
         {
             return View(new TransactionDownloadViewModel());
         }

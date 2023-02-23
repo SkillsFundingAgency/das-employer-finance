@@ -3,6 +3,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
@@ -13,7 +14,7 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     private readonly IDasLevyService _levyService;
     private readonly IValidator<GetAccountFinanceOverviewQuery> _validator;
     private readonly ILogger<GetAccountFinanceOverviewQueryHandler> _logger;
-
+    
     public GetAccountFinanceOverviewQueryHandler(
         ICurrentDateTime currentDateTime,
         IDasForecastingService dasForecastingService,
@@ -31,7 +32,6 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     public async Task<GetAccountFinanceOverviewResponse> Handle(GetAccountFinanceOverviewQuery query, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(query);
-
         if (!validationResult.IsValid())
         {
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);

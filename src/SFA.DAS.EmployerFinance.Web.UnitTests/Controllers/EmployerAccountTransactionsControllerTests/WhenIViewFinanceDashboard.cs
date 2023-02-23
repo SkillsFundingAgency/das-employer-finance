@@ -2,6 +2,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
@@ -14,25 +15,17 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
 {
     public class WhenIViewFinanceDashboard
     {
-        private const long ExpectedAccountId = 23175;
         private const string ExpectedHashedAccountId = "ABC123";
         private const decimal ExpectedCurrentFunds = 123.45M;
 
         private EmployerAccountTransactionsController _controller;
         private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
-        private GetAccountFinanceOverviewQuery _query;
-
+        
         [SetUp]
         public void Arrange()
         {
-            _query = new GetAccountFinanceOverviewQuery
-            {
-                AccountId = ExpectedAccountId,
-                AccountHashedId = ExpectedHashedAccountId
-            };
-
             _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
-            _orchestrator.Setup(o => o.Index(It.Is<GetAccountFinanceOverviewQuery>(q => q.AccountId == ExpectedAccountId && q.AccountHashedId == ExpectedHashedAccountId)))
+            _orchestrator.Setup(o => o.Index(ExpectedHashedAccountId))
                 .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
                 {
                     Data = new FinanceDashboardViewModel
@@ -46,14 +39,14 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
                 _orchestrator.Object,
                 Mock.Of<IMapper>(),
                 Mock.Of<IMediator>(),
-                Mock.Of<ILog>());
+                Mock.Of<ILogger<EmployerAccountTransactionsController>>());
         }
 
         [Test]
         public async Task ThenTheAccountHashedIdIsReturned()
         {
             //Act
-            var result = await _controller.Index(_query);
+            var result = await _controller.Index(ExpectedHashedAccountId);
 
             //Assert
             var viewResult = result as ViewResult;
@@ -69,7 +62,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
         public async Task ThenTheViewModelHasTheCorrectLevyBalance()
         {
             //Act
-            var result = await _controller.Index(_query);
+            var result = await _controller.Index(ExpectedHashedAccountId);
 
             //Assert
             var viewResult = result as ViewResult;
@@ -87,14 +80,14 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
             //Arrange
             const string redirectUrl = "http://example.com";
 
-            _orchestrator.Setup(o => o.Index(It.IsAny<GetAccountFinanceOverviewQuery>()))
+            _orchestrator.Setup(o => o.Index(It.IsAny<string>()))
                 .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
                 {
                     RedirectUrl = redirectUrl
                 });
 
             //Act
-            var result = await _controller.Index(_query);
+            var result = await _controller.Index(ExpectedHashedAccountId);
 
             //Assert
             var redirectResult = result as RedirectResult;
@@ -107,7 +100,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
         public async Task ThenRedirectResultIsNotReturnedWhenOrchestratorDoesNotRequestARedirect()
         {
             //Act
-            var result = await _controller.Index(_query);
+            var result = await _controller.Index(ExpectedHashedAccountId);
 
             //Assert
             Assert.IsNotInstanceOf<RedirectResult>(result);

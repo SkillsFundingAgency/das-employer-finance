@@ -63,7 +63,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 }));
 
             _orchestrator =
-                new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>());
+                new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object,
+                    _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(),
+                    Mock.Of<IEncodingService>());
         }
 
         private Expression<Func<IMediator, Task<FindAccountProviderPaymentsResponse>>> AssertExpressionValidation()

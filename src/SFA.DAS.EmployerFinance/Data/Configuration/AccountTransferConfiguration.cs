@@ -8,5 +8,6 @@ public class AccountTransferConfiguration : IEntityTypeConfiguration<AccountTran
     public void Configure(EntityTypeBuilder<AccountTransfer> builder)
     {
         builder.ToTable("AccountTransfer");
+        builder.HasNoKey();
     }
 }

@@ -18,6 +18,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 using AggregationData = SFA.DAS.EmployerFinance.Models.Transaction.AggregationData;
 using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.TransactionItemType;
 using TransactionViewModel = SFA.DAS.EmployerFinance.Web.ViewModels.TransactionViewModel;
@@ -29,6 +30,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
     {
         private readonly ICurrentDateTime _currentTime;
         private readonly ILogger<EmployerAccountTransactionsOrchestrator> _logger;
+        private readonly IEncodingService _encodingService;
         private readonly IAccountApiClient _accountApiClient;
         private readonly IMediator _mediator;
 
@@ -41,33 +43,34 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             IAccountApiClient accountApiClient,
             IMediator mediator,
             ICurrentDateTime currentTime,
-            ILogger<EmployerAccountTransactionsOrchestrator> logger)
+            ILogger<EmployerAccountTransactionsOrchestrator> logger, IEncodingService encodingService)
         {
             _accountApiClient = accountApiClient;
             _mediator = mediator;
             _currentTime = currentTime;
             _logger = logger;
+            _encodingService = encodingService;
         }
 
-        public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(GetAccountFinanceOverviewQuery query)
+        public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId)
         {
-            var accountTask = _accountApiClient.GetAccount(query.AccountId);
+            var accountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId);
+            var accountDetailViewModel = await _accountApiClient.GetAccount(accountId);
             _logger.LogInformation("After GetAccount call");
-            var getAccountFinanceOverviewTask = _mediator.Send(query);
+            var getAccountFinanceOverview = await _mediator.Send(new GetAccountFinanceOverviewQuery
+            {
+                AccountId = accountId
+            });
 
-            var account = await accountTask;
-
-            var getAccountFinanceOverview = await getAccountFinanceOverviewTask;
-
-            _logger.LogInformation($"account : {account}  getAccountFinanceOverview: {getAccountFinanceOverview} ");
-            _logger.LogInformation($" account.ApprenticeshipEmployerType: {account.ApprenticeshipEmployerType}  AccountHashedId: {query.AccountHashedId} CurrentLevyFunds: {getAccountFinanceOverview.CurrentFunds} ");
+            _logger.LogInformation($"account : {hashedAccountId}  getAccountFinanceOverview: {getAccountFinanceOverview} ");
+            _logger.LogInformation($" account.ApprenticeshipEmployerType: {accountDetailViewModel.ApprenticeshipEmployerType}  AccountHashedId: {hashedAccountId} CurrentLevyFunds: {getAccountFinanceOverview.CurrentFunds} ");
 
             var viewModel = new OrchestratorResponse<FinanceDashboardViewModel>
             {
                 Data = new FinanceDashboardViewModel
                 {
-                    IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), account.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
-                    AccountHashedId = query.AccountHashedId,
+                    IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
+                    AccountHashedId = hashedAccountId,
                     CurrentLevyFunds = getAccountFinanceOverview.CurrentFunds,
                     ExpiringFunds = getAccountFinanceOverview.ExpiringFundsAmount,
                     ExpiryDate = getAccountFinanceOverview.ExpiringFundsExpiryDate,

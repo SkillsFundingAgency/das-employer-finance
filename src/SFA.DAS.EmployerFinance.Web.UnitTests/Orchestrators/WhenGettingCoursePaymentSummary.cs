@@ -16,6 +16,7 @@ using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 {
@@ -47,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 _accountApiMock.Object, 
                 _mediatorMock.Object, 
                 _currentTimeMock.Object,
-                Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>());
+                Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>());
         }
 
         [Test]

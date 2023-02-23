@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddSingleton(configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>());
             
             services.Configure<IAccountApiConfiguration>(configuration.GetSection(nameof(AccountApiConfiguration)));
-            services.AddSingleton<IAccountApiConfiguration, AccountApiConfiguration>();
+            services.AddSingleton<IAccountApiConfiguration>(configuration.GetSection(nameof(AccountApiConfiguration)).Get<AccountApiConfiguration>());
             
 
             services.Configure<CommitmentsApiV2ClientConfiguration>(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)));

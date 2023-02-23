@@ -58,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             SetupGetTransactionsResponse(2017, 5);
 
-            _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>());
+            _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>());
         }
 
         [Test]

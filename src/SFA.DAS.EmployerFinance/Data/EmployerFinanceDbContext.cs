@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -28,7 +29,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<TransferConnectionInvitation> TransferConnectionInvitations { get; set; }
     public virtual DbSet<User> Users { get; set; }
 
-    public EmployerFinanceDbContext() { }
+    public EmployerFinanceDbContext() { }   
 
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
 
@@ -68,7 +69,14 @@ public class EmployerFinanceDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("employer_financial");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployerFinanceDbContext).Assembly);
+        //modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployerFinanceDbContext).Assembly);
+        modelBuilder.ApplyConfiguration(new AccountConfiguration());
+        modelBuilder.ApplyConfiguration(new AccountTransferConfiguration());
+        modelBuilder.ApplyConfiguration(new HealthCheckConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new TransactionLineEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
         modelBuilder.Ignore<PaymentDetails>();
     }
 }

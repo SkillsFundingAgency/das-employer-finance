@@ -1,17 +1,9 @@
-﻿using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
 public class GetAccountFinanceOverviewQueryValidator : IValidator<GetAccountFinanceOverviewQuery>
 {
-    private readonly IAuthorizationService _authorizationService;
-
-    public GetAccountFinanceOverviewQueryValidator(IAuthorizationService authorizationService)
-    {
-        _authorizationService = authorizationService;
-    }
-
     public ValidationResult Validate(GetAccountFinanceOverviewQuery query)
     {
         throw new NotImplementedException();
