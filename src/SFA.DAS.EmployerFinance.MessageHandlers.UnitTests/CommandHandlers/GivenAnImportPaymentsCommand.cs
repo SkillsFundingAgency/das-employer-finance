@@ -16,7 +16,6 @@ using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.Provider.Events.Api.Client;
 using SFA.DAS.Provider.Events.Api.Types;
 using DbPeriodEnd = SFA.DAS.EmployerFinance.Models.Payments.PeriodEnd;

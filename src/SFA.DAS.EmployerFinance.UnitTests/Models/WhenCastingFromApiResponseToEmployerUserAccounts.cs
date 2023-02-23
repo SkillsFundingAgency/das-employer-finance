@@ -1,6 +1,4 @@
 using AutoFixture.NUnit3;
-using FluentAssertions;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 using SFA.DAS.EmployerFinance.Models.UserAccounts;
 

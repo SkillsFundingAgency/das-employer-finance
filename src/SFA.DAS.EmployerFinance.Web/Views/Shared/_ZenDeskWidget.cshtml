@@ -1,8 +1,6 @@
-﻿@using SFA.DAS.EmployerFinance.Web.Extensions
-
-@{
-    var snippetUrl = $"https://static.zdassets.com/ekr/snippet.js?key={Configuration["EmployerFinanceConfiguration:ZenDeskSectionId"]}";
-    var cobrowsingSnippetUrl = $"https://embed-euw1.rcrsv.io/{Configuration["EmployerFinanceConfiguration:ZenDeskSnippetKey"]}?zwwi=1";
+﻿@{
+    var snippetUrl = $"https://static.zdassets.com/ekr/snippet.js?key={Configuration["ZenDeskConfiguration:ZenDeskSectionId"]}";
+    var cobrowsingSnippetUrl = $"https://embed-euw1.rcrsv.io/{Configuration["ZenDeskConfiguration:ZenDeskSnippetKey"]}?zwwi=1";
 }
 
 <script type="text/javascript">
@@ -18,7 +16,7 @@
             },
             helpCenter: {
                 filter: {
-                    section: @Configuration["EmployerFinanceConfiguration:ZenDeskSectionId"]
+                    section: @Configuration["ZenDeskConfiguration:ZenDeskSectionId"]
                 }
             }
         }

@@ -1,13 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;

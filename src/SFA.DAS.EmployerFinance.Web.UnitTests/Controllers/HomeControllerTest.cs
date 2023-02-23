@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.Authentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
 {
@@ -23,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
             urlHelper.Setup(x => x.LegacyEasAction("")).Returns(ExpectedUrl);
             
             _homeController =
-                new HomeController(Mock.Of<EmployerFinanceConfiguration>(), urlHelper.Object);
+                new HomeController(Mock.Of<ZenDeskConfiguration>(), urlHelper.Object);
         }
 
         [Test]

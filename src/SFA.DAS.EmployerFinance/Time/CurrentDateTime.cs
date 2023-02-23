@@ -1,5 +1,4 @@
-﻿using System;
-using SFA.DAS.EmployerFinance.Interfaces;
+﻿using SFA.DAS.EmployerFinance.Interfaces;
 
 namespace SFA.DAS.EmployerFinance.Time
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -9,7 +8,6 @@ using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
-using EmployerUserRole = SFA.DAS.Authorization.EmployerUserRoles.Options.EmployerUserRole;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {

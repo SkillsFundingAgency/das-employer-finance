@@ -86,7 +86,7 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddApplicationServices(_configuration);
 
             //TODO replace with EncodingService
-            services.AddCachesRegistrations();
+            services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
             
             services.AddEventsApi();
             //services.AddNotifications(_configuration);
@@ -132,11 +132,6 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddControllersWithViews(o => { })
                     .AddRazorRuntimeCompilation();
 #endif            
-        }
-
-        public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
-        {
-            serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

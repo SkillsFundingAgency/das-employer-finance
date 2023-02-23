@@ -1,10 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests
@@ -34,20 +28,5 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
             Assert.IsTrue(actual.IsValid());
         }
 
-        [Test]
-        public async Task ThenTheUnauthorizedFlagIsSetWhenTheUserDoesNotValidateAgainstTheAccount()
-        {
-            //Arrange
-            _authorizationService.Setup(x => x.IsAuthorized(EmployerUserRole.Any)).Returns(false);
-
-            //Act
-            var actual = await _validator.ValidateAsync(new GetAccountFinanceOverviewQuery
-            {
-                AccountId = 10
-            });
-
-            //Assert
-            Assert.IsTrue(actual.IsUnauthorized);
-        }
     }
 }

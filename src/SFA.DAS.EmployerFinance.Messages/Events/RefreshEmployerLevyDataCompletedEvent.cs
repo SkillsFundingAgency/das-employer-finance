@@ -1,5 +1,4 @@
-﻿using System;
-using SFA.DAS.NServiceBus;
+﻿using SFA.DAS.NServiceBus;
 
 namespace SFA.DAS.EmployerFinance.Messages.Events
 {

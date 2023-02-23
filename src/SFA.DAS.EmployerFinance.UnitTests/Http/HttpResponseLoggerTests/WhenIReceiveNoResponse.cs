@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Http;
 using SFA.DAS.NLog.Logger;
 

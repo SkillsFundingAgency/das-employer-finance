@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Mappings;
 

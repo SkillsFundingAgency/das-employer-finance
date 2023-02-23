@@ -1,8 +1,4 @@
-using System.Threading.Tasks;
 using AutoFixture.NUnit3;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.UserAccounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;

@@ -20,7 +20,7 @@ public static class NServiceBusServiceRegistrations
 
     public static void StartNServiceBus(this UpdateableServiceProvider services, IConfiguration configuration, bool isDevOrLocal)
     {
-        var employerFinanceConfiguration = configuration.Get<EmployerFinanceConfiguration>();
+        var employerFinanceConfiguration = configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
 
         var databaseConnectionString = employerFinanceConfiguration.DatabaseConnectionString;
 

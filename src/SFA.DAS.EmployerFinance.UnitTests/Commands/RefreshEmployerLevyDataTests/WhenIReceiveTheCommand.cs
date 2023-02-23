@@ -13,7 +13,6 @@ using SFA.DAS.EmployerFinance.UnitTests.ObjectMothers;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
 using SFA.DAS.Events.Api.Types;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Testing.Services;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 

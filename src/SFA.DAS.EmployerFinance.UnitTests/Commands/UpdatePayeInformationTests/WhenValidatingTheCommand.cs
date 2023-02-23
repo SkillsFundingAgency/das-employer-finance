@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+﻿using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
 {

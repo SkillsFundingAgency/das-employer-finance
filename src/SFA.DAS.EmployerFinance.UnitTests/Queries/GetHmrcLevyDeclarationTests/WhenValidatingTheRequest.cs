@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
+﻿using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
 {

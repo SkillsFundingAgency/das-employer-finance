@@ -14,10 +14,10 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
     [Route("service")]
     public class HomeController : Controller
     { 
-        private readonly EmployerFinanceConfiguration _configuration;
+        private readonly ZenDeskConfiguration _configuration;
         private readonly IUrlActionHelper _urlHelper;
 
-        public HomeController(EmployerFinanceConfiguration configuration, IUrlActionHelper urlHelper)
+        public HomeController(ZenDeskConfiguration configuration, IUrlActionHelper urlHelper)
         {
             _configuration = configuration;
             _urlHelper = urlHelper;

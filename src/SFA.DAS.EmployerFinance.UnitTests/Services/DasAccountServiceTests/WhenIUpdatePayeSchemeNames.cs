@@ -1,8 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediatR;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+﻿using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 using SFA.DAS.EmployerFinance.Services;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Services.DasAccountServiceTests

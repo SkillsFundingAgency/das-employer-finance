@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using AutoMapper;
 using SFA.DAS.Authorization.ModelBinding;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 

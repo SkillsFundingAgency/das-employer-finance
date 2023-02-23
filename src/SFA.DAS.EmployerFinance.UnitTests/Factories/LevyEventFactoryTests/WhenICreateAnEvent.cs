@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Factories;
+﻿using SFA.DAS.EmployerFinance.Factories;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Factories.LevyEventFactoryTests
 {

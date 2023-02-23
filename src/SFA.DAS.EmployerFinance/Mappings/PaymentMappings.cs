@@ -1,5 +1,4 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using Payment = SFA.DAS.Provider.Events.Api.Types.Payment;
 

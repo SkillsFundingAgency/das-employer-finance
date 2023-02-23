@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Transfers;
+﻿using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Transfers;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Infrastructure.OuterApiRequests
 {

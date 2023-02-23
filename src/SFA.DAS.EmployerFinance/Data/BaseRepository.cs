@@ -30,7 +30,7 @@ public abstract class BaseRepository
     {
         try
         {
-            return await _retryPolicy.ExecuteAsync(async () =>
+            return await _retryPolicy.Execute(async () =>
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
@@ -67,7 +67,7 @@ public abstract class BaseRepository
         try
         {
 
-            return await _retryPolicy.ExecuteAsync(async () =>
+            return await _retryPolicy.Execute(async () =>
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
@@ -108,7 +108,7 @@ public abstract class BaseRepository
     {
         try
         {
-            await _retryPolicy.ExecuteAsync(async () =>
+            await _retryPolicy.Execute(async () =>
             {
                 using (var connection = new SqlConnection(_connectionString))
                 {
@@ -149,7 +149,7 @@ public abstract class BaseRepository
         return Policy
             .Handle<SqlException>(ex => _transientErrorNumbers.Contains(ex.Number))
             .Or<TimeoutException>()
-            .WaitAndRetryAsync(3, retryAttempt =>
+            .WaitAndRetry(3, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                 (exception, timespan, retryCount, context) =>
                 {

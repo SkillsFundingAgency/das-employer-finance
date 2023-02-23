@@ -1,5 +1,4 @@
-﻿using Moq;
-using SFA.DAS.EmployerFinance.Models;
+﻿using SFA.DAS.EmployerFinance.Models;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Builders
 {

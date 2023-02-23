@@ -1,5 +1,4 @@
 using SFA.DAS.EmployerFinance.Models.Transaction;
-using System;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {

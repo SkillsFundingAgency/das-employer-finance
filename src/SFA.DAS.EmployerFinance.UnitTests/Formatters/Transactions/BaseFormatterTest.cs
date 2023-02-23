@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
