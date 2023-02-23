@@ -17,7 +17,6 @@ public class Program
         var builder = new HostBuilder()
             .UseDasEnvironment()
             .ConfigureDasAppConfiguration()
-            //.ConfigureContainer<Registry>()
             .UseConsoleLifetime()
             .ConfigureDasLogging()
             .ConfigureDasServices()
