@@ -56,7 +56,7 @@ public static class HostExtensions
             services.AddNServiceBus();
             services.AddDataRepositories();
             services.AddApplicationServices();
-            services.AddDatabaseRegistration(context.Configuration.GetConnectionString("DatabaseConnectionString"));
+            services.AddDatabaseRegistration(context.Configuration[$"{ConfigurationKeys.EmployerFinance}:DatabaseConnectionString"]);
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
             services.AddUnitOfWork();
 #pragma warning disable 618

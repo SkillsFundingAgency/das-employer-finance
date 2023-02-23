@@ -7,11 +7,7 @@ public static class ClientServiceRegistrations
     public static IServiceCollection AddClientRegistrations(this IServiceCollection services)
     {
         services.AddTransient<IPaymentsEventsApiClientFactory, PaymentsEventsApiClientFactory>();
-        services.AddScoped(provider =>
-        {
-            var factory = provider.GetService<IPaymentsEventsApiClientFactory>();
-            return factory.CreateClient();
-        });
+        services.AddTransient<IPaymentsEventsApiClient>(provider => provider.GetService<IPaymentsEventsApiClientFactory>().CreateClient());
 
         return services;
     }

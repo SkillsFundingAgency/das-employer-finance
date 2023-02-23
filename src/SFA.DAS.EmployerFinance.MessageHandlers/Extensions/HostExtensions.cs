@@ -11,15 +11,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 
 public static class HostExtensions
 {
-    public static IHostBuilder UseStructureMap(this IHostBuilder builder)
-    {
-        return UseStructureMap(builder, registry: null);
-    }
-
-    public static IHostBuilder UseStructureMap(this IHostBuilder builder, Registry registry)
-    {
-        return builder.UseServiceProviderFactory(new StructureMapServiceProviderFactory(registry));
-    }
     public static IHostBuilder UseDasEnvironment(this IHostBuilder hostBuilder)
     {
         var environmentName = Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName);
@@ -65,13 +56,11 @@ public static class HostExtensions
             services.AddNServiceBus();
             services.AddDataRepositories();
             services.AddApplicationServices();
-            services.AddMediatR(typeof(Program));
             services.AddDatabaseRegistration(context.Configuration.GetConnectionString("DatabaseConnectionString"));
-            services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
+            services.AddMediatR(typeof(Program));
             services.AddUnitOfWork();
-#pragma warning disable 618
-            services.AddSingleton<IWebHookProvider>(p => null);
-#pragma warning restore 618}
+            services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
+            services.BuildServiceProvider();
         });
 
         return hostBuilder;

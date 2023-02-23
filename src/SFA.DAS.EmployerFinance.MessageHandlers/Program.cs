@@ -7,9 +7,10 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        using var host = CreateHost(args);
-
-        await host.RunAsync();
+        using (var host = CreateHost(args))
+        {
+            await host.RunAsync();
+        }
     }
 
     private static IHost CreateHost(string[] args)
@@ -21,7 +22,7 @@ public class Program
             .ConfigureDasLogging()
             .ConfigureDasServices()
             .UseNServiceBusContainer();
-        
+
         return builder.Build();
     }
 }
