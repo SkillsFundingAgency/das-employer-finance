@@ -1,11 +1,8 @@
-﻿using Microsoft.Azure.Services.AppAuthentication;
-using Microsoft.Data.SqlClient;
-using NLog.Extensions.Logging;
+﻿using NLog.Extensions.Logging;
 using SFA.DAS.Configuration;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.EmployerFinance.MessageHandlers.DependencyResolution;
+using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
@@ -14,17 +11,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 
 public static class HostExtensions
 {
-    private const string AzureResource = "https://database.windows.net/";
-
-    public static IHostBuilder UseStructureMap(this IHostBuilder builder)
-    {
-        return UseStructureMap(builder, registry: null);
-    }
-
-    public static IHostBuilder UseStructureMap(this IHostBuilder builder, Registry registry)
-    {
-        return builder.UseServiceProviderFactory(new StructureMapServiceProviderFactory(registry));
-    }
     public static IHostBuilder UseDasEnvironment(this IHostBuilder hostBuilder)
     {
         var environmentName = Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName);
@@ -63,49 +49,20 @@ public static class HostExtensions
 
     public static IHostBuilder ConfigureDasServices(this IHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureServices(services =>
+        hostBuilder.ConfigureServices((context, services) =>
         {
-            services.AddScoped(GetDbContext);
+            services.AddConfigurationSections(context.Configuration);
+            services.AddClientRegistrations();
             services.AddNServiceBus();
             services.AddDataRepositories();
-            services.AddScoped<IJobActivator, StructureMapJobActivator>();
-            services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
+            services.AddApplicationServices();
+            services.AddDatabaseRegistration(context.Configuration.GetConnectionString("DatabaseConnectionString"));
+            services.AddMediatR(typeof(Program));
             services.AddUnitOfWork();
-#pragma warning disable 618
-            services.AddSingleton<IWebHookProvider>(p => null);
-#pragma warning restore 618}
+            services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
+            services.BuildServiceProvider();
         });
 
         return hostBuilder;
-    }
-
-    private static EmployerFinanceDbContext GetDbContext(IServiceProvider serviceProvider)
-    {
-        var employerFinanceConfiguration = serviceProvider.GetService<EmployerFinanceConfiguration>();
-        var configuration = serviceProvider.GetService<IConfiguration>();
-
-        var environmentName = configuration["EnvironmentName"];
-
-        var azureServiceTokenProvider = new AzureServiceTokenProvider();
-
-        var connectionString = employerFinanceConfiguration.DatabaseConnectionString;
-
-        var connection = environmentName.Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase)
-            ? new SqlConnection(connectionString)
-            : new SqlConnection
-            {
-                ConnectionString = connectionString,
-                AccessToken = azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result
-            };
-
-        var optionsBuilder = new DbContextOptionsBuilder<EmployerFinanceDbContext>();
-        optionsBuilder.UseSqlServer(connection);
-
-        return new EmployerFinanceDbContext(optionsBuilder.Options);
-    }
-
-    private static string GetConnectionString(IServiceProvider serviceProvider)
-    {
-        return serviceProvider.GetService<EmployerFinanceConfiguration>().DatabaseConnectionString;
     }
 }

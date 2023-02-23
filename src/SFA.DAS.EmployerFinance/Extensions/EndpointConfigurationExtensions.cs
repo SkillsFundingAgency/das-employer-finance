@@ -1,13 +1,12 @@
 ﻿using NServiceBus;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
-using StructureMap;
 
 namespace SFA.DAS.EmployerFinance.Extensions;
 
 public static class EndpointConfigurationExtensions
 {
-    public static EndpointConfiguration UseAzureServiceBusTransport(this EndpointConfiguration config, Func<string> connectionStringBuilder, IContainer container, bool isLocal)
+    public static EndpointConfiguration UseAzureServiceBusTransport(this EndpointConfiguration config, Func<string> connectionStringBuilder, bool isLocal)
     {
         if (isLocal)
         {
@@ -15,7 +14,6 @@ public static class EndpointConfigurationExtensions
             transport.Transactions(TransportTransactionMode.ReceiveOnly);
             transport.Routing().AddRouting();
         }
-
         else
         {
             config.UseAzureServiceBusTransport(connectionStringBuilder(), s => s.AddRouting());

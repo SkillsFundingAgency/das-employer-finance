@@ -2,6 +2,7 @@
 
 public class AccountTransfer
 {
+    public long Id { get; set; }
     public long SenderAccountId { get; set; }
     public string SenderAccountName { get; set; }
     public long ReceiverAccountId { get; set; }

@@ -1,6 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Jobs.DependencyResolution;
-using SFA.DAS.EmployerFinance.Jobs.Extensions;
+﻿using SFA.DAS.EmployerFinance.Jobs.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Jobs;
 
@@ -17,11 +15,10 @@ public class Program
     private static IHost CreateHost()
     {
         return new HostBuilder()
+            .ConfigureDasAppConfiguration()
             .ConfigureDasWebJobs()
             .ConfigureDasLogging()
             .ConfigureDasServices()
-            .UseStructureMap()
-            .ConfigureContainer<Registry>(IoC.Initialize)
             .Build();
     }
 }

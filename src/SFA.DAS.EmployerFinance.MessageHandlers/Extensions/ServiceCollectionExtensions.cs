@@ -16,11 +16,9 @@ public static class ServiceCollectionExtensions
         return services
             .AddSingleton(p =>
             {
-
-                var container = p.GetService<IContainer>();
                 var employerFinanceConfiguration = p.GetService<EmployerFinanceConfiguration>();
                 var configuration = p.GetService<IConfiguration>();
-                var isDevelopment = configuration["EnvironmentName"] == "LOCAL";
+                var isLocal = configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
 
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
                     .UseErrorQueue($"{EndpointName}-errors")
@@ -29,17 +27,9 @@ public static class ServiceCollectionExtensions
                     .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
-                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString));
-
-                if (isDevelopment)
-                {
-                    endpointConfiguration.UseLearningTransport(s => s.AddRouting());
-                }
-                else
-                {
-                    endpointConfiguration.UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, container,configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-                }
-
+                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
+                    .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal);
+                    
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
 
                 return endpoint;
