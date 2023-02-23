@@ -64,6 +64,7 @@ public static class HostExtensions
             services.AddClientRegistrations();
             services.AddNServiceBus();
             services.AddDataRepositories();
+            services.AddApplicationServices();
             services.AddMediatR(typeof(Program));
             services.AddDatabaseRegistration(context.Configuration.GetConnectionString("DatabaseConnectionString"));
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
