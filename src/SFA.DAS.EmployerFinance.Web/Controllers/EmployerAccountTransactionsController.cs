@@ -67,7 +67,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("finance/downloadtransactions")]
         public async Task<IActionResult> TransactionsDownload(TransactionDownloadViewModel model)

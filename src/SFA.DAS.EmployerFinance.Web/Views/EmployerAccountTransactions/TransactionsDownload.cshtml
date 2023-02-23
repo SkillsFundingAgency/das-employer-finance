@@ -28,7 +28,6 @@
     <div class="column-one-third">
         @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", FormMethod.Post, new { novalidate = "novalidate" }))
         {
-            @Html.AntiForgeryToken()
             
             <div asp-fieldname="GetTransactionsDownloadQuery.StartDate.Month,GetTransactionsDownloadQuery.StartDate.Year">
                 <span id="@Html.IdFor(m => m.GetTransactionsDownloadQuery.StartDate)" class="form-label-bold">Start date</span>

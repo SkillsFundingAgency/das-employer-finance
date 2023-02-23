@@ -53,7 +53,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]        
         [Route("start")]
         public async Task<IActionResult> Start(StartTransferConnectionInvitationViewModel model)
@@ -78,7 +77,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("send")]
         public async Task<IActionResult> Send(SendTransferConnectionInvitationViewModel model)
@@ -112,7 +110,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/sent")]
         public IActionResult Sent(SentTransferConnectionInvitationViewModel model)
@@ -140,7 +137,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/receive")]
         public async Task<IActionResult> Receive(ReceiveTransferConnectionInvitationViewModel model)
@@ -170,7 +166,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/approved")]
         public IActionResult Approved(ApprovedTransferConnectionInvitationViewModel model)
@@ -198,7 +193,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/rejected")]
         public async Task<IActionResult> Rejected(RejectedTransferConnectionInvitationViewModel model)
@@ -231,7 +225,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/details")]
         public async Task<IActionResult> Details(TransferConnectionInvitationViewModel model)
@@ -263,7 +256,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [ValidateModelState]
         [Route("{transferConnectionInvitationId}/deleted")]
         public IActionResult Deleted(DeletedTransferConnectionInvitationViewModel model)

@@ -10,6 +10,7 @@ using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
+    //TODO This should be removed
     [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
     [Route("healthcheck")]
     public class HealthCheckController : Controller
@@ -32,7 +33,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(RunHealthCheckCommand command)
         {
             await _mediator.Send(command);

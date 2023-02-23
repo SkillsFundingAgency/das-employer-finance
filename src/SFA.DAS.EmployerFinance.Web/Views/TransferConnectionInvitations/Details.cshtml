@@ -15,7 +15,6 @@
         <h1 class="heading-xlarge">Connection request details</h1>
         @using (Html.BeginForm())
         {
-            @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.TransferConnectionInvitationId)
             <div class="form-group">
                 <table>
