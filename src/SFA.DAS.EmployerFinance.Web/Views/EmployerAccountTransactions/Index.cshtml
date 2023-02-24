@@ -18,7 +18,7 @@
 
 
 
-<h1 class="heading-xlarge">Finance</h1>
+<h1 class="govuk-heading-xl">Finance</h1>
 
 @if (Model.Data.IsLevyEmployer)
 {
@@ -146,10 +146,10 @@
     <hr>
 }
 
-<div class="grid-row">
-    <div class="column-half">
-        <h2 class="heading-medium">
-            <a title="View transactions" href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new { year=now.Year, month=now.Month })">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+            <a href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new { year=now.Year, month=now.Month })" class="govuk-link govuk-link--no-visited-state">
                 View transactions
             </a>
         </h2>
@@ -157,9 +157,9 @@
     </div>
 
 
-    <div class="column-half">
-        <h2 class="heading-medium">
-            <a title="Download transactions" href="@Url.Action("TransactionsDownload", "EmployerAccountTransactions")">
+    <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+            <a href="@Url.Action("TransactionsDownload", "EmployerAccountTransactions")" class="govuk-link govuk-link--no-visited-state">
                 Download transactions
             </a>
         </h2>
@@ -168,9 +168,9 @@
 
     @if (Model.Data.IsLevyEmployer)
     {
-        <div class="column-half">
-            <h2 class="heading-medium">
-                <a title="Funding projection" href="@UrlHelpers.EmployerProjectionsAction("forecasting/projections")">
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">
+                <a href="@UrlHelpers.EmployerProjectionsAction("forecasting/projections")" class="govuk-link govuk-link--no-visited-state">
                     Funding projection
                 </a>
             </h2>
@@ -178,9 +178,9 @@
         </div>
     }
 
-    <div class="column-half">
-        <h2 class="heading-medium">
-            <a title="Manage transfers" href="@Url.Action("Index", "TransferConnections")">
+    <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+            <a title="Manage transfers" href="@Url.Action("Index", "TransferConnections")" class="govuk-link govuk-link--no-visited-state">
                 Transfers
             </a>
         </h2>
@@ -188,15 +188,3 @@
     </div>
 </div>
 
-@section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a href="@UrlHelpers.EmployerAccountsAction("teams")">Home</a></li>
-            <li>@ViewBag.Title</li>
-        </ol>
-    </div>
-}
-
-@* @section pageSpecificJS { *@
-@*     <script language="javascript" type="text/javascript" src="~/bundles/modernizr"></script> *@
-@* } *@
