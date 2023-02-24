@@ -1,0 +1,26 @@
+/* Finance figures */
+
+.app-finance-figure {
+    background-color: #f3f2f1;
+    border-left-style: solid;
+    border-left-color: #0b0c0c;
+    border-left-width: 10px;
+    line-height: 1;
+    padding: 15px;
+    font-size: 30px;
+}
+
+.app-finance-figure--expiring {
+    border-left-color: #d4351c;
+}
+
+.app-finance-figure__label {
+    margin-top: -5px;
+    margin-bottom: 30px;
+}
+
+.app-finance-figure__title {
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
