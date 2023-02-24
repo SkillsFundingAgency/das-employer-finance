@@ -54,24 +54,19 @@
             <partial name="_Menu" model="@accountId">
             </partial>
         </partial>
-            <div class="das-section--dashboard">
-                <div class="govuk-width-container">
-                    @RenderSection("breadcrumb", required: false)
-                    <main class="govuk-main-wrapper" id="main-content" role="main">
-                        @RenderBody()
-                    </main>
-                </div>
-            </div>
+
+        <div class="govuk-width-container">
+            @RenderSection("breadcrumb", required: false)
+            <main class="govuk-main-wrapper" id="main-content" role="main">
+                @RenderBody()
+            </main>
+        </div>
+        
         @* ReSharper disable once Mvc.PartialViewNotResolved *@
         <partial name="_Footer" model="@footerModel"/>
         
         <script src="/libs/jquery/jquery.min.js"></script>
-
-        <script src="/js/popper.min.js" no-cdn></script>
-        <script src="/js/tippy.min.js" no-cdn></script>
-
         <script src="/libs/govuk-frontend/all.js"></script>
-
         <script src="/js/das-all.min.js"></script>
         <script src="/js/app.min.js"></script>
 
@@ -83,9 +78,6 @@
             window.GOVUKFrontend.initAll();
             window.DASFrontend.initAll();
         </script>
-        
-
-
        
     </body>
 </html>
