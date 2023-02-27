@@ -1,6 +1,8 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using NServiceBus.ObjectBuilder.MSDependencyInjection;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.NServiceBus.Configuration;
+using SFA.DAS.NServiceBus.Configuration.MicrosoftDependencyInjection;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.Hosting;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
@@ -28,7 +30,8 @@ public static class ServiceCollectionExtensions
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
-                    .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal);
+                    .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
+                    .UseServicesBuilder(new UpdateableServiceProvider(services));
                     
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
 
