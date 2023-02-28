@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using HMRC.ESFA.Levy.Api.Client;
+﻿using HMRC.ESFA.Levy.Api.Client;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Factories;
@@ -12,8 +11,6 @@ using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Time;
 using SFA.DAS.EmployerFinance.Types.Models;
 using SFA.DAS.Encoding;
-using SFA.DAS.Http;
-using SFA.DAS.NLog.Logger.Web.MessageHandlers;
 using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.UnitOfWork.NServiceBus.Services;
 
@@ -36,30 +33,17 @@ public static class ApplicationServiceRegistrations
         services.AddSingleton<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
         services.AddSingleton<IEventPublisher, EventPublisher>();
 
+        services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
+        services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
 
-        services.AddTransient<ICommitmentsV2ApiClient>(provider =>
-        {
-            var configuration = provider.GetService<IConfiguration>();
-            var commitmentsConfiguration = provider.GetService<CommitmentsApiV2ClientConfiguration>();
-            var logger = provider.GetService<ILogger<CommitmentsV2ApiClient>>();
-            return new CommitmentsV2ApiClient(GetHttpV2Client(), commitmentsConfiguration, logger, configuration);
-        });
-
-        services.AddTransient<IApprenticeshipLevyApiClient>(provider =>
+        services.AddHttpClient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>((provider, client) =>
         {
             var financeConfiguration = provider.GetService<EmployerFinanceConfiguration>();
-            return new ApprenticeshipLevyApiClient(new HttpClient { BaseAddress = new Uri(financeConfiguration.Hmrc.BaseUrl) });
+            client.BaseAddress = new Uri(financeConfiguration.Hmrc.BaseUrl);
         });
+        
+        services.AddTransient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>();
 
         return services;
-    }
-
-    private static HttpClient GetHttpV2Client()
-    {
-        return new HttpClientBuilder()
-            .WithHandler(new RequestIdMessageRequestHandler())
-            .WithHandler(new SessionIdMessageRequestHandler())
-            .WithDefaultHeaders()
-            .Build();
     }
 }
