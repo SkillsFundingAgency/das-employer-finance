@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
@@ -23,6 +24,7 @@ using SFA.DAS.EmployerFinance.Commands.RenameAccount;
 using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
@@ -31,6 +33,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests;
@@ -55,7 +58,7 @@ public class WhenAddingServicesToTheContainer
         var type = provider.GetService(toResolve);
         Assert.IsNotNull(type);
     }
-    
+
     [TestCase(typeof(IRequestHandler<RefreshEmployerLevyDataCommand, Unit>))]
     [TestCase(typeof(IRequestHandler<GetHMRCLevyDeclarationQuery, GetHMRCLevyDeclarationResponse>))]
     [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand, Unit>))]
@@ -79,21 +82,17 @@ public class WhenAddingServicesToTheContainer
 
     [TestCase(typeof(IHandleMessages<AddedLegalEntityEvent>))]
     [TestCase(typeof(IHandleMessages<AddedPayeSchemeEvent>))]
-    [TestCase(typeof(IHandleMessages<ApprovedTransferConnectionRequestEvent>))]
     [TestCase(typeof(IHandleMessages<ChangedAccountNameEvent>))]
     [TestCase(typeof(IHandleMessages<CreatedAccountEvent>))]
     [TestCase(typeof(IHandleMessages<DeletedPayeSchemeEvent>))]
-    [TestCase(typeof(IHandleMessages<HealthCheckEvent>))]
-    [TestCase(typeof(IHandleMessages<RejectedTransferConnectionRequestEvent>))]
     [TestCase(typeof(IHandleMessages<RemovedLegalEntityEvent>))]
-    [TestCase(typeof(IHandleMessages<SentTransferConnectionRequestEvent>))]
     [TestCase(typeof(IHandleMessages<SignedAgreementEvent>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Event_MessageHandlers(Type toResolve)
     {
         var services = new ServiceCollection();
         SetupServiceCollection(services);
         var provider = services.BuildServiceProvider();
-
+        
         var type = provider.GetService(toResolve);
         Assert.IsNotNull(type);
     }
@@ -128,7 +127,7 @@ public class WhenAddingServicesToTheContainer
         services.AddDataRepositories();
         services.AddApplicationServices();
         services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
-        services.AddMediatR(typeof(RenameAccountCommand), typeof(ProcessPeriodEndPaymentsCommand));
+        services.AddMediatR(typeof(RenameAccountCommand));
         services.AddAutoMapper(typeof(TransactionRepository));
         services.AddUnitOfWork();
         services.AddMediatorValidators();
@@ -143,7 +142,7 @@ public class WhenAddingServicesToTheContainer
 
     private static void RegisterEventHandlers(IServiceCollection services)
     {
-        var handlersAssembly = typeof(AddedLegalEntityEventHandler).Assembly;
+        var handlersAssembly = typeof(CreateAccountPayeCommandHandler).Assembly;
         var handlerTypes = handlersAssembly
             .GetTypes()
             .Where(x => x.GetInterfaces()
@@ -151,7 +150,8 @@ public class WhenAddingServicesToTheContainer
 
         foreach (var handlerType in handlerTypes)
         {
-            services.AddTransient(handlerType);
+            var handlerInterface = handlerType.GetInterfaces().Single(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>));
+            services.AddTransient(handlerInterface, handlerType);
         }
     }
 
