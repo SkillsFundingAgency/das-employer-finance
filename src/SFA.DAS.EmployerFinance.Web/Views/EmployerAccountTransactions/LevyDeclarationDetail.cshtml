@@ -1,5 +1,6 @@
 ﻿@using System.Globalization
 @using SFA.DAS.EmployerFinance.Interfaces
+@using SFA.DAS.EmployerFinance.Web.Infrastructure
 
 @inject IUrlActionHelper UrlHelpers;
 
@@ -91,7 +92,7 @@
     <div class="breadcrumbs">
         <ol role="navigation">
             <li><a href="@UrlHelpers.EmployerFinanceAction($"teams")">Home</a></li>
-            <li><a href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new {year = Model.Data.TransactionDate.Year, month = Model.Data.TransactionDate.Month})">Your transactions</a></li>
+            <li><a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.Data.HashedAccountId" asp-route-year="@Model.Data.TransactionDate.Year" asp-route-month="@Model.Data.TransactionDate.Month">Your transactions</a></li>
             <li>@paymentType details</li>
         </ol>
     </div>

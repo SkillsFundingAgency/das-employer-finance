@@ -10,5 +10,6 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         public string Description { get; set; }
         public decimal Amount { get; set; }
         public List<T> SubTransactions { get; set; }
+        public string HashedAccountId { get; set; }
     }
 }
