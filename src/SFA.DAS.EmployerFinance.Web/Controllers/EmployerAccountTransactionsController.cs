@@ -9,6 +9,7 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
@@ -46,8 +47,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return View(ControllerConstants.ProviderPaymentSummaryViewName, viewModel);
         }
 
-        [Route("finance")]
-        [Route("balance")]
+        [Route("finance", Name = RouteNames.FinanceIndex)]
         public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
         {
 
@@ -60,7 +60,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [ImportModelStateFromTempData]
-        [Route("finance/downloadtransactions")]
+        [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsGet)]
         public ActionResult TransactionsDownload()
         {
             return View(new TransactionDownloadViewModel());
@@ -68,16 +68,16 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpPost]
         [ValidateModelState]
-        [Route("finance/downloadtransactions")]
+        [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsPost)]
         public async Task<IActionResult> TransactionsDownload(TransactionDownloadViewModel model)
         {
             var response = await _mediator.Send(model.GetTransactionsDownloadQuery);
             return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
         }
 
-        [Route("finance/{year}/{month}")]
-        [Route("balance/{year}/{month}")]
-        public async Task<IActionResult> TransactionsView(string hashedAccountId, int year, int month)
+        [HttpGet]
+        [Route("finance/{year}/{month}", Name = RouteNames.TransactionsView)]
+        public async Task<IActionResult> TransactionsView([FromRoute]string hashedAccountId, [FromRoute]int year, [FromRoute]int month)
         {
             var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month);
 

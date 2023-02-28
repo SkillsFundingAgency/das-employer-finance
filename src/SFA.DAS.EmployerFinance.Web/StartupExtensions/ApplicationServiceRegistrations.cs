@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
+using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Policies.Hmrc;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
@@ -27,6 +28,7 @@ public static class ApplicationServiceRegistrations
     {
         services.AddDateTimeServices(configuration);
         services.AddAutoMapper(typeof(Startup).Assembly);
+        services.AddAutoMapper(typeof(AccountMappings).Assembly);
         services.AddMediatR(typeof(GetTransferRequestsQuery));
         services.AddWebMediatorValidators();
 

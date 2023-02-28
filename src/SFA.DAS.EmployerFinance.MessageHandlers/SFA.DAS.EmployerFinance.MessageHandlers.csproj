@@ -19,7 +19,6 @@
 		<PackageReference Include="NServiceBus.Testing" Version="7.0.0" />
 		<PackageReference Include="SFA.DAS.EmployerAccounts.Messages" Version="1.6.3167" />
 		<PackageReference Include="SFA.DAS.Messaging" Version="3.1.133" />
-		<PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
 		<PackageReference Include="SFA.DAS.NLog.Targets.Redis" Version="1.2.1" />
 		<PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="16.0.21" />
 		<PackageReference Include="SFA.DAS.UnitOfWork.EntityFrameworkCore" Version="9.0.28" />

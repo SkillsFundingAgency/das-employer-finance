@@ -4,6 +4,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
@@ -11,8 +12,8 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -20,11 +21,11 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
     [Route("accounts/{HashedAccountId}/transfers/connections")]
     public class TransferConnectionsController : Controller
     {
-        private readonly ILog _logger;
+        private readonly ILogger<TransferConnectionsController> _logger;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public TransferConnectionsController(ILog logger, IMapper mapper, IMediator mediator)
+        public TransferConnectionsController(ILogger<TransferConnectionsController> logger, IMapper mapper, IMediator mediator)
         {
             _logger = logger;
             _mapper = mapper;
@@ -32,6 +33,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpGet]
+        [Route("",Name = RouteNames.TransferConnectionsIndex)]
         public async Task<IActionResult> Index(GetEmployerAccountDetailByHashedIdQuery query)
         {
             var response = await _mediator.Send(query);
@@ -78,7 +80,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Failed to get transfer requests");
+                _logger.LogWarning(ex, "Failed to get transfer requests");
 
                 return new EmptyResult();
             }

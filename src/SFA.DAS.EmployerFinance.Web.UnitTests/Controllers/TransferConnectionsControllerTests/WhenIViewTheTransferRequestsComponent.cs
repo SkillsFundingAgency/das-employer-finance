@@ -4,6 +4,7 @@ using System.Threading;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Dtos;
@@ -21,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         private TransferConnectionsController _controller;
         private GetTransferRequestsQuery _query;
         private GetTransferRequestsResponse _response;
-        private Mock<ILog> _logger;
+        private Mock<ILogger<TransferConnectionsController>> _logger;
         private IConfigurationProvider _mapperConfig;
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
@@ -36,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
                 TransferRequests = new List<TransferRequestDto>()
             };
 
-            _logger = new Mock<ILog>();
+            _logger = new Mock<ILogger<TransferConnectionsController>>();
             _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
@@ -74,7 +75,10 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
 
             Assert.That(result, Is.Not.Null);
 
-            _logger.Verify(l => l.Warn(It.IsAny<Exception>(), "Failed to get transfer requests"), Times.Once);
+            _logger.Verify(x => x.Log(LogLevel.Warning,0,
+                It.Is<It.IsAnyType>((message, type) => message.ToString().Contains("Failed to get transfer requests") && type.Name == "FormattedLogValues"),
+                It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
+            ), Times.Once);
         }
     }
 }

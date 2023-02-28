@@ -22,7 +22,6 @@ using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    //[DasAuthorize("EmployerFeature.TransferConnectionRequests", EmployerUserRole.Any)]
     //TODO MAC-192 - this should be restricted on some actions to owner role
     [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
     [Route("accounts/{HashedAccountId}/transfers/connections/requests")]

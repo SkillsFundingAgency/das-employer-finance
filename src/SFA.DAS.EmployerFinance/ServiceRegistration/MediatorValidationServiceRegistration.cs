@@ -38,5 +38,6 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<GetEmployerAccountTransactionsQuery>, GetEmployerAccountTransactionsValidator>();
         services.AddTransient<IValidator<GetPayeSchemeByRefQuery> , GetPayeSchemeByRefValidator>();
         services.AddTransient<IValidator<GetAccountFinanceOverviewQuery> , GetAccountFinanceOverviewQueryValidator>();
+        services.AddTransient<IValidator<GetEmployerAccountDetailByHashedIdQuery> , GetEmployerAccountDetailByHashedIdValidator>();
     }
 }

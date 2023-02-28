@@ -117,6 +117,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     Status = HttpStatusCode.OK,
                     Data = new PaymentTransactionViewModel
                     {
+                        HashedAccountId = hashedId,
                         ProviderName = data.ProviderName,
                         TransactionDate = data.TransactionDate,
                         Amount = data.Total,
@@ -397,9 +398,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             viewModel.Data.TransactionLines = newTransactionLines;
         }
 
-        public async Task<OrchestratorResponse<TransactionLineViewModel<LevyDeclarationTransactionLine>>>
-            FindAccountLevyDeclarationTransactions(
-                string hashedId, DateTime fromDate, DateTime toDate)
+        public async Task<OrchestratorResponse<TransactionLineViewModel<LevyDeclarationTransactionLine>>> FindAccountLevyDeclarationTransactions(string hashedId, DateTime fromDate, DateTime toDate)
         {
             var data = await _mediator.Send(new FindEmployerAccountLevyDeclarationTransactionsQuery
             {
@@ -431,6 +430,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                 Status = HttpStatusCode.OK,
                 Data = new TransactionLineViewModel<LevyDeclarationTransactionLine>
                 {
+                    HashedAccountId = hashedId,
                     Amount = data.Total,
                     SubTransactions = data.Transactions,
                     TransactionDate = data.Transactions.First().DateCreated
