@@ -24,3 +24,39 @@
     margin-top: 10px;
     margin-bottom: 5px;
 }
+
+
+/* Survey */
+
+.app-survey-details {
+    background: #1d70b8;
+    margin-bottom: 0;
+}
+
+.app-survey-details__summary {
+    margin: 5px 10px 6px;
+    color: #fff;
+}
+
+.app-survey-details__summary:hover {
+    color: #fff;
+}
+
+.app-survey-details__summary:hover:focus {
+    color: black;
+}
+
+.app-survey-details__summary:hover:active {
+    color: black;
+}
+
+.app-survey-details__wrapper {
+    padding: 10px;
+}
+
+.app-survey-details__wrapper iframe {
+    width: 100%;
+    height: 300px;
+    display: block;
+    border: none;
+}

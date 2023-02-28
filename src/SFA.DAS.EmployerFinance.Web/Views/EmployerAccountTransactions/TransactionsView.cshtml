@@ -17,11 +17,10 @@
     var nextMonthDate = displayingMonthDate.AddMonths(1);
 }
 
-<div class="grid-row">
-    <div class="column-full">
-        <h1 class="heading-xlarge">
+
+        <h1 class="govuk-heading-xl">
             Your transactions
-            <span class="heading-secondary">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
+            <span class="govuk-caption-xl">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
         </h1>
 
         @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy.ToString())
@@ -50,23 +49,19 @@
             </div>
         }
 
-    </div>
-</div>
-<div class="grid-row">
-    <div class="column-full">
 
         @if (Model.Data.Model.Data.TransactionLines.All(c => c.TransactionType == TransactionItemType.Unknown))
         {
-            <p class="panel panel-info">
+            <div class="govuk-inset-text">
                 @if (Model.Data.IsLatestMonth)
                 {
-                    <span>No transactions yet.</span>
+                    <p>No transactions yet</p>
                 }
                 else
                 {
-                    <span>No transactions.</span>
+                    <p>No transactions</p>
                 }
-            </p>
+            </div>
             if (!Model.Data.AccountHasPreviousTransactions && Model.Data.Account.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy.ToString())
             {
 
@@ -81,29 +76,30 @@
         }
         else
         {
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col" class="no-wrap">Payment date</th>
-                        <th scope="col" class="mobile-hide-cell">Description</th>
-                        <th scope="col" class="numeric">Amount</th>
-                        <th scope="col"><span class="vh">Action</span></th>
+            <table class="govuk-table">
+                <caption class="govuk-visually-hidden">Transactions</caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Payment date</th>
+                        <th scope="col" class="govuk-table__header">Description</th>
+                        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Amount</th>
+                        <th scope="col" class="govuk-table__header govuk-table__header--numeric"><span class="govuk-visually-hidden">Action</span></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="govuk-table__body">
                     @foreach (var aggregationLine in Model.Data.Model.Data.TransactionLines)
                     {
                         var fromDate = aggregationLine.DateCreated.Date;
                         var toDate = new DateTime(aggregationLine.DateCreated.Year, aggregationLine.DateCreated.Month, aggregationLine.DateCreated.Day, 23, 59, 59);
 
-                        <tr>
-                            <td class="no-wrap">
-                                @{var date = aggregationLine.DateCreated.ToGdsFormat();} @date
-                            </td>
-                            <td class="mobile-hide-cell">
-                                <span class="description">
-                                    @aggregationLine.Description
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">
+                                <span class="das-no-wrap">
+                                    @{var date = aggregationLine.DateCreated.ToGdsFormat();} @date
                                 </span>
+                            </td>
+                            <td class="govuk-table__cell">
+                                @aggregationLine.Description
                             </td>
 
                             @{
@@ -121,22 +117,26 @@
                                 }
                             }
 
-                            <td class="numeric no-wrap">@(transactionAmount.ToString("C2", culture))</td>
+                            <td class="govuk-table__cell govuk-table__cell--numeric">
+                                <span class="das-no-wrap">
+                                    @(transactionAmount.ToString("C2", culture))
+                                </span>
+                            </td>
+                            <td class="govuk-table__cell govuk-table__cell--numeric">
 
-                            <td class="link-right">
                                 @if (aggregationLine.TransactionType == TransactionItemType.Declaration ||
                                      aggregationLine.TransactionType == TransactionItemType.TopUp)
                                 {
-                                    <a id="LevyDeclarationDetails" title="View details for the transaction on @date" href="@Url.Action("LevyDeclarationDetail", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
-                                        Details <span class="vh"> for the transaction on @date</span>
+                                    <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("LevyDeclarationDetail", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
+                                        Details <span class="govuk-visually-hidden"> for the transaction on @date</span>
                                     </a>
                                 }
                                 else if (aggregationLine.TransactionType == TransactionItemType.Payment)
                                 {
                                     var paymentTransaction = aggregationLine as PaymentTransactionLine;
 
-                                    <a id="ProviderPaymentDetails" title="View details for the transaction on @date" href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, ukPrn = paymentTransaction?.UkPrn, fromDate = fromDate, toDate = toDate })">
-                                        Details <span class="vh"> for the transaction on @date</span>
+                                    <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, ukPrn = paymentTransaction?.UkPrn, fromDate = fromDate, toDate = toDate })">
+                                        Details <span class="govuk-visually-hidden"> for the transaction on @date</span>
 
                                     </a>
                                 }
@@ -149,9 +149,7 @@
                                             transferTransaction?.ReceiverAccountPublicHashedId :
                                             transferTransaction?.SenderAccountPublicHashedId;
 
-                                    var transferDetailClickId = transferTransaction.TransactionAccountIsTransferSender ? "SenderTransferDetails" : "ReceiverTransferDetails";
-
-                                    <a id="@transferDetailClickId" title="View details for the transfer transaction on @date"
+                                    <a title="View details for the transfer transaction on @date"
                                        href="@Url.Action("TransferDetail", "EmployerAccountTransactions",
                                                      new
                                                      {
@@ -159,7 +157,7 @@
                                                          TargetAccountPublicHashedId = targetAccountPublicHashedId,
                                                          PeriodEnd = transferTransaction?.PeriodEnd
                                                      })">
-                                        Details <span class="vh"> for the transfer transaction on @date</span>
+                                        Details <span class="govuk-visually-hidden"> for the transfer transaction on @date</span>
                                     </a>
 
                                 }
@@ -171,31 +169,33 @@
             </table>
         }
 
-        <ul class="previous-next-navigation">
+
+        <nav class="govuk-pagination govuk-pagination--block" role="navigation">
             @if (!Model.Data.IsFirstMonthOfLevy && Model.Data.AccountHasPreviousTransactions)
             {
-                <li class="previous">
-                    <a href="@Url.Action("TransactionsView", new {year = @previousMonthDate.Year, month=@previousMonthDate.Month})">
-                        Previous <span class="hide-mobile">month</span>
-                        <span class="detail">@previousMonthDate.ToGdsFormatWithoutDay()</span>
-                    </a>
-                </li>
+            <div class="govuk-pagination__prev">
+                <a class="govuk-link govuk-pagination__link" href="@Url.Action("TransactionsView", new {year = @previousMonthDate.Year, month=@previousMonthDate.Month})" rel="prev">
+                <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                    <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+                </svg>
+                <span class="govuk-pagination__link-title">Previous month</span><span class="govuk-visually-hidden">:</span>
+                <span class="govuk-pagination__link-label">@previousMonthDate.ToGdsFormatWithoutDay()</span></a>
+            </div>
             }
             @if (!Model.Data.IsLatestMonth)
             {
-                <li class="next">
-                    <a href="@Url.Action("TransactionsView", new {year = @nextMonthDate.Year, month=@nextMonthDate.Month})">
-                        Next month
-                        <span class="detail">@nextMonthDate.ToGdsFormatWithoutDay()</span>
-
-                    </a>
-                </li>
+            <div class="govuk-pagination__next">
+                <a class="govuk-link govuk-pagination__link" href="@Url.Action("TransactionsView", new {year = @nextMonthDate.Year, month=@nextMonthDate.Month})" rel="next"> <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                    <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                </svg> <span class="govuk-pagination__link-title">Next month</span><span class="govuk-visually-hidden">:</span>
+                <span class="govuk-pagination__link-label">@nextMonthDate.ToGdsFormatWithoutDay()</span></a>
+            </div>
             }
-        </ul>
+        </nav>
 
-        <details class="feedback">
-            <summary><span class="summary">Help us improve this section</span></summary>
-            <div class="survey">
+        <details class="govuk-details app-survey-details" data-module="govuk-details">
+            <summary class="govuk-details__summary govuk-link--inverse app-survey-details__summary">Help us improve this section</summary>
+            <div class="app-survey-details__wrapper">
                 <script id="ss-embed-396029">
                     (function (d, w) {
                         var s, ss; ss = d.createElement('script');
@@ -208,55 +208,3 @@
                 </script>
             </div>
         </details>
-
-
-    </div>
-</div>
-@section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            @*<li><a href="@Url.Action("Index", "EmployerTeam", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId})">Home</a></li>*@
-            <li><a href="@Url.Action("Index", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId})">Finance</a></li>
-            <li>@ViewBag.Title</li>
-        </ol>
-    </div>
-}
-
-@* @section pageSpecificJS{ *@
-@*     <script language="javascript" type="text/javascript" src="~/bundles/modernizr"></script> *@
-@* *@
-@*     <script language="javascript" type="text/javascript"> *@
-@*         (function () { *@
-@*             if (!Modernizr.details) { *@
-@*                 //the details element is not supported in the browser (typically IE and edge) so we add some event hooks to give similar behaviour *@
-@*                 $("details").each(function (index, element) { *@
-@*                     $("summary", element).on('click', *@
-@*                         function () { *@
-@*                             var headingElement = $(this); *@
-@*                             $(this).siblings("div").toggle("fast", function () { *@
-@*                                 var arrowElement = $('span.arrow', headingElement); *@
-@*                                 if ($('span.arrow', headingElement).length === 0) { *@
-@*                                     arrowElement = $("<span />").addClass('arrow arrowExpanded'); *@
-@*                                     headingElement.prepend(arrowElement); *@
-@*                                 } else { *@
-@*                                     if (arrowElement.hasClass('arrowCollapsed')) { *@
-@*                                         arrowElement.removeClass('arrowCollapsed').addClass('arrowExpanded'); *@
-@*                                     } else { *@
-@*                                         arrowElement.removeClass('arrowExpanded').addClass('arrowCollapsed'); *@
-@*                                     } *@
-@*                                 } *@
-@*                             }); *@
-@*                         }); *@
-@* *@
-@*                     $("summary", element).each(function (index, element) { *@
-@*                         var headingElement = $(this); *@
-@*                         $(this).siblings("div").hide("fast", function () { *@
-@*                             var arrowElement = $("<span />").addClass('arrow arrowCollapsed'); *@
-@*                             headingElement.prepend(arrowElement); *@
-@*                         }); *@
-@*                     }); *@
-@*                 }); *@
-@*             } *@
-@*         })(); *@
-@*     </script> *@
-@* } *@
