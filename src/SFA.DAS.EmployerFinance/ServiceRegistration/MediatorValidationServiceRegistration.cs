@@ -41,8 +41,6 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<RefreshAccountTransfersCommand>, RefreshAccountTransfersCommandValidator>();
         services.AddTransient<IValidator<RefreshEmployerLevyDataCommand>, RefreshEmployerLevyDataCommandValidator>();
         services.AddTransient<IValidator<RefreshPaymentDataCommand>, RefreshPaymentDataCommandValidator>();
-
-        
     }
 
     public static void AddWebMediatorValidators(this IServiceCollection services)
