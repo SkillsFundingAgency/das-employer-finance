@@ -39,18 +39,6 @@ public class WhenAddingServicesToTheContainer
         Assert.IsNotNull(type);
     }
 
-    //[TestCase(typeof(IEmployerAccountAuthorisationHandler))]
-    //[TestCase(typeof(ICustomClaims))]
-    //public void Then_The_Dependencies_Are_Correctly_Resolved_For_Services(Type toResolve)
-    //{
-    //    var services = new ServiceCollection();
-    //    SetupServiceCollection(services);
-    //    var provider = services.BuildServiceProvider();
-
-    //    var type = provider.GetService(toResolve);
-    //    Assert.IsNotNull(type);
-    //}
-
     [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
     [TestCase(typeof(IRequestHandler<GetAccountTransactionSummaryRequest, GetAccountTransactionSummaryResponse>))]
     [TestCase(typeof(IRequestHandler<GetLevyDeclarationRequest, GetLevyDeclarationResponse>))]

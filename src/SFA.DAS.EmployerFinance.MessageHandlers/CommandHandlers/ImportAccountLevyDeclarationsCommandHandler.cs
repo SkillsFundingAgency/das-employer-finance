@@ -126,8 +126,7 @@ public class ImportAccountLevyDeclarationsCommandHandler : IHandleMessages<Impor
         return declarations;
     }
 
-    private async Task UpdateEnglishFraction(string payeRef,
-        GetEnglishFractionUpdateRequiredResponse englishFractionUpdateResponse)
+    private async Task UpdateEnglishFraction(string payeRef, GetEnglishFractionUpdateRequiredResponse englishFractionUpdateResponse)
     {
         if (HmrcProcessingEnabled || FractionProcessingOnly)
         {

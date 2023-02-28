@@ -1,4 +1,10 @@
-﻿using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
+﻿using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
+using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
+using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
+using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
+using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
+using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
@@ -7,6 +13,7 @@ using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Validation;
@@ -26,6 +33,14 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<GetEnglishFractionHistoryQuery>, GetEnglishFractionHistoryQueryValidator>();
         services.AddTransient<IValidator<GetLevyDeclarationRequest>, GetLevyDeclarationValidator>();
         services.AddTransient<IValidator<FindAccountProviderPaymentsQuery>, FindAccountProviderPaymentsQueryValidator>();
+        services.AddTransient<IValidator<GetHMRCLevyDeclarationQuery>, GetHMRCLevyDeclarationQueryValidator>();
+
+        services.AddTransient<IValidator<CreateEnglishFractionCalculationDateCommand>, CreateEnglishFractionCalculationDateCommandValidator>();
+        services.AddTransient<IValidator<CreateNewPeriodEndCommand>, CreateNewPeriodEndCommandValidator>();
+        services.AddTransient<IValidator<CreateTransferTransactionsCommand>, CreateTransferTransactionsCommandValidator>();
+        services.AddTransient<IValidator<RefreshAccountTransfersCommand>, RefreshAccountTransfersCommandValidator>();
+        services.AddTransient<IValidator<RefreshEmployerLevyDataCommand>, RefreshEmployerLevyDataCommandValidator>();
+        services.AddTransient<IValidator<RefreshPaymentDataCommand>, RefreshPaymentDataCommandValidator>();
 
         
     }

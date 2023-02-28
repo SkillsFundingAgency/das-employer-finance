@@ -9,6 +9,7 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Jobs.Extensions;
 using SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 using SFA.DAS.EmployerFinance.Jobs.ServiceRegistrations;
+using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 

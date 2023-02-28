@@ -1,16 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
 using NUnit.Framework;
+using SFA.DAS.EmployerAccounts.Messages.Events;
+using SFA.DAS.EmployerFinance.Commands.CreateAccount;
+using SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity;
+using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
+using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
+using SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
+using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
+using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
+using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
+using SFA.DAS.EmployerFinance.Commands.RemoveAccountLegalEntity;
+using SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
+using SFA.DAS.EmployerFinance.Commands.RenameAccount;
+using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Messages.Commands;
+using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
+using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
+using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
@@ -27,7 +46,65 @@ public class WhenAddingServicesToTheContainer
     [TestCase(typeof(IHandleMessages<ImportAccountPaymentsCommand>))]
     [TestCase(typeof(IHandleMessages<ImportPaymentsCommand>))]
     [TestCase(typeof(IHandleMessages<ProcessPeriodEndPaymentsCommand>))]
-    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Command_Handlers(Type toResolve)
+    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Command_MessageHandlers(Type toResolve)
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+        var provider = services.BuildServiceProvider();
+
+        var type = provider.GetService(toResolve);
+        Assert.IsNotNull(type);
+    }
+    
+    [TestCase(typeof(IRequestHandler<RefreshEmployerLevyDataCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<GetHMRCLevyDeclarationQuery, GetHMRCLevyDeclarationResponse>))]
+    [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateEnglishFractionCalculationDateCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RefreshAccountTransfersCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateTransferTransactionsCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>))]
+    [TestCase(typeof(IRequestHandler<CreateNewPeriodEndCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand, Unit>))]
+    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Command_MediatorHandlers(Type toResolve)
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+        var provider = services.BuildServiceProvider();
+
+        var type = provider.GetService(toResolve);
+        Assert.IsNotNull(type);
+    }
+
+    [TestCase(typeof(IHandleMessages<AddedLegalEntityEvent>))]
+    [TestCase(typeof(IHandleMessages<AddedPayeSchemeEvent>))]
+    [TestCase(typeof(IHandleMessages<ApprovedTransferConnectionRequestEvent>))]
+    [TestCase(typeof(IHandleMessages<ChangedAccountNameEvent>))]
+    [TestCase(typeof(IHandleMessages<CreatedAccountEvent>))]
+    [TestCase(typeof(IHandleMessages<DeletedPayeSchemeEvent>))]
+    [TestCase(typeof(IHandleMessages<HealthCheckEvent>))]
+    [TestCase(typeof(IHandleMessages<RejectedTransferConnectionRequestEvent>))]
+    [TestCase(typeof(IHandleMessages<RemovedLegalEntityEvent>))]
+    [TestCase(typeof(IHandleMessages<SentTransferConnectionRequestEvent>))]
+    [TestCase(typeof(IHandleMessages<SignedAgreementEvent>))]
+    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Event_MessageHandlers(Type toResolve)
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+        var provider = services.BuildServiceProvider();
+
+        var type = provider.GetService(toResolve);
+        Assert.IsNotNull(type);
+    }
+
+    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RenameAccountCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RemoveAccountPayeCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RemoveAccountLegalEntityCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<LegalEntitySignAgreementCommand, Unit>))]
+    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Event_MediatorHandlers(Type toResolve)
     {
         var services = new ServiceCollection();
         SetupServiceCollection(services);
@@ -51,19 +128,31 @@ public class WhenAddingServicesToTheContainer
         services.AddDataRepositories();
         services.AddApplicationServices();
         services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+        services.AddMediatR(typeof(RenameAccountCommand), typeof(ProcessPeriodEndPaymentsCommand));
+        services.AddAutoMapper(typeof(TransactionRepository));
         services.AddUnitOfWork();
-        services.AddMediatR(typeof(Program));
+        services.AddMediatorValidators();
         services.AddLogging(_ => { });
+        services.AddHmrcServices();
+        services.AddProviderServices();
+        services.AddCachesRegistrations(true);
+        services.AddEmployerFinanceOuterApi(financeConfiguration.EmployerFinanceOuterApiConfiguration);
 
-        services.AddTransient<IHandleMessages<CreateAccountPayeCommand>, CreateAccountPayeCommandHandler>();
-        services.AddTransient<IHandleMessages<DraftExpireAccountFundsCommand>, DraftExpireAccountFundsCommandHandler>();
-        services.AddTransient<IHandleMessages<DraftExpireFundsCommand>, DraftExpireFundsCommandHandler>();
-        services.AddTransient<IHandleMessages<ExpireAccountFundsCommand>, ExpireAccountFundsCommandHandler>();
-        services.AddTransient<IHandleMessages<ImportAccountLevyDeclarationsCommand>, ImportAccountLevyDeclarationsCommandHandler>();
-        services.AddTransient<IHandleMessages<ImportAccountPaymentsCommand>, ImportAccountPaymentsCommandHandler>();
-        services.AddTransient<IHandleMessages<ImportPaymentsCommand>, ImportPaymentsCommandHandler>();
-        services.AddTransient<IHandleMessages<ProcessPeriodEndPaymentsCommand>, ProcessPeriodEndPaymentsCommandHandler>();
-        services.AddTransient<IHandleMessages<ImportPaymentsCommand>, ImportPaymentsCommandHandler>();
+        RegisterEventHandlers(services);
+    }
+
+    private static void RegisterEventHandlers(IServiceCollection services)
+    {
+        var handlersAssembly = typeof(AddedLegalEntityEventHandler).Assembly;
+        var handlerTypes = handlersAssembly
+            .GetTypes()
+            .Where(x => x.GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandleMessages<>)));
+
+        foreach (var handlerType in handlerTypes)
+        {
+            services.AddTransient(handlerType);
+        }
     }
 
 
@@ -76,8 +165,14 @@ public class WhenAddingServicesToTheContainer
                 new("SFA.DAS.EmployerFinance:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("SFA.DAS.EmployerFinance:PaymentsEventsApi:ApiBaseUrl", "test"),
                 new("SFA.DAS.EmployerFinance:PaymentsEventsApi:IdentifierUri", "test"),
+                new("SFA.DAS.EmployerFinance:CommitmentsApi:ApiBaseUrl", "test"),
+                new("SFA.DAS.EmployerFinance:CommitmentsApi:IdentifierUri", "test"),
+                new("SFA.DAS.EmployerFinance:Hmrc:BaseUrl", "http://test"),
+                new("SFA.DAS.EmployerFinance:EmployerFinanceOuterApiConfiguration:BaseUrl", "http://test"),
+                new("SFA.DAS.EmployerFinance:EmployerFinanceOuterApiConfiguration:Key", "test"),
                 new("EnvironmentName", "test"),
                 new("DeclarationsEnabled", "true"),
+                new("SFA.DAS.Encoding", "{\"Encodings\": [{\"EncodingType\": \"AccountId\",\"Salt\": \"and vinegar\",\"MinHashLength\": 32,\"Alphabet\": \"46789BCDFGHJKLMNPRSTVWXY\"}]}"),
             }
         };
 

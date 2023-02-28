@@ -1,7 +1,9 @@
 ﻿using NLog.Extensions.Logging;
 using SFA.DAS.Configuration;
 using SFA.DAS.Configuration.AzureTableStorage;
+using SFA.DAS.EmployerFinance.Commands.RenameAccount;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
@@ -51,14 +53,24 @@ public static class HostExtensions
     {
         hostBuilder.ConfigureServices((context, services) =>
         {
+            var financeConfiguration = context.Configuration
+                .GetSection(ConfigurationKeys.EmployerFinance)
+                .Get<EmployerFinanceConfiguration>();
+
             services.AddConfigurationSections(context.Configuration);
             services.AddClientRegistrations();
             services.AddNServiceBus();
             services.AddDataRepositories();
             services.AddApplicationServices();
-            services.AddDatabaseRegistration(context.Configuration[$"{ConfigurationKeys.EmployerFinance}:DatabaseConnectionString"]);
-            services.AddMediatR(typeof(Program));
+            services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+            services.AddMediatR(typeof(RenameAccountCommand));
+            services.AddAutoMapper(typeof(TransactionRepository));
             services.AddUnitOfWork();
+            services.AddMediatorValidators();
+            services.AddHmrcServices();
+            services.AddProviderServices();
+            services.AddCachesRegistrations(context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
+            services.AddEmployerFinanceOuterApi(financeConfiguration.EmployerFinanceOuterApiConfiguration);
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
             services.BuildServiceProvider();
         });
