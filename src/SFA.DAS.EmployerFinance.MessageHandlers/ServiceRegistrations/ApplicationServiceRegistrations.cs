@@ -1,6 +1,4 @@
-﻿using HMRC.ESFA.Levy.Api.Client;
-using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -32,17 +30,6 @@ public static class ApplicationServiceRegistrations
         services.AddSingleton<IEncodingService, EncodingService>();
         services.AddSingleton<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
         services.AddSingleton<IEventPublisher, EventPublisher>();
-
-        services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
-        services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
-
-        services.AddHttpClient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>((provider, client) =>
-        {
-            var financeConfiguration = provider.GetService<EmployerFinanceConfiguration>();
-            client.BaseAddress = new Uri(financeConfiguration.Hmrc.BaseUrl);
-        });
-        
-        services.AddTransient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>();
 
         return services;
     }
