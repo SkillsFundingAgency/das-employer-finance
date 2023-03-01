@@ -58,14 +58,6 @@
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<Compile Update="Global.asax.cs">
-			<DependentUpon>Global.asax</DependentUpon>
-		</Compile>
-	</ItemGroup>
-	<ItemGroup>
-		<None Update="NLog.xsd">
-			<SubType>Designer</SubType>
-		</None>
 		<None Include="Web.Debug.config">
 			<DependentUpon>Web.config</DependentUpon>
 		</None>
@@ -93,6 +85,7 @@
 		<EditorConfigFiles Remove="C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\.editorconfig" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\4.5.3\contentFiles\any\any\NLog.xsd" />
 		<None Remove="internal-nlog.txt" />
 	</ItemGroup>
 </Project>
