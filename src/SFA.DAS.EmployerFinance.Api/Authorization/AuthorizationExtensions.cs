@@ -1,52 +1,55 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SFA.DAS.EmployerFinance.Api.Authorization
+namespace SFA.DAS.EmployerFinance.Api.Authorization;
+
+public static class AuthorizationExtensions
 {
-    public static class AuthorizationExtensions
+    public static IServiceCollection AddApiAuthorization(this IServiceCollection services, bool isDevelopment = false)
     {
-        public static IServiceCollection AddApiAuthorization(this IServiceCollection services, bool isDevelopment = false) {
-
-            services.AddAuthorization(x =>
+        services.AddAuthorization(x =>
+        {
             {
+                x.AddPolicy("default", policy =>
                 {
-                    x.AddPolicy("default", policy =>
+                    if (isDevelopment)
                     {
-                        if (isDevelopment)
-                        {
-                            policy.AllowAnonymousUser();
-                        }
-                        else { policy.RequireAuthenticatedUser(); }
-                    });
+                        policy.AllowAnonymousUser();
+                    }
+                    else { policy.RequireAuthenticatedUser(); }
+                });
 
-                    x.AddPolicy(ApiRoles.ReadAllEmployerAccountBalances, policy => {
-                    if(isDevelopment)
-                            policy.AllowAnonymousUser();
+                x.AddPolicy(ApiRoles.ReadAllEmployerAccountBalances, policy =>
+                {
+                    if (isDevelopment)
+                        policy.AllowAnonymousUser();
                     else
-                        {
-                            policy.RequireAuthenticatedUser();
-                            policy.RequireRole(ApiRoles.ReadAllEmployerAccountBalances);
-                        }
-                    });
+                    {
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireRole(ApiRoles.ReadAllEmployerAccountBalances);
+                    }
+                });
 
-                    x.AddPolicy(ApiRoles.ReadUserAccounts, policy => { 
-                    if(isDevelopment)
-                            policy.AllowAnonymousUser();
-                        else
-                        {
-                            policy.RequireAuthenticatedUser();
-                            policy.RequireRole(ApiRoles.ReadUserAccounts);
-                        }
-                    });
+                x.AddPolicy(ApiRoles.ReadUserAccounts, policy =>
+                {
+                    if (isDevelopment)
+                        policy.AllowAnonymousUser();
+                    else
+                    {
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireRole(ApiRoles.ReadUserAccounts);
+                    }
+                });
 
-                    x.DefaultPolicy = x.GetPolicy("default");
-                }
-            });
+                x.DefaultPolicy = x.GetPolicy("default");
+            }
+        });
 
-            if(isDevelopment)
-                services.AddSingleton<IAuthorizationHandler, LocalAuthorizationHandler>();
-
-            return services;
+        if (isDevelopment)
+        {
+            services.AddSingleton<IAuthorizationHandler, LocalAuthorizationHandler>();
         }
+
+        return services;
     }
 }
