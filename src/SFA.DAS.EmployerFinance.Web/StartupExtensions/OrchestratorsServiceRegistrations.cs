@@ -7,7 +7,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
     {
         public static IServiceCollection AddOrchestrators(this IServiceCollection services)
         {
-            services.AddTransient<EmployerAccountTransactionsOrchestrator>();
+            services.AddTransient<IEmployerAccountTransactionsOrchestrator,EmployerAccountTransactionsOrchestrator>();
             services.AddTransient<HomeOrchestrator>();
             services.AddTransient<TransfersOrchestrator>();
             return services;

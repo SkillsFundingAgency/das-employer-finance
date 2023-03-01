@@ -5,6 +5,7 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Factories;
+using SFA.DAS.EmployerFinance.Formatters;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
@@ -67,6 +68,8 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ITokenServiceApiClient, TokenServiceApiClient>();
 
         services.AddTransient<IEncodingService, EncodingService>();
-        
+
+        services.AddTransient<ITransactionFormatterFactory, TransactionFormatterFactory>();
+
     }
 }

@@ -1,15 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper.Configuration.Annotations;
-using SFA.DAS.Authorization.ModelBinding;
+
 using SFA.DAS.EmployerFinance.Attributes;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Messages;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 
-public class GetTransactionsDownloadQuery : IAuthorizationContextModel, IRequest<GetTransactionsDownloadResponse>
+public class GetTransactionsDownloadQuery : IRequest<GetTransactionsDownloadResponse>
 {
-    [Ignore]
     [Required]
     public long AccountId { get; set; }
 

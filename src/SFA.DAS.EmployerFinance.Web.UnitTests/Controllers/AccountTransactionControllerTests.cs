@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers;
 
@@ -23,7 +23,7 @@ public class AccountTransactionControllerTests
     public void Arrange()
     {
         _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
-        
+
         _orchestrator.Setup(x => x.GetAccountTransactions(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>
             {
@@ -38,7 +38,8 @@ public class AccountTransactionControllerTests
                 }
             });
 
-        _controller = new EmployerAccountTransactionsController(_orchestrator.Object, Mock.Of<IMapper>(), Mock.Of<IMediator>(), Mock.Of<ILogger<EmployerAccountTransactionsController>>());
+        _controller = new Web.Controllers.EmployerAccountTransactionsController(
+            _orchestrator.Object, Mock.Of<IMapper>(), Mock.Of<IMediator>(), Mock.Of<IEncodingService>());
     }
 
     [Test]
@@ -48,7 +49,9 @@ public class AccountTransactionControllerTests
         var result = await _controller.TransactionsView("TEST", 2017, 1);
 
         //Assert
-        _orchestrator.Verify(x => x.GetAccountTransactions(It.Is<string>(s => s == "TEST"), It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+        _orchestrator.Verify(
+            x => x.GetAccountTransactions(It.Is<string>(s => s == "TEST"), It.IsAny<int>(), It.IsAny<int>()),
+            Times.Once);
         Assert.IsNotNull(result as ViewResult);
     }
 

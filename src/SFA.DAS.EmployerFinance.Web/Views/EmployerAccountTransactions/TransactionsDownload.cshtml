@@ -13,11 +13,14 @@
     ViewBag.ZenDeskLabel = "eas-download-transactions";
 }
 
-@await Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
+
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
+
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">Download transactions</h1>
+
         <p>Enter a start and end date to download transactions within a specific date range.</p>
 
         @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", FormMethod.Post, new { novalidate = "novalidate" }))
@@ -28,18 +31,18 @@
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Start date</legend>
                     <div class="govuk-hint" id="start-date-hint">For example, 2 2022</div>
                     <div class="govuk-date-input">
-                        @Html.ValidationMessageFor(m => m.GetTransactionsDownloadQuery.StartDate.Month)
-                        @Html.ValidationMessageFor(m => m.GetTransactionsDownloadQuery.StartDate.Year)
+                        @Html.ValidationMessageFor(m => m.StartDate.Month)
+                        @Html.ValidationMessageFor(m => m.StartDate.Year)
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
-                                <label asp-for="GetTransactionsDownloadQuery.StartDate.Month" class="govuk-label govuk-date-input__label">Month</label>
-                                <input asp-for="GetTransactionsDownloadQuery.StartDate.Month" class="govuk-input govuk-date-input__input govuk-input--width-2" type="text" maxlength="2" inputmode="numeric">
+                                <label asp-for="StartDate.Month" class="govuk-label govuk-date-input__label">Month</label>
+                                <input asp-for="StartDate.Month" class="govuk-input govuk-date-input__input govuk-input--width-2" type="text" maxlength="2" inputmode="numeric">
                             </div>
                         </div>
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
-                                <label asp-for="GetTransactionsDownloadQuery.StartDate.Year" class="govuk-label govuk-date-input__label">Year</label>
-                                <input asp-for="GetTransactionsDownloadQuery.StartDate.Year" class="govuk-input govuk-date-input__input govuk-input--width-4" type="text" maxlength="4" inputmode="numeric">
+                                <label asp-for="StartDate.Year" class="govuk-label govuk-date-input__label">Year</label>
+                                <input asp-for="StartDate.Year" class="govuk-input govuk-date-input__input govuk-input--width-4" type="text" maxlength="4" inputmode="numeric">
                             </div>
                         </div>
                     </div>
@@ -48,21 +51,21 @@
 
             <div asp-fieldname="GetTransactionsDownloadQuery.EndDate.Month,GetTransactionsDownloadQuery.EndDate.Year" class="govuk-form-group">
                 <fieldset class="govuk-fieldset" role="group" aria-describedby="end-date-hint">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Start date</legend>
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">End date</legend>
                     <div class="govuk-hint" id="end-date-hint">For example, 2 2023</div>
                     <div class="govuk-date-input">
-                        @Html.ValidationMessageFor(m => m.GetTransactionsDownloadQuery.EndDate.Month)
-                        @Html.ValidationMessageFor(m => m.GetTransactionsDownloadQuery.EndDate.Year)
+                        @Html.ValidationMessageFor(m => m.EndDate.Month)
+                        @Html.ValidationMessageFor(m => m.EndDate.Year)
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
-                                <label asp-for="GetTransactionsDownloadQuery.EndDate.Month" class="govuk-label govuk-date-input__label">Month</label>
-                                <input asp-for="GetTransactionsDownloadQuery.EndDate.Month" class="govuk-input govuk-date-input__input govuk-input--width-2" type="text" maxlength="2" inputmode="numeric">
+                                <label asp-for="EndDate.Month" class="govuk-label govuk-date-input__label">Month</label>
+                                <input asp-for="EndDate.Month" class="govuk-input govuk-date-input__input govuk-input--width-2" type="text" maxlength="2" inputmode="numeric">
                             </div>
                         </div>
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
-                                <label asp-for="GetTransactionsDownloadQuery.EndDate.Year" class="govuk-label govuk-date-input__label">Year</label>
-                                <input asp-for="GetTransactionsDownloadQuery.EndDate.Year" class="govuk-input govuk-date-input__input govuk-input--width-4" type="text" maxlength="4" inputmode="numeric">
+                                <label asp-for="EndDate.Year" class="govuk-label govuk-date-input__label">Year</label>
+                                <input asp-for="EndDate.Year" class="govuk-input govuk-date-input__input govuk-input--width-4" type="text" maxlength="4" inputmode="numeric">
                             </div>
                         </div>
                     </div>
@@ -70,8 +73,8 @@
             </div>
 
             <div class="govuk-form-group">
-                <label class="govuk-label" for="@Html.IdFor(m => m.GetTransactionsDownloadQuery.DownloadFormat)">Select format</label>
-                @Html.DropDownListFor(m => m.GetTransactionsDownloadQuery.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
+                <label class="govuk-label" for="@Html.IdFor(m => m.DownloadFormat)">Select format</label>
+                @Html.DropDownListFor(m => m.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
             </div>
             
             <button class="govuk-button" aria-label="Download">Download</button>

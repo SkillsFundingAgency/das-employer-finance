@@ -39,10 +39,10 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             ICurrentDateTime currentTime,
             ILogger<EmployerAccountTransactionsOrchestrator> logger, IEncodingService encodingService)
         {
-            _accountApiClient = accountApiClient;
+            _accountApiClient = accountApiClient;   
             _mediator = mediator;
             _currentTime = currentTime;
-            _logger = logger;
+            _logger = logger;       
             _encodingService = encodingService;
         }
 

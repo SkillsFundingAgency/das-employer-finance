@@ -1,13 +1,14 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
+using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests;
 
@@ -33,12 +34,12 @@ public class WhenIViewFinanceDashboard
                 }
             });
 
-        _controller = new EmployerAccountTransactionsController(
-            _orchestrator.Object,
-            Mock.Of<IMapper>(),
-            Mock.Of<IMediator>(),
-            Mock.Of<ILogger<EmployerAccountTransactionsController>>());
-    }
+            _controller = new EmployerAccountTransactionsController(
+                _orchestrator.Object,
+                Mock.Of<IMapper>(),
+                Mock.Of<IMediator>(),
+                Mock.Of<IEncodingService>());
+        }
 
     [Test]
     public async Task ThenTheAccountHashedIdIsReturned()

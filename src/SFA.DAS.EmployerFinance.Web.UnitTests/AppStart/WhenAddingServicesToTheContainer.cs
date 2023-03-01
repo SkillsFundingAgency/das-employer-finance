@@ -18,6 +18,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
@@ -32,9 +33,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
 public class WhenAddingServicesToTheContainer
 {
-    [TestCase(typeof(EmployerAccountTransactionsOrchestrator))]
     [TestCase(typeof(HomeOrchestrator))]
     [TestCase(typeof(TransfersOrchestrator))]
+    [TestCase(typeof(IEmployerAccountTransactionsOrchestrator))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Orchestrators(Type toResolve)
     {
         var serviceCollection = new ServiceCollection();
@@ -68,6 +69,7 @@ public class WhenAddingServicesToTheContainer
     [TestCase(typeof(IRequestHandler<GetTransferConnectionInvitationAuthorizationQuery, GetTransferConnectionInvitationAuthorizationResponse>))]
     [TestCase(typeof(IRequestHandler<GetTransferConnectionInvitationsQuery, GetTransferConnectionInvitationsResponse>))]
     [TestCase(typeof(IRequestHandler<GetTransferRequestsQuery, GetTransferRequestsResponse>))]
+    [TestCase(typeof(IRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Handlers(Type toResolve)
     {
         var serviceCollection = new ServiceCollection();
