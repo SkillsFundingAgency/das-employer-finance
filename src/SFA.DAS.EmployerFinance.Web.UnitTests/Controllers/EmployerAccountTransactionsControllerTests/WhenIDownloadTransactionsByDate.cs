@@ -14,91 +14,89 @@ using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests;
+
+[TestFixture]
+public class WhenIDownloadTransactionsByDate
 {
-    [TestFixture]
-    public class WhenIDownloadTransactionsByDate
+    private const string ExpectedFileExtension = "hello";
+    private const string ExpectedMimeType = @"text/csv";
+    private static readonly byte[] ExpectedFileData = { };
+
+    private EmployerAccountTransactionsController _controller;
+    private Mock<IMediator> _mediator;
+    private Mock<IEmployerAccountTransactionsOrchestrator> _orchestrator;
+    private Mock<ITransactionFormatter> _formatter;
+    private TransactionDownloadViewModel _transactionDownloadViewModel;
+
+    [SetUp]
+    public void Arrange()
     {
-        private const string ExpectedFileExtension = "hello";
-        private const string ExpectedMimeType = @"text/csv";
-        private static readonly byte[] ExpectedFileData = { };
-
-        private EmployerAccountTransactionsController _controller;
-        private Mock<IMediator> _mediator;
-        private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
-        private Mock<ITransactionFormatter> _formatter;
-        private TransactionDownloadViewModel _transactionDownloadViewModel;
-
-        [SetUp]
-        public void Arrange()
+        _transactionDownloadViewModel = new TransactionDownloadViewModel
         {
-            _transactionDownloadViewModel = new TransactionDownloadViewModel
+            GetTransactionsDownloadQuery = new GetTransactionsDownloadQuery
             {
-                GetTransactionsDownloadQuery = new GetTransactionsDownloadQuery
+                StartDate = new MonthYear
                 {
-                    StartDate = new MonthYear
-                    {
-                        Month = "1",
-                        Year = "2000"
-                    },
-                    EndDate = new MonthYear
-                    {
-                        Month = "1",
-                        Year = "2018"
-                    }
+                    Month = "1",
+                    Year = "2000"
+                },
+                EndDate = new MonthYear
+                {
+                    Month = "1",
+                    Year = "2018"
                 }
-            };
+            }
+        };
 
-            _mediator = new Mock<IMediator>();
-            _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
-            _formatter = new Mock<ITransactionFormatter>();
+        _mediator = new Mock<IMediator>();
+        _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
+        _formatter = new Mock<ITransactionFormatter>();
 
-            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
-                .ReturnsAsync(new GetTransactionsDownloadResponse
-                {
-                    MimeType = ExpectedMimeType,
-                    FileExtension = ExpectedFileExtension,
-                    FileData = ExpectedFileData
-                });
+        _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
+            .ReturnsAsync(new GetTransactionsDownloadResponse
+            {
+                MimeType = ExpectedMimeType,
+                FileExtension = ExpectedFileExtension,
+                FileData = ExpectedFileData
+            });
 
-            _formatter.Setup(x => x.GetFileData(It.IsAny<List<TransactionDownloadLine>>())).Returns(new byte[] { 1, 2, 3, 4 });
-            _formatter.Setup(x => x.MimeType).Returns("txt/csv");
-            _formatter.Setup(x => x.DownloadFormatType).Returns(DownloadFormatType.CSV);
+        _formatter.Setup(x => x.GetFileData(It.IsAny<List<TransactionDownloadLine>>())).Returns(new byte[] { 1, 2, 3, 4 });
+        _formatter.Setup(x => x.MimeType).Returns("txt/csv");
+        _formatter.Setup(x => x.DownloadFormatType).Returns(DownloadFormatType.CSV);
 
-            _controller = new EmployerAccountTransactionsController(
-                _orchestrator.Object,
-                Mock.Of<IMapper>(),
-                _mediator.Object,
-                Mock.Of<ILogger<EmployerAccountTransactionsController>>());
-        }
+        _controller = new EmployerAccountTransactionsController(
+            _orchestrator.Object,
+            Mock.Of<IMapper>(),
+            _mediator.Object,
+            Mock.Of<ILogger<EmployerAccountTransactionsController>>());
+    }
 
-        [Test]
-        public async Task ThenAGetTransactionsDownloadQueryShouldBeSent()
-        {
-            await _controller.TransactionsDownload(_transactionDownloadViewModel);
+    [Test]
+    public async Task ThenAGetTransactionsDownloadQueryShouldBeSent()
+    {
+        await _controller.TransactionsDownload(_transactionDownloadViewModel);
 
-            _mediator.Verify(m => m.Send(_transactionDownloadViewModel.GetTransactionsDownloadQuery, CancellationToken.None), Times.Once);
-        }
+        _mediator.Verify(m => m.Send(_transactionDownloadViewModel.GetTransactionsDownloadQuery, CancellationToken.None), Times.Once);
+    }
 
-        [Test]
-        public async Task ThenTheModelStateShouldBeValid()
-        {
-            await _controller.TransactionsDownload(_transactionDownloadViewModel);
+    [Test]
+    public async Task ThenTheModelStateShouldBeValid()
+    {
+        await _controller.TransactionsDownload(_transactionDownloadViewModel);
 
-            Assert.That(_controller.ModelState.IsValid, Is.True);
-        }
+        Assert.That(_controller.ModelState.IsValid, Is.True);
+    }
 
-        [Test]
-        public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
-        {
-            var result = await _controller.TransactionsDownload(_transactionDownloadViewModel) as FileContentResult;
+    [Test]
+    public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
+    {
+        var result = await _controller.TransactionsDownload(_transactionDownloadViewModel) as FileContentResult;
 
-            Assert.That(result, Is.Not.Null);
-            Assert.AreEqual(result.ContentType, ExpectedMimeType);
-            Assert.AreEqual(result.FileContents, ExpectedFileData);
-            Assert.IsTrue(result.FileDownloadName.EndsWith(ExpectedFileExtension));
-        }
+        Assert.That(result, Is.Not.Null);
+        Assert.AreEqual(result.ContentType, ExpectedMimeType);
+        Assert.AreEqual(result.FileContents, ExpectedFileData);
+        Assert.IsTrue(result.FileDownloadName.EndsWith(ExpectedFileExtension));
     }
 }

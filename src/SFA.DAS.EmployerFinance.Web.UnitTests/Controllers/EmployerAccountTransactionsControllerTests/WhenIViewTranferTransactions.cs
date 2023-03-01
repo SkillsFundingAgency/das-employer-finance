@@ -12,78 +12,76 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests;
+
+class WhenIViewTranferTransactions
 {
-    class WhenIViewTranferTransactions
+    private const long SenderAccountId = 1;
+    private const string ReceiverPublicHashedAccountId = "DEF456";
+    private const string PeriodEnd = "1718-R01";
+
+    private EmployerAccountTransactionsController _controller;
+    private Mock<IEmployerAccountTransactionsOrchestrator> _orchestrator;
+    private Mock<IMapper> _mapper;
+    private Mock<IMediator> _mediator;
+    private GetTransferTransactionDetailsQuery _query;
+
+    [SetUp]
+    public void Arrange()
     {
-        private const long SenderAccountId = 1;
-        private const string ReceiverPublicHashedAccountId = "DEF456";
-        private const string PeriodEnd = "1718-R01";
+        _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
+        _mapper = new Mock<IMapper>();
+        _mediator = new Mock<IMediator>();
 
-        private EmployerAccountTransactionsController _controller;
-        private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
-        private Mock<IMapper> _mapper;
-        private Mock<IMediator> _mediator;
-        private GetTransferTransactionDetailsQuery _query;
+        _controller = new EmployerAccountTransactionsController(
+            _orchestrator.Object,
+            _mapper.Object,
+            _mediator.Object,
+            Mock.Of<ILogger<EmployerAccountTransactionsController>>());
 
-        [SetUp]
-        public void Arrange()
+        _query = new GetTransferTransactionDetailsQuery
         {
-            _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
-            _mapper = new Mock<IMapper>();
-            _mediator = new Mock<IMediator>();
+            AccountId = SenderAccountId,
+            TargetAccountPublicHashedId = ReceiverPublicHashedAccountId,
+            PeriodEnd = PeriodEnd
+        };
+    }
 
-            _controller = new EmployerAccountTransactionsController(
-                _orchestrator.Object,
-                _mapper.Object,
-                _mediator.Object,
-                Mock.Of<ILogger<EmployerAccountTransactionsController>>());
-
-            _query = new GetTransferTransactionDetailsQuery
-            {
-                AccountId = SenderAccountId,
-                TargetAccountPublicHashedId = ReceiverPublicHashedAccountId,
-                PeriodEnd = PeriodEnd
-            };
-        }
-
-        [Test]
-        public async Task ThenIShouldGetTransferDetails()
+    [Test]
+    public async Task ThenIShouldGetTransferDetails()
+    {
+        //Assign
+        var expectedViewModel = new TransferTransactionDetailsViewModel
         {
-            //Assign
-            var expectedViewModel = new TransferTransactionDetailsViewModel
-            {
-                ReceiverAccountName = "Test Group",
-                ReceiverAccountPublicHashedId = "GFH657",
-                IsCurrentAccountSender = true,
-                TransferDetails = new List<AccountTransferDetails>()
-            };
+            ReceiverAccountName = "Test Group",
+            ReceiverAccountPublicHashedId = "GFH657",
+            IsCurrentAccountSender = true,
+            TransferDetails = new List<AccountTransferDetails>()
+        };
 
-            var response = new GetTransferTransactionDetailsResponse
-            {
-                IsCurrentAccountSender = true,
-                ReceiverAccountName = "Test Group",
-                ReceiverAccountPublicHashedId = "GFH657",
-                TransferDetails = new List<AccountTransferDetails>()
-            };
+        var response = new GetTransferTransactionDetailsResponse
+        {
+            IsCurrentAccountSender = true,
+            ReceiverAccountName = "Test Group",
+            ReceiverAccountPublicHashedId = "GFH657",
+            TransferDetails = new List<AccountTransferDetails>()
+        };
 
-            _mapper.Setup(x => x.Map<TransferTransactionDetailsViewModel>(response))
-                   .Returns(expectedViewModel);
+        _mapper.Setup(x => x.Map<TransferTransactionDetailsViewModel>(response))
+            .Returns(expectedViewModel);
 
-            _mediator.Setup(x => x.Send(It.IsAny<GetTransferTransactionDetailsQuery>(), CancellationToken.None))
-                .ReturnsAsync(response);
+        _mediator.Setup(x => x.Send(It.IsAny<GetTransferTransactionDetailsQuery>(), CancellationToken.None))
+            .ReturnsAsync(response);
 
-            //Act
-            var result = await _controller.TransferDetail(_query);
+        //Act
+        var result = await _controller.TransferDetail(_query);
 
-            //Assert
-            var view = result as ViewResult;
+        //Assert
+        var view = result as ViewResult;
 
-            var viewModel = view?.Model as TransferTransactionDetailsViewModel;
+        var viewModel = view?.Model as TransferTransactionDetailsViewModel;
 
-            Assert.AreEqual(expectedViewModel, viewModel);
-        }
+        Assert.AreEqual(expectedViewModel, viewModel);
     }
 }

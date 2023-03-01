@@ -23,10 +23,10 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         private readonly IMediator _mediator;
         private readonly ILogger<EmployerAccountTransactionsController> _logger;
 
-        private readonly EmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
+        private readonly IEmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
 
         public EmployerAccountTransactionsController(
-            EmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
+            IEmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
             IMapper mapper,
             IMediator mediator,
             ILogger<EmployerAccountTransactionsController> logger)

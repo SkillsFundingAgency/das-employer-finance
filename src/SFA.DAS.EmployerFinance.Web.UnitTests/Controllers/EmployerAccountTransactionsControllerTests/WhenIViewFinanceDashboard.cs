@@ -5,105 +5,102 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTransactionsControllerTests;
+
+public class WhenIViewFinanceDashboard
 {
-    public class WhenIViewFinanceDashboard
-    {
-        private const string ExpectedHashedAccountId = "ABC123";
-        private const decimal ExpectedCurrentFunds = 123.45M;
+    private const string ExpectedHashedAccountId = "ABC123";
+    private const decimal ExpectedCurrentFunds = 123.45M;
 
-        private EmployerAccountTransactionsController _controller;
-        private Mock<EmployerAccountTransactionsOrchestrator> _orchestrator;
+    private EmployerAccountTransactionsController _controller;
+    private Mock<IEmployerAccountTransactionsOrchestrator> _orchestrator;
         
-        [SetUp]
-        public void Arrange()
-        {
-            _orchestrator = new Mock<EmployerAccountTransactionsOrchestrator>();
-            _orchestrator.Setup(o => o.Index(ExpectedHashedAccountId))
-                .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
+    [SetUp]
+    public void Arrange()
+    {
+        _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
+        _orchestrator.Setup(o => o.Index(ExpectedHashedAccountId))
+            .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
+            {
+                Data = new FinanceDashboardViewModel
                 {
-                    Data = new FinanceDashboardViewModel
-                    {
-                        AccountHashedId = ExpectedHashedAccountId,
-                        CurrentLevyFunds = ExpectedCurrentFunds
-                    }
-                });
+                    AccountHashedId = ExpectedHashedAccountId,
+                    CurrentLevyFunds = ExpectedCurrentFunds
+                }
+            });
 
-            _controller = new EmployerAccountTransactionsController(
-                _orchestrator.Object,
-                Mock.Of<IMapper>(),
-                Mock.Of<IMediator>(),
-                Mock.Of<ILogger<EmployerAccountTransactionsController>>());
-        }
+        _controller = new EmployerAccountTransactionsController(
+            _orchestrator.Object,
+            Mock.Of<IMapper>(),
+            Mock.Of<IMediator>(),
+            Mock.Of<ILogger<EmployerAccountTransactionsController>>());
+    }
 
-        [Test]
-        public async Task ThenTheAccountHashedIdIsReturned()
-        {
-            //Act
-            var result = await _controller.Index(ExpectedHashedAccountId);
+    [Test]
+    public async Task ThenTheAccountHashedIdIsReturned()
+    {
+        //Act
+        var result = await _controller.Index(ExpectedHashedAccountId);
 
-            //Assert
-            var viewResult = result as ViewResult;
-            Assert.IsNotNull(viewResult);
+        //Assert
+        var viewResult = result as ViewResult;
+        Assert.IsNotNull(viewResult);
 
-            var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
-            Assert.IsNotNull(model);
-            Assert.IsNotNull(model.Data);
-            Assert.AreEqual(ExpectedHashedAccountId, model.Data.AccountHashedId);
-        }
+        var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
+        Assert.IsNotNull(model);
+        Assert.IsNotNull(model.Data);
+        Assert.AreEqual(ExpectedHashedAccountId, model.Data.AccountHashedId);
+    }
 
-        [Test]
-        public async Task ThenTheViewModelHasTheCorrectLevyBalance()
-        {
-            //Act
-            var result = await _controller.Index(ExpectedHashedAccountId);
+    [Test]
+    public async Task ThenTheViewModelHasTheCorrectLevyBalance()
+    {
+        //Act
+        var result = await _controller.Index(ExpectedHashedAccountId);
 
-            //Assert
-            var viewResult = result as ViewResult;
-            Assert.IsNotNull(viewResult);
+        //Assert
+        var viewResult = result as ViewResult;
+        Assert.IsNotNull(viewResult);
 
-            var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
-            Assert.IsNotNull(model);
-            Assert.IsNotNull(model.Data);
-            Assert.AreEqual(ExpectedCurrentFunds, model.Data.CurrentLevyFunds);
-        }
+        var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
+        Assert.IsNotNull(model);
+        Assert.IsNotNull(model.Data);
+        Assert.AreEqual(ExpectedCurrentFunds, model.Data.CurrentLevyFunds);
+    }
 
-        [Test]
-        public async Task ThenCorrectRedirectResultIsReturnedWhenOrchestratorRequestARedirect()
-        {
-            //Arrange
-            const string redirectUrl = "http://example.com";
+    [Test]
+    public async Task ThenCorrectRedirectResultIsReturnedWhenOrchestratorRequestARedirect()
+    {
+        //Arrange
+        const string redirectUrl = "http://example.com";
 
-            _orchestrator.Setup(o => o.Index(It.IsAny<string>()))
-                .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
-                {
-                    RedirectUrl = redirectUrl
-                });
+        _orchestrator.Setup(o => o.Index(It.IsAny<string>()))
+            .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
+            {
+                RedirectUrl = redirectUrl
+            });
 
-            //Act
-            var result = await _controller.Index(ExpectedHashedAccountId);
+        //Act
+        var result = await _controller.Index(ExpectedHashedAccountId);
 
-            //Assert
-            var redirectResult = result as RedirectResult;
-            Assert.IsNotNull(redirectResult);
-            Assert.AreEqual(redirectUrl, redirectResult.Url);
-            Assert.IsFalse(redirectResult.Permanent);
-        }
+        //Assert
+        var redirectResult = result as RedirectResult;
+        Assert.IsNotNull(redirectResult);
+        Assert.AreEqual(redirectUrl, redirectResult.Url);
+        Assert.IsFalse(redirectResult.Permanent);
+    }
 
-        [Test]
-        public async Task ThenRedirectResultIsNotReturnedWhenOrchestratorDoesNotRequestARedirect()
-        {
-            //Act
-            var result = await _controller.Index(ExpectedHashedAccountId);
+    [Test]
+    public async Task ThenRedirectResultIsNotReturnedWhenOrchestratorDoesNotRequestARedirect()
+    {
+        //Act
+        var result = await _controller.Index(ExpectedHashedAccountId);
 
-            //Assert
-            Assert.IsNotInstanceOf<RedirectResult>(result);
-        }
+        //Assert
+        Assert.IsNotInstanceOf<RedirectResult>(result);
     }
 }

@@ -25,8 +25,7 @@ using TransactionViewModel = SFA.DAS.EmployerFinance.Web.ViewModels.TransactionV
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
-
-    public class EmployerAccountTransactionsOrchestrator
+   public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransactionsOrchestrator
     {
         private readonly ICurrentDateTime _currentTime;
         private readonly ILogger<EmployerAccountTransactionsOrchestrator> _logger;
