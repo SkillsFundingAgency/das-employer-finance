@@ -63,6 +63,8 @@ public class Startup
         var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
         var isDevelopment = _configuration.IsDevOrLocal();
 
+        services.AddLogging();
+
         services.AddApiAuthentication(_configuration, isDevelopment);
         services.AddApiAuthorization(isDevelopment);
 
