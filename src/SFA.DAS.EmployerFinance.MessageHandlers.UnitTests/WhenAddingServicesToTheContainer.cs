@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
@@ -25,7 +24,6 @@ using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
-using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Messages.Commands;
@@ -33,7 +31,6 @@ using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
-using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests;
