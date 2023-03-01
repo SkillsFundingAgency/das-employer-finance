@@ -26,11 +26,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.UnitTests", "SFA.DAS.EmployerFinance.UnitTests\SFA.DAS.EmployerFinance.UnitTests.csproj", "{F4F0B32F-B777-43B8-8B8B-7765A3F50EF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.Web", "SFA.DAS.EmployerFinance.Web\SFA.DAS.EmployerFinance.Web.csproj", "{53BF9CE7-8355-4734-AC0F-D8659960BB51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Web", "SFA.DAS.EmployerFinance.Web\SFA.DAS.EmployerFinance.Web.csproj", "{53BF9CE7-8355-4734-AC0F-D8659960BB51}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Web.UnitTests", "SFA.DAS.EmployerFinance.Web.UnitTests\SFA.DAS.EmployerFinance.Web.UnitTests.csproj", "{13D318F4-1848-4236-85D2-CF8965C7D4F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.Api", "SFA.DAS.EmployerFinance.Api\SFA.DAS.EmployerFinance.Api.csproj", "{EC96E8DB-6882-4B4B-86F5-A6977D690ECF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Api", "SFA.DAS.EmployerFinance.Api\SFA.DAS.EmployerFinance.Api.csproj", "{EC96E8DB-6882-4B4B-86F5-A6977D690ECF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Api.UnitTests", "SFA.DAS.EmployerFinance.Api.UnitTests\SFA.DAS.EmployerFinance.Api.UnitTests.csproj", "{0D888B78-B896-4A84-BDF0-71AB13D603A4}"
 EndProject
@@ -40,15 +40,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Api
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Jobs.UnitTests", "SFA.DAS.EmployerFinance.Jobs.UnitTests\SFA.DAS.EmployerFinance.Jobs.UnitTests.csproj", "{4341EE0B-9ECE-424C-B7C2-E5715A5247C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.AcceptanceTests", "SFA.DAS.EmployerFinance.AcceptanceTests\SFA.DAS.EmployerFinance.AcceptanceTests.csproj", "{BA502A04-A41F-418E-80A5-74F264CF0FBA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.MessageHandlers.TestHarness", "SFA.DAS.EmployerFinance.MessageHandlers.TestHarness\SFA.DAS.EmployerFinance.MessageHandlers.TestHarness.csproj", "{73080F2E-1875-4DBC-BE84-381E2FD603D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Api.Types", "SFA.DAS.EmployerFinance.Api.Types\SFA.DAS.EmployerFinance.Api.Types.csproj", "{7C0B08BB-8C28-45F5-B547-25F006615B84}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Events", "SFA.DAS.EmployerFinance.Events\SFA.DAS.EmployerFinance.Events.csproj", "{2245A806-DAF7-42A9-898C-2C3D6C65E87C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.TestCommon", "SFA.DAS.EmployerFinance.TestCommon\SFA.DAS.EmployerFinance.TestCommon.csproj", "{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.TestCommon", "SFA.DAS.EmployerFinance.TestCommon\SFA.DAS.EmployerFinance.TestCommon.csproj", "{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Types", "SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj", "{77E5F79D-6045-49F0-BF5D-E0A83688C220}"
 EndProject
@@ -120,10 +118,6 @@ Global
 		{4341EE0B-9ECE-424C-B7C2-E5715A5247C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4341EE0B-9ECE-424C-B7C2-E5715A5247C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4341EE0B-9ECE-424C-B7C2-E5715A5247C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA502A04-A41F-418E-80A5-74F264CF0FBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA502A04-A41F-418E-80A5-74F264CF0FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA502A04-A41F-418E-80A5-74F264CF0FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA502A04-A41F-418E-80A5-74F264CF0FBA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{73080F2E-1875-4DBC-BE84-381E2FD603D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{73080F2E-1875-4DBC-BE84-381E2FD603D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73080F2E-1875-4DBC-BE84-381E2FD603D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -155,7 +149,6 @@ Global
 		{0D888B78-B896-4A84-BDF0-71AB13D603A4} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 		{3BE38DFF-DCCF-45AC-93EA-AB6E30DBB90D} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 		{4341EE0B-9ECE-424C-B7C2-E5715A5247C0} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
-		{BA502A04-A41F-418E-80A5-74F264CF0FBA} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 		{73080F2E-1875-4DBC-BE84-381E2FD603D2} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6} = {56860F8C-F41E-4B99-8B5A-4C160904DBD9}
 	EndGlobalSection
