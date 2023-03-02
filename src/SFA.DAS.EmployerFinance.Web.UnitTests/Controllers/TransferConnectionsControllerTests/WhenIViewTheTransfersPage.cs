@@ -5,10 +5,12 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
+using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
@@ -53,8 +55,23 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _mediatorMock
                 .Setup(mock => mock.Send(It.IsAny<GetTransferRequestsQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetTransferRequestsResponse() );
+            _mediatorMock
+                .Setup(mock => mock.Send(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>(), CancellationToken.None))
+                .ReturnsAsync(new GetEmployerAccountDetailByHashedIdResponse
+                {
+                    AccountDetail = new AccountDetailDto
+                    {
+                        ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy
+                    }
+                } );
             _mapper.Setup(x => x.Map<TransferAllowanceViewModel>(It.IsAny<GetTransferAllowanceResponse>()))
                 .Returns(new TransferAllowanceViewModel());
+            _mapper.Setup(x => x.Map<TransferConnectionInvitationAuthorizationViewModel>(It.IsAny<GetTransferConnectionInvitationAuthorizationResponse>()))
+                .Returns(new TransferConnectionInvitationAuthorizationViewModel());
+            _mapper.Setup(x => x.Map<TransferConnectionInvitationsViewModel>(It.IsAny<GetTransferConnectionInvitationsResponse>()))
+                .Returns(new TransferConnectionInvitationsViewModel());
+            _mapper.Setup(x => x.Map<TransferRequestsViewModel>(It.IsAny<GetTransferRequestsResponse>()))
+                .Returns(new TransferRequestsViewModel());
 
             //Act
             var result = await _controller.Index("ABC123") as ViewResult;
