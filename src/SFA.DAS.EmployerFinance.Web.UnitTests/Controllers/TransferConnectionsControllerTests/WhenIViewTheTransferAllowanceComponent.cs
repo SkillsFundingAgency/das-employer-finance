@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerTests
 {
@@ -17,13 +19,13 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
     public class WhenIViewTheTransferAllowanceComponent
     {
         private TransferConnectionsController _controller;
-        private GetTransferAllowanceQuery _query;
         private GetTransferAllowanceResponse _response;
         private IConfigurationProvider _mapperConfig;
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
         private TransferAllowance _transferAllowance;
         private EmployerFinanceConfiguration _configuration;
+        private const long AccountId = 23442;
 
         [SetUp]
         public void Arrange()
@@ -34,45 +36,40 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
                 RemainingTransferAllowance = 123.456m,
                 StartingTransferAllowance = 234.56M,
             };
-            _query = new GetTransferAllowanceQuery();
             _response = new GetTransferAllowanceResponse { TransferAllowance = _transferAllowance, TransferAllowancePercentage = _configuration.TransferAllowancePercentage };
             _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
+            _mediator.Setup(m => m.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
             
-            _controller = new TransferConnectionsController(null, _mapper, _mediator.Object);
+            _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, Mock.Of<IEncodingService>());
         }
 
         [Test]
-        public void ThenAGetTransferAllowanceQueryShouldBeSent()
+        public async Task ThenAGetTransferAllowanceQueryShouldBeSent()
         {
-            _controller.TransferAllowance(_query);
+            await _controller.TransferAllowance(AccountId);
 
-            _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
         }
 
         [Test]
-        public void ThenIShouldBeShownTheTransferAllowanceComponent()
+        public async Task ThenIShouldBeShownTheTransferAllowanceComponent()
         {
-            var result = _controller.TransferAllowance(_query) as PartialViewResult;
-            var model = result?.Model as TransferAllowanceViewModel;
+            var model = await _controller.TransferAllowance(AccountId);
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.Null);
             Assert.That(model, Is.Not.Null);
             Assert.That(model.RemainingTransferAllowance, Is.EqualTo(_response.TransferAllowance.RemainingTransferAllowance));
         }
 
         [Test]
-        public void ThenIShouldBeShownTheCorrectTransferAllowancePercentage()
+        public async Task ThenIShouldBeShownTheCorrectTransferAllowancePercentage()
         {
             //Act
-            var result = _controller.TransferAllowance(_query) as PartialViewResult;
-            var model = result?.Model as TransferAllowanceViewModel;
-
+            var result = await _controller.TransferAllowance(AccountId);
+            
             //Assert
-            Assert.AreEqual(25m, model.TransferAllowancePercentage);
+            Assert.AreEqual(25m, result.TransferAllowancePercentage);
         }
     }
 }

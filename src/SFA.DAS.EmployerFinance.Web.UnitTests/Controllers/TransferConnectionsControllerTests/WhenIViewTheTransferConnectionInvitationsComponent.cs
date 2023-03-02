@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerTests
 {
@@ -17,17 +19,15 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
     public class WhenIViewTheTransferConnectionInvitationsComponent
     {
         private TransferConnectionsController _controller;
-        private GetTransferConnectionInvitationsQuery _query;
         private GetTransferConnectionInvitationsResponse _response;
         private IConfigurationProvider _mapperConfig;
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
+        private const long AccountId = 123125;
 
         [SetUp]
         public void Arrange()
         {
-            _query = new GetTransferConnectionInvitationsQuery();
-
             _response = new GetTransferConnectionInvitationsResponse
             {
                 TransferConnectionInvitations = new List<TransferConnectionInvitationDto>()
@@ -36,27 +36,24 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
+            _mediator.Setup(m => m.Send(It.Is<GetTransferConnectionInvitationsQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
             
-            _controller = new TransferConnectionsController(null, _mapper, _mediator.Object);
+            _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, Mock.Of<IEncodingService>());
         }
 
         [Test]
-        public void ThenAGetTransferConnectionInvitationsQueryShouldBeSent()
+        public async Task ThenAGetTransferConnectionInvitationsQueryShouldBeSent()
         {
-            _controller.TransferConnectionInvitations(_query);
+            await _controller.TransferConnectionInvitations(AccountId);
 
-            _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<GetTransferConnectionInvitationsQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
         }
 
         [Test]
-        public void ThenIShouldBeShownTheTransferConnectionInvitationsComponent()
+        public async Task ThenIShouldBeShownTheTransferConnectionInvitationsComponent()
         {
-            var result = _controller.TransferConnectionInvitations(_query) as PartialViewResult;
-            var model = result?.Model as TransferConnectionInvitationsViewModel;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.Null);
+            var model = await _controller.TransferConnectionInvitations(AccountId);
+            
             Assert.That(model, Is.Not.Null);
             Assert.That(model.TransferConnectionInvitations, Is.EqualTo(_response.TransferConnectionInvitations));
         }

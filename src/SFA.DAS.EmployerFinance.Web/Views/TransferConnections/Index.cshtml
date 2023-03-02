@@ -3,33 +3,34 @@
 
 @inject IUrlActionHelper UrlHelpers;
 
+@model SFA.DAS.EmployerFinance.Web.ViewModels.TransferViewModel
+
 @{
     ViewBag.Title = "Transfers";
     ViewBag.Section = "finance";
     ViewBag.PageID = "page-transfers";
     ViewBag.GaData.Vpv = "/accounts/transfers";
     ViewBag.ZenDeskLabel = "eas-transfers";
-    Layout = "~/Views/Shared/_layout.cshtml";
 }
-
+ 
 <h1 class="govuk-heading-xl">Transfers</h1>
 
-@if (ViewBag.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
+@if (Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
 {
-    @Url.Action("TransferAllowance")
+    @Html.Partial("_TransferAllowance",Model.TransferAllowanceViewModel)
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        @if (ViewBag.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
+        @if (Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
         {
             <p><a href="@UrlHelpers.EmployerProjectionsAction("forecasting/estimations/start-transfer")" class="govuk-link govuk-link--no-visited-state">Estimate</a> the number of apprentices you can fund with your transfer allowance.</p>
         }
-
-        @Url.Action("TransferConnectionInvitationAuthorization")
-        @Url.Action("TransferConnectionInvitations")
-        @Url.Action("TransferRequests")
+        @Html.Partial("_TransferConnectionInvitationAuthorization",Model.TransferConnectionInvitationAuthorizationViewModel)
+        @Html.Partial("_TransferConnectionInvitations",Model.TransferConnectionInvitationsViewModel)
+        @Html.Partial("_TransferRequests",Model.TransferRequest)
+        
         
     </div>
 </div>

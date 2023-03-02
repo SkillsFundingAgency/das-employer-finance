@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,8 +12,7 @@ using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerTests
 {
@@ -20,18 +20,17 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
     public class WhenIViewTheTransferRequestsComponent
     {
         private TransferConnectionsController _controller;
-        private GetTransferRequestsQuery _query;
         private GetTransferRequestsResponse _response;
         private Mock<ILogger<TransferConnectionsController>> _logger;
         private IConfigurationProvider _mapperConfig;
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
+        private const long AccountId = 123213;
 
         [SetUp]
         public void Arrange()
         {
-            _query = new GetTransferRequestsQuery();
-
+        
             _response = new GetTransferRequestsResponse
             {
                 TransferRequests = new List<TransferRequestDto>()
@@ -41,39 +40,36 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
-            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
+            _mediator.Setup(m => m.Send(It.Is<GetTransferRequestsQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
             
-            _controller = new TransferConnectionsController(_logger.Object, _mapper, _mediator.Object);
+            _controller = new TransferConnectionsController(_logger.Object, _mapper, _mediator.Object, Mock.Of<IEncodingService>());
         }
 
         [Test]
-        public void ThenAGetTransferRequestsQueryShouldBeSent()
+        public async Task ThenAGetTransferRequestsQueryShouldBeSent()
         {
-            _controller.TransferRequests(_query);
+            await _controller.TransferRequests(AccountId);
 
-            _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<GetTransferRequestsQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
         }
 
         [Test]
-        public void ThenIShouldBeShownTheTransferRequestsComponent()
+        public async Task ThenIShouldBeShownTheTransferRequestsComponent()
         {
-            var result = _controller.TransferRequests(_query) as PartialViewResult;
-            var model = result?.Model as TransferRequestsViewModel;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.Null);
+            var model = await _controller.TransferRequests(AccountId);
+            
             Assert.That(model, Is.Not.Null);
             Assert.That(model.TransferRequests, Is.EqualTo(_response.TransferRequests));
         }
 
         [Test]
-        public void ThenExceptionShouldBeLoggedWhenExceptionIsThrown()
+        public async Task ThenExceptionShouldBeLoggedWhenExceptionIsThrown()
         {
-            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).Throws<Exception>();
+            _mediator.Setup(m => m.Send(It.IsAny<GetTransferRequestsQuery>(), CancellationToken.None)).Throws<Exception>();
 
-            var result = _controller.TransferRequests(_query) as EmptyResult;
+            var result = await _controller.TransferRequests(AccountId);
 
-            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.Null);
 
             _logger.Verify(x => x.Log(LogLevel.Warning,0,
                 It.Is<It.IsAnyType>((message, type) => message.ToString().Contains("Failed to get transfer requests") && type.Name == "FormattedLogValues"),

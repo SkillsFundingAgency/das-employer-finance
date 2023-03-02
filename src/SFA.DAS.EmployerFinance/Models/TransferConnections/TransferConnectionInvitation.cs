@@ -5,16 +5,16 @@ namespace SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 public class TransferConnectionInvitation : Entity
 {
-    public virtual int Id { get; protected set; }
+    public int Id { get; protected set; }
     public virtual ICollection<TransferConnectionInvitationChange> Changes { get; protected set; } = new List<TransferConnectionInvitationChange>();
-    public virtual DateTime CreatedDate { get; protected set; }
-    public virtual bool DeletedByReceiver { get; protected set; }
-    public virtual bool DeletedBySender { get; protected set; }
+    public DateTime CreatedDate { get; protected set; }
+    public bool DeletedByReceiver { get; protected set; }
+    public bool DeletedBySender { get; protected set; }
     public virtual Account.Account ReceiverAccount { get; protected set; }
-    public virtual long ReceiverAccountId { get; protected set; }
+    public long ReceiverAccountId { get; protected set; }
     public virtual Account.Account SenderAccount { get; protected set; }
-    public virtual long SenderAccountId { get; protected set; }
-    public virtual TransferConnectionInvitationStatus Status { get; protected set; }
+    public long SenderAccountId { get; protected set; }
+    public TransferConnectionInvitationStatus Status { get; protected set; }
 
     public TransferConnectionInvitation(Account.Account senderAccount, Account.Account receiverAccount, User senderUser) : this()
     {

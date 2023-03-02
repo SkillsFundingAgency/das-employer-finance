@@ -6,7 +6,5 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthori
 
 public class GetTransferConnectionInvitationAuthorizationQuery : IRequest<GetTransferConnectionInvitationAuthorizationResponse>
 {
-    [Ignore]
-    [Required]
     public long AccountId { get; set; }
 }

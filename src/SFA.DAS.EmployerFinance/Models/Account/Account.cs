@@ -10,7 +10,7 @@ public class Account : Entity
     public virtual ICollection<AccountLegalEntity> AccountLegalEntities { get; set; } = new List<AccountLegalEntity>();
         
     public virtual string Name { get; set; }
-
+    
     public string HashedId; //=> _hashingService.HashValue(Id);
 
     public string PublicHashedId;// => _publicHashingService.HashValue(Id);

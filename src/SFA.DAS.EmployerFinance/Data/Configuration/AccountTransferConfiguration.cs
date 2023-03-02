@@ -7,7 +7,7 @@ public class AccountTransferConfiguration : IEntityTypeConfiguration<AccountTran
 {
     public void Configure(EntityTypeBuilder<AccountTransfer> builder)
     {
-        builder.ToTable("AccountTransfer");
+        builder.ToTable("AccountTransfers");
         builder.HasKey(x => x.Id);
     }
 }
