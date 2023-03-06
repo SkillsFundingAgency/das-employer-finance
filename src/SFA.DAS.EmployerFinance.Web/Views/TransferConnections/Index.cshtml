@@ -17,7 +17,7 @@
 
 @if (Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy)
 {
-    @Html.Partial("_TransferAllowance",Model.TransferAllowanceViewModel)
+    @await Html.PartialAsync("_TransferAllowance",Model.TransferAllowanceViewModel)
 }
 
 <div class="govuk-grid-row">
@@ -27,11 +27,12 @@
         {
             <p><a href="@UrlHelpers.EmployerProjectionsAction("forecasting/estimations/start-transfer")" class="govuk-link govuk-link--no-visited-state">Estimate</a> the number of apprentices you can fund with your transfer allowance.</p>
         }
-        @Html.Partial("_TransferConnectionInvitationAuthorization",Model.TransferConnectionInvitationAuthorizationViewModel)
-        @Html.Partial("_TransferConnectionInvitations",Model.TransferConnectionInvitationsViewModel)
-        @Html.Partial("_TransferRequests",Model.TransferRequest)
-        
-        
+
+        @await Html.PartialAsync("_TransferConnectionInvitationAuthorization",Model.TransferConnectionInvitationAuthorizationViewModel)
+        @await Html.PartialAsync("_TransferConnectionInvitations",Model.TransferConnectionInvitationsViewModel)
+        @await Html.PartialAsync("_TransferRequests",Model.TransferRequest)
+
+
     </div>
 </div>
 
