@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
@@ -29,44 +27,19 @@ namespace SFA.DAS.EmployerFinance.Web
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            var config = new ConfigurationBuilder()
-                .AddConfiguration(configuration)
-                .SetBasePath(Directory.GetCurrentDirectory());
-#if DEBUG
-            if (!configuration.IsDev())
-            {
-                config.AddJsonFile("appsettings.json", false)
-                    .AddJsonFile("appsettings.Development.json", true);
-            }
-
-#endif
-            config.AddEnvironmentVariables();
-
-            if (!configuration.IsTest())
-            {
-                config.AddAzureTableStorage(options =>
-                    {
-                        options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
-                        options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
-                        options.EnvironmentName = configuration["EnvironmentName"];
-                        options.PreFixConfigurationKeys = false;
-                        options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
-                    }
-                );
-            }
-
-            _configuration = config.Build();
             _environment = environment;
+
+            _configuration = configuration.BuildDasConfiguration();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            
+
             services.AddOptions();
 
             services.AddLogging();
-            
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             services.AddConfigurationOptions(_configuration);
@@ -78,24 +51,24 @@ namespace SFA.DAS.EmployerFinance.Web
              .Get<IdentityServerConfiguration>();
 
             services.AddOrchestrators();
-            
+
             services.AddDatabaseRegistration(_employerFinanceConfiguration.DatabaseConnectionString);
             services.AddDataRepositories();
             services.AddHmrcServices();
-            
-            services.AddMaMenuConfiguration("SignOut", identityServerConfiguration.ClientId,_configuration["ResourceEnvironmentName"]);
+
+            services.AddMaMenuConfiguration("SignOut", identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);
             //MAC-192
             services.AddApplicationServices(_configuration);
 
             //TODO replace with EncodingService
             services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-            
+
             services.AddEventsApi();
             //services.AddNotifications(_configuration);
             services.AddEmployerFinanceApi();
 
             services.AddAuthenticationServices();
-            
+
             if (_configuration.UseGovUkSignIn())
             {
                 services.AddAndConfigureGovUkAuthentication(_configuration,
