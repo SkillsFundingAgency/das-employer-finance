@@ -18,7 +18,7 @@ public class AuthorizationHeaderParameterOperationFilter : IOperationFilter
             Schema = new OpenApiSchema
             {
                 Type = "string",
-                Default = new OpenApiString("Bearer ")
+                Default = new OpenApiString("Bearer")
             },
         });
     }
