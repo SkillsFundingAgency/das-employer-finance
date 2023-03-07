@@ -15,7 +15,6 @@ using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.Handlers;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
