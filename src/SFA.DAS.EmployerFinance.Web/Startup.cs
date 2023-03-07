@@ -12,6 +12,7 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.Handlers;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
@@ -95,9 +96,7 @@ namespace SFA.DAS.EmployerFinance.Web
 
             services.AddAuthenticationServices();
             
-            if (_configuration["EmployerFinanceConfiguration:UseGovSignIn"] != null &&
-               _configuration["EmployerFinanceConfiguration:UseGovSignIn"]
-                   .Equals("true", StringComparison.CurrentCultureIgnoreCase))
+            if (_configuration.UseGovUkSignIn())
             {
                 services.AddAndConfigureGovUkAuthentication(_configuration,
                     $"{typeof(Startup).Assembly.GetName().Name}.Auth",
