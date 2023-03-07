@@ -12,7 +12,6 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
-using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -48,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             });
 
             var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-//This cant be done with Task.WhenAll
+            //This cant be done with Task.WhenAll
             var transferAllowanceTask = await TransferAllowance(accountId);
             var transferConnectionInvitationAuthorizationTask =await TransferConnectionInvitationAuthorization(accountId);
             var transferConnectionInvitationsTask =  await TransferConnectionInvitations(accountId);
@@ -65,7 +64,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             
             return View(model);
         }
-
         
         public async Task<TransferAllowanceViewModel> TransferAllowance(long accountId)
         {

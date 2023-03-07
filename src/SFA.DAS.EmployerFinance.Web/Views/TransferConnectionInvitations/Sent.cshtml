@@ -7,7 +7,8 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connection/requests/sent";
 }
 
-@Html.Partial("_ValidationSummary", ViewData.ModelState)
+
+@await Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
 <div class="grid-row">
     <div class="column-two-thirds">
         <div class="success-summary">
