@@ -24,20 +24,6 @@ public class EmployerAccountRepository : IEmployerAccountRepository
         return accounts;
     }
 
-    public async Task<Account> Get(string publicHashedId)
-    {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("@HashedAccountId", publicHashedId, DbType.String);
-
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<Account>(
-            sql: "select a.* from [employer_account].[Account] a where a.HashedId = @HashedAccountId;",
-            param: parameters,
-            commandType: CommandType.Text);
-
-        return result.SingleOrDefault();
-    }
-
     public async Task<List<Account>> GetAll()
     {
         var accounts = await _db.Value.Accounts.ToListAsync();

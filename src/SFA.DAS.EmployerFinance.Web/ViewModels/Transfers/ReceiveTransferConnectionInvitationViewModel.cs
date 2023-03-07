@@ -6,16 +6,8 @@ using SFA.DAS.EmployerFinance.Web.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
-    public class ReceiveTransferConnectionInvitationViewModel : IAuthorizationContextModel
+    public class ReceiveTransferConnectionInvitationViewModel
     {
-        [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
-
-        [IgnoreMap]
-        [Required]
-        public Guid UserRef { get; set; }
-
         [Required]
         public int? TransferConnectionInvitationId { get; set; }
 

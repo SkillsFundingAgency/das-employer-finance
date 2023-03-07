@@ -4,6 +4,7 @@ using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 
@@ -12,20 +13,23 @@ public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<Send
     private readonly IEmployerAccountRepository _employerAccountRepository;
     private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
     private readonly IMapper _mapper;
+    private readonly IEncodingService _encodingService;
 
     public SendTransferConnectionInvitationQueryHandler(
         IEmployerAccountRepository employerAccountRepository,
         ITransferConnectionInvitationRepository transferConnectionInvitationRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IEncodingService encodingService)
     {
         _employerAccountRepository = employerAccountRepository;
         _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
         _mapper = mapper;
+        _encodingService = encodingService;
     }
 
     public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
     {
-        var receiverAccount = await _employerAccountRepository.Get(message.ReceiverAccountPublicHashedId);
+        var receiverAccount = await _employerAccountRepository.Get(_encodingService.Decode(message.ReceiverAccountPublicHashedId, EncodingType.PublicAccountId));
 
         if (receiverAccount == null || receiverAccount.Id == message.AccountId)
         {

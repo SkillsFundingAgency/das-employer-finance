@@ -6,16 +6,8 @@ using SFA.DAS.EmployerFinance.Web.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
-    public class RejectedTransferConnectionInvitationViewModel : IAuthorizationContextModel
+    public class RejectedTransferConnectionInvitationViewModel
     {
-        [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
-
-        [IgnoreMap]
-        [Required]
-        public Guid UserRef { get; set; }
-
         [Required(ErrorMessage = "Option required")]
         [RegularExpression("Confirm|GoToTransfersPage", ErrorMessage = "Option required")]
         public string Choice { get; set; }

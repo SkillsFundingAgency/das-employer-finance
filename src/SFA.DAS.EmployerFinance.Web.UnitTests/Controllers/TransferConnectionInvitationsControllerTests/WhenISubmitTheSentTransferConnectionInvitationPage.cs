@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
 {
@@ -22,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             var urlHelper = new Mock<IUrlActionHelper>();
             urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{AccountHashedId}/teams");
             
-            _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object);
+            _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object, Mock.Of<IEncodingService>());
         }
 
         [Test]

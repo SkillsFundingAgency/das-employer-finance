@@ -10,6 +10,7 @@ using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Queries.GetLatestPendingReceivedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
 {
@@ -20,6 +21,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         private IConfigurationProvider _configurationProvider;
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
+        private const string HashedAccountId = "ABC123";
+        private const long AccountId = 345435;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +30,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             _configurationProvider = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null);
+            var encodingService = new Mock<IEncodingService>();
+            encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
+            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null, encodingService.Object);
         }
 
         [Test]
@@ -39,7 +44,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                     TransferConnectionInvitation = new TransferConnectionInvitationDto()
                 });
 
-            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery());
+            var actionResult = await _controller.Outstanding(HashedAccountId);
 
             Assert.AreEqual(typeof(RedirectToActionResult), actionResult.GetType());
         }
@@ -53,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                     TransferConnectionInvitation = new TransferConnectionInvitationDto()
                 });
 
-            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery()) as RedirectToActionResult;
+            var actionResult = await _controller.Outstanding(HashedAccountId) as RedirectToActionResult;
 
             CheckRoute(
                 null,
@@ -70,7 +75,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                     TransferConnectionInvitation = null
                 });
 
-            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery());
+            var actionResult = await _controller.Outstanding(HashedAccountId);
 
             Assert.AreEqual(typeof(RedirectToActionResult), actionResult.GetType());
         }
@@ -84,7 +89,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
                     TransferConnectionInvitation = null
                 });
 
-            var actionResult = await _controller.Outstanding(new GetLatestPendingReceivedTransferConnectionInvitationQuery()) as RedirectToActionResult;
+            var actionResult = await _controller.Outstanding(HashedAccountId) as RedirectToActionResult;
 
             CheckRoute(
                 nameof(TransferConnectionsController),

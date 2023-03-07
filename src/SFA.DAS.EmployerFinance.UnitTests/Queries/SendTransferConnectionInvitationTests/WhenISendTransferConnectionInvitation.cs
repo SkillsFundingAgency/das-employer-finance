@@ -5,6 +5,7 @@ using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.SendTransferConnectionInvitationTests;
 
@@ -21,6 +22,7 @@ public class WhenISendTransferConnectionInvitation
 
     private Account _receiverAccount;
     private Account _senderAccount;
+    private Mock<IEncodingService> _encodingService;
 
     [SetUp]
     public void Arrange()
@@ -41,7 +43,7 @@ public class WhenISendTransferConnectionInvitation
         };
 
         _employerAccountRepository = new Mock<IEmployerAccountRepository>();
-        _employerAccountRepository.Setup(s => s.Get(_receiverAccount.PublicHashedId)).ReturnsAsync(_receiverAccount);
+        _employerAccountRepository.Setup(s => s.Get(_receiverAccount.Id)).ReturnsAsync(_receiverAccount);
         _employerAccountRepository.Setup(s => s.Get(_senderAccount.Id)).ReturnsAsync(_senderAccount);
 
         _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
@@ -53,10 +55,17 @@ public class WhenISendTransferConnectionInvitation
             c.AddProfile<UserMappings>();
         }));
 
+        _encodingService = new Mock<IEncodingService>();
+        _encodingService.Setup(x => x.Decode(_receiverAccount.PublicHashedId, EncodingType.PublicAccountId))
+            .Returns(_receiverAccount.Id);
+        _encodingService.Setup(x => x.Decode(_senderAccount.PublicHashedId, EncodingType.PublicAccountId))
+            .Returns(_senderAccount.Id);
+        
         _handler = new SendTransferConnectionInvitationQueryHandler(
             _employerAccountRepository.Object, 
             _transferConnectionInvitationRepository.Object, 
-            _mapper);
+            _mapper,
+            _encodingService.Object);
 
         _query = new SendTransferConnectionInvitationQuery
         {
@@ -102,7 +111,7 @@ public class WhenISendTransferConnectionInvitation
     [Test]
     public void ThenShouldThrowValidationExceptionIfReceiverAccountIsNull()
     {
-        _employerAccountRepository.Setup(s => s.Get(_query.ReceiverAccountPublicHashedId)).ReturnsAsync((Account)null);
+        _employerAccountRepository.Setup(s => s.Get(_receiverAccount.Id)).ReturnsAsync((Account)null);
 
         var exception = Assert.ThrowsAsync<ValidationException>( () => _handler.Handle(_query, CancellationToken.None));
 

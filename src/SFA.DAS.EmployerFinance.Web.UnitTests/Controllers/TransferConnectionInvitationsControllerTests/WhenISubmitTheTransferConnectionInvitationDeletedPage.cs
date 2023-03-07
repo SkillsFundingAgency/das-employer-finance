@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
 {
@@ -21,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             var urlHelper = new Mock<IUrlActionHelper>();
             urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{AccountHashedId}/teams");
-            _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object);
+            _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object, Mock.Of<IEncodingService>());
         }
 
         [Test]
@@ -29,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToTransfersPage";
 
-            var result = _controller.Deleted(_viewModel) as RedirectToActionResult;
+            var result = _controller.Deleted("ABC123",_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.ActionName, Is.EqualTo("Index"));
@@ -41,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToHomepage";
 
-            var result = _controller.Deleted(_viewModel) as RedirectResult;
+            var result = _controller.Deleted("ABC123",_viewModel) as RedirectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));

@@ -18,7 +18,7 @@ public class GetTransferConnectionInvitationQueryHandler : IRequestHandler<GetTr
     public async Task<GetTransferConnectionInvitationResponse> Handle(GetTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
     {
         var transferConnectionInvitation = await _transferConnectionInvitationRepository.GetBySenderOrReceiver(
-            message.TransferConnectionInvitationId.Value,
+            Convert.ToInt32(message.TransferConnectionInvitationId.Value),
             message.AccountId);
 
         return new GetTransferConnectionInvitationResponse

@@ -9,6 +9,7 @@ using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
 {
@@ -29,15 +30,16 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();
 
+            
             _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
 
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null);
+            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null, Mock.Of<IEncodingService>());
         }
 
         [Test]
         public async Task ThenAGetCreatedTransferConnectionQueryShouldBeSent()
         {
-            await _controller.Send(_query);
+            await _controller.Send("ABC123",_query);
 
             _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
         }
@@ -45,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenIShouldBeShownTheSendTransferConnectionInvitationPage()
         {
-            var result = await _controller.Send(_query) as ViewResult;
+            var result = await _controller.Send("ABC123",_query) as ViewResult;
             var model = result?.Model as SendTransferConnectionInvitationViewModel;
 
             Assert.That(result, Is.Not.Null);

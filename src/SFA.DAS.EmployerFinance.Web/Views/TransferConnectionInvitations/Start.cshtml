@@ -7,12 +7,12 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connections/requests/start";
 }
 
-@Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
+
 <div class="grid-row">
     <div class="column-two-thirds">
         <h1 class="heading-xlarge">Which employer are you connecting with?</h1>
-        @using (Html.BeginForm())
-        {
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Start" asp-route-hashedAccountId="@Model.HashedAccountId">
             <div asp-fieldname="Choice">
                 <label for="@Html.IdFor(m => m.ReceiverAccountPublicHashedId)">
                     <span class="form-label-bold">Enter the employer's apprenticeship account ID</span>
@@ -22,14 +22,14 @@
                 @Html.TextBoxFor(m => m.ReceiverAccountPublicHashedId, new { aria_required = true, @class = "form-control form-control-3-4" })
             </div>
             <button class="button" type="submit">Continue</button>
-        }
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
     <div class="breadcrumbs" id="js-breadcrumbs">
         <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Index", "TransferConnectionInvitations")">Back</a></li>
+            <li><a class="link-back" href="@Url.Action("Index", "TransferConnectionInvitations", new {Model.HashedAccountId})">Back</a></li>
         </ol>
     </div>
 }

@@ -22,7 +22,7 @@ public class DeleteTransferConnectionInvitationCommandHandler : IRequestHandler<
     {
         var deleterAccount = await _employerAccountRepository.Get(request.AccountId);
         var deleterUser = await _userRepository.Get(request.UserRef);
-        var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(request.TransferConnectionInvitationId.Value);
+        var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(Convert.ToInt32(request.TransferConnectionInvitationId.Value));
 
         transferConnectionInvitation.Delete(deleterAccount, deleterUser);
 

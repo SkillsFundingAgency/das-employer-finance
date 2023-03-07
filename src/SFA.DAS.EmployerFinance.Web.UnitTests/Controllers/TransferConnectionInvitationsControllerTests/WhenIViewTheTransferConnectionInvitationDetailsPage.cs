@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
 {
@@ -22,6 +24,11 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         private readonly GetTransferConnectionInvitationQuery _query = new GetTransferConnectionInvitationQuery();
         private readonly GetTransferConnectionInvitationResponse _response = new GetTransferConnectionInvitationResponse();
 
+        private const long AccountId = 12345;
+        private const string HashedAccountId = "ABC123";
+        private const long TransferConnectionId = 54321;
+        private const string HashedTransferConnectionId = "XYZ345";
+        
         [SetUp]
         public void Arrange()
         {
@@ -29,23 +36,31 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();
 
-            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
+            var encodingService = new Mock<IEncodingService>();
+            encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
+            encodingService.Setup(x => x.Decode(HashedTransferConnectionId, EncodingType.TransferRequestId)).Returns(TransferConnectionId);
 
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object,null);
+            _mediator.Setup(m =>
+                m.Send(
+                    It.Is<GetTransferConnectionInvitationQuery>(c =>
+                        c.AccountId.Equals(AccountId) && c.TransferConnectionInvitationId.Equals(TransferConnectionId)),
+                    CancellationToken.None)).ReturnsAsync(_response);
+
+            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object,null, encodingService.Object);
         }
 
         [Test]
         public async Task ThenAGetTransferConnectionQueryShouldBeSent()
         {
-            await _controller.Details(_query);
+            await _controller.Details(HashedAccountId, HashedTransferConnectionId);
 
-            _mediator.Verify(m => m.Send(_query, CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<GetTransferConnectionInvitationQuery>(c=>c.AccountId.Equals(AccountId) && c.TransferConnectionInvitationId.Equals(TransferConnectionId) ), CancellationToken.None), Times.Once);
         }
 
         [Test]
         public async Task ThenIShouldBeShownTheTransferConnectionDetailsPage()
         {
-            var result = await _controller.Details(_query) as ViewResult;
+            var result = await _controller.Details(HashedAccountId, HashedTransferConnectionId) as ViewResult;
             var model = result?.Model as TransferConnectionInvitationViewModel;
 
             Assert.That(result, Is.Not.Null);

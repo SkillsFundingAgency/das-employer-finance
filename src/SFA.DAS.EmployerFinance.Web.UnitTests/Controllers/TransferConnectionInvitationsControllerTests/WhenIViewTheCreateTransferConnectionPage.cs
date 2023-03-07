@@ -13,17 +13,17 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [SetUp]
         public void Arrange()
         {
-            _controller = new TransferConnectionInvitationsController(null, null, null);
+            _controller = new TransferConnectionInvitationsController(null, null, null, null);
         }
 
         [Test]
         public void ThenIShouldBeShownTheStartTransferConnectionInvitationPage()
         {
-            var result = _controller.Start() as ViewResult;
+            var result = _controller.Start("ABC123") as ViewResult;
             var model = result?.Model as StartTransferConnectionInvitationViewModel;
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(model, Is.Not.Null);
+            Assert.That(model.HashedAccountId, Is.EqualTo("ABC123"));
         }
     }
 }

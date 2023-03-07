@@ -1,4 +1,5 @@
-﻿@{
+﻿@model string
+@{
     ViewBag.Title = "Transfer connection requests";
     ViewBag.Section = "finance";
     ViewBag.PageID = "page-transfer-connection-requests";
@@ -30,8 +31,8 @@
                     </ul>
                     <p>You won't be able to complete the next step until you have the receiving employer's account ID.</p>
                     <div class="form-block">
-                        <a class="button button-white" href="@Url.Action("Start", "TransferConnectionInvitations")">Continue</a>
-                        <a class="button-link" href="@Url.Action("Index", "TransferConnections")">Cancel</a>
+                        <a class="button button-white" href="@Url.Action("Start", "TransferConnectionInvitations", new{HashedAccountId = Model})">Continue</a>
+                        <a class="button-link" href="@Url.Action("Index", "TransferConnections", new{HashedAccountId = Model})">Cancel</a>
                     </div>
                 </div>
             </div>
@@ -42,7 +43,7 @@
 @section breadcrumb {
     <div class="breadcrumbs" id="js-breadcrumbs">
         <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Index", "TransferConnections")">Back</a></li>
+            <li><a class="link-back" href="@Url.Action("Index", "TransferConnections", new{HashedAccountId = Model})">Back</a></li>
         </ol>
     </div>
 }

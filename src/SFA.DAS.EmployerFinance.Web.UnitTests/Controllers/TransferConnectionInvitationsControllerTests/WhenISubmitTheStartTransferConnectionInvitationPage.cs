@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
 {
@@ -25,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _mediator.Setup(m => m.Send(It.IsAny<SendTransferConnectionInvitationQuery>(), CancellationToken.None)).ReturnsAsync(new SendTransferConnectionInvitationResponse());
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>());
+            _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>(), Mock.Of<IEncodingService>());
 
             _viewModel = new StartTransferConnectionInvitationViewModel
             {
@@ -36,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenAGetTransferConnectionInvitationAccountQueryShouldBeSent()
         {
-            await _controller.Start(_viewModel);
+            await _controller.Start(ReceiverAccountPublicHashedId,_viewModel);
 
             _mediator.Verify(m => m.Send(It.Is<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId), CancellationToken.None), Times.Once);
         }
@@ -44,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [Test]
         public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
         {
-            var result = await _controller.Start(_viewModel) as RedirectToActionResult;
+            var result = await _controller.Start(ReceiverAccountPublicHashedId, _viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.ActionName, Is.EqualTo("Send"));

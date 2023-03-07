@@ -1,21 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using SFA.DAS.Authorization.ModelBinding;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
-    public class SendTransferConnectionInvitationViewModel : IAuthorizationContextModel
+    public class SendTransferConnectionInvitationViewModel
     {
-        [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
-
-        [IgnoreMap]
-        [Required]
-        public Guid UserRef { get; set; }
-
         [Required(ErrorMessage = "Option required")]
         [RegularExpression("Confirm|ReEnterAccountId", ErrorMessage = "Option required")]
         public string Choice { get; set; }
@@ -26,5 +17,8 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         [Required]
         [RegularExpression(EmployerFinance.Constants.AccountHashedIdRegex)]
         public string ReceiverAccountPublicHashedId { get; set; }
+
+        [IgnoreMap]
+        public string HashedAccountId { get; set; }
     }
 }

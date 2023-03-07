@@ -1,15 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using SFA.DAS.Authorization.ModelBinding;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
-    public class StartTransferConnectionInvitationViewModel : IAuthorizationContextModel
+    public class StartTransferConnectionInvitationViewModel 
     {
         [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
+        public string HashedAccountId { get; set; }
 
         [IgnoreMap]
         [Required]

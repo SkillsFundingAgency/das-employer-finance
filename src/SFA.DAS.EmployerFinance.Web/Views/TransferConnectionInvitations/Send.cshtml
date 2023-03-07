@@ -7,12 +7,11 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connections/requests/send";
 }
 
-@Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
 <div class="grid-row">
     <div class="column-two-thirds">
         <h1 class="heading-xlarge">Confirm details</h1>
-        @using (Html.BeginForm())
-        {
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Send" asp-route-hashedAccountId="@Model.HashedAccountId">
             @Html.HiddenFor(m => m.ReceiverAccountPublicHashedId)
             <div class="form-group">
                 <table>
@@ -49,14 +48,14 @@
                 </fieldset>
             </div>
             <button class="button" type="submit">Continue</button>
-        }
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
     <div class="breadcrumbs" id="js-breadcrumbs">
         <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Start", "TransferConnectionInvitations")">Back</a></li>
+            <li><a class="link-back" href="@Url.Action("Start", "TransferConnectionInvitations",new {Model.HashedAccountId})">Back</a></li>
         </ol>
     </div>
 }

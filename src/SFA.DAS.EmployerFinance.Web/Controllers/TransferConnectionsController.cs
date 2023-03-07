@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -48,18 +48,20 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
             var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
             //This cant be done with Task.WhenAll
-            var transferAllowanceTask = await TransferAllowance(accountId);
-            var transferConnectionInvitationAuthorizationTask =await TransferConnectionInvitationAuthorization(accountId);
-            var transferConnectionInvitationsTask =  await TransferConnectionInvitations(accountId);
-            var transferRequestsTask = await TransferRequests(accountId);
+            var transferAllowance = await TransferAllowance(accountId);
+            var transferConnectionInvitationAuthorization =await TransferConnectionInvitationAuthorization(accountId);
+            var transferConnectionInvitations =  await TransferConnectionInvitations(accountId);
+            var transferRequests = await TransferRequests(accountId);
 
+            transferConnectionInvitationAuthorization.HashedAccountId = hashedAccountId;
+            
             var model = new TransferViewModel
             {
                 ApprenticeshipEmployerType = response.AccountDetail.ApprenticeshipEmployerType,
-                TransferAllowanceViewModel = transferAllowanceTask,
-                TransferConnectionInvitationAuthorizationViewModel = transferConnectionInvitationAuthorizationTask,
-                TransferConnectionInvitationsViewModel = transferConnectionInvitationsTask,
-                TransferRequest = transferRequestsTask,
+                TransferAllowanceViewModel = transferAllowance,
+                TransferConnectionInvitationAuthorizationViewModel = transferConnectionInvitationAuthorization,
+                TransferConnectionInvitationsViewModel = transferConnectionInvitations,
+                TransferRequest = transferRequests,
             };
             
             return View(model);

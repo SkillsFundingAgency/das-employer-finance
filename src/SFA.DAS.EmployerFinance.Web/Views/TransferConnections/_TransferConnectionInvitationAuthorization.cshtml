@@ -16,10 +16,10 @@
 
     if (Model.IsValidSender)
     {
-        <a class="govuk-button" href="@Url.Action("Index", "TransferConnectionInvitations")">Connect to a receiving employer</a>
+        <a class="govuk-button" href="@Url.Action("Index", "TransferConnectionInvitations", new{Model.HashedAccountId})">Connect to a receiving employer</a>
     }
 }
-else if (Model.AuthorizationResult.HasError<EmployerFeatureAgreementNotSigned>())
+else if (Model.AuthorizationResult.HasError<EmployerFeatureAgreementNotSigned>())//TODO MAC-192 
 {
     <p>Before starting a connection both the sending and receiving employers need to read and understand the <a href="https://www.gov.uk/guidance/apprenticeship-funding-rules" class="govuk-link" rel="nofollow">rules for sending and receiving transfers</a> and accept the updated organisation agreement with DfE.</p>
     <a class="govuk-button" href="@UrlHelper.EmployerAccountsAction("agreements")">Accept agreement</a>
