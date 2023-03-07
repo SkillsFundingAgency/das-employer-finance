@@ -6,6 +6,7 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.ErrorHandler;
+using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Filters;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Authorisation;
@@ -24,38 +25,10 @@ public class Startup
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _environment;
 
-    public Startup(IConfiguration configuration,IHostEnvironment environment)
+    public Startup(IConfiguration configuration, IHostEnvironment environment)
     {
-        _environment= environment;
-        _configuration= configuration;
-
-        var config = new ConfigurationBuilder()
-            .AddConfiguration(configuration)
-            .SetBasePath(Directory.GetCurrentDirectory());
-
-#if DEBUG
-        if (!_configuration.IsDev())
-        {
-            config.AddJsonFile("appsettings.json", false)
-                .AddJsonFile("appsettings.Development.json", true);
-        }
-#endif
-
-        config.AddEnvironmentVariables();
-
-        if (!configuration.IsTest())
-        {
-            config.AddAzureTableStorage(options =>
-                {
-                    options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
-                    options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
-                    options.EnvironmentName = configuration["EnvironmentName"];
-                    options.PreFixConfigurationKeys = false;
-                    options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
-                }
-            );
-        }
-        _configuration = config.Build();
+        _environment = environment;
+        _configuration = configuration.BuildDasConfiguration();
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -79,8 +52,8 @@ public class Startup
         });
 
         services.AddApplicationServices();
-        services.AddDasDistributedMemoryCache(employerFinanceConfiguration,_environment.IsDevelopment());
-      
+        services.AddDasDistributedMemoryCache(employerFinanceConfiguration, _environment.IsDevelopment());
+
         services.AddOrchestrators();
 
         services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
@@ -120,7 +93,7 @@ public class Startup
         serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
         if (env.IsDevelopment())
         {
