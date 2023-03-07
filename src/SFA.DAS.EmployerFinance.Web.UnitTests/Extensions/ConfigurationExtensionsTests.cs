@@ -13,6 +13,7 @@ public class ConfigurationExtensionsTests
     [MoqInlineAutoData("true", true)]
     [MoqInlineAutoData("false", false)]
     [MoqInlineAutoData(null, false)]
+    [MoqInlineAutoData("", false)]
     public void UseGovUkSignIn_WhenConfigValue_ReturnCorrectValue(string configValue, bool expected)
     {
         // Arrange
