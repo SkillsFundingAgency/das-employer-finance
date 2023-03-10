@@ -8,9 +8,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
-        <div class="das-highlight">
-            <p class="govuk-heading-s govuk-!-margin-0">Remaining transfer allowance</p>
-            <p class="govuk-heading-l govuk-!-margin-0 govuk-!-padding-0">@Model.RemainingTransferAllowance.ToString("C0", culture)</p>
-        </div>
+        <p class="app-finance-figure__title" id="lbl-transfer-funds">Remaining transfer allowance</p>
+        <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-funds">@Model.RemainingTransferAllowance.ToString("C0", culture)</div>
     </div>
 </div>

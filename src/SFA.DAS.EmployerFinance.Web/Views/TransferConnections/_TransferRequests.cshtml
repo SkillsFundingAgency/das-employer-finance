@@ -9,12 +9,14 @@
     var culture = new CultureInfo("en-GB");
 }
 
-<h3 class="govuk-heading-m">
+<h2 class="govuk-heading-l">
     Transfer requests
-</h3>
+</h2>
 
-<table class="govuk-table das-table--responsive" id="transfers-send">
-    <caption class="govuk-table__caption">Transfer funds you are sending other employers</caption>
+<h3 class="govuk-heading-m" id="heading-transfer-send">Transfer funds you are sending other employers</h3>
+@if (Model.TransferSenderRequests.Any())
+{
+    <table class="govuk-table das-table--responsive" id="transfers-send" aria-labelledby="heading-transfer-send">
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
             <th class="govuk-table__header  das-table-cell-width-50">Employer</th>
@@ -24,64 +26,63 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model.TransferSenderRequests.Any())
-        {
-            foreach (var transferRequest in Model.TransferSenderRequests)
-            {
-                <tr class="govuk-table__row">
-                    <td data-label="Employer" class="govuk-table__cell">@transferRequest.ReceiverAccount.Name</td>
-                    <td data-label="Status" class="govuk-table__cell">@transferRequest.Status.ToString()</td>
-                    <td data-label="Total cost" class="govuk-table__cell">@transferRequest.TransferCost.ToString("C0", culture)</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric">
-                        <a href="@UrlHelper.EmployerCommitmentsV2Action($"sender/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
-                            Details<span class="govuk-visually-hidden"> about the @transferRequest.ReceiverAccount.Name request</span>
-                        </a>
-                    </td>
-                </tr>
-            }
-        }
-        else
+    @foreach (var transferRequest in Model.TransferSenderRequests)
+    {
+        <tr class="govuk-table__row">
+            <td data-label="Employer" class="govuk-table__cell">@transferRequest.ReceiverAccount.Name</td>
+            <td data-label="Status" class="govuk-table__cell">@transferRequest.Status.ToString()</td>
+            <td data-label="Total cost" class="govuk-table__cell">@transferRequest.TransferCost.ToString("C0", culture)</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+                <a href="@UrlHelper.EmployerCommitmentsV2Action($"sender/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
+                    Details<span class="govuk-visually-hidden"> about the @transferRequest.ReceiverAccount.Name request</span>
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+}
+else
+{
+    <div class="govuk-inset-text">
+        You have no pending or approved requests
+    </div>
+}
+
+    <h3 class="govuk-heading-m" id="heading-transfer-rec">Transfer funds you are receiving from other employers</h3>
+    @if (Model.TransferReceiverRequests.Any())
+    {
+    <table class="govuk-table das-table--responsive" id="transfers-receive" aria-labelledby="heading-transfer-rec">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th class="govuk-table__header  das-table-cell-width-50">Employer</th>
+                <th class="govuk-table__header  das-table-cell-width-15">Status</th>
+                <th class="govuk-table__header  das-table-cell-width-20">Total cost</th>
+                <th class="govuk-table__header  das-table-cell-width-15">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var transferRequest in Model.TransferReceiverRequests)
         {
             <tr class="govuk-table__row">
-                <td colspan="4" class="govuk-table__cell">You have no pending or approved requests</td>
+                <td data-label="Employer" class="govuk-table__cell">@transferRequest.SenderAccount.Name</td>
+                <td data-label="Status" class="govuk-table__cell">@transferRequest.Status.ToString()</td>
+                <td data-label="Total cost" class="govuk-table__cell">@transferRequest.TransferCost.ToString("C0", culture)</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    <a href="@UrlHelper.EmployerCommitmentsV2Action($"receiver/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
+                        Details<span class="govuk-visually-hidden"> about the @transferRequest.SenderAccount.Name request</span>
+                    </a>
+                </td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+    }
+    else
+    {
+        <div class="govuk-inset-text">
+            You have no pending or approved requests
+        </div>
+    }
 
-<table class="govuk-table das-table--responsive" id="transfers-receive">
-    <caption class="govuk-table__caption">Transfer funds you are receiving from other employers</caption>
-    <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-            <th class="govuk-table__header  das-table-cell-width-50">Employer</th>
-            <th class="govuk-table__header  das-table-cell-width-15">Status</th>
-            <th class="govuk-table__header  das-table-cell-width-20">Total cost</th>
-            <th class="govuk-table__header  das-table-cell-width-15">&nbsp;</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.TransferReceiverRequests.Any())
-            {
-                foreach (var transferRequest in Model.TransferReceiverRequests)
-                {
-                    <tr class="govuk-table__row">
-                        <td data-label="Employer" class="govuk-table__cell">@transferRequest.SenderAccount.Name</td>
-                        <td data-label="Status" class="govuk-table__cell">@transferRequest.Status.ToString()</td>
-                        <td data-label="Total cost" class="govuk-table__cell">@transferRequest.TransferCost.ToString("C0", culture)</td>
-                        <td class="govuk-table__cell govuk-table__cell--numeric">
-                            <a href="@UrlHelper.EmployerCommitmentsV2Action($"receiver/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
-                                Details<span class="govuk-visually-hidden"> about the @transferRequest.SenderAccount.Name request</span>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr class="govuk-table__row">
-                    <td colspan="4" class="govuk-table__cell">You have no pending or approved requests</td>
-                </tr>
-            }
-    </tbody>
-</table>
 
