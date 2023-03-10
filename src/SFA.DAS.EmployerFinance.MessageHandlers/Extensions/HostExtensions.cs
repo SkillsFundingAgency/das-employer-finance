@@ -40,12 +40,28 @@ public static class HostExtensions
 
     public static IHostBuilder ConfigureDasAppConfiguration(this IHostBuilder hostBuilder)
     {
+        
         return hostBuilder.ConfigureAppConfiguration((context, builder) =>
         {
-            builder.AddAzureTableStorage(ConfigurationKeys.EmployerFinance)
+            
+            
+            builder
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
+
+            var configuration = builder.Build();
+            
+            builder.AddAzureTableStorage(options =>
+                {
+                    options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
+                    options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
+                    options.EnvironmentName = configuration["EnvironmentName"];
+                    options.PreFixConfigurationKeys = false;
+                    options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
+                }
+            );
+            builder.Build();
         });
     }
 
@@ -54,7 +70,7 @@ public static class HostExtensions
         hostBuilder.ConfigureServices((context, services) =>
         {
             var financeConfiguration = context.Configuration
-                .GetSection(ConfigurationKeys.EmployerFinance)
+                .GetSection(nameof(EmployerFinanceConfiguration))
                 .Get<EmployerFinanceConfiguration>();
 
             services.AddConfigurationSections(context.Configuration);

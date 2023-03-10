@@ -1,6 +1,8 @@
-﻿using Microsoft.Azure.Services.AppAuthentication;
+﻿using System.Data;
+using System.Data.Common;
+using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
@@ -11,12 +13,14 @@ using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
+
 namespace SFA.DAS.EmployerFinance.Data;
 
 public class EmployerFinanceDbContext : DbContext
 {
     private readonly EmployerFinanceConfiguration _configuration;
     private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
+    private readonly IDbConnection _connection;
 
     private const string AzureResource = "https://database.windows.net/";
 
@@ -33,10 +37,11 @@ public class EmployerFinanceDbContext : DbContext
 
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
 
-    public EmployerFinanceDbContext(IOptions<EmployerFinanceConfiguration> configuration, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider) : base(options)
+    public EmployerFinanceDbContext(IDbConnection connection, EmployerFinanceConfiguration configuration, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider) : base(options)
     {
-        _configuration = configuration.Value;
+        _configuration = configuration;
         _azureServiceTokenProvider = azureServiceTokenProvider;
+        _connection = connection;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -47,25 +52,19 @@ public class EmployerFinanceDbContext : DbContext
             return;
         }
 
-        var connection = new SqlConnection
-        {
-            ConnectionString = _configuration.DatabaseConnectionString,
-            AccessToken = _azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result,
-        };
+        // var connection = new SqlConnection
+        // {
+        //     ConnectionString = _configuration.DatabaseConnectionString,
+        //     AccessToken = _azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result,
+        // };
 
-        optionsBuilder.UseSqlServer(connection, options =>
-            options.EnableRetryOnFailure(
-                5,
-                TimeSpan.FromSeconds(20),
-                null
-            )).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        optionsBuilder.UseSqlServer(_connection as DbConnection);
 
     }
     public virtual Task<List<T>> SqlQueryAsync<T>(string query, params object[] parameters)
     {
         return Database.SqlQueryRaw<T>(query, parameters).ToListAsync();
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("employer_financial");

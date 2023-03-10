@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 
@@ -25,6 +26,7 @@ public class TransferRepository : BaseRepository, ITransferRepository
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[CreateAccountTransfersV1]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure,
             commandTimeout: 300);
     }
@@ -39,6 +41,7 @@ public class TransferRepository : BaseRepository, ITransferRepository
         return _db.Value.Database.GetDbConnection().QueryAsync<AccountTransfer>(
             sql: "[employer_financial].[GetAccountTransfersByPeriodEnd]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -53,6 +56,7 @@ public class TransferRepository : BaseRepository, ITransferRepository
         return _db.Value.Database.GetDbConnection().QuerySingleOrDefaultAsync<AccountTransferDetails>(
             sql: "[employer_financial].[GetTransferPaymentDetails]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -66,6 +70,7 @@ public class TransferRepository : BaseRepository, ITransferRepository
         var transferAllowance = await _db.Value.Database.GetDbConnection().QueryAsync<TransferAllowance>(
             sql: "[employer_financial].[GetAccountTransferAllowance]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return transferAllowance.SingleOrDefault() ?? new TransferAllowance();

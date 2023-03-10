@@ -1,4 +1,7 @@
 ﻿
+@using SFA.DAS.EmployerFinance.Web.Infrastructure
+@using SFA.DAS.EmployerFinance.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model SFA.DAS.EmployerFinance.Web.ViewModels.RejectedTransferConnectionInvitationViewModel
 
 @{
@@ -9,7 +12,7 @@
 }
 
 
-@await Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
 <div class="grid-row">
     <div class="column-two-thirds">
         <div class="success-summary">
@@ -17,9 +20,10 @@
             <p><i class="icon-green-tick"></i> You've successfully rejected this connection request</p>
         </div>
         <h1 class="heading-xlarge">Connection request details</h1>
-        @using (Html.BeginForm())
-        {
-            @Html.HiddenFor(m => m.TransferConnectionInvitationId)
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Rejected" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
+            <input type="hidden" asp-for="TransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="HashedAccountId"/>
+            <input type="hidden" asp-for="HashedTransferConnectionInvitationId"/>
             <div class="form-group">
                 <table>
                     <tbody>
@@ -70,14 +74,14 @@
                 </fieldset>
             </div>
             <button class="button" type="submit">Continue</button>
-        }
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
     <div class="breadcrumbs">
         <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Index", "TransferConnections")">Back</a></li>
+            <li><a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="link-back" >Back</a></li>
         </ol>
     </div>
 }

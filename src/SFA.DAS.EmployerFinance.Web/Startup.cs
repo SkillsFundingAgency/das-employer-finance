@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +8,21 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.Handlers;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
+using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
+using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
+using SFA.DAS.UnitOfWork.Mvc.Extensions;
+using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.EmployerFinance.Web
 {
@@ -59,7 +67,6 @@ namespace SFA.DAS.EmployerFinance.Web
             //MAC-192
             services.AddApplicationServices(_configuration);
 
-            //TODO replace with EncodingService
             services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
 
             services.AddEventsApi();
@@ -94,6 +101,13 @@ namespace SFA.DAS.EmployerFinance.Web
 
             });
 
+            services.AddNServiceBusClientUnitOfWork();
+            services
+                .AddUnitOfWork()
+                .AddEntityFramework(_employerFinanceConfiguration)
+                .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
+            services.AddNServiceBusClientUnitOfWork();
+            
             services.AddApplicationInsightsTelemetry();
 
             if (!_environment.IsDevelopment())
@@ -118,12 +132,21 @@ namespace SFA.DAS.EmployerFinance.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseUnitOfWork();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+        
+        public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
+        {
+            serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal() || _configuration.IsTest());
+            var serviceDescriptor = serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
+            serviceProvider.Remove(serviceDescriptor);
+            serviceProvider.AddScoped<IClientOutboxStorageV2, ClientOutboxPersisterV2>();
         }
     }
 }

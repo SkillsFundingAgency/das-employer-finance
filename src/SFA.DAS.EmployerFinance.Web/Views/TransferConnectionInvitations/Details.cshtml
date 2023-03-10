@@ -1,4 +1,7 @@
 @using SFA.DAS.EmployerFinance.Models.TransferConnections
+@using SFA.DAS.EmployerFinance.Web.Infrastructure
+@using SFA.DAS.EmployerFinance.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @model SFA.DAS.EmployerFinance.Web.ViewModels.TransferConnectionInvitationViewModel
 
@@ -9,13 +12,14 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connections/requests/details";
 }
 
-@Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
 <div class="grid-row">
     <div class="column-two-thirds">
         <h1 class="heading-xlarge">Connection request details</h1>
-        @using (Html.BeginForm())
-        {
-            @Html.HiddenFor(m => m.TransferConnectionInvitationId)
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Details" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
+            <input type="hidden" asp-for="TransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="HashedAccountId"/>
+            <input type="hidden" asp-for="HashedTransferConnectionInvitationId"/>
             <div class="form-group">
                 <table>
                     <tbody>
@@ -74,7 +78,7 @@
                     </tbody>
                 </table>
             </div>
-            if (Model.TransferConnectionInvitation.Status == TransferConnectionInvitationStatus.Rejected)
+            @if (Model.TransferConnectionInvitation.Status == TransferConnectionInvitationStatus.Rejected)
             {
                 <div asp-fieldname="Choice">
                     <fieldset>
@@ -94,12 +98,12 @@
                 </div>
                 <button class="button" type="submit">Continue</button>
             }
-        }
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
     <div class="breadcrumbs" id="js-breadcrumbs">
-        <a aria-label="Back" class="back-link" href="@Url.Action("Index", "TransferConnections")">Back</a>
+        <li><a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="link-back" >Back</a></li>
     </div>
 }

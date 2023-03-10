@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 
@@ -23,6 +24,7 @@ public class LevyFundsInRepository : BaseRepository, ILevyFundsInRepository
         return _db.Value.Database.GetDbConnection().QueryAsync<LevyFundsIn>(
             "[employer_financial].[GetLevyFundsIn]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure
         );
     }

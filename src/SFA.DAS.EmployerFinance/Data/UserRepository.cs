@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
@@ -27,6 +28,7 @@ public class UserRepository : BaseRepository, IUserRepository
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[UpsertUser] @userRef, @email, @firstName, @lastName, @correlationId",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -62,8 +63,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             });
         }
 
-        [HttpPost]
-        [ValidateModelState]        
+        [HttpPost]  
         [Route("start")]
         public async Task<IActionResult> Start([FromRoute]string hashedAccountId, StartTransferConnectionInvitationViewModel model)
         {
@@ -71,13 +71,25 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             {
                 return View("Start", model);
             }
-            
-            await _mediator.Send(new SendTransferConnectionInvitationQuery
+
+            try
             {
-                ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId,
-                AccountId = _encodingService.Decode(model.HashedAccountId, EncodingType.AccountId)
-            });
-            return RedirectToAction("Send", new {hashedAccountId, receiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId });
+                await _mediator.Send(new SendTransferConnectionInvitationQuery
+                {
+                    ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId,
+                    AccountId = _encodingService.Decode(model.HashedAccountId, EncodingType.AccountId)
+                });
+                return RedirectToAction("Send", new {hashedAccountId, receiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId });
+            }
+            catch (ValidationException e)
+            {
+                foreach (var member in e.ValidationResult.MemberNames)
+                {
+                    ModelState.AddModelError(member.Split('|')[0], member.Split('|')[1]);
+                }
+                return View("Start", model);
+            }
+            
         }
 
         [HttpNotFoundForNullModel]
@@ -93,7 +105,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateModelState]
         [Route("send")]
         public async Task<IActionResult> Send([FromRoute]string hashedAccountId, SendTransferConnectionInvitationViewModel model)
         {
@@ -138,14 +149,21 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             });
             var model = _mapper.Map<SentTransferConnectionInvitationViewModel>(response);
 
+            model.HashedAccountId = hashedAccountId;
+            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
+            
             return View(model);
         }
 
         [HttpPost]
-        [ValidateModelState]
         [Route("{transferConnectionInvitationId}/sent")]
-        public IActionResult Sent(SentTransferConnectionInvitationViewModel model)
+        public IActionResult Sent([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, SentTransferConnectionInvitationViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("Sent", model);
+            }
+            
             switch (model.Choice)
             {
                 case "GoToTransfersPage":
@@ -157,10 +175,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             }
         }
 
-        [HttpNotFoundForNullModel]
-        [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/receive")]
-        public async Task<IActionResult> Receive([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId)
+        public async Task<IActionResult> Receive([FromRoute]string hashedAccountId, [FromRoute]string transferConnectionInvitationId)
         {
             var response = await _mediator.Send(new GetReceivedTransferConnectionInvitationQuery
             {
@@ -168,15 +184,30 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
             });
             var model = _mapper.Map<ReceiveTransferConnectionInvitationViewModel>(response);
-
+            model.HashedAccountId = hashedAccountId;
+            model.NotHashedTransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId));
+            model.TransferConnectionInvitationId = transferConnectionInvitationId;
             return View(model);
         }
 
         [HttpPost]
-        [ValidateModelState]
         [Route("{transferConnectionInvitationId}/receive")]
-        public async Task<IActionResult> Receive([FromRoute]string hashedAccountId, ReceiveTransferConnectionInvitationViewModel model)
+        public async Task<IActionResult> Receive([FromRoute]string hashedAccountId, [FromRoute]string transferConnectionInvitationId, ReceiveTransferConnectionInvitationViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                var response = await _mediator.Send(new GetReceivedTransferConnectionInvitationQuery
+                {
+                    AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
+                    TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
+                });
+                model = _mapper.Map<ReceiveTransferConnectionInvitationViewModel>(response);
+                model.HashedAccountId = hashedAccountId;
+                model.NotHashedTransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId));
+                model.TransferConnectionInvitationId = transferConnectionInvitationId;
+                return View("Receive", model);
+            }
+            
             switch (model.Choice)
             {
                 case "Approve":
@@ -184,17 +215,17 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                     {
                         AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId), 
                         UserRef = Guid.Parse(User.GetUserId()), 
-                        TransferConnectionInvitationId = model.TransferConnectionInvitationId
+                        TransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(model.TransferConnectionInvitationId, EncodingType.TransferRequestId))
                     });
-                    return RedirectToAction("Approved", new { transferConnectionInvitationId = _encodingService.Encode(Convert.ToInt64(model.TransferConnectionInvitationId), EncodingType.TransferRequestId) });
+                    return RedirectToAction("Approved", new { transferConnectionInvitationId, hashedAccountId });
                 case "Reject":
                     await _mediator.Send(new RejectTransferConnectionInvitationCommand
                     {
                         AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId), 
                         UserRef = Guid.Parse(User.GetUserId()), 
-                        TransferConnectionInvitationId = model.TransferConnectionInvitationId
+                        TransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(model.TransferConnectionInvitationId, EncodingType.TransferRequestId))
                     });
-                    return RedirectToAction("Rejected", new { transferConnectionInvitationId = _encodingService.Encode(Convert.ToInt64(model.TransferConnectionInvitationId), EncodingType.TransferRequestId) });
+                    return RedirectToAction("Rejected", new { transferConnectionInvitationId, hashedAccountId });
                 default:
                     throw new ArgumentOutOfRangeException(nameof(model.Choice));
             }
@@ -211,7 +242,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
             });
             var model = _mapper.Map<ApprovedTransferConnectionInvitationViewModel>(response);
-
+            model.HashedAccountId = hashedAccountId;
+            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
             return View(model);
         }
 
@@ -252,7 +284,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
             });
             var model = _mapper.Map<RejectedTransferConnectionInvitationViewModel>(response);
-
+            model.HashedAccountId = hashedAccountId;
+            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
             return View(model);
         }
 
@@ -261,6 +294,10 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("{transferConnectionInvitationId}/rejected")]
         public async Task<IActionResult> Rejected([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, RejectedTransferConnectionInvitationViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("Rejected", model);
+            }
             switch (model.Choice)
             {
                 case "Confirm":
@@ -272,61 +309,80 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                     });
                     return RedirectToAction("Deleted");
                 case "GoToTransfersPage":
-                    return RedirectToAction("Index", "TransferConnections");
+                    return RedirectToAction("Index", "TransferConnections", new {hashedAccountId});
                 default:
                     throw new ArgumentOutOfRangeException(nameof(model.Choice));
             }
         }
 
-        [HttpNotFoundForNullModel]
         [Route("{transferConnectionInvitationId}/details")]
         public async Task<IActionResult> Details([FromRoute]string hashedAccountId, [FromRoute]string transferConnectionInvitationId)
+        {
+            var model = await GetTransferConnectionInvitationViewModel(hashedAccountId, transferConnectionInvitationId);
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("{transferConnectionInvitationId}/details")]
+        public async Task<IActionResult> Details([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, TransferConnectionInvitationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model = await GetTransferConnectionInvitationViewModel(hashedAccountId, transferConnectionInvitationId);
+                return View("Details", model);
+            }
+            switch (model.Choice)
+            {
+                case "Confirm":
+                    await _mediator.Send(new DeleteTransferConnectionInvitationCommand
+                    {
+                        AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
+                        TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
+                        UserRef = Guid.Parse(User.GetUserId())
+                    });
+                    return RedirectToAction("Deleted");
+                case "GoToTransfersPage":
+                    return RedirectToAction("Index", "TransferConnections", new {hashedAccountId});
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(model.Choice));
+            }
+        }
+        
+        private async Task<TransferConnectionInvitationViewModel> GetTransferConnectionInvitationViewModel(string hashedAccountId,
+            string transferConnectionInvitationId)
         {
             var response = await _mediator.Send(new GetTransferConnectionInvitationQuery
             {
                 AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
-                TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
+                TransferConnectionInvitationId =
+                    _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
             });
             var model = _mapper.Map<TransferConnectionInvitationViewModel>(response);
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateModelState]
-        [Route("{transferConnectionInvitationId}/details")]
-        public async Task<IActionResult> Details([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, TransferConnectionInvitationViewModel model)
-        {
-            switch (model.Choice)
-            {
-                case "Confirm":
-                    await _mediator.Send(new DeleteTransferConnectionInvitationCommand
-                    {
-                        AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
-                        TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
-                        UserRef = Guid.Parse(User.GetUserId())
-                    });
-                    return RedirectToAction("Deleted");
-                case "GoToTransfersPage":
-                    return RedirectToAction("Index", "TransferConnections");
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(model.Choice));
-            }
+            model.HashedAccountId = hashedAccountId;
+            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
+            model.TransferConnectionInvitation.ReceiverAccount.PublicHashedId =
+                _encodingService.Encode(model.TransferConnectionInvitation.ReceiverAccount.Id, EncodingType.PublicAccountId);
+            model.TransferConnectionInvitation.SenderAccount.PublicHashedId =
+                _encodingService.Encode(model.TransferConnectionInvitation.SenderAccount.Id, EncodingType.PublicAccountId);
+            return model;
         }
 
         [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/deleted")]
-        public IActionResult Deleted()
+        public IActionResult Deleted([FromRoute]string hashedAccountId, [FromRoute]string transferConnectionInvitationId)
         {
-            var model = new DeletedTransferConnectionInvitationViewModel();
+            var model = new DeletedTransferConnectionInvitationViewModel
+            {
+                HashedAccountId = hashedAccountId,
+                HashedTransferConnectionInvitationId = transferConnectionInvitationId
+            };
 
             return View(model);
         }
 
         [HttpPost]
-        [ValidateModelState]
         [Route("{transferConnectionInvitationId}/deleted")]
-        public IActionResult Deleted([FromRoute]string hashedAccountId, DeletedTransferConnectionInvitationViewModel model)
+        public IActionResult Deleted([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, DeletedTransferConnectionInvitationViewModel model)
         {
             if (!ModelState.IsValid)
             {

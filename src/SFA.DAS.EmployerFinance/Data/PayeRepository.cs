@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Paye;
@@ -23,6 +24,7 @@ public class PayeRepository : BaseRepository, IPayeRepository
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<Paye>(
             sql: "[employer_financial].[GetPaye_ByRef]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.SingleOrDefault();
@@ -38,6 +40,7 @@ public class PayeRepository : BaseRepository, IPayeRepository
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[UpdatePayeName_ByRef]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -48,7 +51,9 @@ public class PayeRepository : BaseRepository, IPayeRepository
         parameters.Add("@AccountId", accountId, DbType.Int64);
         parameters.Add("@Ref", reference, DbType.String);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<PayeSchemeView>(sql: "[employer_financial].[GetPayeForAccount_ByRef]", param: parameters, commandType: CommandType.StoredProcedure);
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<PayeSchemeView>(sql: "[employer_financial].[GetPayeForAccount_ByRef]", param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
         return result.SingleOrDefault();
     }
@@ -59,7 +64,9 @@ public class PayeRepository : BaseRepository, IPayeRepository
 
         parameters.Add("@accountId", employerId, DbType.Int64);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<Paye>(sql: "[employer_financial].[GetPayeSchemesAddedByGovernmentGateway_ByAccountId]", param: parameters, commandType: CommandType.StoredProcedure);
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<Paye>(sql: "[employer_financial].[GetPayeSchemesAddedByGovernmentGateway_ByAccountId]", param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
         return new PayeSchemes
         {
@@ -76,7 +83,9 @@ public class PayeRepository : BaseRepository, IPayeRepository
         parameters.Add("@name", paye.Name, DbType.String);
         parameters.Add("@aorn", paye.Aorn, DbType.String);
 
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(sql: "[employer_financial].[CreateAccountPaye]", param: parameters, commandType: CommandType.StoredProcedure);
+        return _db.Value.Database.GetDbConnection().ExecuteAsync(sql: "[employer_financial].[CreateAccountPaye]", param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
     }
 
     public Task RemovePayeScheme(long accountId, string payeRef)
@@ -86,6 +95,8 @@ public class PayeRepository : BaseRepository, IPayeRepository
         parameters.Add("@accountId", accountId, DbType.Int64);
         parameters.Add("@empRef", payeRef, DbType.String);
 
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(sql: "[employer_financial].[RemoveAccountPaye]", param: parameters, commandType: CommandType.StoredProcedure);
+        return _db.Value.Database.GetDbConnection().ExecuteAsync(sql: "[employer_financial].[RemoveAccountPaye]", param: parameters, 
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
     }
 }

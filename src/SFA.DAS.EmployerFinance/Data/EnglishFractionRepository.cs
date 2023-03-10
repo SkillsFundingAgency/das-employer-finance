@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 
@@ -25,6 +26,7 @@ public class EnglishFractionRepository : BaseRepository, IEnglishFractionReposit
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "INSERT INTO [employer_financial].[EnglishFraction] (EmpRef, DateCalculated, Amount) VALUES (@empRef, @dateCalculated, @amount);",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
     }
 
@@ -37,6 +39,7 @@ public class EnglishFractionRepository : BaseRepository, IEnglishFractionReposit
         return _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
             sql: "SELECT * FROM [employer_financial].[EnglishFraction] WHERE EmpRef = @empRef ORDER BY DateCalculated desc;",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
     }
 
@@ -44,6 +47,7 @@ public class EnglishFractionRepository : BaseRepository, IEnglishFractionReposit
     {
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<DateTime>(
             sql: "SELECT Top(1) DateCalculated FROM [employer_financial].[EnglishFractionCalculationDate] ORDER BY DateCalculated DESC;",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
 
         return result.FirstOrDefault();
@@ -57,6 +61,7 @@ public class EnglishFractionRepository : BaseRepository, IEnglishFractionReposit
 
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "INSERT INTO [employer_financial].[EnglishFractionCalculationDate] (DateCalculated) VALUES (@dateCalculated);",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: parameters,
             commandType: CommandType.Text);
     }

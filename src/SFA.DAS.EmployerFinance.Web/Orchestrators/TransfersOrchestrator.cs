@@ -30,13 +30,14 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             _accountApiClient = accountApiClient;
         }
 
-        public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)
+        public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId,
+            ClaimsPrincipal claimsPrincipal)
         {
             var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
             var indexTask = _transfersService.GetCounts(accountId);
             var accountDetail = _accountApiClient.GetAccount(hashedAccountId);
 
-            var renderCreateTransfersPledgeButton = _authorizationService.CheckUserAccountAccess(ClaimsPrincipal.Current, EmployerUserRole.Transactor);            
+            var renderCreateTransfersPledgeButton = _authorizationService.CheckUserAccountAccess(claimsPrincipal, EmployerUserRole.Transactor);            
 
             await Task.WhenAll(indexTask, accountDetail);
 

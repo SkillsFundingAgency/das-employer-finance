@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
+using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
@@ -92,7 +94,36 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             {
                 AccountId = accountId
             });
-            return _mapper.Map<TransferConnectionInvitationsViewModel>(response);
+
+            return new TransferConnectionInvitationsViewModel
+            {
+                AccountId = response.AccountId,
+                HashedAccountId = _encodingService.Encode(response.AccountId, EncodingType.AccountId),
+                TransferSenderConnectionInvitations = response.TransferConnectionInvitations
+                    .Where(p => p.SenderAccount.Id.Equals(response.AccountId)).Select(c =>
+                        new TransferConnectionInvitationDto
+                        {
+                            Changes = c.Changes,
+                            Id = c.Id,
+                            Status = c.Status,
+                            CreatedDate = c.CreatedDate,
+                            ReceiverAccount = c.ReceiverAccount,
+                            SenderAccount = c.SenderAccount,
+                            HashedId = _encodingService.Encode(c.Id, EncodingType.TransferRequestId)
+                        }),
+                TransferReceiverConnectionInvitations = response.TransferConnectionInvitations
+                    .Where(p => p.ReceiverAccount.Id.Equals(response.AccountId)).Select(c =>
+                        new TransferConnectionInvitationDto
+                        {
+                            Changes = c.Changes,
+                            Id = c.Id,
+                            Status = c.Status,
+                            CreatedDate = c.CreatedDate,
+                            ReceiverAccount = c.ReceiverAccount,
+                            SenderAccount = c.SenderAccount,
+                            HashedId = _encodingService.Encode(c.Id, EncodingType.TransferRequestId)
+                        })
+            };
             
         }
 

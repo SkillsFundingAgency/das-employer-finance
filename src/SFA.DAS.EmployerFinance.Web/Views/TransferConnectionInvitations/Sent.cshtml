@@ -1,4 +1,7 @@
-﻿@model SFA.DAS.EmployerFinance.Web.ViewModels.SentTransferConnectionInvitationViewModel
+﻿@using SFA.DAS.EmployerFinance.Web.Infrastructure
+@using SFA.DAS.EmployerFinance.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SFA.DAS.EmployerFinance.Web.ViewModels.SentTransferConnectionInvitationViewModel
 
 @{
     ViewBag.Title = "Sent transfer connection request";
@@ -8,7 +11,7 @@
 }
 
 
-@await Html.PartialAsync("_ValidationSummary", ViewData.ModelState)
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
 <div class="grid-row">
     <div class="column-two-thirds">
         <div class="success-summary">
@@ -16,8 +19,7 @@
             <p><i class="icon-green-tick"></i> You've sent a connection request to @Model.TransferConnectionInvitation.ReceiverAccount.Name with account ID @Model.TransferConnectionInvitation.ReceiverAccount.PublicHashedId from @Model.TransferConnectionInvitation.SenderAccount.Name</p>
         </div>
         <h2 class="heading-xlarge">What next?</h2>
-        @using (Html.BeginForm())
-        {
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Sent" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
             <div asp-fieldname="Choice">
                 <fieldset>
                     <legend>
@@ -35,14 +37,14 @@
                 </fieldset>
             </div>
             <button class="button" type="submit">Continue</button>
-        }
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
     <div class="breadcrumbs">
         <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Index", "TransferConnections")">Back</a></li>
+            <li><a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="link-back" >Back</a></li>
         </ol>
     </div>
 }

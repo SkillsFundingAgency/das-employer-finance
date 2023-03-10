@@ -8,13 +8,17 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
     public class ReceiveTransferConnectionInvitationViewModel
     {
-        [Required]
-        public int? TransferConnectionInvitationId { get; set; }
+        [IgnoreMap]
+        public string TransferConnectionInvitationId { get; set; }
 
         [Required(ErrorMessage = "Option required")]
         [RegularExpression("Approve|Reject", ErrorMessage = "Option required")]
         public string Choice { get; set; }
 
         public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }
+        [IgnoreMap]
+        public string HashedAccountId { get; set; }
+        [IgnoreMap]
+        public int NotHashedTransferConnectionInvitationId { get; set; }
     }
 }

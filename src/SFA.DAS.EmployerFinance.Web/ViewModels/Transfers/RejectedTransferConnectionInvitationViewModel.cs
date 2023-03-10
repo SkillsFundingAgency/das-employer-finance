@@ -16,5 +16,7 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         public int? TransferConnectionInvitationId { get; set; }
 
         public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }
+        public string HashedAccountId { get; set; }
+        public string HashedTransferConnectionInvitationId { get; set; }
     }
 }

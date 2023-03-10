@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -35,6 +36,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[CreateAccountTransferTransactions]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -50,6 +52,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
             return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<int>(
                 sql: "[employer_financial].[GetPreviousTransactionsCount]",
                 param: parameters,
+                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
 
         }
@@ -68,6 +71,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         return _db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
             sql: "SELECT ISNULL(SUM(Amount),0) FROM [employer_financial].[TransactionLine] WHERE AccountId = @accountId AND TransactionType in (1, 2, 3, 4, 5)",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
     }
 
@@ -82,6 +86,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
             sql: "[employer_financial].[GetTransactionLines_ByAccountId]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return MapTransactions(result);
@@ -135,6 +140,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
             sql: "[employer_financial].[GetPaymentDetail_ByAccountProviderAndDateRange]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return MapTransactions(result);
@@ -183,6 +189,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
             sql: "[employer_financial].[GetPaymentDetail_ByAccountProviderCourseAndDateRange]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return MapTransactions(result);
@@ -198,6 +205,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
             sql: "[employer_financial].[GetLevyDetail_ByAccountIdAndDateRange]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return MapTransactions(result);
@@ -215,6 +223,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         return _db.Value.Database.GetDbConnection().ExecuteScalarAsync<string>(
             sql: "[employer_financial].[GetProviderName]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
     }
@@ -231,6 +240,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
             .QueryAsync<TransactionDownloadLine>(
                 sql: "[employer_financial].[GetAllTransactionDetailsForAccountByDate]",
                 param: parameters,
+                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
 
         var hmrcDateService = new HmrcDateService();
@@ -256,6 +266,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
             .GetDbConnection()
             .ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]",
                 param: parameters, 
+                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
     }
 
@@ -270,6 +281,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
             .QueryAsync<TransactionSummary>(
                 sql: "[employer_financial].[GetTransactionSummary_ByAccountId]",
                 param: parameters,
+                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
 
         return result.ToList();

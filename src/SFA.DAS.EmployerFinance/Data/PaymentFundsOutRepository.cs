@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 
@@ -23,6 +24,7 @@ public class PaymentFundsOutRepository : BaseRepository, IPaymentFundsOutReposit
         return _db.Value.Database.GetDbConnection().QueryAsync<PaymentFundsOut>(
             "[employer_financial].[GetPaymentFundsOut]",
             param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure
         );
     }

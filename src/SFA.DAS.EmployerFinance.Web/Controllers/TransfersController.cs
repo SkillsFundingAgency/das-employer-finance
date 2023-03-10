@@ -24,7 +24,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("transfers")]
         public async Task<IActionResult> Index(string hashedAccountId)
         {
-            var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId);
+            var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId, User);
 
             return View(viewModel);
         }

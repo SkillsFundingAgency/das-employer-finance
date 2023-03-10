@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -21,6 +22,7 @@ public class AccountRepository : BaseRepository, IAccountRepository
 
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<string>(
             sql: "SELECT Name FROM [employer_financial].[Account] WHERE Id = @accountId",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: parameters,
             commandType: CommandType.Text);
 
@@ -31,6 +33,7 @@ public class AccountRepository : BaseRepository, IAccountRepository
     {
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<AccountNameItem>(
             sql: "SELECT Id, Name FROM [employer_financial].[Account] WHERE Id IN @accountIds",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: new { accountIds = accountIds });
 
         return result.ToDictionary(d => d.Id, d => d.Name);
@@ -45,6 +48,7 @@ public class AccountRepository : BaseRepository, IAccountRepository
 
         await _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[CreateAccount]",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: parameters,
             commandType: CommandType.StoredProcedure);
     }
@@ -58,6 +62,7 @@ public class AccountRepository : BaseRepository, IAccountRepository
 
         await _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[RenameAccount]",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: parameters,
             commandType: CommandType.StoredProcedure);
     }

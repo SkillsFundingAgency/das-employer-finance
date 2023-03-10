@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
@@ -27,6 +28,7 @@ public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
 
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
              sql: "[employer_financial].[CreateDraftExpiredFunds]",
+             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
              param: parameters,
              commandType: CommandType.StoredProcedure);
     }
@@ -43,6 +45,7 @@ public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
 
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
              sql: "[employer_financial].[CreateExpiredFunds]",
+             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
              param: parameters,
              commandType: CommandType.StoredProcedure);
 
@@ -56,6 +59,7 @@ public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
 
         return _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
             "[employer_financial].[GetExpiredFunds]",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: parameters,
             commandType: CommandType.StoredProcedure
         );
@@ -69,6 +73,7 @@ public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
 
         return _db.Value.Database.GetDbConnection().QueryAsync<ExpiredFund>(
             "[employer_financial].[GetDraftExpiredFunds]",
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             param: parameters,
             commandType: CommandType.StoredProcedure
         );

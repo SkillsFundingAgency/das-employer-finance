@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -28,6 +29,7 @@ public class AccountLegalEntityRepository : BaseRepository, IAccountLegalEntityR
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             "[employer_financial].[CreateAccountLegalEntity]",
             parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -43,6 +45,7 @@ public class AccountLegalEntityRepository : BaseRepository, IAccountLegalEntityR
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             "[employer_financial].[SignAccountLegalEntityAgreement]",
             parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -55,6 +58,7 @@ public class AccountLegalEntityRepository : BaseRepository, IAccountLegalEntityR
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
             "[employer_financial].[RemoveAccountLegalEntity]",
             parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 }

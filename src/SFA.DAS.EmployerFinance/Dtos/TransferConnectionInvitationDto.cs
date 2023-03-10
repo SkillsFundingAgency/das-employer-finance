@@ -10,4 +10,5 @@ public class TransferConnectionInvitationDto
     public AccountDto ReceiverAccount { get; set; }
     public AccountDto SenderAccount { get; set; }
     public TransferConnectionInvitationStatus Status { get; set; }
+    public string HashedId { get; set; }
 }
