@@ -25,6 +25,38 @@
     margin-bottom: 5px;
 }
 
+.das-table--responsive .govuk-table__body tr.app-table__row--total, 
+.app-table__row--total {
+    border-color: #000;
+    margin-bottom: 15px;
+}
+
+@media (min-width: 40.0625em) {
+    .das-table--responsive .govuk-table__body tr.app-table__row--total-top {
+        display: none;
+    }
+    .das-table--responsive .govuk-table__body tr.app-table__row--total th,
+    .app-table__row--total th {
+        border: none;
+    }
+    .das-table--responsive .govuk-table__body tr.app-table__row--total td,
+    .app-table__row--total td {
+        border-bottom: 3px solid #000;
+    }
+}
+
+.das-table--responsive .govuk-table__body th.app-table__header--total, 
+.app-table__header--total {
+    display: none;
+}
+
+@media (min-width: 40.0625em) {
+    .das-table--responsive .govuk-table__body th.app-table__header--total, 
+    .app-table__header--total {
+        display: table-cell
+    }
+}
+
 
 /* Survey */
 
