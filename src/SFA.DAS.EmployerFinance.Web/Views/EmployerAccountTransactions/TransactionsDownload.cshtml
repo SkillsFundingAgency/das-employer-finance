@@ -11,6 +11,10 @@
     ViewBag.Title = "Download transactions";
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
     ViewBag.ZenDeskLabel = "eas-download-transactions";
+
+    var exampleClosingDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    var exampleStartingDate = exampleClosingDate.AddMonths(-12);
+    
 }
 
 
@@ -20,19 +24,21 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">Download transactions</h1>
-
         <p>Enter a start and end date to download transactions within a specific date range.</p>
 
         @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", FormMethod.Post, new { novalidate = "novalidate" }))
         {
             
-            <div asp-fieldname="GetTransactionsDownloadQuery.StartDate.Month,GetTransactionsDownloadQuery.StartDate.Year" class="govuk-form-group">
+            <div asp-fieldname="StartDate.Month, StartDate.Year" class="govuk-form-group">
                 <fieldset class="govuk-fieldset" role="group" aria-describedby="start-date-hint">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Start date</legend>
-                    <div class="govuk-hint" id="start-date-hint">For example, 2 2022</div>
+                    <div class="govuk-hint" id="start-date-hint">For example, @exampleStartingDate.ToGdsFormatNoDayMonthsNumbers()</div>
+
+                    <span esfa-validation-for="StartDate.Month" class="govuk-error-message"></span>
+                    <span esfa-validation-for="StartDate.Year" class="govuk-error-message"></span>
+
                     <div class="govuk-date-input">
-                        @Html.ValidationMessageFor(m => m.StartDate.Month)
-                        @Html.ValidationMessageFor(m => m.StartDate.Year)
+
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
                                 <label asp-for="StartDate.Month" class="govuk-label govuk-date-input__label">Month</label>
@@ -49,13 +55,13 @@
                 </fieldset>
             </div>
 
-            <div asp-fieldname="GetTransactionsDownloadQuery.EndDate.Month,GetTransactionsDownloadQuery.EndDate.Year" class="govuk-form-group">
+            <div asp-fieldname="StartDate.Month, StartDate.Year" class="govuk-form-group">
                 <fieldset class="govuk-fieldset" role="group" aria-describedby="end-date-hint">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">End date</legend>
-                    <div class="govuk-hint" id="end-date-hint">For example, 2 2023</div>
+                    <div class="govuk-hint" id="end-date-hint">For example, @exampleClosingDate.ToGdsFormatNoDayMonthsNumbers()</div>
                     <div class="govuk-date-input">
-                        @Html.ValidationMessageFor(m => m.EndDate.Month)
-                        @Html.ValidationMessageFor(m => m.EndDate.Year)
+                    <span esfa-validation-for="EndDate.Month" class="govuk-error-message"></span>
+                    <span esfa-validation-for="EndDate.Year" class="govuk-error-message"></span>
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
                                 <label asp-for="EndDate.Month" class="govuk-label govuk-date-input__label">Month</label>
@@ -77,7 +83,7 @@
                 @Html.DropDownListFor(m => m.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
             </div>
             
-            <button class="govuk-button" aria-label="Download">Download</button>
+            <button class="govuk-button">Download</button>
         }
     </div>
 </div>

@@ -31,6 +31,11 @@ namespace SFA.DAS.EmployerFinance.Web.Extensions
             return date.ToString("MMM yyyy");
         }
 
+        public static string ToGdsFormatNoDayMonthsNumbers(this DateTime date)
+        {
+            return date.ToString("M yyyy");
+        }
+
         public static DateTime ToGmtStandardTime(this DateTime date)
         {
             return TimeZoneInfo.ConvertTime(date, TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time"));

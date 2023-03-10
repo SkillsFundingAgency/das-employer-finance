@@ -92,3 +92,10 @@
     display: block;
     border: none;
 }
+
+/* Forms */
+
+.govuk-error-message + .govuk-error-message {
+    position: relative;
+    top: -10px;
+}
