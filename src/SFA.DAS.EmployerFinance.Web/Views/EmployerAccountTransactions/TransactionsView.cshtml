@@ -25,28 +25,13 @@
 
         @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy.ToString())
         {
-            <div class="data-wrap">
-                <div class="data">
-                    <dl>
-                        <dt>Current funds</dt>
-                        @{
-                            var balance = Model.Data.Model.CurrentBalance.ToString("C0", culture);
-                            var balanceClass = string.Empty;
-
-                            if (balance.Length > 8)
-                            {
-                                balanceClass = "long";
-                            }
-                            if (balance.Length > 10)
-                            {
-                                balanceClass = "longer";
-                            }
-
-                        }
-                        <dd class="@balanceClass">@balance</dd>
-                    </dl>
+            <div class="govuk-grid-row govuk-!-margin-bottom-8">
+                <div class="govuk-grid-column-one-third">
+                    <p class="app-finance-figure__title" id="lbl-current-funds">Current funds</p>
+                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-funds">@Model.Data.Model.CurrentBalance.ToString("C0", culture)</div>
                 </div>
             </div>
+    
         }
 
 
@@ -208,3 +193,13 @@
                 </script>
             </div>
         </details>
+
+
+@section breadcrumb {
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId})" class="govuk-breadcrumbs__link">Finance</a></li>
+            <li class="govuk-breadcrumbs__list-item">Your transactions</li>
+        </ol>
+    </div>
+}
