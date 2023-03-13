@@ -1,8 +1,7 @@
-﻿using SFA.DAS.Authorization.ModelBinding;
-
+﻿
 namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 
-public class UpsertRegisteredUserCommand : IAuthorizationContextModel,IRequest<Unit>
+public class UpsertRegisteredUserCommand : IRequest<Unit>
 {
     public string UserRef { get; set; }
     public string FirstName { get; set; }

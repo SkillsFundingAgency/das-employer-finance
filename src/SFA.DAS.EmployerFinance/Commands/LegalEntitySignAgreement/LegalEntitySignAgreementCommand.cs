@@ -1,9 +1,8 @@
-﻿using SFA.DAS.Authorization.ModelBinding;
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
 
-public class LegalEntitySignAgreementCommand : IAuthorizationContextModel,IRequest<Unit>
+public class LegalEntitySignAgreementCommand : IRequest<Unit>
 {
     public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId,
         long legalEntityId)

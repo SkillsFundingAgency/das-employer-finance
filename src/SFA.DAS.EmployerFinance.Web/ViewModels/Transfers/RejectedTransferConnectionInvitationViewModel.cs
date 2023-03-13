@@ -1,8 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using SFA.DAS.Authorization.ModelBinding;
+﻿using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.Web.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
