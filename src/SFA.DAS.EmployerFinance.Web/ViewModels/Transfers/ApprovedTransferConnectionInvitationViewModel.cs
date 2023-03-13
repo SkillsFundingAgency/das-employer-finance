@@ -5,8 +5,8 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
     public class ApprovedTransferConnectionInvitationViewModel
     {
-        [Required(ErrorMessage = "Option required")]
-        [RegularExpression("GoToApprenticesPage|GoToHomepage", ErrorMessage = "Option required")]
+        [Required(ErrorMessage = "Select an option")]
+        [RegularExpression("GoToApprenticesPage|GoToHomepage", ErrorMessage = "Select an option")]
         public string Choice { get; set; }
 
         public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }

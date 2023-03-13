@@ -11,8 +11,8 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         [IgnoreMap]
         public string TransferConnectionInvitationId { get; set; }
 
-        [Required(ErrorMessage = "Option required")]
-        [RegularExpression("Approve|Reject", ErrorMessage = "Option required")]
+        [Required(ErrorMessage = "Select an option")]
+        [RegularExpression("Approve|Reject", ErrorMessage = "Select an option")]
         public string Choice { get; set; }
 
         public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }

@@ -8,8 +8,8 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
     public class TransferConnectionInvitationViewModel
     {
-        [Required(ErrorMessage = "Option required")]
-        [RegularExpression("Confirm|GoToTransfersPage", ErrorMessage = "Option required")]
+        [Required(ErrorMessage = "Select an option")]
+        [RegularExpression("Confirm|GoToTransfersPage", ErrorMessage = "Select an option")]
         public string Choice { get; set; }
 
         public int? Id { get; set; }

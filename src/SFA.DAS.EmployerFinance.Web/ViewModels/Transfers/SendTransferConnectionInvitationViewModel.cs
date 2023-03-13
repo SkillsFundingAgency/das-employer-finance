@@ -7,8 +7,8 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
     public class SendTransferConnectionInvitationViewModel
     {
-        [Required(ErrorMessage = "Option required")]
-        [RegularExpression("Confirm|ReEnterAccountId", ErrorMessage = "Option required")]
+        [Required(ErrorMessage = "Select an option")]
+        [RegularExpression("Confirm|ReEnterAccountId", ErrorMessage = "Select an option")]
         public string Choice { get; set; }
 
         public AccountDto ReceiverAccount { get; set; }
