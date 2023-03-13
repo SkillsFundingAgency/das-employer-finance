@@ -62,7 +62,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return View(viewModel);
         }
 
-        [ImportModelStateFromTempData]
         [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsGet)]
         public ActionResult TransactionsDownload()
         {
@@ -70,7 +69,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateModelState]
         [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsPost)]
         public async Task<IActionResult> TransactionsDownload([FromRoute]string hashedAccountId, TransactionDownloadViewModel model)
         {
@@ -108,7 +106,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
 
         [Route("finance/levyDeclaration/details")]
-        public async Task<IActionResult> LevyDeclarationDetail(string hashedAccountId, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> LevyDeclarationDetail([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
         {
             var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate);
 
@@ -134,8 +132,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [Route("finance/transfer/details")]
-        public async Task<IActionResult> TransferDetail(GetTransferTransactionDetailsQuery query)
+        public async Task<IActionResult> TransferDetail([FromRoute]string hashedAccountId, GetTransferTransactionDetailsQuery query)
         {
+            query.AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
             var response = await _mediator.Send(query);
 
             var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);

@@ -9,5 +9,6 @@ public class AccountTransferConfiguration : IEntityTypeConfiguration<AccountTran
     {
         builder.ToTable("AccountTransfers");
         builder.HasKey(x => x.Id);
+        builder.Ignore(c => c.ApprenticeCount);
     }
 }

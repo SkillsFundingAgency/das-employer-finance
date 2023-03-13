@@ -53,7 +53,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return View("Index", hashedAccountId);
         }
 
-        [ImportModelStateFromTempData]
         [Route("start")]
         public IActionResult Start([FromRoute]string hashedAccountId)
         {
@@ -92,8 +91,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             
         }
 
-        [HttpNotFoundForNullModel]
-        [ImportModelStateFromTempData]
         [Route("send")]
         public async Task<IActionResult> Send([FromRoute]string hashedAccountId, SendTransferConnectionInvitationQuery query)
         {
@@ -131,7 +128,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                         ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId,
                         UserRef = Guid.Parse(User.GetUserId())
                     });
-                    return RedirectToAction("Sent", new { transferConnectionInvitationId, hashedAccountId });
+                    return RedirectToAction("Sent", new { transferConnectionInvitationId = _encodingService.Encode(Convert.ToInt64(transferConnectionInvitationId), EncodingType.TransferRequestId), hashedAccountId });
                 case "ReEnterAccountId":
                     return RedirectToAction("Start", new{hashedAccountId});
                 default:
@@ -139,8 +136,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             }
         }
 
-        [HttpNotFoundForNullModel]
-        [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/sent")]
         public async Task<IActionResult> Sent([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId)
         {
@@ -233,8 +228,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             }
         }
 
-        [HttpNotFoundForNullModel]
-        [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/approved")]
         public async Task<IActionResult> Approved([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId)
         {
@@ -250,7 +243,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateModelState]
         [Route("{transferConnectionInvitationId}/approved")]
         public async Task<IActionResult> Approved([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, ApprovedTransferConnectionInvitationViewModel model)
         {
@@ -276,11 +268,16 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             }
         }
 
-        [HttpNotFoundForNullModel]
         [Route("{transferConnectionInvitationId}/rejected")]
         public async Task<IActionResult> Rejected([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId)
         {
             var model = await GetRejectedModel(hashedAccountId, transferConnectionInvitationId);
+
+            if (model == null)
+            {
+                return View("notfound");
+            }
+            
             return View(model);
         }
 
@@ -350,7 +347,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                         TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
                         UserRef = Guid.Parse(User.GetUserId())
                     });
-                    return RedirectToAction("Deleted");
+                    return RedirectToAction("Deleted", new {hashedAccountId, transferConnectionInvitationId});
                 case "GoToTransfersPage":
                     return RedirectToAction("Index", "TransferConnections", new {hashedAccountId});
                 default:
@@ -370,6 +367,12 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             var model = _mapper.Map<TransferConnectionInvitationViewModel>(response);
             model.HashedAccountId = hashedAccountId;
             model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
+
+            if (model.TransferConnectionInvitation == null)
+            {
+                return null;
+            }
+            
             model.TransferConnectionInvitation.ReceiverAccount.PublicHashedId =
                 _encodingService.Encode(model.TransferConnectionInvitation.ReceiverAccount.Id, EncodingType.PublicAccountId);
             model.TransferConnectionInvitation.SenderAccount.PublicHashedId =
@@ -377,7 +380,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return model;
         }
 
-        [ImportModelStateFromTempData]
         [Route("{transferConnectionInvitationId}/deleted")]
         public IActionResult Deleted([FromRoute]string hashedAccountId, [FromRoute]string transferConnectionInvitationId)
         {

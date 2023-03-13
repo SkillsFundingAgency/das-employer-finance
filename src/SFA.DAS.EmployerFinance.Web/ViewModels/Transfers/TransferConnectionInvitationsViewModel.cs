@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SFA.DAS.Authorization.ModelBinding;
 using SFA.DAS.EmployerFinance.Dtos;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels

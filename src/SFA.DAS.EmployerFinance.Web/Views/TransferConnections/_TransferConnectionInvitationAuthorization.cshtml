@@ -1,4 +1,3 @@
-@using SFA.DAS.EmployerFinance.Authorisation
 @using SFA.DAS.EmployerFinance.Interfaces
 
 @inject IUrlActionHelper UrlHelper
@@ -7,7 +6,7 @@
 
 <p>Employers who pay the apprenticeship levy can connect with other employers and transfer up to @Model.TransferAllowancePercentage.ToString("N0")% of their previous year's annual funds.</p>
 
-@if (Model.AuthorizationResult.IsAuthorized)
+@if (Model.AuthorizationResult)
 {
     <p>Before starting a connection both the sending and receiving employers need to read and understand the <a href="https://www.gov.uk/government/publications/apprenticeship-funding-and-performance-management-rules-2017-to-2018" class="govuk-link" rel="nofollow">rules for sending and receiving transfers</a>.</p>
     <div class="govuk-inset-text">
@@ -19,12 +18,13 @@
         <a class="govuk-button" href="@Url.Action("Index", "TransferConnectionInvitations", new{Model.HashedAccountId})">Connect to a receiving employer</a>
     }
 }
-else if (Model.AuthorizationResult.HasError<EmployerFeatureAgreementNotSigned>())//TODO MAC-192 
+else 
 {
     <p>Before starting a connection both the sending and receiving employers need to read and understand the <a href="https://www.gov.uk/guidance/apprenticeship-funding-rules" class="govuk-link" rel="nofollow">rules for sending and receiving transfers</a> and accept the updated organisation agreement with DfE.</p>
     <a class="govuk-button" href="@UrlHelper.EmployerAccountsAction("agreements")">Accept agreement</a>
 }
-else
-{
-    throw new ApplicationException($"Transfer connections feature not authorized because {Model.AuthorizationResult.ToString()}");
-}
+
+@* // else TODO this should be an access denied exception *@
+@* // { *@
+@* //     throw new ApplicationException($"Transfer connections feature not authorized because {Model.AuthorizationResult.ToString()}"); *@
+@* // } *@

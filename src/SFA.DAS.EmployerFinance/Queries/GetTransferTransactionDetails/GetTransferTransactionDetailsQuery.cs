@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper.Configuration.Annotations;
-using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 
-public class GetTransferTransactionDetailsQuery : IAuthorizationContextModel, IRequest<GetTransferTransactionDetailsResponse>
+public class GetTransferTransactionDetailsQuery : IRequest<GetTransferTransactionDetailsResponse>
 {
     [Ignore]
     [Required]

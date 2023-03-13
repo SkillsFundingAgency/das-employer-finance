@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper.Configuration.Annotations;
-using SFA.DAS.Authorization.ModelBinding;
 
 namespace SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 
-public class RunHealthCheckCommand : IAuthorizationContextModel, IRequest<Unit>
+public class RunHealthCheckCommand : IRequest<Unit>
 {
     [Ignore]
     [Required]
