@@ -32,7 +32,7 @@
                 <dt class="govuk-summary-list__key">Sent on</dt>
                 <dd class="govuk-summary-list__value">@pendingChange.CreatedDate.ToString("d MMMM yyyy")</dd>
             </div>
-            </div>
+        </dl>
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Receive" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.TransferConnectionInvitationId">
             <input type="hidden" asp-for="TransferConnectionInvitationId"/>
             <input type="hidden" asp-for="HashedAccountId"/>
