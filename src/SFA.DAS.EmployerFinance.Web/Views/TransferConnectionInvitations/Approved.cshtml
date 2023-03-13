@@ -12,59 +12,66 @@
 
 
 <partial model="@ViewData.ModelState" name="_ValidationSummary"/>
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <div class="success-summary">
-            <h1 class="bold-large">Connection confirmed</h1>
-            <p><i class="icon-green-tick"></i> You can now request transfer funds from @Model.TransferConnectionInvitation.SenderAccount.Name.</p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Connection confirmed
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-body">You can now request transfer funds from @Model.TransferConnectionInvitation.SenderAccount.Name</p>
+            </div>
         </div>
-        <div class="flash-card">
-            <header>
-                <h2 class="heading-medium">How do I request transfer funds?</h2>
-            </header>
-            <ul class="how-to-renew" data-id="how-to-renew-uk">
+
+        <div class="das-highlight das-highlight--information govuk-!-padding-6">
+            <h1 class="govuk-heading-l">How do I request transfer funds?</h1>
+            <ol class="govuk-list govuk-list--number" data-id="how-to-renew-uk">
                 <li>
-                    <span class="circle circle-step circle-white">1</span>
                     <p>Agree the apprentices, training and costs that the transfer will cover</p>
                 </li>
                 <li>
-                    <span class="circle circle-step circle-white">2</span>
                     <p>Add apprentices, training and cost details in the apprenticeship service</p>
                 </li>
                 <li>
-                    <span class="circle circle-step circle-white">3</span>
                     <p>Confirm details with your training provider</p>
                 </li>
-            </ul>
+            </ol>
             <p>Once you and your training provider approve the apprenticeship details, a transfer request is automatically sent to the sending employer to review.</p>
         </div>
-        <h2 class="heading-xlarge">What next?</h2>
+
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Approved" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
             <div asp-fieldname="Choice">
-                <fieldset>
-                    <legend>
-                        <span class="visuallyhidden">What next?</span>
-                        @Html.ValidationMessageFor(m => m.Choice)
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 class="govuk-fieldset__heading">
+                            What next?
+                        </h2>
                     </legend>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "GoToApprenticesPage")
-                        Start adding apprentices
-                    </label>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "GoToHomepage")
-                        Go back to the homepage
-                    </label>
+                    <span esfa-validation-for="Choice" class="govuk-error-message"></span>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToApprenticesPage" asp-for="Choice" value="GoToApprenticesPage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToApprenticesPage">
+                                Start adding apprentices
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToHomepage" asp-for="Choice" value="GoToHomepage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToHomepage">
+                                Go to the homepage
+                            </label>
+                        </div>
+                    </div>
                 </fieldset>
             </div>
-            <button class="button" type="submit">Continue</button>
+            <button class="govuk-button" type="submit">Continue</button>
         </form>
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="link-back" >Back</a></li>
-        </ol>
-    </div>
+    <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="govuk-back-link">Back</a>
 }

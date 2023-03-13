@@ -12,42 +12,50 @@
 
 
 <partial model="@ViewData.ModelState" name="_ValidationSummary"/>
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <div class="success-summary">
-            <h1 class="bold-large">Connection request deleted</h1>
-            <p><i class="icon-green-tick"></i> You've successfully deleted this connection request</p>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Connection request deleted
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-body">You've successfully deleted this connection request</p>
+            </div>
         </div>
-        <h2 class="heading-xlarge">What next?</h2>
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Deleted" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
             <input type="hidden" asp-for="HashedAccountId"/>
             <input type="hidden" asp-for="HashedTransferConnectionInvitationId"/>
             <div asp-fieldname="Choice">
-                <fieldset>
-                    <legend>
-                        <span class="visuallyhidden">What next?</span>
-                        @Html.ValidationMessageFor(m => m.Choice)
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 class="govuk-fieldset__heading">
+                            What next?
+                        </h2>
                     </legend>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "GoToTransfersPage")
-                        Go to transfers
-                    </label>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "GoToHomepage")
-                        Go back to the homepage
-                    </label>
+                    <span esfa-validation-for="Choice" class="govuk-error-message"></span>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToTransfersPage" asp-for="Choice" value="GoToTransfersPage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToTransfersPage">
+                                Go to transfers
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToHomepage" asp-for="Choice" value="GoToHomepage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToHomepage">
+                                Go to the homepage
+                            </label>
+                        </div>
+                    </div>
                 </fieldset>
             </div>
-            <button class="button" type="submit">Continue</button>
-        </form>
-                
+            <button class="govuk-button" type="submit">Continue</button>
+        </form>        
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="link-back" >Back</a></li>
-        </ol>
-    </div>
+    <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="govuk-back-link" >Back</a>
 }
