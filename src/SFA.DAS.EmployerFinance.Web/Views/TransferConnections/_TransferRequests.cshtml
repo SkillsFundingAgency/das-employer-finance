@@ -21,7 +21,7 @@
         <tr class="govuk-table__row">
             <th class="govuk-table__header  das-table-cell-width-50">Employer</th>
             <th class="govuk-table__header  das-table-cell-width-15">Status</th>
-            <th class="govuk-table__header  das-table-cell-width-20">Total cost</th>
+            <th class="govuk-table__header govuk-table__header--numeric  das-table-cell-width-20">Total cost</th>
             <th class="govuk-table__header  das-table-cell-width-15">&nbsp;</th>
         </tr>
     </thead>
@@ -31,7 +31,7 @@
         <tr class="govuk-table__row">
             <td data-label="Employer" class="govuk-table__cell">@transferRequest.ReceiverAccount.Name</td>
             <td data-label="Status" class="govuk-table__cell">@transferRequest.Status.ToString()</td>
-            <td data-label="Total cost" class="govuk-table__cell">@transferRequest.TransferCost.ToString("C0", culture)</td>
+            <td data-label="Total cost" class="govuk-table__cell govuk-table__cell--numeric">@transferRequest.TransferCost.ToString("C0", culture)</td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
                 <a href="@UrlHelper.EmployerCommitmentsV2Action($"sender/transfers/{transferRequest.TransferRequestHashedId}")" class="govuk-link">
                     Details<span class="govuk-visually-hidden"> about the @transferRequest.ReceiverAccount.Name request</span>

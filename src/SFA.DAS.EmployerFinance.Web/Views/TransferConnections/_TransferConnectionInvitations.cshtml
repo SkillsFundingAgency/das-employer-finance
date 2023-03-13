@@ -56,43 +56,18 @@ else
          <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.SenderAccount.Name</td>
          <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
          <td class="govuk-table__cell govuk-table__cell--numeric">
-            @if (transferConnectionInvitation.Status == TransferConnectionInvitationStatus.Pending)
-            {
-                <tr class="govuk-table__row">
-                    <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.ReceiverAccount.Name</td>
-                    <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric">
-                        
-                        <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId })" class="govuk-link">
-                            Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.ReceiverAccount.Name request</span>
-                        </a>
-                    
-                    </td>
-                </tr>
-            }
-            else
-            {
-                <tr class="govuk-table__row">
-                    <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.SenderAccount.Name</td>
-                    <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric">
-                        
-                        @if (transferConnectionInvitation.Status == TransferConnectionInvitationStatus.Pending)
-                        {
-                            <a href="@Url.Action("Receive", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId})" class="govuk-link">
-                                Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId })" class="govuk-link">
-                                Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
-                            </a>
-                        }
-                        
-                    </td>
-                </tr>
-            }
+         @if (transferConnectionInvitation.Status == TransferConnectionInvitationStatus.Pending) 
+         {
+            <a href="@Url.Action("Receive", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId})" class="govuk-link">
+               Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
+            </a>
+         } 
+         else 
+         {
+            <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId })" class="govuk-link">
+               Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
+            </a>
+         }
          </td>
       </tr>
       }
