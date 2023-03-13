@@ -13,18 +13,18 @@
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
 }
 
+@if (Model.IsCurrentAccountSender)
+{
+    <h1 class="govuk-heading-xl">Levy transfer</h1>
+}
+else
+{
+    <h1 class="govuk-heading-xl">Transfer received</h1>
+}
+
 <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-
-        @if (Model.IsCurrentAccountSender)
-        {
-            <h1 class="govuk-heading-xl">Levy transfer</h1>
-        }
-        else
-        {
-            <h1 class="govuk-heading-xl">Transfer received</h1>
-        }
-
+    <div class="govuk-grid-column-one-half">
+        <hr class="govuk-section-break govuk-section-break--visible">
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Date </dt>
@@ -54,12 +54,12 @@
         @foreach (var transferDetail in Model.TransferDetails)
     {
         <tr class="govuk-table__row">
-            <td class="numeric">
+            <td class="govuk-table__cell govuk-table__cell--numeric">
                 @(@transferDetail.CourseLevel.HasValue ? 
                         $"{transferDetail.CourseName}: level {transferDetail.CourseLevel}" : 
                         transferDetail.CourseName)
             </td>
-            <td class="numeric">
+            <td class="govuk-table__cell govuk-table__cell--numeric">
                 @transferDetail.ApprenticeCount
             </td>
             @if (Model.IsCurrentAccountSender)
@@ -78,7 +78,7 @@
 }
 
         <tr class="govuk-table__row">
-            <td colspan="2"></td>
+            <td class="govuk-table__cell app-table__cell--transparent" colspan="2"> </td>
             @if (Model.IsCurrentAccountSender)
             {
                 <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@((Model.TransferPaymentTotal * -1).ToString("C2", culture))</td>
