@@ -81,8 +81,7 @@
 
 
 
-
-
+/* Table */
 
 .das-table--responsive .govuk-table__body tr.app-table__row--total, 
 .app-table__row--total {
@@ -116,6 +115,23 @@
     }
 }
 
+.app-table__cell--highlight {
+    background: #f3f2f1;
+}
+
+.app-table__cell--colgroup {
+    text-align: center;
+}
+
+.app-table__cell--total {
+    border-bottom-width: 2px !important;
+    border-bottom-color: #0b0c0c !important;
+    font-weight: 700;
+}
+
+.app-table__cell--transparent {
+    border-color: transparent !important;
+}
 
 /* Survey */
 
