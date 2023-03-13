@@ -49,7 +49,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             };
             _viewModel = new TransferConnectionInvitationViewModel
             {
-                TransferConnectionInvitationId = 123
+                Id = 123
             };
         }
 

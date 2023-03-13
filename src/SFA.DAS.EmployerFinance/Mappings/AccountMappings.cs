@@ -2,6 +2,7 @@
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.Account;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Mappings;
 

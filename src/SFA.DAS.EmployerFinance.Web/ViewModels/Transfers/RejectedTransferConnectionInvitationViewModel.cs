@@ -12,9 +12,6 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         [RegularExpression("Confirm|GoToTransfersPage", ErrorMessage = "Option required")]
         public string Choice { get; set; }
 
-        [Required]
-        public int? TransferConnectionInvitationId { get; set; }
-
         public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }
         public string HashedAccountId { get; set; }
         public string HashedTransferConnectionInvitationId { get; set; }

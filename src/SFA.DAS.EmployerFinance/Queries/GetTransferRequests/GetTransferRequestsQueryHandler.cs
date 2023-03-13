@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -28,7 +29,6 @@ public class GetTransferRequestsQueryHandler : IRequestHandler<GetTransferReques
 
     public async Task<GetTransferRequestsResponse> Handle(GetTransferRequestsQuery message,CancellationToken cancellationToken)
     {
-        var accountHashedId = _encodingService.Encode(message.AccountId,EncodingType.AccountId);
         var transferRequests = await _commitmentV2ApiClient.GetTransferRequests(message.AccountId);
 
         var accountIds = transferRequests.TransferRequestSummaryResponse
@@ -36,7 +36,15 @@ public class GetTransferRequestsQueryHandler : IRequestHandler<GetTransferReques
             .Select(h => _encodingService.Decode(h, EncodingType.AccountId))
             .ToList();
 
-        var accounts = _mapper.Map<List<AccountDto>>(await _employerAccountsRepository.Get(accountIds))
+        var accountList = await _employerAccountsRepository.Get(accountIds);
+        
+        var accounts = accountList.Select(c=> new AccountDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                HashedId = _encodingService.Encode(c.Id, EncodingType.AccountId),
+                PublicHashedId = _encodingService.Encode(c.Id, EncodingType.PublicAccountId)
+            })
             .ToDictionary(p => p.HashedId);
             
         var transferRequestsData = transferRequests.TransferRequestSummaryResponse

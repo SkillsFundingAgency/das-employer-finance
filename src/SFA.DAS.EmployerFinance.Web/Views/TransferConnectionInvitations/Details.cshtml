@@ -17,7 +17,7 @@
     <div class="column-two-thirds">
         <h1 class="heading-xlarge">Connection request details</h1>
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Details" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
-            <input type="hidden" asp-for="TransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="Id"/>
             <input type="hidden" asp-for="HashedAccountId"/>
             <input type="hidden" asp-for="HashedTransferConnectionInvitationId"/>
             <div class="form-group">

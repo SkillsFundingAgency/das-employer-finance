@@ -38,7 +38,8 @@ namespace SFA.DAS.EmployerFinance.Web.Mappings
 
             CreateMap<GetRejectedTransferConnectionInvitationResponse, RejectedTransferConnectionInvitationViewModel>()
                 .ForMember(m => m.Choice, o => o.Ignore())
-                .ForMember(m => m.TransferConnectionInvitationId, o => o.MapFrom(r => r.TransferConnectionInvitation.Id));
+                //.ForMember(m => m.TransferConnectionInvitationId, o => o.MapFrom(r => r.TransferConnectionInvitation.Id))
+                ;
 
             CreateMap<GetSentTransferConnectionInvitationResponse, SentTransferConnectionInvitationViewModel>()
                 .ForMember(m => m.Choice, o => o.Ignore());
@@ -53,7 +54,7 @@ namespace SFA.DAS.EmployerFinance.Web.Mappings
 
             CreateMap<GetTransferConnectionInvitationResponse, TransferConnectionInvitationViewModel>()
                 .ForMember(m => m.Choice, o => o.Ignore())
-                .ForMember(m => m.TransferConnectionInvitationId, o => o.MapFrom(r => r.TransferConnectionInvitation.Id));
+                .ForMember(m => m.Id, o => o.MapFrom(r => r.TransferConnectionInvitation.Id));
 
             CreateMap<GetTransferConnectionInvitationsResponse, TransferConnectionInvitationsViewModel>();
 

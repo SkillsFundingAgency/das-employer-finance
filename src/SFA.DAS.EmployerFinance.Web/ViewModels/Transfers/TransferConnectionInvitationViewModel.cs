@@ -6,14 +6,13 @@ using SFA.DAS.EmployerFinance.Web.Attributes;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels
 {
-    public class TransferConnectionInvitationViewModel : IAuthorizationContextModel
+    public class TransferConnectionInvitationViewModel
     {
         [Required(ErrorMessage = "Option required")]
         [RegularExpression("Confirm|GoToTransfersPage", ErrorMessage = "Option required")]
         public string Choice { get; set; }
 
-        [Required]
-        public int? TransferConnectionInvitationId { get; set; }
+        public int? Id { get; set; }
 
         public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }
         public string HashedAccountId { get; set; }

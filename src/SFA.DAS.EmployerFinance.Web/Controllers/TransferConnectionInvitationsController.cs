@@ -101,6 +101,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             var response = await _mediator.Send(query);
             var model = _mapper.Map<SendTransferConnectionInvitationViewModel>(response);
             model.HashedAccountId = hashedAccountId;
+            model.ReceiverAccountPublicHashedId =
+                _encodingService.Encode(model.ReceiverAccount.Id, EncodingType.PublicAccountId);
             return View(model);
         }
 
@@ -278,15 +280,22 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("{transferConnectionInvitationId}/rejected")]
         public async Task<IActionResult> Rejected([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId)
         {
+            var model = await GetRejectedModel(hashedAccountId, transferConnectionInvitationId);
+            return View(model);
+        }
+
+        private async Task<RejectedTransferConnectionInvitationViewModel> GetRejectedModel(string hashedAccountId, string transferConnectionInvitationId)
+        {
             var response = await _mediator.Send(new GetRejectedTransferConnectionInvitationQuery
             {
                 AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
-                TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
+                TransferConnectionInvitationId =
+                    _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
             });
             var model = _mapper.Map<RejectedTransferConnectionInvitationViewModel>(response);
             model.HashedAccountId = hashedAccountId;
             model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
-            return View(model);
+            return model;
         }
 
         [HttpPost]
@@ -296,6 +305,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                model = await GetRejectedModel(hashedAccountId, transferConnectionInvitationId);
                 return View("Rejected", model);
             }
             switch (model.Choice)
