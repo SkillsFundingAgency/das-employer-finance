@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
-using SFA.DAS.Authorization.Services;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
 {

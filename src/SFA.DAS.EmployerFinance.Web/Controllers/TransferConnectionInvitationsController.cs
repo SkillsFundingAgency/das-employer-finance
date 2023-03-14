@@ -96,10 +96,13 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             query.AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
             var response = await _mediator.Send(query);
-            var model = _mapper.Map<SendTransferConnectionInvitationViewModel>(response);
-            model.HashedAccountId = hashedAccountId;
-            model.ReceiverAccountPublicHashedId =
-                _encodingService.Encode(model.ReceiverAccount.Id, EncodingType.PublicAccountId);
+            var model = new SendTransferConnectionInvitationViewModel
+            {
+                HashedAccountId = hashedAccountId,
+                SenderAccountName = response.SenderAccount.Name,
+                ReceiverAccountName = response.ReceiverAccount.Name,
+                ReceiverAccountPublicHashedId = _encodingService.Encode(response.ReceiverAccount.Id, EncodingType.PublicAccountId)
+            };
             return View(model);
         }
 
@@ -109,14 +112,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var query = new SendTransferConnectionInvitationQuery
-                {
-                    AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
-                    ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId
-                };
-                var response = await _mediator.Send(query);
-                model = _mapper.Map<SendTransferConnectionInvitationViewModel>(response);
-                model.HashedAccountId = hashedAccountId;
                 return View("Send", model);
             }
             switch (model.Choice)
@@ -144,11 +139,15 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
                 TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
             });
-            var model = _mapper.Map<SentTransferConnectionInvitationViewModel>(response);
+            var model = new SentTransferConnectionInvitationViewModel
+            {
+                HashedAccountId = hashedAccountId,
+                HashedTransferConnectionInvitationId = transferConnectionInvitationId,
+                ReceiverAccountName = response.TransferConnectionInvitation.ReceiverAccount.Name,
+                ReceiverPublicHashedId = _encodingService.Encode(response.TransferConnectionInvitation.ReceiverAccount.Id,EncodingType.TransferRequestId),
+                SenderAccountName = response.TransferConnectionInvitation.SenderAccount.Name
+            };
 
-            model.HashedAccountId = hashedAccountId;
-            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
-            
             return View(model);
         }
 
@@ -164,7 +163,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             switch (model.Choice)
             {
                 case "GoToTransfersPage":
-                    return RedirectToAction("Index", "TransferConnections");
+                    return RedirectToAction("Index", "TransferConnections", new {hashedAccountId});
                 case "GoToHomepage":
                     return Redirect(_urlHelper.EmployerAccountsAction("teams"));
                 default:
@@ -180,10 +179,17 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
                 TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
             });
-            var model = _mapper.Map<ReceiveTransferConnectionInvitationViewModel>(response);
-            model.HashedAccountId = hashedAccountId;
-            model.NotHashedTransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId));
-            model.TransferConnectionInvitationId = transferConnectionInvitationId;
+            var pendingChange = response.TransferConnectionInvitation.GetPendingChange();
+            var model = new ReceiveTransferConnectionInvitationViewModel
+            {
+                HashedAccountId = hashedAccountId,
+                NotHashedTransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)),
+                TransferConnectionInvitationId = transferConnectionInvitationId,
+                SenderAccountName = response.TransferConnectionInvitation.SenderAccount.Name,
+                PendingChangeUserFullName = pendingChange.User.FullName,
+                PendingChangeCreatedDate = pendingChange.CreatedDate
+            };
+
             return View(model);
         }
 
@@ -193,15 +199,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var response = await _mediator.Send(new GetReceivedTransferConnectionInvitationQuery
-                {
-                    AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
-                    TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
-                });
-                model = _mapper.Map<ReceiveTransferConnectionInvitationViewModel>(response);
-                model.HashedAccountId = hashedAccountId;
-                model.NotHashedTransferConnectionInvitationId = Convert.ToInt32(_encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId));
-                model.TransferConnectionInvitationId = transferConnectionInvitationId;
                 return View("Receive", model);
             }
             
@@ -236,24 +233,21 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
                 TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId)
             });
-            var model = _mapper.Map<ApprovedTransferConnectionInvitationViewModel>(response);
-            model.HashedAccountId = hashedAccountId;
-            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
+            var model = new ApprovedTransferConnectionInvitationViewModel
+            {
+                HashedAccountId = hashedAccountId,
+                HashedTransferConnectionInvitationId = transferConnectionInvitationId,
+                SenderAccountName = response.TransferConnectionInvitation.SenderAccount.Name
+            };
             return View(model);
         }
 
         [HttpPost]
         [Route("{transferConnectionInvitationId}/approved")]
-        public async Task<IActionResult> Approved([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, ApprovedTransferConnectionInvitationViewModel model)
+        public IActionResult Approved([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId, ApprovedTransferConnectionInvitationViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                var response = await _mediator.Send(new GetApprovedTransferConnectionInvitationQuery
-                {
-                    AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
-                    TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
-                });
-                model = _mapper.Map<ApprovedTransferConnectionInvitationViewModel>(response);
                 return View(model);
             }
             
@@ -271,28 +265,31 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("{transferConnectionInvitationId}/rejected")]
         public async Task<IActionResult> Rejected([FromRoute]string hashedAccountId,[FromRoute]string transferConnectionInvitationId)
         {
-            var model = await GetRejectedModel(hashedAccountId, transferConnectionInvitationId);
-
-            if (model == null)
-            {
-                return View("notfound");
-            }
-            
-            return View(model);
-        }
-
-        private async Task<RejectedTransferConnectionInvitationViewModel> GetRejectedModel(string hashedAccountId, string transferConnectionInvitationId)
-        {
             var response = await _mediator.Send(new GetRejectedTransferConnectionInvitationQuery
             {
                 AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId),
                 TransferConnectionInvitationId =
                     _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
             });
-            var model = _mapper.Map<RejectedTransferConnectionInvitationViewModel>(response);
-            model.HashedAccountId = hashedAccountId;
-            model.HashedTransferConnectionInvitationId = transferConnectionInvitationId;
-            return model;
+            var pendingChange = response.TransferConnectionInvitation.GetPendingChange();
+            var model = new RejectedTransferConnectionInvitationViewModel
+            {
+                HashedAccountId = hashedAccountId,
+                HashedTransferConnectionInvitationId = transferConnectionInvitationId,
+                Status = response.TransferConnectionInvitation.Status.ToString(),
+                SenderAccountName = response.TransferConnectionInvitation.SenderAccount.Name,
+                PendingUserName = pendingChange.User.FullName,
+                PendingChangeCreatedDate = pendingChange.CreatedDate,
+                ReceiverAccountName = response.TransferConnectionInvitation.ReceiverAccount.Name,
+                ReceiverAccountPublicHashedId = _encodingService.Encode(response.TransferConnectionInvitation.ReceiverAccount.Id, EncodingType.PublicAccountId) 
+            };
+
+            // if (model == null)
+            // {
+            //     return View("notfound");
+            // }
+            
+            return View(model);
         }
 
         [HttpPost]
@@ -302,7 +299,6 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model = await GetRejectedModel(hashedAccountId, transferConnectionInvitationId);
                 return View("Rejected", model);
             }
             switch (model.Choice)
@@ -314,7 +310,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                         TransferConnectionInvitationId = _encodingService.Decode(transferConnectionInvitationId, EncodingType.TransferRequestId),
                         UserRef = Guid.Parse(User.GetUserId())
                     });
-                    return RedirectToAction("Deleted");
+                    return RedirectToAction("Deleted", new {hashedAccountId, transferConnectionInvitationId});
                 case "GoToTransfersPage":
                     return RedirectToAction("Index", "TransferConnections", new {hashedAccountId});
                 default:

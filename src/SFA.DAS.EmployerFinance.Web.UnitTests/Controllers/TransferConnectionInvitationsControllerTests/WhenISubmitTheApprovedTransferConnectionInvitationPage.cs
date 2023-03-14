@@ -30,22 +30,22 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         }
 
         [Test]
-        public async Task ThenIShouldBeRedirectedToTheApprenticesPageIfIChoseOption1()
+        public void ThenIShouldBeRedirectedToTheApprenticesPageIfIChoseOption1()
         {
             _viewModel.Choice = "GoToApprenticesPage";
 
-            var result = await _controller.Approved(AccountHashedId, "",_viewModel) as RedirectResult;
+            var result = _controller.Approved(AccountHashedId, "",_viewModel) as RedirectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Url, Is.EqualTo($"/{AccountHashedId}"));
         }
 
         [Test]
-        public async Task ThenIShouldBeRedirectedToTheHomepageIfIChoseOption2()
+        public void ThenIShouldBeRedirectedToTheHomepageIfIChoseOption2()
         {
             _viewModel.Choice = "GoToHomepage";
 
-            var result = await _controller.Approved(AccountHashedId, "", _viewModel) as RedirectResult;
+            var result = _controller.Approved(AccountHashedId, "", _viewModel) as RedirectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));

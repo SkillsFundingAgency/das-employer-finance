@@ -15,28 +15,29 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">Connection request details</h1>
-        <p>@Model.TransferConnectionInvitation.SenderAccount.Name wants to connect with you. Once you approve the connection request you'll be able to request transfer funds from this employer.</p>
+        <p>@Model.SenderAccountName wants to connect with you. Once you approve the connection request you'll be able to request transfer funds from this employer.</p>
         <dl class="govuk-summary-list">
-            @{
-                var pendingChange = Model.TransferConnectionInvitation.GetPendingChange();
-            }
+            
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Sending employer</dt>
-                <dd class="govuk-summary-list__value">@Model.TransferConnectionInvitation.SenderAccount.Name</dd>
+                <dd class="govuk-summary-list__value">@Model.SenderAccountName</dd>
             </div>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Sent by</dt>
-                <dd class="govuk-summary-list__value">@pendingChange.User.FullName</dd>
+                <dd class="govuk-summary-list__value">@Model.PendingChangeUserFullName</dd>
             </div>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Sent on</dt>
-                <dd class="govuk-summary-list__value">@pendingChange.CreatedDate.ToString("d MMMM yyyy")</dd>
+                <dd class="govuk-summary-list__value">@Model.PendingChangeCreatedDate.ToString("d MMMM yyyy")</dd>
             </div>
         </dl>
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Receive" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.TransferConnectionInvitationId">
             <input type="hidden" asp-for="TransferConnectionInvitationId"/>
             <input type="hidden" asp-for="HashedAccountId"/>
             <input type="hidden" asp-for="NotHashedTransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="SenderAccountName"/>
+            <input type="hidden" asp-for="PendingChangeUserFullName"/>
+            <input type="hidden" asp-for="PendingChangeCreatedDate"/>
             <div asp-fieldname="Choice">
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">

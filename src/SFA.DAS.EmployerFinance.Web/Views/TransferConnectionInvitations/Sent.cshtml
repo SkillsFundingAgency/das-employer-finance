@@ -22,37 +22,39 @@
                 </h2>
             </div>
             <div class="govuk-notification-banner__content">
-                <p class="govuk-body">You've sent a connection request to @Model.TransferConnectionInvitation.ReceiverAccount.Name with account ID @Model.TransferConnectionInvitation.ReceiverAccount.PublicHashedId from @Model.TransferConnectionInvitation.SenderAccount.Name</p>
+                <p class="govuk-body">You've sent a connection request to @Model.ReceiverAccountName with account ID @Model.ReceiverPublicHashedId from @Model.SenderAccountName</p>
             </div>
         </div>
 
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Sent" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
-        
-        <div asp-fieldname="Choice">
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                    <h2 class="govuk-fieldset__heading">
-                        What next?
-                    </h2>
-                </legend>
-                <span esfa-validation-for="Choice" class="govuk-error-message"></span>
-                <div class="govuk-radios" data-module="govuk-radios">
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="GoToTransfersPage" asp-for="Choice" value="GoToTransfersPage" type="radio">
-                        <label class="govuk-label govuk-radios__label" for="GoToTransfersPage">
-                            Go to transfers
-                        </label>
+            <input type="hidden" asp-for="ReceiverAccountName">
+            <input type="hidden" asp-for="SenderAccountName">
+            <input type="hidden" asp-for="ReceiverPublicHashedId">
+            <div asp-fieldname="Choice">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 class="govuk-fieldset__heading">
+                            What next?
+                        </h2>
+                    </legend>
+                    <span esfa-validation-for="Choice" class="govuk-error-message"></span>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToTransfersPage" asp-for="Choice" value="GoToTransfersPage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToTransfersPage">
+                                Go to transfers
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToHomepage" asp-for="Choice" value="GoToHomepage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToHomepage">
+                                Go to the homepage
+                            </label>
+                        </div>
                     </div>
-                    <div class="govuk-radios__item">
-                        <input class="govuk-radios__input" id="GoToHomepage" asp-for="Choice" value="GoToHomepage" type="radio">
-                        <label class="govuk-label govuk-radios__label" for="GoToHomepage">
-                            Go to the homepage
-                        </label>
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-        <button class="govuk-button" type="submit">Continue</button>
+                </fieldset>
+            </div>
+            <button class="govuk-button" type="submit">Continue</button>
         </form>
     </div>
 </div>

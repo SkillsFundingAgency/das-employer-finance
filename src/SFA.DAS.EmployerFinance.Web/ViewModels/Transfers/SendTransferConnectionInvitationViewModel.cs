@@ -11,14 +11,14 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         [RegularExpression("Confirm|ReEnterAccountId", ErrorMessage = "Select an option")]
         public string Choice { get; set; }
 
-        public AccountDto ReceiverAccount { get; set; }
-        public AccountDto SenderAccount { get; set; }
-
         [Required]
         [RegularExpression(EmployerFinance.Constants.AccountHashedIdRegex)]
         public string ReceiverAccountPublicHashedId { get; set; }
 
         [IgnoreMap]
         public string HashedAccountId { get; set; }
+
+        public string SenderAccountName { get; set; }
+        public string ReceiverAccountName { get; set; }
     }
 }

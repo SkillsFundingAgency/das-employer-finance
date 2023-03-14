@@ -51,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             _viewModel = new ReceiveTransferConnectionInvitationViewModel
             {
-                TransferConnectionInvitationId = TransferConnectionInvitationId
+                TransferConnectionInvitationId = HashedTransferConnectionInvitationId
             };
         }
 
@@ -60,9 +60,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Approve";
 
-            await _controller.Receive(HashedAccountId, _viewModel);
+            await _controller.Receive(HashedAccountId,HashedTransferConnectionInvitationId, _viewModel);
 
-            _mediator.Verify(m => m.Send(It.Is<ApproveTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId), CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<ApproveTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == TransferConnectionInvitationId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Approve";
 
-            var result = await _controller.Receive(HashedAccountId, _viewModel) as RedirectToActionResult;
+            var result = await _controller.Receive(HashedAccountId,HashedTransferConnectionInvitationId, _viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.ActionName, Is.EqualTo("Approved"));
@@ -83,7 +83,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Reject";
 
-            await _controller.Receive(HashedAccountId, _viewModel);
+            await _controller.Receive(HashedAccountId,HashedTransferConnectionInvitationId, _viewModel);
 
             _mediator.Verify(m => m.Send(It.IsAny<ApproveTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }
@@ -93,9 +93,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Reject";
 
-            await _controller.Receive(HashedAccountId, _viewModel);
+            await _controller.Receive(HashedAccountId,HashedTransferConnectionInvitationId, _viewModel);
 
-            _mediator.Verify(m => m.Send(It.Is<RejectTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId), CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<RejectTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == TransferConnectionInvitationId), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Reject";
 
-            var result = await _controller.Receive(HashedAccountId, _viewModel) as RedirectToActionResult;
+            var result = await _controller.Receive(HashedAccountId,HashedTransferConnectionInvitationId, _viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.ActionName, Is.EqualTo("Rejected"));
@@ -116,7 +116,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "Approve";
 
-            await _controller.Receive(HashedAccountId, _viewModel);
+            await _controller.Receive(HashedAccountId, HashedTransferConnectionInvitationId, _viewModel);
 
             _mediator.Verify(m => m.Send(It.IsAny<RejectTransferConnectionInvitationCommand>(), CancellationToken.None), Times.Never);
         }

@@ -13,6 +13,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
     public class WhenISubmitTheTransferConnectionInvitationDeletedPage
     {
         private const string AccountHashedId = "ABC123";
+        private const string TransferHashedId = "XYZ123";
 
         private TransferConnectionInvitationsController _controller;
         private DeletedTransferConnectionInvitationViewModel _viewModel = new DeletedTransferConnectionInvitationViewModel();
@@ -30,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToTransfersPage";
 
-            var result = _controller.Deleted("ABC123",_viewModel) as RedirectToActionResult;
+            var result = _controller.Deleted(AccountHashedId,TransferHashedId,_viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.ActionName, Is.EqualTo("Index"));
@@ -42,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToHomepage";
 
-            var result = _controller.Deleted("ABC123",_viewModel) as RedirectResult;
+            var result = _controller.Deleted(AccountHashedId,TransferHashedId,_viewModel) as RedirectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));

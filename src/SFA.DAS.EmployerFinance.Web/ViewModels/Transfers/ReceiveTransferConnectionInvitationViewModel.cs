@@ -14,10 +14,13 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels
         [RegularExpression("Approve|Reject", ErrorMessage = "Select an option")]
         public string Choice { get; set; }
 
-        public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }
         [IgnoreMap]
         public string HashedAccountId { get; set; }
         [IgnoreMap]
         public int NotHashedTransferConnectionInvitationId { get; set; }
+
+        public string SenderAccountName { get; set; }
+        public string PendingChangeUserFullName { get; set; }
+        public DateTime PendingChangeCreatedDate { get; set; }
     }
 }

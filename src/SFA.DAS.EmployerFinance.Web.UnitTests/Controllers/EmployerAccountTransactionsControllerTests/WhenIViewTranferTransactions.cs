@@ -75,7 +75,7 @@ class WhenIViewTranferTransactions
             .ReturnsAsync(response);
 
         //Act
-        var result = await _controller.TransferDetail(_query);
+        var result = await _controller.TransferDetail("ABC123",_query);
 
         //Assert
         var view = result as ViewResult;

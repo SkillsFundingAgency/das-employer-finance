@@ -31,33 +31,36 @@
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Rejected" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
             <input type="hidden" asp-for="HashedAccountId"/>
             <input type="hidden" asp-for="HashedTransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="Status"/>
+            <input type="hidden" asp-for="SenderAccountName"/>
+            <input type="hidden" asp-for="PendingUserName"/>
+            <input type="hidden" asp-for="PendingChangeCreatedDate"/>
+            <input type="hidden" asp-for="ReceiverAccountName"/>
+            <input type="hidden" asp-for="ReceiverAccountPublicHashedId"/>
             <dl class="govuk-summary-list">
-                @{
-                    var pendingChange = Model.TransferConnectionInvitation.GetPendingChange();
-                }
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Status</dt>
-                    <dd class="govuk-summary-list__value">@Model.TransferConnectionInvitation.Status.ToString()</dd>
+                    <dd class="govuk-summary-list__value">@Model.Status</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Sending employer</dt>
-                    <dd class="govuk-summary-list__value">@Model.TransferConnectionInvitation.SenderAccount.Name</dd>
+                    <dd class="govuk-summary-list__value">@Model.SenderAccountName</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Sent by</dt>
-                    <dd class="govuk-summary-list__value">@pendingChange.User.FullName</dd>
+                    <dd class="govuk-summary-list__value">@Model.PendingUserName</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Sent on</dt>
-                    <dd class="govuk-summary-list__value">@pendingChange.CreatedDate.ToString("d MMMM yyyy")</dd>
+                    <dd class="govuk-summary-list__value">@Model.PendingChangeCreatedDate.ToString("d MMMM yyyy")</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Receiving employer</dt>
-                    <dd class="govuk-summary-list__value">@Model.TransferConnectionInvitation.ReceiverAccount.Name</dd>
+                    <dd class="govuk-summary-list__value">@Model.ReceiverAccountName</dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">Receiver account ID</dt>
-                    <dd class="govuk-summary-list__value">@Model.TransferConnectionInvitation.ReceiverAccount.PublicHashedId</dd>
+                    <dd class="govuk-summary-list__value">@Model.ReceiverAccountPublicHashedId</dd>
                 </div>
             </dl>
             <div asp-fieldname="Choice">

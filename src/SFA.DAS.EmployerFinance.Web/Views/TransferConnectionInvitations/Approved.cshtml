@@ -22,7 +22,7 @@
                 </h2>
             </div>
             <div class="govuk-notification-banner__content">
-                <p class="govuk-body">You can now request transfer funds from @Model.TransferConnectionInvitation.SenderAccount.Name</p>
+                <p class="govuk-body">You can now request transfer funds from @Model.SenderAccountName</p>
             </div>
         </div>
 
@@ -43,6 +43,9 @@
         </div>
 
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Approved" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
+            <input type="hidden" asp-for="SenderAccountName">
+            <input type="hidden" asp-for="HashedAccountId">
+            <input type="hidden" asp-for="HashedTransferConnectionInvitationId">
             <div asp-fieldname="Choice">
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">

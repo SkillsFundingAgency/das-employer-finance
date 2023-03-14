@@ -45,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             SetupTheAccountApiClient(isLevyPayer);
             
-            var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
+            var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
 
             Assert.AreEqual(expectIsLevyEmployer, actual.Data.IsLevyEmployer);
         }
@@ -60,7 +60,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
             _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(),Authentication.EmployerUserRole.Transactor)).Returns(isAuthorised);
 
-            var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
+            var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
 
             Assert.AreEqual(expected, actual.Data.RenderCreateTransfersPledgeButton);
         }

@@ -12,16 +12,18 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">Confirm details</h1>
         <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Send" asp-route-hashedAccountId="@Model.HashedAccountId">
-            @Html.HiddenFor(m => m.ReceiverAccountPublicHashedId)
+            <input type="hidden" asp-for="SenderAccountName">
+            <input type="hidden" asp-for="ReceiverAccountName">
+            <input type="hidden" asp-for="ReceiverAccountPublicHashedId">
             <table class="govuk-table">
                 <tbody class="govuk-table__body">
                     <tr class="govuk-table__row">
                         <th scope="row" class="govuk-table__header das-no-wrap">Sending employer</th>
-                        <td class="govuk-table__cell">@Model.SenderAccount.Name</td>
+                        <td class="govuk-table__cell">@Model.SenderAccountName</td>
                     </tr>
                     <tr class="govuk-table-row">
                         <th scope="row" class="govuk-table__header das-no-wrap">Receiving employer</th>
-                        <td class="govuk-table__cell">@Model.ReceiverAccount.Name</td>
+                        <td class="govuk-table__cell">@Model.ReceiverAccountName</td>
                     </tr>
                     <tr class="govuk-table-row">
                         <th scope="row" class="govuk-table__header das-no-wrap">Receiving account ID</th>

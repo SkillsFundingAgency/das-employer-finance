@@ -13,6 +13,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
     public class WhenISubmitTheSentTransferConnectionInvitationPage
     {
         private const string AccountHashedId = "ABC123";
+        private const string TransferHashedId = "XYZ123";
 
         private TransferConnectionInvitationsController _controller;
         private readonly SentTransferConnectionInvitationViewModel _viewModel = new SentTransferConnectionInvitationViewModel();
@@ -31,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToTransfersPage";
 
-            var result = _controller.Sent(_viewModel) as RedirectToActionResult;
+            var result = _controller.Sent(AccountHashedId, TransferHashedId, _viewModel) as RedirectToActionResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.ActionName, Is.EqualTo("Index"));
@@ -43,7 +44,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         {
             _viewModel.Choice = "GoToHomepage";
 
-            var result = _controller.Sent(_viewModel) as RedirectResult;
+            var result = _controller.Sent(AccountHashedId, TransferHashedId,_viewModel) as RedirectResult;
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));

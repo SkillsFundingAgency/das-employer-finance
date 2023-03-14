@@ -56,7 +56,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             var transferRequests = await TransferRequests(accountId);
 
             transferConnectionInvitationAuthorization.HashedAccountId = hashedAccountId;
-            transferConnectionInvitationAuthorization.AuthorizationResult = true;
+            transferConnectionInvitationAuthorization.AuthorizationResult = true; //TODO MAC-192
             
             var model = new TransferViewModel
             {

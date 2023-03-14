@@ -48,7 +48,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             _viewModel = new RejectedTransferConnectionInvitationViewModel
             {
-                TransferConnectionInvitationId = 123
             };
         }
 
@@ -59,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 
             await _controller.Rejected(HashedAccountId, TransferRequestId, _viewModel);
 
-            _mediator.Verify(m => m.Send(It.Is<DeleteTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == _viewModel.TransferConnectionInvitationId && c.AccountId.Equals(456)), CancellationToken.None), Times.Once);
+            _mediator.Verify(m => m.Send(It.Is<DeleteTransferConnectionInvitationCommand>(c => c.TransferConnectionInvitationId == 123 && c.AccountId.Equals(456)), CancellationToken.None), Times.Once);
         }
 
         [Test]

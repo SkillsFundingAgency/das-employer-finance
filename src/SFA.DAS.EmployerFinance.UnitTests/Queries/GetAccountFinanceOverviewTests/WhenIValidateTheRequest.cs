@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+﻿using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests
 {
