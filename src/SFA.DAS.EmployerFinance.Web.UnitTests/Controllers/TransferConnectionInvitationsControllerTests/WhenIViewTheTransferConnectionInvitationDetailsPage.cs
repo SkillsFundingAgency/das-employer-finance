@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
         private readonly GetTransferConnectionInvitationQuery _query = new GetTransferConnectionInvitationQuery();
-        private readonly GetTransferConnectionInvitationResponse _response = new GetTransferConnectionInvitationResponse();
+        private GetTransferConnectionInvitationResponse _response = new GetTransferConnectionInvitationResponse();
 
         private const long AccountId = 12345;
         private const string HashedAccountId = "ABC123";
@@ -32,6 +33,8 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         [SetUp]
         public void Arrange()
         {
+            var fixture = new Fixture();
+            _response = fixture.Create<GetTransferConnectionInvitationResponse>();
             _configurationProvider = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();

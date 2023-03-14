@@ -49,7 +49,7 @@ public class WhenIGetTransferRequests
         {
             Id = 22222,
             Name = "Account 2",
-            HashedId = "DEF2564"
+            HashedId = "DEF456"
         };
 
         _encodingService.Setup(h => h.Encode(_account1.Id,EncodingType.AccountId)).Returns("ABC123");
@@ -57,10 +57,10 @@ public class WhenIGetTransferRequests
         _encodingService.Setup(h => h.Decode("ABC123",EncodingType.AccountId)).Returns(_account1.Id);
         _encodingService.Setup(h => h.Decode("DEF456",EncodingType.AccountId)).Returns(_account2.Id);
 
-        _encodingService.Setup(h => h.Encode(_account1.Id, EncodingType.PublicAccountId)).Returns("123ABC");
-        _encodingService.Setup(h => h.Encode(_account2.Id, EncodingType.PublicAccountId)).Returns("456DEF");
+        _encodingService.Setup(h => h.Encode(_account1.Id, EncodingType.PublicAccountId)).Returns("ABC123");
+        _encodingService.Setup(h => h.Encode(_account2.Id, EncodingType.PublicAccountId)).Returns("DEF456");
         _encodingService.Setup(h => h.Decode("123ABC", EncodingType.PublicAccountId)).Returns(_account1.Id);
-        _encodingService.Setup(h => h.Decode("456DEF", EncodingType.PublicAccountId)).Returns(_account2.Id);
+        _encodingService.Setup(h => h.Decode("DEF456", EncodingType.PublicAccountId)).Returns(_account2.Id);
 
         _sentTransferRequest = new TransferRequestSummaryResponse
         {

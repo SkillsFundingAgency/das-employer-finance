@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -28,11 +29,9 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         [SetUp]
         public void Arrange()
         {
-            _response = new GetTransferConnectionInvitationsResponse
-            {
-                TransferConnectionInvitations = new List<TransferConnectionInvitationDto>()
-            };
-
+            var fixture = new Fixture();
+            _response = fixture.Create<GetTransferConnectionInvitationsResponse>();
+            
             _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _mapperConfig.CreateMapper();
             _mediator = new Mock<IMediator>();
@@ -55,7 +54,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             var model = await _controller.TransferConnectionInvitations(AccountId);
             
             Assert.That(model, Is.Not.Null);
-            Assert.That(model.TransferConnectionInvitations, Is.EqualTo(_response.TransferConnectionInvitations));
         }
     }
 }

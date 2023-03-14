@@ -34,7 +34,7 @@ public class WhenAddingServicesToTheContainer
     {
         var configuration = GenerateConfiguration();
         var financeConfiguration = configuration
-            .GetSection(ConfigurationKeys.EmployerFinance)
+            .GetSection(nameof(EmployerFinanceConfiguration))
             .Get<EmployerFinanceConfiguration>();
 
         services.AddSingleton<IConfiguration>(configuration);
@@ -58,11 +58,11 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
-                new("SFA.DAS.EmployerFinance:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
-                new("SFA.DAS.EmployerFinance:PaymentsEventsApi:ApiBaseUrl", "test"),
-                new("SFA.DAS.EmployerFinance:PaymentsEventsApi:IdentifierUri", "test"),
-                new("SFA.DAS.EmployerFinance:ServiceBusConnectionString", "test"),
-                new("SFA.DAS.EmployerFinance:NServiceBusLicense", "test"),
+                new("EmployerFinanceConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
+                new("PaymentsEventsApi:ApiBaseUrl", "test"),
+                new("PaymentsEventsApi:IdentifierUri", "test"),
+                new("EmployerFinanceConfiguration:ServiceBusConnectionString", "test"),
+                new("EmployerFinanceConfiguration:NServiceBusLicense", "test"),
                 new("EnvironmentName", "LOCAL"),
                 new("DeclarationsEnabled", "true"),
             }

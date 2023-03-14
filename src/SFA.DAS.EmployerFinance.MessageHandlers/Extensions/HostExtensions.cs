@@ -72,6 +72,9 @@ public static class HostExtensions
             var financeConfiguration = context.Configuration
                 .GetSection(nameof(EmployerFinanceConfiguration))
                 .Get<EmployerFinanceConfiguration>();
+            var outerApiConfiguration = context.Configuration
+                .GetSection(nameof(EmployerFinanceOuterApiConfiguration))
+                .Get<EmployerFinanceOuterApiConfiguration>();
 
             services.AddConfigurationSections(context.Configuration);
             services.AddClientRegistrations();
@@ -86,7 +89,7 @@ public static class HostExtensions
             services.AddHmrcServices();
             services.AddProviderServices();
             services.AddCachesRegistrations(context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-            services.AddEmployerFinanceOuterApi(financeConfiguration.EmployerFinanceOuterApiConfiguration);
+            services.AddEmployerFinanceOuterApi(outerApiConfiguration);
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
             services.BuildServiceProvider();
         });

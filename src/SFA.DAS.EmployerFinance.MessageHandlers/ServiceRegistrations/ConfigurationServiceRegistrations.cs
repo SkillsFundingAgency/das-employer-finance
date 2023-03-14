@@ -34,12 +34,16 @@ public static class ConfigurationServiceRegistrations
         var financeConfiguration = configuration
             .GetSection(nameof(EmployerFinanceConfiguration))
             .Get<EmployerFinanceConfiguration>();
+        
+        var outerApiConfiguration = configuration
+            .GetSection(nameof(EmployerFinanceOuterApiConfiguration))
+            .Get<EmployerFinanceOuterApiConfiguration>();
 
         services.AddSingleton(financeConfiguration);
 
         services.AddSingleton<IHmrcConfiguration>(_ => financeConfiguration.Hmrc);
         services.AddSingleton<ITokenServiceApiClientConfiguration>(_ => financeConfiguration.TokenServiceApi);
-        services.AddSingleton<EmployerFinanceOuterApiConfiguration>(_ => financeConfiguration.EmployerFinanceOuterApiConfiguration);
+        services.AddSingleton<EmployerFinanceOuterApiConfiguration>(_ => outerApiConfiguration);
 
         return services;
     }

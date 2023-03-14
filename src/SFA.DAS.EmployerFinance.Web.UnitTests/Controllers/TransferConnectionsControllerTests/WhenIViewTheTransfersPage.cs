@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         [SetUp]
         public void Arrange()
         {
+            
             _mediatorMock = new Mock<IMediator>();
             _mapper = new Mock<IMapper>();
             var encodingService = new Mock<IEncodingService>();
@@ -43,6 +45,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
         public async Task ThenIShouldBeShownTheTransfersPage()
         {
             // Arrange
+            var fixture = new Fixture();
             _mediatorMock
                 .Setup(mock => mock.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId==AccountId), CancellationToken.None))
                 .ReturnsAsync(new GetTransferAllowanceResponse{TransferAllowance =  new TransferAllowance{RemainingTransferAllowance = 0,StartingTransferAllowance = 0}, TransferAllowancePercentage = 0.25m});
@@ -51,7 +54,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
                 .ReturnsAsync(new GetTransferConnectionInvitationAuthorizationResponse{ });
             _mediatorMock
                 .Setup(mock => mock.Send(It.IsAny<GetTransferConnectionInvitationsQuery>(), CancellationToken.None))
-                .ReturnsAsync(new GetTransferConnectionInvitationsResponse() );
+                .ReturnsAsync(fixture.Create<GetTransferConnectionInvitationsResponse>() );
             _mediatorMock
                 .Setup(mock => mock.Send(It.IsAny<GetTransferRequestsQuery>(), CancellationToken.None))
                 .ReturnsAsync(new GetTransferRequestsResponse() );

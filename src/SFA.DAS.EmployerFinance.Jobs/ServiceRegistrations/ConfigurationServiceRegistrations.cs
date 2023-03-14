@@ -7,9 +7,9 @@ public static class ConfigurationServiceRegistrations
 {
     public static IServiceCollection AddConfigurationSections(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<EmployerFinanceConfiguration>(configuration.GetSection(ConfigurationKeys.EmployerFinance));
+        services.Configure<EmployerFinanceConfiguration>(configuration.GetSection(nameof(EmployerFinanceConfiguration)));
         services.AddSingleton(cfg => cfg.GetService<IOptions<EmployerFinanceConfiguration>>().Value);
-        services.AddSingleton(configuration.GetSection(ConfigurationKeys.EmployerFinance).Get<EmployerFinanceConfiguration>());
+        services.AddSingleton(configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>());
 
         return services;
     }

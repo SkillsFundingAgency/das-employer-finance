@@ -36,6 +36,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             var encodingService = new Mock<IEncodingService>();
             encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
             encodingService.Setup(x => x.Decode(HashedTransferConnectionInvitationId, EncodingType.TransferRequestId)).Returns(TransferConnectionInvitationId);
+            encodingService.Setup(x => x.Encode(TransferConnectionId, EncodingType.TransferRequestId)).Returns(HashedTransferConnectionInvitationId);
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new []
                 {
@@ -78,7 +79,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             Assert.That(result.ActionName, Is.EqualTo("Sent"));
             Assert.That(result.ControllerName, Is.Null);
             Assert.That(result.RouteValues.TryGetValue("transferConnectionInvitationId", out var transferConnectionId), Is.True);
-            Assert.That(transferConnectionId, Is.EqualTo(TransferConnectionId));
+            Assert.That(transferConnectionId, Is.EqualTo(HashedTransferConnectionInvitationId));
         }
 
         [Test]

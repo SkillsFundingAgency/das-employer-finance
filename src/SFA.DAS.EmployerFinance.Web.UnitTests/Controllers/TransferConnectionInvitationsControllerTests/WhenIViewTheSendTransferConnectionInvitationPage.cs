@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using AutoFixture;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,19 +22,26 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         private IMapper _mapper;
         private Mock<IMediator> _mediator;
         private readonly SendTransferConnectionInvitationQuery _query = new SendTransferConnectionInvitationQuery();
-        private readonly SendTransferConnectionInvitationResponse _response = new SendTransferConnectionInvitationResponse();
+        private SendTransferConnectionInvitationResponse _response;
 
         [SetUp]
         public void Arrange()
         {
+            
+            var fixture = new Fixture();
             _configurationProvider = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
             _mapper = _configurationProvider.CreateMapper();
             _mediator = new Mock<IMediator>();
-
+            _response = fixture.Create<SendTransferConnectionInvitationResponse>();
+            var accountId = 34567;
+            var encodingService = new Mock<IEncodingService>();
+            encodingService.Setup(x => x.Decode("ABC123", EncodingType.AccountId)).Returns(accountId);
             
-            _mediator.Setup(m => m.Send(_query, CancellationToken.None)).ReturnsAsync(_response);
+            _query.ReceiverAccountPublicHashedId = "ABC123";
+            _mediator.Setup(m => m.Send(It.Is<SendTransferConnectionInvitationQuery>(c => c.AccountId.Equals(accountId)
+                && c.ReceiverAccountPublicHashedId.Equals("ABC123")), CancellationToken.None)).ReturnsAsync(_response);
 
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null, Mock.Of<IEncodingService>());
+            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null, encodingService.Object);
         }
 
         [Test]

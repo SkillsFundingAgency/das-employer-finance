@@ -114,8 +114,11 @@ public class WhenAddingServicesToTheContainer
     {
         var configuration = GenerateConfiguration();
         var financeConfiguration = configuration
-            .GetSection(ConfigurationKeys.EmployerFinance)
+            .GetSection(nameof(EmployerFinanceConfiguration))
             .Get<EmployerFinanceConfiguration>();
+        var outerApiConfiguration = configuration
+            .GetSection(nameof(EmployerFinanceOuterApiConfiguration))
+            .Get<EmployerFinanceOuterApiConfiguration>();
 
         services.AddSingleton<IConfiguration>(configuration);
         services.AddConfigurationSections(configuration);
@@ -132,7 +135,7 @@ public class WhenAddingServicesToTheContainer
         services.AddHmrcServices();
         services.AddProviderServices();
         services.AddCachesRegistrations(true);
-        services.AddEmployerFinanceOuterApi(financeConfiguration.EmployerFinanceOuterApiConfiguration);
+        services.AddEmployerFinanceOuterApi(outerApiConfiguration);
 
         RegisterEventHandlers(services);
     }
@@ -159,14 +162,14 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
-                new("SFA.DAS.EmployerFinance:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
-                new("SFA.DAS.EmployerFinance:PaymentsEventsApi:ApiBaseUrl", "test"),
-                new("SFA.DAS.EmployerFinance:PaymentsEventsApi:IdentifierUri", "test"),
-                new("SFA.DAS.EmployerFinance:CommitmentsApi:ApiBaseUrl", "test"),
-                new("SFA.DAS.EmployerFinance:CommitmentsApi:IdentifierUri", "test"),
-                new("SFA.DAS.EmployerFinance:Hmrc:BaseUrl", "http://test"),
-                new("SFA.DAS.EmployerFinance:EmployerFinanceOuterApiConfiguration:BaseUrl", "http://test"),
-                new("SFA.DAS.EmployerFinance:EmployerFinanceOuterApiConfiguration:Key", "test"),
+                new("EmployerFinanceConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
+                new("PaymentsEventsApi:ApiBaseUrl", "test"),
+                new("PaymentsEventsApi:IdentifierUri", "test"),
+                new("CommitmentsApiV2ClientConfiguration:ApiBaseUrl", "test"),
+                new("CommitmentsApiV2ClientConfiguration:IdentifierUri", "test"),
+                new("EmployerFinanceConfiguration:Hmrc:BaseUrl", "http://test"),
+                new("EmployerFinanceOuterApiConfiguration:BaseUrl", "http://test"),
+                new("EmployerFinanceOuterApiConfiguration:Key", "test"),
                 new("EnvironmentName", "test"),
                 new("DeclarationsEnabled", "true"),
                 new("SFA.DAS.Encoding", "{\"Encodings\": [{\"EncodingType\": \"AccountId\",\"Salt\": \"and vinegar\",\"MinHashLength\": 32,\"Alphabet\": \"46789BCDFGHJKLMNPRSTVWXY\"}]}"),

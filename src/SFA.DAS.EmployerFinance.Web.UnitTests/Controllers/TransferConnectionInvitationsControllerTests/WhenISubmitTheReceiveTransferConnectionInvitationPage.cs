@@ -35,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
             _mediator = new Mock<IMediator>();
             var encodingService = new Mock<IEncodingService>();
             encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
-            encodingService.Setup(x => x.Encode(TransferConnectionInvitationId, EncodingType.TransferRequestId)).Returns(HashedTransferConnectionInvitationId);
+            encodingService.Setup(x => x.Decode(HashedTransferConnectionInvitationId, EncodingType.TransferRequestId)).Returns(TransferConnectionInvitationId);
             var user = new ClaimsPrincipal(new ClaimsIdentity(
                 new []
                 {
@@ -59,6 +59,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
         public async Task ThenAnApproveTransferConnectionCommandShouldBeSentIfIChoseOption1()
         {
             _viewModel.Choice = "Approve";
+            _viewModel.TransferConnectionInvitationId = HashedTransferConnectionInvitationId;
 
             await _controller.Receive(HashedAccountId,HashedTransferConnectionInvitationId, _viewModel);
 
