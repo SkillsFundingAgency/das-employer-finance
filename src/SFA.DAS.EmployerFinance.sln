@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.Employer_Financial.Database", "SFA.DAS.EAS.Employer_Financial.Database\SFA.DAS.EAS.Employer_Financial.Database.sqlproj", "{6C145D4A-CBA9-439C-984E-0A5953CBE04D}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EAS.EmployerFinance.Database", "SFA.DAS.EAS.EmployerFinance.Database\SFA.DAS.EAS.EmployerFinance.Database.sqlproj", "{6C145D4A-CBA9-439C-984E-0A5953CBE04D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "AzureConfiguration", "{68328FF1-53F2-4737-A983-7E2B67179E17}"
 	ProjectSection(SolutionItems) = preProject
