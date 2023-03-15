@@ -95,7 +95,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
             objectContainer.Resolve<Mock<IApprenticeshipLevyApiClient>>().Setup(x => x.GetEmployerDetails(It.IsAny<string>()))
                 .ReturnsAsync(new EmpRefLevyInformation
                 {
-                    Employer = new Employer()
+                    Employer = new HMRC.ESFA.Levy.Api.Types.Employer()
                     {
                         Name = new Name { EmprefAssociatedName = $"Name{empRef}" }
                     }

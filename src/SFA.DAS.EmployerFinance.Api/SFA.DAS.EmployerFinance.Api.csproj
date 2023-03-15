@@ -70,22 +70,7 @@
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance.Api.Types\SFA.DAS.EmployerFinance.Api.Types.csproj" />
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
 	</ItemGroup>
-	<PropertyGroup>
-		<WebProjectOutputDir Condition="$(WebProjectOutputDir) == '' AND $(OS) == 'Unix' ">./</WebProjectOutputDir>
-	</PropertyGroup>
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<OutputPath>bin\</OutputPath>
-	</PropertyGroup>
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-	<ItemGroup>
-		<EditorConfigFiles Remove="C:\Users\GAURAVP\DFE\das-employer-finance\src\SFA.DAS.EmployerFinance.Api\.editorconfig" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\4.5.3\contentFiles\any\any\NLog.xsd" />
 		<None Remove="internal-nlog.txt" />
 	</ItemGroup>
 </Project>

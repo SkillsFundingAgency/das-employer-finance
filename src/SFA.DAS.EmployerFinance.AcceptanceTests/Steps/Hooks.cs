@@ -38,7 +38,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
         {
             AzureStorageEmulatorManager.StartStorageEmulator();
 
-            _container = IoC.Initialize();
+            ;
 
             await StartNServiceBusEndpoint();
         }
@@ -95,10 +95,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                     .UseLicense(WebUtility.HtmlDecode(_container.GetInstance<EmployerFinanceConfiguration>().NServiceBusLicense))
                     .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
                     .UseNewtonsoftJsonSerializer()
-                    //MAP-192- Implement
-                    //.UseNLogFactory()
                     .UseOutbox()
-                    //.UseStructureMapBuilder(_container)
                     .UseUnitOfWork();
 
                 if (Debugger.IsAttached)
