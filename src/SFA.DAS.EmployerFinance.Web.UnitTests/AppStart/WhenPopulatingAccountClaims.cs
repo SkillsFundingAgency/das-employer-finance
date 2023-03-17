@@ -34,6 +34,7 @@ public class WhenPopulatingAccountClaims
         [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> forecastingConfiguration,
         EmployerAccountPostAuthenticationClaimsHandler handler)
     {
+        accountData.IsSuspended = false;
         forecastingConfiguration.Object.Value.UseGovSignIn = true;
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress);
         accountService.Setup(x => x.GetUserAccounts(nameIdentifier,emailAddress)).ReturnsAsync(accountData);
@@ -48,6 +49,26 @@ public class WhenPopulatingAccountClaims
         actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier)).Value.Should().Be(accountData.EmployerUserId);
         actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Value.Should().Be(accountData.FirstName + " " + accountData.LastName);
         actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserEmailClaimTypeIdentifier)).Value.Should().Be(emailAddress);
+        actual.FirstOrDefault(c=>c.Type.Equals(ClaimTypes.AuthorizationDecision))?.Value.Should().BeNullOrEmpty();
+    }
+    [Test, MoqAutoData]
+    public async Task Then_The_Claims_Are_Populated_For_Gov_User_And_Suspended_Flag_Set(
+        string nameIdentifier,
+        string idamsIdentifier,
+        string emailAddress,
+        EmployerUserAccounts accountData,
+        [Frozen] Mock<IUserAccountService> accountService,
+        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> forecastingConfiguration,
+        EmployerAccountPostAuthenticationClaimsHandler handler)
+    {
+        accountData.IsSuspended = true;
+        forecastingConfiguration.Object.Value.UseGovSignIn = true;
+        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress);
+        accountService.Setup(x => x.GetUserAccounts(nameIdentifier,emailAddress)).ReturnsAsync(accountData);
+        
+        var actual = await handler.GetClaims(tokenValidatedContext);
+        
+        actual.FirstOrDefault(c=>c.Type.Equals(ClaimTypes.AuthorizationDecision)).Value.Should().Be("Suspended");
     }
 
     [Test, MoqAutoData]

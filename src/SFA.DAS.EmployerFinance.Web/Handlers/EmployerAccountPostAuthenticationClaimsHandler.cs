@@ -50,6 +50,11 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
             }
                 
             var result = await _userAccountService.GetUserAccounts(userId, email);
+            
+            if (result.IsSuspended)
+            {
+                claims.Add(new Claim(ClaimTypes.AuthorizationDecision, "Suspended"));
+            }
 
             var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
             var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
