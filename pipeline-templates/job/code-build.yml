@@ -15,11 +15,31 @@ jobs:
         RunAcceptanceTests: false
   
     - task: DotNetCoreCLI@2
-      displayName: Publish - dotnet publish ${{ parameters.SolutionBaseName }}
+      displayName: Publish - dotnet publish ${{ parameters.SolutionBaseName }}.Web
       inputs:
         command: publish
         publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
-        projects: src/${{ parameters.SolutionBaseName }}/${{ parameters.SolutionBaseName }}.csproj
+        projects: src/${{ parameters.SolutionBaseName }}.Web/${{ parameters.SolutionBaseName }}.Web.csproj
+        arguments: -o $(build.artifactstagingdirectory)/publish -c ${{ parameters.BuildConfiguration }} --no-build
+        modifyOutputPath: true
+        zipAfterPublish: true
+    
+    - task: DotNetCoreCLI@2
+      displayName: Publish - dotnet publish ${{ parameters.SolutionBaseName }}.Api
+      inputs:
+        command: publish
+        publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
+        projects: src/${{ parameters.SolutionBaseName }}.Api/${{ parameters.SolutionBaseName }}.Api.csproj
+        arguments: -o $(build.artifactstagingdirectory)/publish -c ${{ parameters.BuildConfiguration }} --no-build
+        modifyOutputPath: true
+        zipAfterPublish: true
+    
+    - task: DotNetCoreCLI@2
+      displayName: Publish - dotnet publish ${{ parameters.SolutionBaseName }}.Host
+      inputs:
+        command: publish
+        publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
+        projects: src/${{ parameters.SolutionBaseName }}.Host/${{ parameters.SolutionBaseName }}.Host.csproj
         arguments: -o $(build.artifactstagingdirectory)/publish -c ${{ parameters.BuildConfiguration }} --no-build
         modifyOutputPath: true
         zipAfterPublish: true
@@ -29,7 +49,7 @@ jobs:
       inputs:
         Contents: |
           azure/**
-          src/**/bin/**/*.dacpac
+          src/**/*.dacpac
         TargetFolder: $(build.artifactstagingdirectory)/publish
   
     - task: PublishPipelineArtifact@1
