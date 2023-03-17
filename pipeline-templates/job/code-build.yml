@@ -4,6 +4,10 @@ parameters:
 
 jobs:
   - job: CodeBuild
+    pool:
+      name: DAS - Continuous Integration Agents
+      workspace:
+        clean: all
     variables:
       - group: BUILD Management Resources
     steps:
@@ -48,7 +52,6 @@ jobs:
       inputs:
         Contents: |
           azure/**
-          src/**/*.dacpac
         TargetFolder: $(build.artifactstagingdirectory)/publish
   
     - task: PublishPipelineArtifact@1
