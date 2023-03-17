@@ -27,6 +27,7 @@ using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
+using SFA.DAS.GovUK.Auth.Authentication;
 using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
@@ -90,9 +91,10 @@ public class WhenAddingServicesToTheContainer
         var type = provider.GetServices(typeof(IAuthorizationHandler)).ToList();
             
         Assert.IsNotNull(type);
-        type.Count.Should().Be(3);
+        type.Count.Should().Be(4);
         type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountAllRolesAuthorizationHandler));
         type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountOwnerAuthorizationHandler));
+        type.Should().ContainSingle(c => c.GetType() == typeof(AccountActiveAuthorizationHandler));
     }
 
 

@@ -12,6 +12,7 @@ using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Handlers;
+using SFA.DAS.GovUK.Auth.Authentication;
 using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
@@ -25,6 +26,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.AddTransient<IEmployerAccountAuthorisationHandler, EmployerAccountAuthorisationHandler>();
             services.AddSingleton<IAuthorizationHandler, EmployerAccountAllRolesAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, EmployerAccountOwnerAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, AccountActiveAuthorizationHandler>();//TODO remove after gov one login go live
             services.AddTransient<IUserAccountService, UserAccountService>();
             
             services.AddAuthorization(options =>
@@ -35,6 +37,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
                     {
                         policy.RequireClaim(EmployerClaims.AccountsClaimsTypeIdentifier);
                         policy.Requirements.Add(new EmployerAccountOwnerRequirement());
+                        policy.Requirements.Add(new AccountActiveRequirement());
                         policy.RequireAuthenticatedUser();
                     });
                 options.AddPolicy(
@@ -43,6 +46,7 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
                     {
                         policy.RequireClaim(EmployerClaims.AccountsClaimsTypeIdentifier);
                         policy.Requirements.Add(new EmployerAccountAllRolesRequirement());
+                        policy.Requirements.Add(new AccountActiveRequirement());
                         policy.RequireAuthenticatedUser();
                     });
             });
