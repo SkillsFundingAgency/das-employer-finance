@@ -9,12 +9,16 @@ public class WhenCastingFromApiResponseToEmployerUserAccounts
     [Test, AutoData]
     public void Then_The_Values_Are_Mapped(GetUserAccountsResponse source)
     {
+        //Arrange
+        source.IsSuspended = true;
+        
         //Act
         var actual = (EmployerUserAccounts) source;
 
         //Assert
         actual.ShouldBeEquivalentTo(source, options=>options.Excluding(x=>x.EmployerAccounts));
         actual.EmployerAccounts.ShouldBeEquivalentTo(source.UserAccounts);
+        actual.IsSuspended.Should().BeTrue();
     }
 
     [Test, AutoData]
@@ -43,5 +47,6 @@ public class WhenCastingFromApiResponseToEmployerUserAccounts
         actual.Email.Should().BeNullOrEmpty();
         actual.EmployerUserId.Should().BeNullOrEmpty();
         actual.EmployerAccounts.Should().BeEmpty();
+        actual.IsSuspended.Should().BeFalse();
     }
 }
