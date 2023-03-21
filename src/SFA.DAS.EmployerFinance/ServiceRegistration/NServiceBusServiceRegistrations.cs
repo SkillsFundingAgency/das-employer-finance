@@ -47,7 +47,7 @@ public static class NServiceBusServiceRegistrations
         else
         {
             //TODO MAC-192
-            endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguration.MessageServiceBusConnectionString, r => { });
+            endpointConfiguration.UseAzureServiceBusTransport(employerFinanceConfiguration.ServiceBusConnectionString, r => { });
         }
 
         if (!string.IsNullOrEmpty(employerFinanceConfiguration.NServiceBusLicense))
