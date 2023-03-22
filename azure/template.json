@@ -29,6 +29,12 @@
         "sharedServiceBusName": {
             "type": "string"
         },
+        "employerApprenticeshipServiceResourceGroupName": {
+            "type": "string"
+        },
+        "employerApprenticeshipServiceServiceBusName": {
+            "type": "string"
+        },
         "environmentName": {
             "type": "string"
         },
@@ -142,7 +148,8 @@
         "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]"
     },
-    "resources": [{
+    "resources": [
+        {
             "apiVersion": "2020-06-01",
             "name": "[variables('resourceGroupName')]",
             "type": "Microsoft.Resources/resourceGroups",
@@ -273,7 +280,8 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -395,7 +403,8 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -545,7 +554,8 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -574,7 +584,8 @@
                     },
                     "appServiceConnectionStrings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "AzureWebJobsDashboard",
                                     "connectionString": "[parameters('sharedStorageAccountConnectionString')]",
                                     "type": "Custom"
@@ -601,7 +612,7 @@
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('role-assignments-fin', copyIndex(), '-', parameters('utcValue'))]",
+            "name": "[concat('role-assignments-fin-shared-service-bus-', copyIndex(), '-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "properties": {
@@ -619,6 +630,34 @@
                     },
                     "resourceName": {
                         "value": "[parameters('sharedServiceBusName')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "role-assignments",
+                "count": 5
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[concat('role-assignments-fin-eas-service-bus-', copyIndex(), '-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('employerApprenticeshipServiceResourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "principalId": {
+                        "value": "[createArray(reference(concat('UIAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('UIAppService-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('ApiAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('ApiAppService-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('WorkerAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value)[copyIndex()]]"
+                    },
+                    "assignmentType": {
+                        "value": "ServiceBusOwner"
+                    },
+                    "resourceName": {
+                        "value": "[parameters('employerApprenticeshipServiceServiceBusName')]"
                     }
                 }
             },
