@@ -30,19 +30,17 @@ public static class ConfigurationExtensions
 
 #endif
         configurationBuilder.AddEnvironmentVariables();
-
-        if (!configuration.IsTest())
-        {
-            configurationBuilder.AddAzureTableStorage(options =>
-                {
-                    options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
-                    options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
-                    options.EnvironmentName = configuration["EnvironmentName"];
-                    options.PreFixConfigurationKeys = false;
-                    options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
-                }
-            );
-        }
+        
+        configurationBuilder.AddAzureTableStorage(options =>
+            {
+                options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
+                options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
+                options.EnvironmentName = configuration["EnvironmentName"];
+                options.PreFixConfigurationKeys = false;
+                options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
+            }
+        );
+    
 
         return configurationBuilder.Build();
     }
