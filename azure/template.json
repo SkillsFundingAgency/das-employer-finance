@@ -287,7 +287,7 @@
             },
             "copy": {
                 "name": "role-assignments",
-                "count": 5
+                "count": 2
             }
         },
         {
@@ -315,7 +315,7 @@
             },
             "copy": {
                 "name": "role-assignments",
-                "count": 5
+                "count": 2
             }
         }
     ],
