@@ -17,6 +17,9 @@
         "sharedEnvResourceGroup": {
             "type": "string"
         },
+        "serviceBusResourceGroupName": {
+            "type": "string"
+        },
         "sharedManagementResourceGroup": {
             "type": "string"
         },
@@ -263,7 +266,7 @@
             "apiVersion": "2020-06-01",
             "name": "[concat('role-assignments-fin-shared-service-bus-', copyIndex(), '-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+            "resourceGroup": "[parameters('serviceBusResourceGroupName')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
