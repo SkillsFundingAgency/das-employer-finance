@@ -55,7 +55,7 @@ stages:
   variables:
   - group: DevTest Management Resources
   - group: TEST DevTest Shared Resources
-  - group: TEST temp das-employer-finance
+  - group: TEST das-employer-finance
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
