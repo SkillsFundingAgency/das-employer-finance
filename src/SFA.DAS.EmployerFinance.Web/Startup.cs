@@ -101,9 +101,9 @@ namespace SFA.DAS.EmployerFinance.Web
 
             });
 
-            services.AddNServiceBusClientUnitOfWork();
+            //services.AddNServiceBusClientUnitOfWork();
             services
-                .AddUnitOfWork()
+                //.AddUnitOfWork()
                 .AddEntityFramework(_employerFinanceConfiguration)
                 .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
             services.AddNServiceBusClientUnitOfWork();
@@ -132,7 +132,7 @@ namespace SFA.DAS.EmployerFinance.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseUnitOfWork();
+            //app.UseUnitOfWork();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -143,10 +143,10 @@ namespace SFA.DAS.EmployerFinance.Web
         
         public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
         {
-            serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal());
-            var serviceDescriptor = serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
-            serviceProvider.Remove(serviceDescriptor);
-            serviceProvider.AddScoped<IClientOutboxStorageV2, ClientOutboxPersisterV2>();
+            // serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal());
+            // var serviceDescriptor = serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
+            // serviceProvider.Remove(serviceDescriptor);
+            // serviceProvider.AddScoped<IClientOutboxStorageV2, ClientOutboxPersisterV2>();
         }
     }
 }
