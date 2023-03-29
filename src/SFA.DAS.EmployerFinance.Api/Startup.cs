@@ -1,21 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.Infrastructure;
-using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Api.Authentication;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.ErrorHandler;
 using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Filters;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
-using SFA.DAS.EmployerFinance.Authorisation;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
-using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
-using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 using SFA.DAS.Validation.Mvc.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Api;
@@ -33,7 +27,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var employerFinanceConfiguration = _configuration.Get<EmployerFinanceConfiguration>();
+        services.AddApiConfigurationSections(_configuration);
+        
+        var employerFinanceConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
         var isDevelopment = _configuration.IsDevOrLocal();
 
         services.AddLogging();
@@ -56,41 +52,30 @@ public class Startup
 
         services.AddOrchestrators();
 
-        services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
-        services.AddNServiceBusClientUnitOfWork();
-
         services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
         services.AddDataRepositories();
-        services.AddEventsApi();
-
+        
 
         services.AddMediatorValidators();
         services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
-        services.AddNotifications(_configuration);
-
+        
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        services.AddSingleton<IAuthenticationServiceWrapper, AuthenticationServiceWrapper>();
 
-        services.AddApiConfigurationSections(_configuration)
-            .Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
+        
+        services.Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
             .AddMvc(opt =>
             {
                 if (!_configuration.IsDevOrLocal())
                 {
-                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
+                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>{""}));
                 }
 
                 opt.AddValidation();
 
-                opt.Filters.Add<StopwatchFilter>();
+                opt.Conventions.Add(new ApiExplorerGroupPerVersionConvention());
             });
 
         services.AddApplicationInsightsTelemetry();
-    }
-
-    public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
-    {
-        //serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal());
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -102,14 +87,12 @@ public class Startup
         else
         {
             app.UseHsts();
-            app.UseAuthentication();
         }
 
         app.UseHttpsRedirection()
             .UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
-            .UseStaticFiles()
-            .UseRouting()
             .UseAuthentication()
+            .UseRouting()
             .UseAuthorization()
             .UseEndpoints(endpoints =>
             {
