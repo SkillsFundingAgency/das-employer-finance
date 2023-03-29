@@ -17,6 +17,9 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions
             services.Configure<EmployerFinanceConfiguration>(configuration.GetSection(nameof(EmployerFinanceConfiguration)));
             services.AddSingleton(cfg => cfg.GetService<IOptions<EmployerFinanceConfiguration>>().Value);
             
+            services.Configure<ZenDeskConfiguration>(configuration.GetSection(nameof(ZenDeskConfiguration)));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<ZenDeskConfiguration>>().Value);
+            
             services.AddSingleton(configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>());
             
             services.Configure<IAccountApiConfiguration>(configuration.GetSection(nameof(AccountApiConfiguration)));
