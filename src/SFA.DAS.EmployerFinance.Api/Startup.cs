@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.EmployerFinance.Api.Authentication;
@@ -8,6 +9,7 @@ using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Filters;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.Validation.Mvc.Extensions;
@@ -58,6 +60,8 @@ public class Startup
 
         services.AddMediatorValidators();
         services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddAutoMapper(typeof(Startup).Assembly);
+        services.AddAutoMapper(typeof(AccountMappings).Assembly);
         
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
@@ -74,6 +78,14 @@ public class Startup
 
                 opt.Conventions.Add(new ApiExplorerGroupPerVersionConvention());
             });
+        
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+        services.AddScoped<IUrlHelper>(factory =>
+        {
+            var actionContext = factory.GetService<IActionContextAccessor>()
+                .ActionContext;
+            return new UrlHelper(actionContext);
+        });
 
         services.AddApplicationInsightsTelemetry();
     }
