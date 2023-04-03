@@ -71,7 +71,7 @@ public class Startup
             {
                 if (!_configuration.IsDevOrLocal())
                 {
-                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>{""}));
+                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>( )));
                 }
 
                 opt.AddValidation();
