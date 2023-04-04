@@ -18,7 +18,7 @@ public class EmployerAccountsController : ControllerBase
     [Route("balances")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpPost]
-    public async Task<IActionResult> GetAccountBalances(List<string> accountIds)
+    public async Task<IActionResult> GetAccountBalances([FromBody]List<string> accountIds)
     {
         var result = await _financeOrchestrator.GetAccountBalances(accountIds);
 
