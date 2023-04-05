@@ -150,7 +150,8 @@
         "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
         "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
-        "configNames": "SFA.DAS.EmployerFinance.Web,SFA.DAS.Employer.GovSignIn,SFA.DAS.Encoding"
+        "configNames": "SFA.DAS.EmployerFinance.Web,SFA.DAS.Employer.GovSignIn,SFA.DAS.Encoding",
+        "configNamesApi": "SFA.DAS.EmployerFinance,SFA.DAS.Encoding"
     },
     "resources": [
         {
@@ -451,6 +452,10 @@
                                 {
                                     "name": "FinanceApiIdaAudience",
                                     "value": "[parameters('financeApiIdaAudience')]"
+                                },
+                                {
+                                    "name": "ConfigNames",
+                                    "value": "[variables('configNamesApi')]"
                                 }
                             ]
                         }
