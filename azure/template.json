@@ -140,6 +140,9 @@
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow()]"
+        },
+        "stubAuth": {
+            "type": "string"
         }
     },
     "variables": {
@@ -333,6 +336,10 @@
                                 {
                                     "name": "Cdn:Url",
                                     "value": "[parameters('cdnUrl')]"
+                                },
+                                {
+                                    "name": "StubAuth",
+                                    "value": "[parameters('stubAuth')]"
                                 }
                             ]
                         }
