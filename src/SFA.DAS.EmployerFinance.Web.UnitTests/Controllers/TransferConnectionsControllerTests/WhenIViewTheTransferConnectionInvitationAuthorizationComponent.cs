@@ -53,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerT
             var model = await _controller.TransferConnectionInvitationAuthorization(AccountId);
             
             Assert.That(model, Is.Not.Null);
-            //Assert.That(model.AuthorizationResult, Is.EqualTo(_response.AuthorizationResult)); TODO
+            Assert.That(model.AuthorizationResult, Is.EqualTo(_response.AuthorizationResult));
             Assert.That(model.IsValidSender, Is.EqualTo(_response.IsValidSender));
         }
 
