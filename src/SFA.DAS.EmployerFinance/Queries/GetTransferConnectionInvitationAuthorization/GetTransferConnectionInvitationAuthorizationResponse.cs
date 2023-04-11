@@ -4,7 +4,8 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthori
 
 public class GetTransferConnectionInvitationAuthorizationResponse
 {
-    //public AuthorizationResult AuthorizationResult { get; set; }
+    public bool AuthorizationResult { get; set; }
+    public bool AgreementSigned { get; set; }
     public bool IsValidSender { get; set; }
     public decimal TransferAllowancePercentage { get; set; }
 }

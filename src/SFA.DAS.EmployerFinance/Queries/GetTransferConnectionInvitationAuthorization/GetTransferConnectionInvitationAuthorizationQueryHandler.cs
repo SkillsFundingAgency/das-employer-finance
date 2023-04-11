@@ -1,5 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
+using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 
@@ -7,31 +10,35 @@ public class GetTransferConnectionInvitationAuthorizationQueryHandler : IRequest
 {
     private readonly ITransferRepository _transferRepository;
     private readonly EmployerFinanceConfiguration _configuration;
-    //private readonly IAuthorizationService _authorizationService;
+    private readonly IOuterApiClient _outerApiClient;
 
     public GetTransferConnectionInvitationAuthorizationQueryHandler(
         ITransferRepository transferRepository,
-        EmployerFinanceConfiguration configuration
-        //, IAuthorizationService authorizationService //TODO 
+        EmployerFinanceConfiguration configuration,
+        IOuterApiClient outerApiClient
         )
     {
         _transferRepository = transferRepository;
         _configuration = configuration;
-        //_authorizationService = authorizationService;
+        _outerApiClient = outerApiClient;
     }
 
     public async Task<GetTransferConnectionInvitationAuthorizationResponse> Handle(GetTransferConnectionInvitationAuthorizationQuery message,CancellationToken cancellationToken)
     {
-        //var authorizationResult = new AuthorizationResult();// await _authorizationService.GetAuthorizationResultAsync("EmployerFeature.TransferConnectionRequests");
-        var transferAllowance = await _transferRepository.GetTransferAllowance(message.AccountId, _configuration.TransferAllowancePercentage);
+        var transferAllowanceTask = _transferRepository.GetTransferAllowance(message.AccountId, _configuration.TransferAllowancePercentage);
+        var agreementTask = _outerApiClient
+            .Get<GetMinimumSignedAgreementVersionResponse>(
+                new GetMinimumSignedAgreementVersionRequest(message.AccountId));
 
-        var isValidSender = transferAllowance.RemainingTransferAllowance >= Constants.TransferConnectionInvitations.SenderMinTransferAllowance;
+        await Task.WhenAll(transferAllowanceTask, agreementTask);
+        
+        var isValidSender = transferAllowanceTask.Result.RemainingTransferAllowance >= Constants.TransferConnectionInvitations.SenderMinTransferAllowance;
 
         return new GetTransferConnectionInvitationAuthorizationResponse
         {
-            //AuthorizationResult = authorizationResult,
             IsValidSender = isValidSender,
-            TransferAllowancePercentage = _configuration.TransferAllowancePercentage
+            TransferAllowancePercentage = _configuration.TransferAllowancePercentage,
+            AuthorizationResult = agreementTask.Result.MinimumSignedAgreementVersion >= Constants.TransferConnectionInvitations.MinimumSignedAgreementVersion
         };
     }
 }

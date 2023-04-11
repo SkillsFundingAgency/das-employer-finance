@@ -10,6 +10,7 @@
         public struct TransferConnectionInvitations
         {
             public const decimal SenderMinTransferAllowance = 1;
+            public const int MinimumSignedAgreementVersion = 3;
         }
     }
 }
