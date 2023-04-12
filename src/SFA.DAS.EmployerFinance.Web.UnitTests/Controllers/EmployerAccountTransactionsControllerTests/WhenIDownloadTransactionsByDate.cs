@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -107,6 +108,18 @@ public class WhenIDownloadTransactionsByDate
         Assert.AreEqual(result.ContentType, ExpectedMimeType);
         Assert.AreEqual(result.FileContents, ExpectedFileData);
         Assert.IsTrue(result.FileDownloadName.EndsWith(ExpectedFileExtension));
+    }
+
+    [Test]
+    public async Task ThenIfThereIsAValidationExceptionItIsHanded()
+    {
+        _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
+            .ThrowsAsync(new ValidationException());
+
+        var result =
+            await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as ViewResult;
+        
+        Assert.IsNotNull(result);
     }
     
 }

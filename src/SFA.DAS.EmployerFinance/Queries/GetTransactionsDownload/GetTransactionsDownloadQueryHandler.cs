@@ -4,6 +4,8 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Validation;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 
@@ -31,7 +33,8 @@ public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactio
                        
         if (!transactions.Any())
         {
-            throw new ValidationException("There are no transactions in the date range");
+            var validationResult = new ValidationResult{ValidationDictionary = new Dictionary<string, string>{{"StartDate","There are no transactions in the date range"}}};
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
         var accountResponse = await _accountApiClient.GetAccount(message.AccountId);

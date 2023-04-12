@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
@@ -76,15 +77,26 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             {
                 return View(model);
             }
-            
-            var response = await _mediator.Send(new GetTransactionsDownloadQuery
+
+            try
             {
-                AccountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId),
-                DownloadFormat = model.DownloadFormat,
-                EndDate = model.EndDate,
-                StartDate = model.StartDate
-            });
-            return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
+                var response = await _mediator.Send(new GetTransactionsDownloadQuery
+                {
+                    AccountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId),
+                    DownloadFormat = model.DownloadFormat,
+                    EndDate = model.EndDate,
+                    StartDate = model.StartDate
+                });
+                return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
+            }
+            catch (ValidationException e)
+            {
+                foreach (var member in e.ValidationResult.MemberNames)
+                {
+                    ModelState.AddModelError(member.Split('|')[0], member.Split('|')[1]);
+                }
+                return View(model);
+            }
         }
 
         [HttpGet]
