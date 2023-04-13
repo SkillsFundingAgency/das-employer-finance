@@ -36,12 +36,12 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
         if (users == null)
         {
-            throw new Exception($"Unable to send sent transfer request notifications for SenderAccountId '{message.SenderAccountId}'");
+            throw new InvalidOperationException($"Unable to send sent transfer request notifications for SenderAccountId '{message.SenderAccountId}'");
         }
 
         if (!users.Any())
         {
-            _logger.LogInformation($"There are no users that receive notifications for ReceiverAccountId '{message.ReceiverAccountId}'");
+            _logger.LogInformation("There are no users that receive notifications for ReceiverAccountId '{ReceiverAccountId}'", message.ReceiverAccountId);
         }
 
         foreach (var user in users)
@@ -70,7 +70,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Unable to send sent transfer request notification to UserRef '{user.UserRef}' for ReceiverAccountId '{message.ReceiverAccountId}'");
+                _logger.LogError(exception, "Unable to send sent transfer request notification to UserRef '{UserRef}' for ReceiverAccountId '{ReceiverAccountId}'", user.UserRef,message.ReceiverAccountId);
             }
         }
     }

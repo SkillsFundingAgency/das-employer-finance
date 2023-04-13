@@ -51,6 +51,7 @@ public class WhenPopulatingAccountClaims
         actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserEmailClaimTypeIdentifier)).Value.Should().Be(emailAddress);
         actual.FirstOrDefault(c=>c.Type.Equals(ClaimTypes.AuthorizationDecision))?.Value.Should().BeNullOrEmpty();
     }
+
     [Test, MoqAutoData]
     public async Task Then_The_Claims_Are_Populated_For_Gov_User_And_Suspended_Flag_Set(
         string nameIdentifier,
@@ -95,13 +96,13 @@ public class WhenPopulatingAccountClaims
         actual.FirstOrDefault(c=>c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Should().BeNull();
     }
 
-    private TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress)
+    private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress)
     {
         var identity = new ClaimsIdentity(new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, nameIdentifier),
-            new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier, idamsIdentifier),
-            new Claim(ClaimTypes.Email, emailAddress)
+            new(ClaimTypes.NameIdentifier, nameIdentifier),
+            new(EmployerClaims.IdamsUserIdClaimTypeIdentifier, idamsIdentifier),
+            new(ClaimTypes.Email, emailAddress)
         });
         
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(identity));

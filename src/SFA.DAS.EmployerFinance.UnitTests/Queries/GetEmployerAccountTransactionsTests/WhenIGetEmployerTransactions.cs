@@ -38,7 +38,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         _dasLevyService = new Mock<IDasLevyService>();
         _dasLevyService.Setup(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(new TransactionLine[0]);
+            .ReturnsAsync(Array.Empty<TransactionLine>());
 
         _dasLevyService.Setup(x => x.GetPreviousAccountTransaction(It.IsAny<long>(), It.IsAny<DateTime>()))
             .ReturnsAsync(2);

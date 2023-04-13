@@ -19,7 +19,7 @@ public class AccountTransactionsOrchestrator
       
     public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month, IUrlHelper urlHelper)
     {
-        _logger.LogInformation($"Requesting account transactions for account {hashedAccountId}, year {year} and month {month}");
+        _logger.LogInformation("Requesting account transactions for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
 
         var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery {
             Year = year,
@@ -35,20 +35,20 @@ public class AccountTransactionsOrchestrator
         };
         response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x, urlHelper)));
             
-        _logger.LogInformation($"Received account transactions response for account {hashedAccountId}, year {year} and month {month}");
+        _logger.LogInformation("Received account transactions response for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
         return response;
     }
 
     public async Task<List<TransactionSummary>> GetAccountTransactionSummary(string hashedAccountId)
     {
-        _logger.LogInformation($"Requesting account transaction summary for account {hashedAccountId}");
+        _logger.LogInformation("Requesting account transaction summary for account {HashedAccountId}", hashedAccountId);
 
         var response = await _mediator.Send(new GetAccountTransactionSummaryRequest { HashedAccountId = hashedAccountId });
         if (response.Data == null)
         {
             return null;
         }
-        _logger.LogInformation($"Received account transaction summary response for account {hashedAccountId}");
+        _logger.LogInformation("Received account transaction summary response for account {HashedAccountId}", hashedAccountId);
         return response.Data;
     }
 

@@ -10,7 +10,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
 
 [TestFixture]
 public class LevyImportCleanerStrategyTests
-{ 
+{
     [Test]
     public void Constructor_Valid_ShouldNotThrowException()
     {
@@ -46,8 +46,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const int expectedInfoMessages = 1;
-        Assert.AreEqual(expectedInfoMessages, fixtures.Result.Count());
-        //Assert.AreEqual(expectedInfoMessages, fixtures.InfoLog.Count);
+        Assert.AreEqual(expectedInfoMessages, fixtures.Result.Length);
     }
 
     [Test]
@@ -106,6 +105,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = (firstAdjustmentValue - period12Value) * -1; // adjustments are inverted
+        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[1].EndOfYearAdjustmentAmount);
     }
 
     [Test(Description = "A later adjustment should apply on top of earlier adjustments, not replace")]
@@ -230,7 +230,7 @@ internal class LevyImportCleanerStrategyTestFixtures
     {
         foreach (var submissionId in submissionIds)
         {
-            WithDeclaration(new DasDeclaration{SubmissionId = submissionId});
+            WithDeclaration(new DasDeclaration { SubmissionId = submissionId });
         }
 
         return this;

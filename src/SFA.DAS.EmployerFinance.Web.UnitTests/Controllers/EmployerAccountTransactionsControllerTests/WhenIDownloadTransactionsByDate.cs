@@ -39,7 +39,6 @@ public class WhenIDownloadTransactionsByDate
     {
         _transactionDownloadViewModel = new TransactionDownloadViewModel
         {
-            
             StartDate = new MonthYear
             {
                 Month = "1",
@@ -50,38 +49,37 @@ public class WhenIDownloadTransactionsByDate
                 Month = "1",
                 Year = "2018"
             }
-        
         };
 
-            _mediator = new Mock<IMediator>();
-            _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
-            _formatter = new Mock<ITransactionFormatter>();
-            _encodingService = new Mock<IEncodingService>();
-            _encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
-            _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
-                .ReturnsAsync(new GetTransactionsDownloadResponse
-                {
-                    MimeType = ExpectedMimeType,
-                    FileExtension = ExpectedFileExtension,
-                    FileData = ExpectedFileData
-                });
+        _mediator = new Mock<IMediator>();
+        _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
+        _formatter = new Mock<ITransactionFormatter>();
+        _encodingService = new Mock<IEncodingService>();
+        _encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
+        _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
+            .ReturnsAsync(new GetTransactionsDownloadResponse
+            {
+                MimeType = ExpectedMimeType,
+                FileExtension = ExpectedFileExtension,
+                FileData = ExpectedFileData
+            });
 
         _formatter.Setup(x => x.GetFileData(It.IsAny<List<TransactionDownloadLine>>())).Returns(new byte[] { 1, 2, 3, 4 });
         _formatter.Setup(x => x.MimeType).Returns("txt/csv");
         _formatter.Setup(x => x.DownloadFormatType).Returns(DownloadFormatType.CSV);
 
-            _controller = new EmployerAccountTransactionsController(
-                _orchestrator.Object,
-                Mock.Of<IMapper>(),
-                _mediator.Object, _encodingService.Object);
-        }
+        _controller = new EmployerAccountTransactionsController(
+            _orchestrator.Object,
+            Mock.Of<IMapper>(),
+            _mediator.Object, _encodingService.Object);
+    }
 
     [Test]
     public async Task ThenAGetTransactionsDownloadQueryShouldBeSent()
     {
         await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel);
 
-        _mediator.Verify(m => m.Send(It.Is<GetTransactionsDownloadQuery>(c=>
+        _mediator.Verify(m => m.Send(It.Is<GetTransactionsDownloadQuery>(c =>
             c.AccountId.Equals(AccountId)
             && c.EndDate.Equals(_transactionDownloadViewModel.EndDate)
             && c.StartDate.Equals(_transactionDownloadViewModel.StartDate)
@@ -94,19 +92,17 @@ public class WhenIDownloadTransactionsByDate
     {
         await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel);
 
-    Assert.That(_controller.ModelState.IsValid, Is.True);
-}
+        Assert.That(_controller.ModelState.IsValid, Is.True);
+    }
 
     [Test]
     public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
     {
-        var result =
-            await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as
-                FileContentResult;
+        var result = await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as FileContentResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.AreEqual(result.ContentType, ExpectedMimeType);
-        Assert.AreEqual(result.FileContents, ExpectedFileData);
+        Assert.AreEqual(ExpectedMimeType, result.ContentType);
+        Assert.AreEqual(ExpectedFileData, result.FileContents);
         Assert.IsTrue(result.FileDownloadName.EndsWith(ExpectedFileExtension));
     }
 
@@ -116,10 +112,8 @@ public class WhenIDownloadTransactionsByDate
         _mediator.Setup(m => m.Send(It.IsAny<GetTransactionsDownloadQuery>(), CancellationToken.None))
             .ThrowsAsync(new ValidationException());
 
-        var result =
-            await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as ViewResult;
-        
+        var result = await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as ViewResult;
+
         Assert.IsNotNull(result);
     }
-    
 }

@@ -25,7 +25,6 @@ public class WhenIGetTransferRequests
     private TransferRequestSummaryResponse _sentTransferRequest;
     private TransferRequestSummaryResponse _receivedTransferRequest;
     private GetTransferRequestSummaryResponse _getTransferRequestSummaryResponse;
-    private DbSetStub<Account> _accountsDbSet;
     private List<Account> _accounts;
     private Account _account1;
     private Account _account2;

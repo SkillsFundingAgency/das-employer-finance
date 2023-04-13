@@ -36,12 +36,12 @@ public class ApprovedTransferConnectionRequestEventNotificationHandler : IHandle
 
         if(users == null)
         {
-            throw new Exception($"Unable to send approved transfer request notifications for SenderAccountId '{message.SenderAccountId}'");
+            throw new InvalidOperationException($"Unable to send approved transfer request notifications for SenderAccountId '{message.SenderAccountId}'");
         }
 
         if (!users.Any())
         {
-            _logger.LogInformation($"There are no users that receive notifications for SenderAccountId '{message.SenderAccountId}'");
+            _logger.LogInformation("There are no users that receive notifications for SenderAccountId '{SenderAccountId}'", message.SenderAccountId);
         }
 
         foreach (var user in users)
@@ -70,7 +70,7 @@ public class ApprovedTransferConnectionRequestEventNotificationHandler : IHandle
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Unable to send approved transfer request notification to UserRef '{user.UserRef}' for SenderAccountId '{message.SenderAccountId}'");
+                _logger.LogError(exception, "Unable to send approved transfer request notification to UserRef '{UserRef}' for SenderAccountId '{SenderAccountId}'", user.UserRef, message.SenderAccountId);
             }
         }
     }

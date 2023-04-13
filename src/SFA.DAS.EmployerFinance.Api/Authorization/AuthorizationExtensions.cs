@@ -5,44 +5,24 @@ namespace SFA.DAS.EmployerFinance.Api.Authorization;
 
 public static class AuthorizationExtensions
 {
+    private const string DefaultPolicyName = "default";
+
+    private static readonly string[] PolicyNames =
+    {
+        ApiRoles.ReadAllEmployerAccountBalances,
+        ApiRoles.ReadUserAccounts
+    };
+
     public static IServiceCollection AddApiAuthorization(this IServiceCollection services, bool isDevelopment = false)
     {
         services.AddAuthorization(x =>
         {
-            {
-                x.AddPolicy("default", policy =>
-                {
-                    if (isDevelopment)
-                    {
-                        policy.AllowAnonymousUser();
-                    }
-                    else { policy.RequireAuthenticatedUser(); }
-                });
+            AddDefaultPolicy(isDevelopment, x);
 
-                x.AddPolicy(ApiRoles.ReadAllEmployerAccountBalances, policy =>
-                {
-                    if (isDevelopment)
-                        policy.AllowAnonymousUser();
-                    else
-                    {
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireRole(ApiRoles.ReadAllEmployerAccountBalances);
-                    }
-                });
+            AddApiPolicies(isDevelopment, x);
 
-                x.AddPolicy(ApiRoles.ReadUserAccounts, policy =>
-                {
-                    if (isDevelopment)
-                        policy.AllowAnonymousUser();
-                    else
-                    {
-                        policy.RequireAuthenticatedUser();
-                        policy.RequireRole(ApiRoles.ReadUserAccounts);
-                    }
-                });
+            x.DefaultPolicy = x.GetPolicy(DefaultPolicyName);
 
-                x.DefaultPolicy = x.GetPolicy("default");
-            }
         });
 
         if (isDevelopment)
@@ -51,5 +31,39 @@ public static class AuthorizationExtensions
         }
 
         return services;
+    }
+
+    private static void AddApiPolicies(bool isDevelopment, AuthorizationOptions x)
+    {
+        foreach (var policyName in PolicyNames)
+        {
+            x.AddPolicy(policyName, policy =>
+            {
+                if (isDevelopment)
+                {
+                    policy.AllowAnonymousUser();
+                }
+                else
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(policyName);
+                }
+            });
+        }
+    }
+
+    private static void AddDefaultPolicy(bool isDevelopment, AuthorizationOptions x)
+    {
+        x.AddPolicy(DefaultPolicyName, policy =>
+        {
+            if (isDevelopment)
+            {
+                policy.AllowAnonymousUser();
+            }
+            else
+            {
+                policy.RequireAuthenticatedUser();
+            }
+        });
     }
 }

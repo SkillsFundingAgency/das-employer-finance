@@ -72,7 +72,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         }
 
         [Route("SignOutCleanup")]
-        public async void SignOutCleanup()
+        public async Task SignOutCleanup()
         {
             var idToken = await HttpContext.GetTokenAsync("id_token");
 

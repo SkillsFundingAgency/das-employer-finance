@@ -64,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             var response = await _sut.GetProviderPaymentSummary("abc123", 888888, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
             // Assert
-            response.Data.CoursePayments.Count().Should().Be(numberOfCourses);
+            response.Data.CoursePayments.Count.Should().Be(numberOfCourses);
         }
 
         [Test]
@@ -175,7 +175,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
         private void SetupGetCoursePaymentsResponse()
         {
-            SetupGetCoursePaymentsResponse(new PaymentTransactionLine[0]);
+            SetupGetCoursePaymentsResponse(Array.Empty<PaymentTransactionLine>());
         }
 
         private void SetupGetCoursePaymentsResponse(IEnumerable<PaymentTransactionLine> payments)

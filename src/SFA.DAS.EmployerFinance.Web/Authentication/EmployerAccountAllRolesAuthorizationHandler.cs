@@ -14,13 +14,11 @@ public class EmployerAccountAllRolesAuthorizationHandler : AuthorizationHandler<
     
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, EmployerAccountAllRolesRequirement requirement)
     {
-        if (!(await _handler.IsEmployerAuthorised(context, true)))
+        if (!await _handler.IsEmployerAuthorised(context, true))
         {
             return;
         }
 
         context.Succeed(requirement);
-
-        return;
     }
 }

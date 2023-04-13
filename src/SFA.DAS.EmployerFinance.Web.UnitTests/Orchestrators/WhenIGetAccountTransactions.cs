@@ -251,7 +251,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
 
         private void SetupGetTransactionsResponse(int year, int month)
         {
-            SetupGetTransactionsResponse(year, month, new TransactionLine[0]);
+            SetupGetTransactionsResponse(year, month, Array.Empty<TransactionLine>());
         }
 
         private void SetupGetTransactionsResponse(int year, int month, IEnumerable<TransactionLine> transactions)

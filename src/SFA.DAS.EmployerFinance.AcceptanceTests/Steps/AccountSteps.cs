@@ -8,7 +8,6 @@ using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Paye;
-using SFA.DAS.NLog.Logger;
 using TechTalk.SpecFlow;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
@@ -62,9 +61,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                 await _objectContext.CreateAccount(c);
             });
         }
-
-
-
+        
         private Task InitialisePayeSchemeRef(IObjectContainer objectContainer, string empRef)
         {
             return ClearDownPayeRefsFromDbAsync(objectContainer, empRef)
@@ -75,14 +72,14 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                 });
         }
 
-        private Task ClearDownPayeRefsFromDbAsync(IObjectContainer objectContainer, string empRef)
+        private static Task ClearDownPayeRefsFromDbAsync(IObjectContainer objectContainer, string empRef)
         {
             var repo = objectContainer.Resolve<ITestTransactionRepository>();
 
             return repo.RemovePayeRef(empRef);
         }
 
-        private void SetupMocks(IObjectContainer objectContainer, string empRef)
+        private static void SetupMocks(IObjectContainer objectContainer, string empRef)
         {
             objectContainer.Resolve<Mock<IPayeRepository>>().Setup(x => x.GetPayeSchemeByRef(It.IsAny<string>()))
                 .ReturnsAsync(new Paye

@@ -262,11 +262,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
             public const long TestUserId = 789;
         }
 
-        public long TestSenderAccountId => Constants.TestSenderAccountId;
+        public static long TestSenderAccountId => Constants.TestSenderAccountId;
 
-        public long TestReceiverAccountId => Constants.TestReceiverAccountId;
+        public static long TestReceiverAccountId => Constants.TestReceiverAccountId;
 
-        public long TestUserId => Constants.TestUserId;
+        public static long TestUserId => Constants.TestUserId;
 
         public Task Handle(TransferConnectionInvitationStatus status, long deletingAccountId)
         {

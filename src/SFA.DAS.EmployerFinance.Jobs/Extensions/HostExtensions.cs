@@ -61,7 +61,7 @@ public static class HostExtensions
             services.AddUnitOfWork();
 #pragma warning disable 618
             services.AddSingleton<IWebHookProvider>(p => null);
-#pragma warning restore 618}
+#pragma warning restore 618
         });
 
         return hostBuilder;

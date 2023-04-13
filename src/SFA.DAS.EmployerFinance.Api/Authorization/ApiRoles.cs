@@ -1,8 +1,7 @@
-﻿namespace SFA.DAS.EmployerFinance.Api.Authorization
+﻿namespace SFA.DAS.EmployerFinance.Api.Authorization;
+
+public class ApiRoles
 {
-    public class ApiRoles
-    {
-        public const string ReadUserAccounts = "ReadUserAccounts"; 
-        public const string ReadAllEmployerAccountBalances = "ReadAllEmployerAccountBalances";
-    }
+    public const string ReadUserAccounts = "ReadUserAccounts"; 
+    public const string ReadAllEmployerAccountBalances = "ReadAllEmployerAccountBalances";
 }

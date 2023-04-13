@@ -46,7 +46,7 @@
             <th class="govuk-table__header govuk-table__header--numeric" scope="col">Your funds</th>
         </tr>
     </thead>
-    <thead class="govuk-table__body">
+    <tbody class="govuk-table__body">
         <tr class="govuk-table__row app-table__row--total app-table__row--total-top">
             <th scope="row" colspan="5" class="app-table__header app-table__header--total"><span class="govuk-visually-hidden">Total</span></th>
             <td data-label="Your funds total" class="govuk-table__cell govuk-table__cell--numeric  govuk-!-font-weight-bold">@Model.Data.Amount.ToString("C2", culture)</td>
@@ -89,7 +89,7 @@
     <div class="column-two-thirds">
         @await Html.PartialAsync("_WhatIsEnglishPercentage")
         <div class="govuk-inset-text">
-            <p><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/employer-enquiries" target="_blank" class="govuk-link">Contact HMRC</a> if the levied amount isn't what you expected. </p>
+            <p><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/employer-enquiries" target="_blank" rel="noopener" class="govuk-link">Contact HMRC</a> if the levied amount isn't what you expected. </p>
         </div>
     </div>
 </div>

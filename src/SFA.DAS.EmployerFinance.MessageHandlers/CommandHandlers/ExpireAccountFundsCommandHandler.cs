@@ -38,7 +38,7 @@ public class ExpireAccountFundsCommandHandler : IHandleMessages<ExpireAccountFun
 
     public async Task Handle(ExpireAccountFundsCommand message, IMessageHandlerContext context)
     {
-        _logger.LogInformation($"Expiring funds for account ID '{message.AccountId}' with expiry period '{_configuration.FundsExpiryPeriod}'");
+        _logger.LogInformation("Expiring funds for account ID '{AccountId}' with expiry period '{FundsExpiryPeriod}'", message.AccountId, _configuration.FundsExpiryPeriod);
 
         var now = _currentDateTime.Now;
         var fundsIn = await _levyFundsInRepository.GetLevyFundsIn(message.AccountId);
@@ -65,7 +65,7 @@ public class ExpireAccountFundsCommandHandler : IHandleMessages<ExpireAccountFun
         if (expiredFunds.Any(ef => ef.Value != 0m))
             await PublishAccountFundsExpiredEvent(context, message.AccountId);
 
-        _logger.LogInformation($"Expired '{expiredFunds.Count}' month(s) of funds for account ID '{message.AccountId}' with expiry period '{_configuration.FundsExpiryPeriod}'");
+        _logger.LogInformation("Expired '{ExpiredFundsCount}' month(s) of funds for account ID '{AccountId}' with expiry period '{FundsExpiryPeriod}'", expiredFunds.Count, message.AccountId, _configuration.FundsExpiryPeriod);
     }
 
     private static async Task PublishAccountFundsExpiredEvent(IMessageHandlerContext context, long accountId)
