@@ -63,7 +63,15 @@ namespace SFA.DAS.EmployerFinance.Web
             services.AddDataRepositories();
             services.AddHmrcServices();
 
-            services.AddMaMenuConfiguration("SignOut", identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);
+            if (_employerFinanceConfiguration.UseGovSignIn)
+            {
+                services.AddMaMenuConfiguration("SignOut", _configuration["ResourceEnvironmentName"]);   
+            }
+            else
+            {
+                services.AddMaMenuConfiguration("SignOut", identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);    
+            }
+            
             //MAC-192
             services.AddApplicationServices(_configuration);
 
