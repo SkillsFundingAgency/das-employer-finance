@@ -15,14 +15,15 @@ public static class PaymentDetailsExtensions
             PeriodEnd                   25
         */
         StringBuilder errors = null;
-        var isOkay = CheckFieldLength(payment.CollectionPeriodId, nameof(payment.CollectionPeriodId), 20, false, ref errors) &&
+
+        var isValid = CheckFieldLength(payment.CollectionPeriodId, nameof(payment.CollectionPeriodId), 20, false, ref errors) &&
                      CheckFieldLength(payment.EmployerAccountVersion, nameof(payment.EmployerAccountVersion), 50, false, ref errors) &&
                      CheckFieldLength(payment.ApprenticeshipVersion, nameof(payment.ApprenticeshipVersion), 25, false, ref errors) &&
                      CheckFieldLength(payment.PeriodEnd, nameof(payment.PeriodEnd), 25, false, ref errors);
 
-        if (!isOkay)
+        if (!isValid)
         {
-            throw new Exception($"The following errors were detected:{errors.ToString()}");
+            throw new InvalidOperationException($"The following errors were detected:{errors}");
         }
     }
 
