@@ -1,7 +1,4 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Configuration;
-using Moq;
-using NUnit.Framework;
+﻿using Microsoft.Extensions.Configuration;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.Testing.AutoFixture;
 

@@ -1,11 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using FluentAssertions;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
@@ -14,67 +7,66 @@ using SFA.DAS.EmployerFinance.Web.Mappings;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Testing;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
-{
-    [TestFixture]
-    public class HealthCheckControllerTests : FluentTest<HealthCheckControllerTestsFixture>
-    {
-        [Test]
-        public Task Index_WhenGettingTheIndexAction_ThenShouldReturnTheIndexView()
-        {
-            return RunAsync(f => f.Index(), (f, r) =>
-            {
-                r.Should().NotBeNull().And.Match<ViewResult>(a => a.ViewName == null);
-                r.As<ViewResult>().Model.Should().NotBeNull().And.Match<HealthCheckViewModel>(m => m.HealthCheck == f.GetHealthCheckQueryResponse.HealthCheck);
-            });
-        }
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers;
 
-        [Test]
-        public Task Index_WhenPostingTheIndexAction_ThenShouldRedirectToTheIndexAction()
+[TestFixture]
+public class HealthCheckControllerTests : FluentTest<HealthCheckControllerTestsFixture>
+{
+    [Test]
+    public Task Index_WhenGettingTheIndexAction_ThenShouldReturnTheIndexView()
+    {
+        return RunAsync(f => f.Index(), (f, r) =>
         {
-            return RunAsync(f => f.PostIndex(), (f, r) => r.Should().NotBeNull().And.Match<RedirectToActionResult>(a =>
-                a.ActionName.Equals("Index") &&
-                a.ControllerName == null));
-        }
+            r.Should().NotBeNull().And.Match<ViewResult>(a => a.ViewName == null);
+            r.As<ViewResult>().Model.Should().NotBeNull().And.Match<HealthCheckViewModel>(m => m.HealthCheck == f.GetHealthCheckQueryResponse.HealthCheck);
+        });
     }
 
-    public class HealthCheckControllerTestsFixture
+    [Test]
+    public Task Index_WhenPostingTheIndexAction_ThenShouldRedirectToTheIndexAction()
     {
-        public HealthCheckController HealthCheckController { get; set; }
-        public GetHealthCheckQuery GetHealthCheckQuery { get; set; }
-        public Mock<IMediator> Mediator { get; set; }
-        public IMapper Mapper { get; set; }
-        public GetHealthCheckQueryResponse GetHealthCheckQueryResponse { get; set; }
-        public RunHealthCheckCommand RunHealthCheckCommand { get; set; }
+        return RunAsync(f => f.PostIndex(), (f, r) => r.Should().NotBeNull().And.Match<RedirectToActionResult>(a =>
+            a.ActionName.Equals("Index") &&
+            a.ControllerName == null));
+    }
+}
 
-        public HealthCheckControllerTestsFixture()
+public class HealthCheckControllerTestsFixture
+{
+    public HealthCheckController HealthCheckController { get; set; }
+    public GetHealthCheckQuery GetHealthCheckQuery { get; set; }
+    public Mock<IMediator> Mediator { get; set; }
+    public IMapper Mapper { get; set; }
+    public GetHealthCheckQueryResponse GetHealthCheckQueryResponse { get; set; }
+    public RunHealthCheckCommand RunHealthCheckCommand { get; set; }
+
+    public HealthCheckControllerTestsFixture()
+    {
+        Mediator = new Mock<IMediator>();
+        Mapper = new MapperConfiguration(c => c.AddProfile<HealthCheckMappings>()).CreateMapper();
+        HealthCheckController = new HealthCheckController(Mediator.Object, Mapper);
+    }
+
+    public Task<IActionResult> Index()
+    {
+        GetHealthCheckQuery = new GetHealthCheckQuery();
+
+        GetHealthCheckQueryResponse = new GetHealthCheckQueryResponse
         {
-            Mediator = new Mock<IMediator>();
-            Mapper = new MapperConfiguration(c => c.AddProfile<HealthCheckMappings>()).CreateMapper();
-            HealthCheckController = new HealthCheckController(Mediator.Object, Mapper);
-        }
+            HealthCheck = new HealthCheckDto()
+        };
 
-        public Task<IActionResult> Index()
-        {
-            GetHealthCheckQuery = new GetHealthCheckQuery();
+        Mediator.Setup(m => m.Send(GetHealthCheckQuery, CancellationToken.None)).ReturnsAsync(GetHealthCheckQueryResponse);
 
-            GetHealthCheckQueryResponse = new GetHealthCheckQueryResponse
-            {
-                HealthCheck = new HealthCheckDto()
-            };
+        return HealthCheckController.Index(GetHealthCheckQuery);
+    }
 
-            Mediator.Setup(m => m.Send(GetHealthCheckQuery, CancellationToken.None)).ReturnsAsync(GetHealthCheckQueryResponse);
+    public Task<IActionResult> PostIndex()
+    {
+        RunHealthCheckCommand = new RunHealthCheckCommand();
 
-            return HealthCheckController.Index(GetHealthCheckQuery);
-        }
+        Mediator.Setup(m => m.Send(RunHealthCheckCommand, CancellationToken.None)).ReturnsAsync(Unit.Value);
 
-        public Task<IActionResult> PostIndex()
-        {
-            RunHealthCheckCommand = new RunHealthCheckCommand();
-
-            Mediator.Setup(m => m.Send(RunHealthCheckCommand, CancellationToken.None)).ReturnsAsync(Unit.Value);
-
-            return HealthCheckController.Index(RunHealthCheckCommand);
-        }
+        return HealthCheckController.Index(RunHealthCheckCommand);
     }
 }

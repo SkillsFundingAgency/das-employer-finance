@@ -1,12 +1,6 @@
-using System.Collections.Generic;
-using System.Security.Claims;
 using AutoFixture.NUnit3;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Moq;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 using SFA.DAS.EmployerFinance.Web.Authentication;

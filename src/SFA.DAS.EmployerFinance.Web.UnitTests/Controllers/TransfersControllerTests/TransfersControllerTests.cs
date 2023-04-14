@@ -1,9 +1,4 @@
-﻿using System.Threading.Tasks;
-using AutoFixture;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EAS.Account.Api.Client;
+﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -13,107 +8,106 @@ using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransfersControllerTests;
+
+public class TransfersControllerTests
 {
-    public class TransfersControllerTests
+    private TransfersController _controller;
+    private TransfersOrchestrator _orchestrator;
+    private Mock<IEncodingService> _encodingService;
+    private Mock<IEmployerAccountAuthorisationHandler> _authorisationService;
+    private Mock<ITransfersService> _transfersService;
+    private Mock<IAccountApiClient> _accountApiClient;
+    private GetFinancialBreakdownResponse _financialBreakdownResponse;
+    private AccountDetailViewModel _accountDetailViewModel;
+
+    private const string HashedAccountId = "123ABC";
+    private const long AccountId = 1234;
+
+    [SetUp]
+    public void Arrange()
     {
-        private TransfersController _controller;
-        private TransfersOrchestrator _orchestrator;
-        private Mock<IEncodingService> _encodingService;
-        private Mock<IEmployerAccountAuthorisationHandler> _authorisationService;
-        private Mock<ITransfersService> _transfersService;
-        private Mock<IAccountApiClient> _accountApiClient;
-        private GetFinancialBreakdownResponse _financialBreakdownResponse;
-        private AccountDetailViewModel _accountDetailViewModel;
+        var fixture = new Fixture();
 
-        private const string HashedAccountId = "123ABC";
-        private const long AccountId = 1234;
+        _authorisationService = new Mock<IEmployerAccountAuthorisationHandler>();
+        _encodingService = new Mock<IEncodingService>();
+        _transfersService = new Mock<ITransfersService>();
+        _accountApiClient = new Mock<IAccountApiClient>();
+        _financialBreakdownResponse = fixture.Create<GetFinancialBreakdownResponse>();
 
-        [SetUp]
-        public void Arrange()
-        {
-            var fixture = new Fixture();
+        _transfersService.Setup(m => m.GetFinancialBreakdown(AccountId)).ReturnsAsync(_financialBreakdownResponse);
 
-            _authorisationService = new Mock<IEmployerAccountAuthorisationHandler>();
-            _encodingService = new Mock<IEncodingService>();
-            _transfersService = new Mock<ITransfersService>();
-            _accountApiClient = new Mock<IAccountApiClient>();
-            _financialBreakdownResponse = fixture.Create<GetFinancialBreakdownResponse>();
+        _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
+        _accountDetailViewModel = new AccountDetailViewModel();
+        _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
+        _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
 
-            _transfersService.Setup(m => m.GetFinancialBreakdown(AccountId)).ReturnsAsync(_financialBreakdownResponse);
+        _controller = new TransfersController(_orchestrator);
+    }
 
-            _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
-            _accountDetailViewModel = new AccountDetailViewModel();
-            _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
-            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
-
-            _controller = new TransfersController(_orchestrator);
-        }
-
-        [Test]
-        public async Task FinancialBreakdownReturnsAViewModelWithData()
-        {   
-            var result = await _controller.FinancialBreakdown(HashedAccountId);
-            var view = result as ViewResult;
-            var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
+    [Test]
+    public async Task FinancialBreakdownReturnsAViewModelWithData()
+    {   
+        var result = await _controller.FinancialBreakdown(HashedAccountId);
+        var view = result as ViewResult;
+        var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
            
-            Assert.IsNotNull(viewModel);
-            Assert.IsNotNull(viewModel.Data);
-            Assert.IsNotNull(viewModel.Data.AcceptedPledgeApplications);
-            Assert.IsNotNull(viewModel.Data.ApprovedPledgeApplications);
-            Assert.IsNotNull(viewModel.Data.Commitments);
-            Assert.IsNotNull(viewModel.Data.TransferConnections);
-            Assert.IsNotNull(viewModel.Data.CurrentYearEstimatedSpend);
-            Assert.IsNotNull(viewModel.Data.NextYearEstimatedSpend);
-            Assert.IsNotNull(viewModel.Data.YearAfterNextYearEstimatedSpend);
-        }        
+        Assert.IsNotNull(viewModel);
+        Assert.IsNotNull(viewModel.Data);
+        Assert.IsNotNull(viewModel.Data.AcceptedPledgeApplications);
+        Assert.IsNotNull(viewModel.Data.ApprovedPledgeApplications);
+        Assert.IsNotNull(viewModel.Data.Commitments);
+        Assert.IsNotNull(viewModel.Data.TransferConnections);
+        Assert.IsNotNull(viewModel.Data.CurrentYearEstimatedSpend);
+        Assert.IsNotNull(viewModel.Data.NextYearEstimatedSpend);
+        Assert.IsNotNull(viewModel.Data.YearAfterNextYearEstimatedSpend);
+    }        
 
-        [Test]
-        public async Task FinancialBreakdownPageShowsEstimatedRemainingAllowance()
-        {
-            var viewModel = await GetViewModel();
+    [Test]
+    public async Task FinancialBreakdownPageShowsEstimatedRemainingAllowance()
+    {
+        var viewModel = await GetViewModel();
 
-            var estimatedRemainingAllowance = viewModel.Data.StartingTransferAllowance - viewModel.Data.CurrentYearEstimatedSpend;
-            Assert.AreEqual(estimatedRemainingAllowance, viewModel.Data.EstimatedRemainingAllowance);
-        }
+        var estimatedRemainingAllowance = viewModel.Data.StartingTransferAllowance - viewModel.Data.CurrentYearEstimatedSpend;
+        Assert.AreEqual(estimatedRemainingAllowance, viewModel.Data.EstimatedRemainingAllowance);
+    }
 
-        [Test]
-        public async Task FinancialBreakdownPageShowsCorrectTotalAvailablePledgedFunds()
-        {
-            var viewModel = await GetViewModel();
+    [Test]
+    public async Task FinancialBreakdownPageShowsCorrectTotalAvailablePledgedFunds()
+    {
+        var viewModel = await GetViewModel();
 
-            var totalAvailablePledgedFunds = viewModel.Data.TotalAvailableTransferAllowance - viewModel.Data.TotalPledgedAndTransferConnections;
-            Assert.AreEqual(totalAvailablePledgedFunds, viewModel.Data.TotalAvailablePledgedFunds);
-        }
+        var totalAvailablePledgedFunds = viewModel.Data.TotalAvailableTransferAllowance - viewModel.Data.TotalPledgedAndTransferConnections;
+        Assert.AreEqual(totalAvailablePledgedFunds, viewModel.Data.TotalAvailablePledgedFunds);
+    }
 
-        [Test]
-        public async Task FinancialBreakdownPageShowsCorrectTotalPledgedAndTransferConnections()
-        {
-            var viewModel = await GetViewModel();
+    [Test]
+    public async Task FinancialBreakdownPageShowsCorrectTotalPledgedAndTransferConnections()
+    {
+        var viewModel = await GetViewModel();
 
-            var totalPledgedAndTransferConnections = viewModel.Data.AmountPledged + viewModel.Data.TransferConnections;
-            Assert.AreEqual(totalPledgedAndTransferConnections, viewModel.Data.TotalPledgedAndTransferConnections);
-        }
+        var totalPledgedAndTransferConnections = viewModel.Data.AmountPledged + viewModel.Data.TransferConnections;
+        Assert.AreEqual(totalPledgedAndTransferConnections, viewModel.Data.TotalPledgedAndTransferConnections);
+    }
 
-        [Test]
-        public async Task FinancialBreakdownPageShowsCorrectAvailablePledgedFunds()
-        {
-            var viewModel = await GetViewModel();
+    [Test]
+    public async Task FinancialBreakdownPageShowsCorrectAvailablePledgedFunds()
+    {
+        var viewModel = await GetViewModel();
 
-            var availablePledgedFunds = viewModel.Data.AmountPledged - (viewModel.Data.ApprovedPledgeApplications + viewModel.Data.AcceptedPledgeApplications);
-            Assert.AreEqual(availablePledgedFunds, viewModel.Data.AvailablePledgedFunds);
-        }
+        var availablePledgedFunds = viewModel.Data.AmountPledged - (viewModel.Data.ApprovedPledgeApplications + viewModel.Data.AcceptedPledgeApplications);
+        Assert.AreEqual(availablePledgedFunds, viewModel.Data.AvailablePledgedFunds);
+    }
 
-        private async Task<Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
-        {
-            var result = await _controller.FinancialBreakdown(HashedAccountId);
+    private async Task<Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
+    {
+        var result = await _controller.FinancialBreakdown(HashedAccountId);
 
-            var view = result as ViewResult;
-            var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
+        var view = result as ViewResult;
+        var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
 
-            Assert.IsNotNull(viewModel);
+        Assert.IsNotNull(viewModel);
 
-            return viewModel;
-        }
+        return viewModel;
     }
 }
