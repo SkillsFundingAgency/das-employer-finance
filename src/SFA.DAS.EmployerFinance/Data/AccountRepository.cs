@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class AccountRepository : BaseRepository, IAccountRepository
+public class AccountRepository : IAccountRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public AccountRepository(EmployerFinanceConfiguration configuration, ILogger<AccountRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public AccountRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }
@@ -67,7 +65,7 @@ public class AccountRepository : BaseRepository, IAccountRepository
             commandType: CommandType.StoredProcedure);
     }
 
-    private class AccountNameItem
+    private sealed class AccountNameItem
     {
         public long Id { get; set; }
         public string Name { get; set; }

@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class EnglishFractionRepository : BaseRepository, IEnglishFractionRepository
+public class EnglishFractionRepository : IEnglishFractionRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public EnglishFractionRepository(EmployerFinanceConfiguration configuration, ILogger<EnglishFractionRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public EnglishFractionRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

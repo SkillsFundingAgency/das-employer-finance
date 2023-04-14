@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class AccountLegalEntityRepository : BaseRepository, IAccountLegalEntityRepository
+public class AccountLegalEntityRepository : IAccountLegalEntityRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public AccountLegalEntityRepository(EmployerFinanceConfiguration configuration, ILogger<AccountLegalEntityRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public AccountLegalEntityRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

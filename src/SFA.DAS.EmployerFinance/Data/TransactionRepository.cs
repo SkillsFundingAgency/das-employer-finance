@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Api.Types;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -12,14 +11,12 @@ using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.Transacti
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class TransactionRepository : BaseRepository, ITransactionRepository
+public class TransactionRepository : ITransactionRepository
 {
     private readonly IMapper _mapper;
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public TransactionRepository(EmployerFinanceConfiguration configuration, IMapper mapper, ILogger<TransactionRepository> logger,
-        Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext> db)
     {
         _mapper = mapper;
         _db = db;
@@ -265,7 +262,7 @@ public class TransactionRepository : BaseRepository, ITransactionRepository
         return _db.Value.Database
             .GetDbConnection()
             .ExecuteScalarAsync<decimal>(sql: "[employer_financial].[GetTotalSpendForLastYearByAccountId]",
-                param: parameters, 
+                param: parameters,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
     }

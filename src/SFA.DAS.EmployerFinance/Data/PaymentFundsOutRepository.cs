@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class PaymentFundsOutRepository : BaseRepository, IPaymentFundsOutRepository
+public class PaymentFundsOutRepository : IPaymentFundsOutRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public PaymentFundsOutRepository(EmployerFinanceConfiguration configuration, ILogger<PaymentFundsOutRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public PaymentFundsOutRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

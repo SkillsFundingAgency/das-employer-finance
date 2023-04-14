@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class LevyFundsInRepository : BaseRepository, ILevyFundsInRepository
+public class LevyFundsInRepository : ILevyFundsInRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public LevyFundsInRepository(EmployerFinanceConfiguration configuration, ILogger<LevyFundsInRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public LevyFundsInRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

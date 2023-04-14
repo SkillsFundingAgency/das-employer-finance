@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Paye;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class PayeRepository : BaseRepository, IPayeRepository
+public class PayeRepository : IPayeRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
-    public PayeRepository(EmployerFinanceConfiguration configuration, ILogger<PayeRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public PayeRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

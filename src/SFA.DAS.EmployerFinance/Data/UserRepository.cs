@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class UserRepository : BaseRepository, IUserRepository
+public class UserRepository : IUserRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public UserRepository(EmployerFinanceConfiguration configuration, ILogger<UserRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public UserRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

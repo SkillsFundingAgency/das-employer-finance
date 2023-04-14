@@ -1,16 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class TransferRepository : BaseRepository, ITransferRepository
+public class TransferRepository : ITransferRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public TransferRepository(EmployerFinanceConfiguration configuration, ILogger<TransferRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public TransferRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }
@@ -66,7 +64,7 @@ public class TransferRepository : BaseRepository, ITransferRepository
 
         parameters.Add("@accountId", accountId, DbType.Int64);
         parameters.Add("@allowancePercentage", transferAllowancePercentage, DbType.Decimal);
-            
+
         var transferAllowance = await _db.Value.Database.GetDbConnection().QueryAsync<TransferAllowance>(
             sql: "[employer_financial].[GetAccountTransferAllowance]",
             param: parameters,

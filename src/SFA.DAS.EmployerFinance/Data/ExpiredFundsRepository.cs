@@ -1,17 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class ExpiredFundsRepository : BaseRepository, IExpiredFundsRepository
+public class ExpiredFundsRepository : IExpiredFundsRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
 
-    public ExpiredFundsRepository(EmployerFinanceConfiguration configuration, ILogger<ExpiredFundsRepository> logger, Lazy<EmployerFinanceDbContext> db)
-        : base(configuration.DatabaseConnectionString, logger)
+    public ExpiredFundsRepository(Lazy<EmployerFinanceDbContext> db)
     {
         _db = db;
     }

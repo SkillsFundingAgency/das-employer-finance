@@ -1,8 +1,5 @@
-﻿using System.Data;
-using System.Data.Common;
+﻿using System.Data.Common;
 using Microsoft.Azure.Services.AppAuthentication;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
@@ -21,9 +18,6 @@ public class EmployerFinanceDbContext : DbContext
     private readonly EmployerFinanceConfiguration _configuration;
     private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
     private readonly IDbConnection _connection;
-
-    private const string AzureResource = "https://database.windows.net/";
-
     public virtual DbSet<Account> Accounts { get; set; }
     public virtual DbSet<AccountTransfer> AccountTransfers { get; set; }
     public virtual DbSet<HealthCheck> HealthChecks { get; set; }
@@ -52,12 +46,6 @@ public class EmployerFinanceDbContext : DbContext
             return;
         }
 
-        // var connection = new SqlConnection
-        // {
-        //     ConnectionString = _configuration.DatabaseConnectionString,
-        //     AccessToken = _azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result,
-        // };
-
         optionsBuilder.UseSqlServer(_connection as DbConnection);
 
     }
@@ -68,7 +56,6 @@ public class EmployerFinanceDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("employer_financial");
-        //modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployerFinanceDbContext).Assembly);
         modelBuilder.ApplyConfiguration(new AccountConfiguration());
         modelBuilder.ApplyConfiguration(new AccountTransferConfiguration());
         modelBuilder.ApplyConfiguration(new HealthCheckConfiguration());

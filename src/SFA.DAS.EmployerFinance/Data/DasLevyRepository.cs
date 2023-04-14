@@ -10,14 +10,13 @@ using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class DasLevyRepository : BaseRepository, IDasLevyRepository
+public class DasLevyRepository : IDasLevyRepository
 {
     private readonly EmployerFinanceConfiguration _configuration;
     private readonly Lazy<EmployerFinanceDbContext> _db;
     private readonly ICurrentDateTime _currentDateTime;
 
-    public DasLevyRepository(EmployerFinanceConfiguration configuration, ILogger<DasLevyRepository> logger, Lazy<EmployerFinanceDbContext> db, ICurrentDateTime currentDateTime)
-        : base(configuration.DatabaseConnectionString, logger)
+    public DasLevyRepository(EmployerFinanceConfiguration configuration, Lazy<EmployerFinanceDbContext> db, ICurrentDateTime currentDateTime)
     {
         _configuration = configuration;
         _db = db;
