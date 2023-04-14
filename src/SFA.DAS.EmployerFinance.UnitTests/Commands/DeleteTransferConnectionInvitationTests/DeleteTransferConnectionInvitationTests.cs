@@ -150,7 +150,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId, TransferConnectionInvitationStatus.Pending)]
         public void Handle_WhenDeleting_ThenShouldThrowExceptionIfNotRejected(long deletingAccountId, TransferConnectionInvitationStatus status)
         {
-            Assert.ThrowsAsync<Exception>(() =>
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
                 RunAsync(
                     act: f => f.Handle(status, deletingAccountId),
                     assert: null), "Requires transfer connection invitation is rejected.");

@@ -135,7 +135,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         {
             _command.AccountId = _senderAccount.Id;
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command, CancellationToken.None), "Requires rejector account is the receiver account.");
+            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(_command, CancellationToken.None), "Requires rejector account is the receiver account.");
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
 
             _transferConnectionInvitationRepository.Setup(r => r.Get(_transferConnectionInvitation.Id)).ReturnsAsync(_transferConnectionInvitation);
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command, CancellationToken.None), "Requires transfer connection invitation is pending.");
+            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(_command, CancellationToken.None), "Requires transfer connection invitation is pending.");
         }
     }
 }
