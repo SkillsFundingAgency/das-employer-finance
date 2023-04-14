@@ -19,10 +19,8 @@ public class ErrorFieldTagHelper : TagHelper
     
     [HtmlAttributeName("asp-additionalclass")]
     public string AdditionalClass { get; set; }
-
-
     
-    public override void Process(TagHelperContext context, TagHelperOutput tagHelperOutput)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var fieldNames = FieldName.Split(",");
         if (ViewContext?.ModelState != null)
@@ -30,16 +28,16 @@ public class ErrorFieldTagHelper : TagHelper
             if (fieldNames.Any(modelStateKey => ViewContext.ModelState.ContainsKey(modelStateKey) &&
                                                 ViewContext.ModelState[modelStateKey]!.Errors.Any()))
             {
-                tagHelperOutput.AddClass("govuk-form-group--error", HtmlEncoder.Default);
+                output.AddClass("govuk-form-group--error", HtmlEncoder.Default);
             }
             
             if (string.IsNullOrEmpty(AdditionalClass))
             {
-                tagHelperOutput.AddClass(AdditionalClass, HtmlEncoder.Default);
+                output.AddClass(AdditionalClass, HtmlEncoder.Default);
             }
         }
-        tagHelperOutput.AddClass("govuk-form-group", HtmlEncoder.Default);
+        output.AddClass("govuk-form-group", HtmlEncoder.Default);
         
-        tagHelperOutput.TagMode = TagMode.StartTagAndEndTag;
+        output.TagMode = TagMode.StartTagAndEndTag;
     }
 }

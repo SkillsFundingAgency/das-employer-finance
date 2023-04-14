@@ -16,7 +16,7 @@ using SFA.DAS.EmployerFinance.Models.Transaction;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 
-public class TestTransactionRepository : BaseRepository, ITestTransactionRepository
+public class TestTransactionRepository :  ITestTransactionRepository
 {
     private readonly Lazy<EmployerFinanceDbContext> _employerFinanceDbContext;
     private readonly ILogger<TestTransactionRepository> _logger;
@@ -24,7 +24,6 @@ public class TestTransactionRepository : BaseRepository, ITestTransactionReposit
 
     public TestTransactionRepository(EmployerFinanceConfiguration configuration,
         ILogger<TestTransactionRepository> logger, Lazy<EmployerFinanceDbContext> employerFinanceDbContext)
-        : base(configuration.DatabaseConnectionString, logger)
     {
         _employerFinanceDbContext = employerFinanceDbContext;
         _logger = logger;

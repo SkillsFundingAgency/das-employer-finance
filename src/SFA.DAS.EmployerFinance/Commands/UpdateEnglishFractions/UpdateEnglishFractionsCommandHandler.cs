@@ -61,7 +61,7 @@ public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglis
                 }
                 else
                 {
-                    var exception = new ArgumentException($"Could not convert HMRC API fraction value {fraction.Value} to a decimal for english fraction update for EmpRef {request.EmployerReference}", nameof(fraction.Value));
+                    var exception = new InvalidOperationException($"Could not convert HMRC API fraction value {fraction.Value} to a decimal for english fraction update for EmpRef {request.EmployerReference}");
                     _logger.LogError(exception, exception.Message);
                 }
             }

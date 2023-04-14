@@ -19,13 +19,14 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
         {
             await _accountRepository.CreateAccount(request.Id, request.Name);
 
-            _logger.LogInformation($"Account {request.Id} created");
+            _logger.LogInformation("Account {Id} created", request.Id);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Could not create account");
             throw;
         }
+
         return Unit.Value;
     }        
 }

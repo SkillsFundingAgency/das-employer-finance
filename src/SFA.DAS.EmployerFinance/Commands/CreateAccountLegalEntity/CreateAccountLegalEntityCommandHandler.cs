@@ -25,7 +25,7 @@ public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAcco
                 request.AccountId,
                 request.LegalEntityId
             );
-            _logger.LogInformation($"Account Legal Entity {request.Id} created");
+            _logger.LogInformation("Account Legal Entity {Id} created", request.Id);
         }
         catch (Exception exception)
         {

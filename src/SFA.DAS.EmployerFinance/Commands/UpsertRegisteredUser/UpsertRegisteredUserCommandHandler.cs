@@ -39,7 +39,7 @@ public class UpsertRegisteredUserCommandHandler : IRequestHandler<UpsertRegister
             CorrelationId = request.CorrelationId
         });
 
-        _logger.LogInformation($"Upserted user with email={request.EmailAddress}, userRef={request.UserRef}, lastName={request.LastName}, firstName={request.FirstName}");
+        _logger.LogInformation("Upserted user with email={EmailAddress}, userRef={UserRef}, lastName={LastName}, firstName={FirstName}", request.EmailAddress, request.UserRef, request.LastName);
 
         return Unit.Value;
     }

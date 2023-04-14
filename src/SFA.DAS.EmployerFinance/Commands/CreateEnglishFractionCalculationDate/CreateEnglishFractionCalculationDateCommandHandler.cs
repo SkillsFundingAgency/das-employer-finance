@@ -31,7 +31,7 @@ public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandle
 
         await _englishFractionRepository.SetLastUpdateDate(request.DateCalculated);
 
-        _logger.LogInformation($"English Fraction CalculationDate updated to {request.DateCalculated.ToString("dd MMM yyyy")}");
+        _logger.LogInformation("English Fraction CalculationDate updated to {DateCalculated}.", request.DateCalculated.ToString("dd MMM yyyy"));
 
         return Unit.Value;
     }

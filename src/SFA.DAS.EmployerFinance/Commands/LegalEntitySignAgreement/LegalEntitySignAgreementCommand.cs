@@ -4,8 +4,7 @@ namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
 
 public class LegalEntitySignAgreementCommand : IRequest<Unit>
 {
-    public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId,
-        long legalEntityId)
+    public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId, long legalEntityId)
     {
         SignedAgreementId = signedAgreementId;
         SignedAgreementVersion = signedAgreementVersion;
@@ -13,14 +12,13 @@ public class LegalEntitySignAgreementCommand : IRequest<Unit>
         LegalEntityId = legalEntityId;
     }
 
-
     public long SignedAgreementId { get; set; }
     public int SignedAgreementVersion { get; set; }
     public long AccountId { get; set; }
     public long LegalEntityId { get; set; }
 }
 
-public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand,Unit>
+public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand, Unit>
 {
     private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
     private readonly ILogger<LegalEntitySignAgreementCommandHandler> _logger;
@@ -37,11 +35,11 @@ public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntit
         {
             await _accountLegalEntityRepository.SignAgreement(message.SignedAgreementId, message.SignedAgreementVersion,
                 message.AccountId, message.LegalEntityId);
-            _logger.LogInformation($"Signed agreement on legal entity {message.LegalEntityId}");
+            _logger.LogInformation("Signed agreement on legal entity {LegalEntityId}.", message.LegalEntityId);
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not sign agreement on legal entity");
+            _logger.LogError(exception, "Could not sign agreement on legal entity.");
             throw;
         }
 

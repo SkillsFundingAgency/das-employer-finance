@@ -36,11 +36,13 @@ public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAcco
 
         try
         {
-            _logger.LogInformation($"Getting account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+            _logger.LogInformation("Getting account transfers from payment api for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
+                request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
             var paymentTransfers = await _paymentService.GetAccountTransfers(request.PeriodEnd, request.ReceiverAccountId, request.CorrelationId);
 
-            _logger.LogInformation($"Retrieved payment transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+            _logger.LogInformation("Retrieved payment transfers from payment api for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}", 
+                request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
             //Handle multiple transfers for the same account, period end and commitment ID by grouping them together
             //This can happen if delivery months are different by collection months are not for payments
@@ -60,17 +62,20 @@ public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAcco
                     };
                 }).ToArray();
 
-            _logger.LogInformation($"Retrieved {transfers.Length} grouped account transfers from payment api for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+            _logger.LogInformation("Retrieved {TransfersLength} grouped account transfers from payment api for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
+                transfers.Length, request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
             await _transferRepository.CreateAccountTransfers(transfers);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Could not process transfers for Account Id {request.ReceiverAccountId} and Period End {request.PeriodEnd}, CorrelationId = {request.CorrelationId}");
+            _logger.LogError(ex, "Could not process transfers for Account Id {ReceiverAccountId} and Period End {PeriodEnd}, CorrelationId = {CorrelationId}", 
+                request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
             throw;
         }
 
-        _logger.LogInformation($"Refresh account transfers handler complete for AccountId = '{request.ReceiverAccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+        _logger.LogInformation("Refresh account transfers handler complete for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
+            request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
         return Unit.Value;
     }

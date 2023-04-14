@@ -42,7 +42,7 @@ public class LevyImportCleanerStrategy : ILevyImportCleanerStrategy
     }
 
     /// <summary> 
-    /// If there are any Submissions from Hmrc that have the same submission Id, we should discard all 
+    /// If there are any Submissions from HMRC that have the same submission Id, we should discard all 
     /// but the first. 
     /// </summary> 
     private DasDeclaration[] FilterDuplicateHmrcDeclarations(string empRef, IEnumerable<DasDeclaration> declarations)
@@ -57,17 +57,18 @@ public class LevyImportCleanerStrategy : ILevyImportCleanerStrategy
 
         if (duplicateIds.Any())
         {
-            _logger.LogInformation($"PayeScheme '{empRef}' has duplicate submission id(s) from Hmrc = '{string.Join(", ", duplicateIds)}'");
+            _logger.LogInformation("PayeScheme '{EmpRef}' has duplicate submission id(s) from HMRC = '{DuplicateIds}'", empRef, string.Join(", ", duplicateIds));
         }
+
         //MAC-192 - use System.Collection first 
         return temp.DistinctBy(x => x.Id).ToArray();
     }
 
     private void SetEndOfYearAdjustmentProperty(DasDeclaration[] declarations)
     {
-        for (int i = 0; i < declarations.Length; i++)
+        for (var index = 0; index < declarations.Length; index++)
         {
-            declarations[i].EndOfYearAdjustment = IsEndOfYearAdjustment(declarations[i]);
+            declarations[index].EndOfYearAdjustment = IsEndOfYearAdjustment(declarations[index]);
         }
     }
 
@@ -163,7 +164,7 @@ public class LevyImportCleanerStrategy : ILevyImportCleanerStrategy
     /// </remarks>
     private async Task<DasDeclaration> GetDeclarationEffectiveForPeriod12(string empRef, string payrollYear, DateTime yearEndAdjustmentCutOff, DasDeclaration[] hmrcDeclarations)
     {
-        DasDeclaration period12Declaration = await GetEffectivePeriod12SubmissionFromLatestHmrcFeed(hmrcDeclarations, payrollYear, yearEndAdjustmentCutOff);
+        var period12Declaration = await GetEffectivePeriod12SubmissionFromLatestHmrcFeed(hmrcDeclarations, payrollYear, yearEndAdjustmentCutOff);
 
         if (period12Declaration == null)
         {
@@ -208,7 +209,7 @@ public class LevyImportCleanerStrategy : ILevyImportCleanerStrategy
                _hmrcDateService.IsDateOntimeForPayrollPeriod(ld.PayrollYear, ld.PayrollMonth.Value, ld.SubmissionDate);
     }
 
-    private bool IsAnEarlierYearEndAdjustment(DasDeclaration ld, string payrollYear, DateTime yearEndAdjustmentCutOff)
+    private static bool IsAnEarlierYearEndAdjustment(DasDeclaration ld, string payrollYear, DateTime yearEndAdjustmentCutOff)
     {
         // We're interested in year end adjustments that pre-date the one we're looking for
         return ld.PayrollYear == payrollYear

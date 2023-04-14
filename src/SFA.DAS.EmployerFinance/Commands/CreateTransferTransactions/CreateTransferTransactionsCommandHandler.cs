@@ -40,7 +40,7 @@ public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTr
 
             var accountTransfers = transfers as AccountTransfer[] ?? transfers.ToArray();
 
-            //If this code changes you need to check that the transfer transaction details 
+            // If this code changes you need to check that the transfer transaction details 
             // code supports the change as it currently relies on grouping by sender for the transactions
             var senderTransfers = accountTransfers.GroupBy(t => t.SenderAccountId);
 
@@ -50,7 +50,7 @@ public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTr
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to create transfer transaction for accountId {request.ReceiverAccountId} and period end {request.PeriodEnd}");
+            _logger.LogError(ex, "Failed to create transfer transaction for accountId {ReceiverAccountId} and period end {PeriodEnd}", request.ReceiverAccountId, request.PeriodEnd);
             throw;
         }
 
@@ -60,7 +60,9 @@ public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTr
     private static IEnumerable<TransferTransactionLine> CreateTransactions(IGrouping<long, AccountTransfer> senderTransferGroup)
     {
         if (!senderTransferGroup.Any())
-            return new TransferTransactionLine[0];
+        {
+            return Array.Empty<TransferTransactionLine>();
+        }
 
         var firstTransfer = senderTransferGroup.First();
 
