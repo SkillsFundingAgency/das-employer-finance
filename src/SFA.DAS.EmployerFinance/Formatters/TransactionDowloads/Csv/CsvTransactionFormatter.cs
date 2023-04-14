@@ -9,8 +9,7 @@ public abstract class CsvTransactionFormatter
 
     public string FileExtension => "csv";
 
-    public DownloadFormatType DownloadFormatType =>
-        DownloadFormatType.CSV;
+    public DownloadFormatType DownloadFormatType => DownloadFormatType.CSV;
 
     public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions)
     {
