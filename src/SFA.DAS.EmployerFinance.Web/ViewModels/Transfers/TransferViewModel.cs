@@ -1,6 +1,6 @@
 using SFA.DAS.Common.Domain.Types;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels;
+namespace SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 
 public class TransferViewModel
 {

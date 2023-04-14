@@ -101,7 +101,7 @@ namespace SFA.DAS.EmployerFinance.Web
 
             }).AddMvc(options =>
             {
-                options.Filters.Add(new AnalyticsFilter());
+                options.Filters.Add(new AnalyticsFilterAttribute());
                 if (!_configuration.IsDev())
                 {
                     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());

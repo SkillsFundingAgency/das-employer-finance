@@ -1,8 +1,4 @@
-﻿using System.Threading.Tasks;
-using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 using SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
 using SFA.DAS.EmployerFinance.Web.Authentication;

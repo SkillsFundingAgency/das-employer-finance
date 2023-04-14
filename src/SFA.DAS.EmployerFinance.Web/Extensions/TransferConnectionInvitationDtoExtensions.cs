@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using SFA.DAS.EmployerFinance.Dtos;
+﻿using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 namespace SFA.DAS.EmployerFinance.Web.Extensions

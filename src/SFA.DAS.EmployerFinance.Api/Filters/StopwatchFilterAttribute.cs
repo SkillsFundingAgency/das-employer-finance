@@ -14,7 +14,7 @@ public class StopwatchFilterAttribute : ActionFilterAttribute
         _logger = logger;
     }
 
-    public override void OnActionExecuting(ActionExecutingContext filterContext)
+    public override void OnActionExecuting(ActionExecutingContext context)
     {
         _stopWatch = new Stopwatch();
         _stopWatch.Start();

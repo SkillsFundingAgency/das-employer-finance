@@ -3,7 +3,7 @@ using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    public class BaseController : Microsoft.AspNetCore.Mvc.Controller
+    public class BaseController : Controller
     {
         private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
-using SFA.DAS.Configuration.AzureTableStorage;
+﻿using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
 
 namespace SFA.DAS.EmployerFinance.Web.Extensions;
@@ -27,7 +24,6 @@ public static class ConfigurationExtensions
             configurationBuilder.AddJsonFile("appsettings.json", false)
                 .AddJsonFile("appsettings.Development.json", true);
         }
-
 #endif
         configurationBuilder.AddEnvironmentVariables();
         
@@ -41,7 +37,6 @@ public static class ConfigurationExtensions
             }
         );
     
-
         return configurationBuilder.Build();
     }
 }

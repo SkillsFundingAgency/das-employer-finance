@@ -34,7 +34,6 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
 public class WhenAddingServicesToTheContainer
 {
-    [TestCase(typeof(HomeOrchestrator))]
     [TestCase(typeof(TransfersOrchestrator))]
     [TestCase(typeof(IEmployerAccountTransactionsOrchestrator))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Orchestrators(Type toResolve)

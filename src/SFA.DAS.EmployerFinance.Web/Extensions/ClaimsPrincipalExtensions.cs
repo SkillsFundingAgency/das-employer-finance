@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using SFA.DAS.EmployerFinance.Infrastructure;
+﻿using SFA.DAS.EmployerFinance.Infrastructure;
 
 namespace SFA.DAS.EmployerFinance.Web.Extensions
 {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.Web.Attributes;
+﻿using SFA.DAS.EmployerFinance.Web.Attributes;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels
+namespace SFA.DAS.EmployerFinance.Web.ViewModels.Transfers
 {
     public class ReceiveTransferConnectionInvitationViewModel
     {

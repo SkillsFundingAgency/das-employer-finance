@@ -1,24 +1,22 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SFA.DAS.EmployerFinance.Web.Authorization;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters;
 
-public class ZendeskApiFilter : ActionFilterAttribute
+public class ZendeskApiFilterAttribute : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
         var controller = filterContext.Controller as Controller;
         if (controller != null)
         {
-            var user = (ClaimsPrincipal)controller.User;
             var accountIdFromUrl = controller.RouteData.Values[RouteValueKeys.AccountHashedId]?.ToString().ToUpper();
+
             controller.ViewBag.ZendeskApiData = new ZendeskApiData
             {
-                Name = user?.GetDisplayName(),
-                Email = user?.GetEmailAddress(),
+                Name = controller.User.GetDisplayName(),
+                Email = controller.User.GetEmailAddress(),
                 Organization = accountIdFromUrl
             };
         }

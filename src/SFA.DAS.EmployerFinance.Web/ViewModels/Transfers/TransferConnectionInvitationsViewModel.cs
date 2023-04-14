@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SFA.DAS.EmployerFinance.Dtos;
+﻿using SFA.DAS.EmployerFinance.Dtos;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels
+namespace SFA.DAS.EmployerFinance.Web.ViewModels.Transfers
 {
     public class TransferConnectionInvitationsViewModel
     {

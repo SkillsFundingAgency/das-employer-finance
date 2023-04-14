@@ -1,6 +1,3 @@
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -24,7 +21,6 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
 public static class ApplicationServiceRegistrations
 {
-    
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDateTimeServices(configuration);
