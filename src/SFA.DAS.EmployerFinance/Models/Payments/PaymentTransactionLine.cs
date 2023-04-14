@@ -21,8 +21,4 @@ public class PaymentTransactionLine : TransactionLine
     public decimal EmployerCoInvestmentAmount { get; set; }
 
     public bool IsCoInvested => SfaCoInvestmentAmount != 0 || EmployerCoInvestmentAmount != 0;
-
-    public ICollection<PaymentTransactionLine> SubPayments =>
-        SubTransactions?.OfType<PaymentTransactionLine>().ToList() ??
-        new List<PaymentTransactionLine>();
 }

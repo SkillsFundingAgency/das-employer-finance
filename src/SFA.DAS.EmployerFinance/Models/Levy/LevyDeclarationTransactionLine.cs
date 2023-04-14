@@ -11,8 +11,4 @@ public class LevyDeclarationTransactionLine : TransactionLine
     public decimal TopUp { get; set; }
     public decimal LineTotal { get; set; }
     public decimal LineAmount { get; set; }
-
-    public ICollection<LevyDeclarationTransactionLine> SubLevyDeclarationTransactions =>
-        SubTransactions?.OfType<LevyDeclarationTransactionLine>().ToList() ??
-        new List<LevyDeclarationTransactionLine>();
 }
