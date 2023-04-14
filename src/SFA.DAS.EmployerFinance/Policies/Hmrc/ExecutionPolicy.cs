@@ -6,8 +6,7 @@ namespace SFA.DAS.EmployerFinance.Policies.Hmrc;
 public abstract class ExecutionPolicy
 {
     protected AsyncPolicyWrap RootPolicy { get; set; }
-
-   
+    
     public virtual async Task ExecuteAsync(Func<Task> action)
     {
         try
@@ -31,8 +30,7 @@ public abstract class ExecutionPolicy
             return OnException<T>(ex);
         }
     }
-
-
+    
     protected virtual void OnException(Exception ex)
     {
         throw ex;
@@ -41,24 +39,6 @@ public abstract class ExecutionPolicy
     protected virtual T OnException<T>(Exception ex)
     {
         throw ex;
-    }
-
-    protected static Policy CreateRetryPolicy<T>(int numberOfRetries, TimeSpan waitBetweenTries, Action<Exception> onRetryableFailure = null)
-        where T : Exception
-    {
-        var waits = new TimeSpan[numberOfRetries];
-        for (var i = 0; i < waits.Length; i++) waits[i] = waitBetweenTries;
-
-        return Policy.Handle<T>().WaitAndRetry(waits, (ex, wait) => { onRetryableFailure?.Invoke(ex); });
-    }
-
-    protected static Policy CreateAsyncRetryPolicy<T>(int numberOfRetries, TimeSpan waitBetweenTries, Action<Exception> onRetryableFailure = null)
-        where T : Exception
-    {
-        var waits = new TimeSpan[numberOfRetries];
-        for (var i = 0; i < waits.Length; i++) waits[i] = waitBetweenTries;
-
-        return Policy.Handle<T>().WaitAndRetry(waits, (ex, wait) => { onRetryableFailure?.Invoke(ex); });
     }
 
     protected static IAsyncPolicy CreateAsyncRetryPolicy<T>(Func<T, bool> canHandle, int numberOfRetries, TimeSpan waitBetweenTries, Action<Exception> onRetryableFailure = null)

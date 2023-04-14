@@ -4,14 +4,13 @@ namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 
 public class FindAccountCoursePaymentsQueryValidator : IValidator<FindAccountCoursePaymentsQuery>
 {
-    
     public ValidationResult Validate(FindAccountCoursePaymentsQuery item)
     {
         throw new NotImplementedException();
     }
 
     //TODO this is not tested
-    public async Task<ValidationResult> ValidateAsync(FindAccountCoursePaymentsQuery item)
+    public Task<ValidationResult> ValidateAsync(FindAccountCoursePaymentsQuery item)
     {
         var validationResult = new ValidationResult();
 
@@ -41,6 +40,6 @@ public class FindAccountCoursePaymentsQueryValidator : IValidator<FindAccountCou
             validationResult.AddError(nameof(item.ToDate), "To date has not been supplied");
         }
         
-        return validationResult;
+        return Task.FromResult(validationResult);
     }
 }
