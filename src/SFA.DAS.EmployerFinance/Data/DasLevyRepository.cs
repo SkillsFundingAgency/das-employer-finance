@@ -6,7 +6,6 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -146,18 +145,7 @@ public class DasLevyRepository : IDasLevyRepository
 
         return result.SingleOrDefault();
     }
-
-    public async Task<PeriodEnd> GetLatestPeriodEnd()
-    {
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
-            sql: "[employer_financial].[GetLatestPeriodEnd]",
-            param: null,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.StoredProcedure);
-
-        return result.SingleOrDefault();
-    }
-
+    
     public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
     {
         return _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
@@ -291,22 +279,6 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
 
         return result.ToList();
-    }
-
-    public async Task<TransferAllowance> GetTransferAllowance(long accountId)
-    {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("@accountId", accountId, DbType.Int64);
-        parameters.Add("@allowancePercentage", _configuration.TransferAllowancePercentage, DbType.Decimal);
-
-        var transferAllowance = await _db.Value.Database.GetDbConnection().QueryAsync<TransferAllowance>(
-            sql: "[employer_financial].[GetAccountTransferAllowance]",
-            param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.StoredProcedure);
-
-        return transferAllowance.SingleOrDefault() ?? new TransferAllowance();
     }
 
     public Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef)
