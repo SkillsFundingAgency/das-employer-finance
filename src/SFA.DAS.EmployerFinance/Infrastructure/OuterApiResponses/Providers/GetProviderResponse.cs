@@ -2,11 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Providers;
 
-public class GetProviderResponse : ProviderResponse
-{
-}
-
-public class ProviderResponse
+public class GetProviderResponse 
 {
     [JsonProperty("ukprn")]
     public int Ukprn { get; set; }
