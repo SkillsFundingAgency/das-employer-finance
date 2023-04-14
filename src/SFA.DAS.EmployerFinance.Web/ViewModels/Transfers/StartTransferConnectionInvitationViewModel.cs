@@ -1,18 +1,17 @@
 ﻿using SFA.DAS.EmployerFinance.Web.Attributes;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels.Transfers
+namespace SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+
+public class StartTransferConnectionInvitationViewModel 
 {
-    public class StartTransferConnectionInvitationViewModel 
-    {
-        [IgnoreMap]
-        public string HashedAccountId { get; set; }
+    [IgnoreMap]
+    public string HashedAccountId { get; set; }
 
-        [IgnoreMap]
-        [Required]
-        public Guid UserRef { get; set; }
+    [IgnoreMap]
+    [Required]
+    public Guid UserRef { get; set; }
 
-        [Required(ErrorMessage = "You must enter a valid account ID")]
-        [RegularExpression(EmployerFinance.Constants.AccountHashedIdRegex, ErrorMessage = "You must enter a valid account ID")]
-        public string ReceiverAccountPublicHashedId { get; set; }
-    }
+    [Required(ErrorMessage = "You must enter a valid account ID")]
+    [RegularExpression(EmployerFinance.Constants.AccountHashedIdRegex, ErrorMessage = "You must enter a valid account ID")]
+    public string ReceiverAccountPublicHashedId { get; set; }
 }

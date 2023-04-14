@@ -266,7 +266,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
 
             var apprenticePayments = paymentSummaries.ToList();
 
-            var accountResponse = await _accountApiClient.GetAccount(hashedAccountId);;
+            var accountResponse = await _accountApiClient.GetAccount(hashedAccountId);
 
             return new OrchestratorResponse<CoursePaymentDetailsViewModel>
             {
@@ -326,7 +326,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
                     HashedAccountId = hashedId
                 });
 
-        var viewModel = BuildTransactionViewModel(aggregratedTransactions.Data, year, month);
+        var viewModel = BuildTransactionViewModel(aggregratedTransactions.Data);
 
         return new OrchestratorResponse<TransactionViewResultViewModel>
         {
@@ -341,7 +341,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
         };
     }
 
-    private TransactionViewModel BuildTransactionViewModel(AggregationData aggregationData, int year, int month)
+    private static TransactionViewModel BuildTransactionViewModel(AggregationData aggregationData)
     {
         var viewModel = new TransactionViewModel
         {

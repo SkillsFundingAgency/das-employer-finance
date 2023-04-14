@@ -1,9 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Dtos;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels
+namespace SFA.DAS.EmployerFinance.Web.ViewModels;
+
+public class HealthCheckViewModel
 {
-    public class HealthCheckViewModel
-    {
-        public HealthCheckDto HealthCheck { get; set; }
-    }
+    public HealthCheckDto HealthCheck { get; set; }
 }
