@@ -42,6 +42,7 @@ public class HealthCheck : Entity
         }
         catch
         {
+            // If exception caught, received response will remain default (?)
         }
     }
 
