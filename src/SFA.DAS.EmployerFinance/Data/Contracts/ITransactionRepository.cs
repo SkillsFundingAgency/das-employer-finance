@@ -5,7 +5,7 @@ namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface ITransactionRepository
 {
-    Task CreateTransferTransactions(IEnumerable<TransferTransactionLine> transaction);
+    Task CreateTransferTransactions(IEnumerable<TransferTransactionLine> transactions);
     Task<TransactionLine[]> GetAccountTransactionByProviderAndDateRange(long accountId, long ukprn, DateTime fromDate, DateTime toDate);
     Task<int> GetPreviousTransactionsCount(long accountId, DateTime fromDate);
     Task<decimal> GetAccountBalance(long accountId);

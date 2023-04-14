@@ -44,20 +44,12 @@ public class TransactionRepository : ITransactionRepository
         parameters.Add("@accountId", accountId, DbType.Int64);
         parameters.Add("@fromDate", new DateTime(fromDate.Year, fromDate.Month, fromDate.Day), DbType.DateTime);
 
-        try
-        {
-            return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<int>(
-                sql: "[employer_financial].[GetPreviousTransactionsCount]",
-                param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+        return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<int>(
+            sql: "[employer_financial].[GetPreviousTransactionsCount]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
 
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
     }
 
     public Task<decimal> GetAccountBalance(long accountId)
@@ -166,7 +158,7 @@ public class TransactionRepository : ITransactionRepository
                     return _mapper.Map<TransactionLine>(entity);
 
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new InvalidOperationException($"Unable to map from {entity.TransactionType}.");
             }
         }).ToArray();
     }
@@ -207,8 +199,7 @@ public class TransactionRepository : ITransactionRepository
 
         return MapTransactions(result);
     }
-
-
+    
     public Task<string> GetProviderName(long ukprn, long accountId, string periodEnd)
     {
         var parameters = new DynamicParameters();
@@ -224,6 +215,7 @@ public class TransactionRepository : ITransactionRepository
             commandType: CommandType.StoredProcedure);
 
     }
+
     public async Task<TransactionDownloadLine[]> GetAllTransactionDetailsForAccountByDate(long accountId, DateTime fromDate, DateTime toDate)
     {
         var parameters = new DynamicParameters();

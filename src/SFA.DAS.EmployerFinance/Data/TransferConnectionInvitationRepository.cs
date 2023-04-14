@@ -17,7 +17,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
         _db.Value.Attach(transferConnectionInvitation);
         _db.Value.TransferConnectionInvitations.Add(transferConnectionInvitation);
 
-        // TO DO: investigate why this is saved here - shouldn't the unit of work pattern be saving it with the published events
+        // TODO: investigate why this is saved here - shouldn't the unit of work pattern be saving it with the published events
         return _db.Value.SaveChangesAsync();
     }
 
@@ -64,7 +64,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
             .SingleOrDefaultAsync();
     }
 
-    public Task<List<TransferConnectionInvitation>> GetByReceiver(long recieverAccountId, TransferConnectionInvitationStatus status)
+    public Task<List<TransferConnectionInvitation>> GetByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
     {
         return _db.Value.TransferConnectionInvitations
             .Include(c=>c.ReceiverAccount)
@@ -72,7 +72,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
             .Include(c=>c.Changes)
             .ThenInclude(x=>x.User)
             .Where(
-                i => i.ReceiverAccount.Id == recieverAccountId &&
+                i => i.ReceiverAccount.Id == receiverAccountId &&
                      i.Status == TransferConnectionInvitationStatus.Approved)
             .OrderBy(i => i.SenderAccount.Name)
             .ToListAsync();

@@ -42,12 +42,12 @@ public class PayeRepository : IPayeRepository
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<PayeSchemeView> GetPayeForAccountByRef(long accountId, string reference)
+    public async Task<PayeSchemeView> GetPayeForAccountByRef(long accountId, string payeRef)
     {
         var parameters = new DynamicParameters();
 
         parameters.Add("@AccountId", accountId, DbType.Int64);
-        parameters.Add("@Ref", reference, DbType.String);
+        parameters.Add("@Ref", payeRef, DbType.String);
 
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<PayeSchemeView>(sql: "[employer_financial].[GetPayeForAccount_ByRef]", param: parameters,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),

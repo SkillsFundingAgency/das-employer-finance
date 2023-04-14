@@ -6,7 +6,7 @@ namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface IDasLevyRepository
 {
-    Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> dasDeclaration, string empRef, long accountId);
+    Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId);
     Task CreateNewPeriodEnd(PeriodEnd periodEnd);
     Task CreatePayments(IEnumerable<PaymentDetails> payments);
     Task<ISet<Guid>> GetAccountPaymentIds(long accountId);
