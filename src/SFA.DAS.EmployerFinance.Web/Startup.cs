@@ -80,8 +80,9 @@ public class Startup
         if (_configuration.UseGovUkSignIn())
         {
             services.AddAndConfigureGovUkAuthentication(_configuration,
-                $"{typeof(Startup).Assembly.GetName().Name}.Auth",
-                typeof(EmployerAccountPostAuthenticationClaimsHandler));
+                typeof(EmployerAccountPostAuthenticationClaimsHandler),
+                "",
+                "/service/SignIn-Stub");
         }
         else
         {
