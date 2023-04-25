@@ -115,7 +115,7 @@ public class Startup
 
         if (!_environment.IsDevelopment())
         {
-            services.AddDataProtection();
+            services.AddDataProtection(_configuration);
         }
 #if DEBUG
         services.AddControllersWithViews(o => { })
