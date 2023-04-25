@@ -143,6 +143,10 @@
         },
         "stubAuth": {
             "type": "string"
+        },
+        "websiteRunFromPackage": {
+            "type": "int",
+            "defaultValue": 0
         }
     },
     "variables": {
@@ -610,6 +614,10 @@
                                 {
                                     "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
                                     "value": "[reference(concat('WorkerAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                },
+                                {
+                                    "name": "WEBSITE_RUN_FROM_PACKAGE",
+                                    "value": "[parameters('websiteRunFromPackage')]"
                                 }
                             ]
                         }
