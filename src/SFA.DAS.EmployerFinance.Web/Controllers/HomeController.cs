@@ -69,8 +69,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                 schemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
             }
             
-            return SignOut(
-                authenticationProperties, schemes.ToArray());
+            return SignOut(authenticationProperties, schemes.ToArray());
         }
 
         [Route("SignOutCleanup")]
