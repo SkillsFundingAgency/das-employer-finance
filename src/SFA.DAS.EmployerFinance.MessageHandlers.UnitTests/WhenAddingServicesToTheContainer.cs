@@ -113,12 +113,6 @@ public class WhenAddingServicesToTheContainer
     private static void SetupServiceCollection(IServiceCollection services)
     {
         var configuration = GenerateConfiguration();
-        var financeConfiguration = configuration
-            .GetSection(nameof(EmployerFinanceConfiguration))
-            .Get<EmployerFinanceConfiguration>();
-        var outerApiConfiguration = configuration
-            .GetSection(nameof(EmployerFinanceOuterApiConfiguration))
-            .Get<EmployerFinanceOuterApiConfiguration>();
 
         services.AddSingleton<IConfiguration>(configuration);
         services.AddConfigurationSections(configuration);
