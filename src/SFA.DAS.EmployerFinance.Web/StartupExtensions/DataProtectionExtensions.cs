@@ -6,25 +6,29 @@ namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
 public static class AddDataProtectionExtensions
 {
-    public static void AddDataProtection(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDataProtection(this IServiceCollection services, IConfiguration configuration)
     {
             
-        var config = configuration.GetSection(nameof(EmployerFinanceConfiguration))
-            .Get<EmployerFinanceConfiguration>();
+        var config = configuration.GetSection(nameof(EmployerFinanceWebConfiguration)).Get<EmployerFinanceWebConfiguration>();
 
-        if (config != null 
-            && !string.IsNullOrEmpty(config.DataProtectionKeysDatabase) 
-            && !string.IsNullOrEmpty(config.RedisConnectionString))
+        if (config == null
+            || string.IsNullOrEmpty(config.DataProtectionKeysDatabase)
+            || string.IsNullOrEmpty(config.RedisConnectionString))
         {
-            var redisConnectionString = config.RedisConnectionString;
-            var dataProtectionKeysDatabase = config.DataProtectionKeysDatabase;
-
-            var redis = ConnectionMultiplexer
-                .Connect($"{redisConnectionString},{dataProtectionKeysDatabase}");
-
-            services.AddDataProtection()
-                .SetApplicationName("das-employer")
-                .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+            return services;
         }
+
+
+        var redisConnectionString = config.RedisConnectionString;
+        var dataProtectionKeysDatabase = config.DataProtectionKeysDatabase;
+
+        var redis = ConnectionMultiplexer
+            .Connect($"{redisConnectionString},{dataProtectionKeysDatabase}");
+
+        services.AddDataProtection()
+            .SetApplicationName("das-employer")
+            .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+
+        return services;
     }
 }

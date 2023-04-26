@@ -54,7 +54,7 @@ public class Startup
 
         services.AddOrchestrators();
 
-        services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
+        services.AddDatabaseRegistration();
         services.AddDataRepositories();
         
 

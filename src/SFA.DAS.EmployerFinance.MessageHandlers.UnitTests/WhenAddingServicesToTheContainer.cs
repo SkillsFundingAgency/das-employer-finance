@@ -126,7 +126,7 @@ public class WhenAddingServicesToTheContainer
         services.AddNServiceBus();
         services.AddDataRepositories();
         services.AddApplicationServices();
-        services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+        services.AddDatabaseRegistration();
         services.AddMediatR(typeof(RenameAccountCommand));
         services.AddAutoMapper(typeof(TransactionRepository));
         services.AddUnitOfWork();
@@ -135,7 +135,7 @@ public class WhenAddingServicesToTheContainer
         services.AddHmrcServices();
         services.AddProviderServices();
         services.AddCachesRegistrations(true);
-        services.AddEmployerFinanceOuterApi(outerApiConfiguration);
+        services.AddEmployerFinanceOuterApi();
 
         RegisterEventHandlers(services);
     }
@@ -162,12 +162,12 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
-                new("EmployerFinanceConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
+                new("EmployerFinanceJobsConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("PaymentsEventsApi:ApiBaseUrl", "test"),
                 new("PaymentsEventsApi:IdentifierUri", "test"),
                 new("CommitmentsApiV2ClientConfiguration:ApiBaseUrl", "test"),
                 new("CommitmentsApiV2ClientConfiguration:IdentifierUri", "test"),
-                new("EmployerFinanceConfiguration:Hmrc:BaseUrl", "http://test"),
+                new("Hmrc:BaseUrl", "http://test"),
                 new("EmployerFinanceOuterApiConfiguration:BaseUrl", "http://test"),
                 new("EmployerFinanceOuterApiConfiguration:Key", "test"),
                 new("EnvironmentName", "test"),

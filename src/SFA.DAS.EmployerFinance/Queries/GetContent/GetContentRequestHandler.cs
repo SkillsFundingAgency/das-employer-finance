@@ -10,19 +10,19 @@ public class GetContentRequestHandler : IRequestHandler<GetContentRequest, GetCo
     private readonly IValidator<GetContentRequest> _validator;
     private readonly ILogger<GetContentRequestHandler> _logger;
     private readonly IContentApiClient _service;
-    private readonly EmployerFinanceConfiguration _employerFinanceConfiguration;
+    private readonly EmployerFinanceWebConfiguration _employerFinanceWebConfiguration;
 
     public GetContentRequestHandler(
         IValidator<GetContentRequest> validator,
         ILogger<GetContentRequestHandler> logger,
         IContentApiClient service,
-        EmployerFinanceConfiguration employerFinanceConfiguration
+        EmployerFinanceWebConfiguration employerFinanceWebConfiguration
     )
     {
         _validator = validator;
         _logger = logger;
         _service = service;
-        _employerFinanceConfiguration = employerFinanceConfiguration;
+        _employerFinanceWebConfiguration = employerFinanceWebConfiguration;
     }
 
     public async Task<GetContentResponse> Handle(GetContentRequest message,CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ public class GetContentRequestHandler : IRequestHandler<GetContentRequest, GetCo
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var applicationId = message.UseLegacyStyles ? _employerFinanceConfiguration.ApplicationId + "-legacy" : _employerFinanceConfiguration.ApplicationId;
+        var applicationId = message.UseLegacyStyles ? _employerFinanceWebConfiguration.ApplicationId + "-legacy" : _employerFinanceWebConfiguration.ApplicationId;
 
         try
         {

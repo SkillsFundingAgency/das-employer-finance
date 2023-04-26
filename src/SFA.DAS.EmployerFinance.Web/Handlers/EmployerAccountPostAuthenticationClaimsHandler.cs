@@ -8,10 +8,10 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
 {
     public class EmployerAccountPostAuthenticationClaimsHandler : ICustomClaims
     {
-        private readonly EmployerFinanceConfiguration _employerFinanceConfiguration;
+        private readonly EmployerFinanceWebConfiguration _employerFinanceConfiguration;
         private readonly IUserAccountService _userAccountService;
 
-        public EmployerAccountPostAuthenticationClaimsHandler(IUserAccountService userAccountService, IOptions<EmployerFinanceConfiguration> employerFinanceConfiguration)
+        public EmployerAccountPostAuthenticationClaimsHandler(IUserAccountService userAccountService, IOptions<EmployerFinanceWebConfiguration> employerFinanceConfiguration)
         {
             _userAccountService = userAccountService;
             _employerFinanceConfiguration = employerFinanceConfiguration.Value;

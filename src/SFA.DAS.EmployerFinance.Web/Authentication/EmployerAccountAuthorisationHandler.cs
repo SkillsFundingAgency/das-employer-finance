@@ -18,9 +18,9 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserAccountService _accountsService;
     private readonly ILogger<EmployerAccountOwnerAuthorizationHandler> _logger;
-    private readonly EmployerFinanceConfiguration _configuration;
+    private readonly EmployerFinanceWebConfiguration _configuration;
 
-    public EmployerAccountAuthorisationHandler(IHttpContextAccessor httpContextAccessor, IUserAccountService accountsService, ILogger<EmployerAccountOwnerAuthorizationHandler> logger, IOptions<EmployerFinanceConfiguration> configuration)
+    public EmployerAccountAuthorisationHandler(IHttpContextAccessor httpContextAccessor, IUserAccountService accountsService, ILogger<EmployerAccountOwnerAuthorizationHandler> logger, IOptions<EmployerFinanceWebConfiguration> configuration)
     {
         _httpContextAccessor = httpContextAccessor;
         _accountsService = accountsService;

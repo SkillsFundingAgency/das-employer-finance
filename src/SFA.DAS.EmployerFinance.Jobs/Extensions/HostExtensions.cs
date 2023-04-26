@@ -1,4 +1,5 @@
-﻿using NLog.Extensions.Logging;
+﻿using System.IO;
+using NLog.Extensions.Logging;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Jobs.ServiceRegistrations;
@@ -41,10 +42,15 @@ public static class HostExtensions
     {
         return hostBuilder.ConfigureAppConfiguration((context, builder) =>
         {
-            builder.AddAzureTableStorage(ConfigurationKeys.EmployerFinance)
-                .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
-                .AddEnvironmentVariables();
+            builder.AddConfiguration(context.Configuration).SetBasePath(Directory.GetCurrentDirectory());
+            builder.AddAzureTableStorage(options =>
+            {
+                options.ConfigurationKeys = new [] { ConfigurationKeys.EmployerFinanceJobs };
+                options.PreFixConfigurationKeys = false;
+            })
+            .AddJsonFile("appsettings.json", true, true)
+            .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
+            .AddEnvironmentVariables();
         });
     }
 
@@ -56,7 +62,7 @@ public static class HostExtensions
             services.AddNServiceBus();
             services.AddDataRepositories();
             services.AddApplicationServices();
-            services.AddDatabaseRegistration(context.Configuration[$"{ConfigurationKeys.EmployerFinance}:DatabaseConnectionString"]);
+            services.AddDatabaseRegistration();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
             services.AddUnitOfWork();
 #pragma warning disable 618

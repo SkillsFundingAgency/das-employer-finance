@@ -54,9 +54,7 @@ public static class HostExtensions
             
             builder.AddAzureTableStorage(options =>
                 {
-                    options.ConfigurationKeys = configuration["ConfigNames"].Split(",");
-                    options.StorageConnectionString = configuration["ConfigurationStorageConnectionString"];
-                    options.EnvironmentName = configuration["EnvironmentName"];
+                    options.ConfigurationKeys = new[] { ConfigurationKeys.EmployerFinanceJobs };
                     options.PreFixConfigurationKeys = false;
                     options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
                 }
@@ -81,7 +79,7 @@ public static class HostExtensions
             services.AddNServiceBus();
             services.AddDataRepositories();
             services.AddApplicationServices();
-            services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+            services.AddDatabaseRegistration();
             services.AddMediatR(typeof(RenameAccountCommand));
             services.AddAutoMapper(typeof(TransactionRepository));
             services.AddUnitOfWork();
@@ -89,7 +87,7 @@ public static class HostExtensions
             services.AddHmrcServices();
             services.AddProviderServices();
             services.AddCachesRegistrations(context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-            services.AddEmployerFinanceOuterApi(outerApiConfiguration);
+            services.AddEmployerFinanceOuterApi();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
             services.BuildServiceProvider();
         });

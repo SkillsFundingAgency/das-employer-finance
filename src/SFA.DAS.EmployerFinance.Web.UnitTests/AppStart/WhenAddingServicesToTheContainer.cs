@@ -1,3 +1,4 @@
+using FluentAssertions.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -92,14 +93,14 @@ public class WhenAddingServicesToTheContainer
         var configuration = GenerateConfiguration();
         var financeConfiguration = configuration
             .GetSection("EmployerFinanceConfiguration")
-            .Get<EmployerFinanceConfiguration>();
+            .Get<EmployerFinanceWebConfiguration>();
         serviceCollection.AddSingleton(Mock.Of<IWebHostEnvironment>());
         serviceCollection.AddSingleton(Mock.Of<IConfiguration>());
         serviceCollection.AddConfigurationOptions(configuration);
         serviceCollection.AddDistributedMemoryCache();
         serviceCollection.AddApplicationServices(configuration);
         serviceCollection.AddAuthenticationServices();
-        serviceCollection.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+        serviceCollection.AddDatabaseRegistration();
         serviceCollection.AddDataRepositories();
         serviceCollection.AddOrchestrators();
         serviceCollection.AddLogging();

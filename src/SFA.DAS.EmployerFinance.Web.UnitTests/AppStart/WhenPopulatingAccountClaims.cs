@@ -19,7 +19,7 @@ public class WhenPopulatingAccountClaims
         string emailAddress,
         EmployerUserAccounts accountData,
         [Frozen] Mock<IUserAccountService> accountService,
-        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> forecastingConfiguration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> forecastingConfiguration,
         EmployerAccountPostAuthenticationClaimsHandler handler)
     {
         accountData.IsSuspended = false;
@@ -47,7 +47,7 @@ public class WhenPopulatingAccountClaims
         string emailAddress,
         EmployerUserAccounts accountData,
         [Frozen] Mock<IUserAccountService> accountService,
-        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> forecastingConfiguration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> forecastingConfiguration,
         EmployerAccountPostAuthenticationClaimsHandler handler)
     {
         accountData.IsSuspended = true;
@@ -66,7 +66,7 @@ public class WhenPopulatingAccountClaims
         string idamsIdentifier,
         EmployerUserAccounts accountData,
         [Frozen] Mock<IUserAccountService> accountService,
-        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> forecastingConfiguration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> forecastingConfiguration,
         EmployerAccountPostAuthenticationClaimsHandler handler)
     {
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, string.Empty);

@@ -14,9 +14,10 @@ public static class ConfigurationServiceRegistrations
     {
         services.AddOptions();
 
-        services.Configure<EmployerFinanceConfiguration>(configuration.GetSection(nameof(EmployerFinanceConfiguration)));
-        services.AddSingleton(cfg => cfg.GetService<IOptions<EmployerFinanceConfiguration>>().Value);
-        services.AddSingleton(configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>());
+        services.Configure<EmployerFinanceJobsConfiguration>(configuration.GetSection(nameof(EmployerFinanceJobsConfiguration)));
+        services.AddSingleton(cfg => cfg.GetService<IOptions<EmployerFinanceJobsConfiguration>>().Value);
+
+        services.AddSingleton<EmployerFinanceConfiguration>(sp => sp.GetService<EmployerFinanceJobsConfiguration>());
 
         services.Configure<IPaymentsEventsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient));
         services.AddSingleton<IPaymentsEventsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient).Get<PaymentsEventsApiClientConfiguration>());
@@ -24,26 +25,27 @@ public static class ConfigurationServiceRegistrations
         services.Configure<PaymentsEventsApiClientLocalConfiguration>(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient));
         services.AddSingleton(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient).Get<PaymentsEventsApiClientLocalConfiguration>());
 
+        services.Configure<TokenServiceApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.TokenServiceApi));
+        services.AddSingleton(cfg => cfg.GetService<IOptions<TokenServiceApiClientConfiguration>>().Value);
+
+        services.Configure<HmrcConfiguration>(configuration.GetSection(ConfigurationKeys.Hmrc));
+        services.AddSingleton(cfg => cfg.GetService<IOptions<HmrcConfiguration>>().Value);
+
         services.Configure<CommitmentsApiV2ClientConfiguration>(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)));
         services.AddSingleton(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)).Get<CommitmentsApiV2ClientConfiguration>());
 
         var encodingConfigJson = configuration.GetSection("SFA.DAS.Encoding").Value;
         var encodingConfig = JsonConvert.DeserializeObject<EncodingConfig>(encodingConfigJson);
         services.AddSingleton(encodingConfig);
-
-        var financeConfiguration = configuration
-            .GetSection(nameof(EmployerFinanceConfiguration))
-            .Get<EmployerFinanceConfiguration>();
         
         var outerApiConfiguration = configuration
             .GetSection(nameof(EmployerFinanceOuterApiConfiguration))
             .Get<EmployerFinanceOuterApiConfiguration>();
 
-        services.AddSingleton(financeConfiguration);
+        services.AddSingleton(outerApiConfiguration);
 
-        services.AddSingleton<IHmrcConfiguration>(_ => financeConfiguration.Hmrc);
-        services.AddSingleton<ITokenServiceApiClientConfiguration>(_ => financeConfiguration.TokenServiceApi);
-        services.AddSingleton<EmployerFinanceOuterApiConfiguration>(_ => outerApiConfiguration);
+        services.AddSingleton<IHmrcConfiguration, HmrcConfiguration>();
+        services.AddSingleton<ITokenServiceApiClientConfiguration, TokenServiceApiClientConfiguration>();
 
         return services;
     }

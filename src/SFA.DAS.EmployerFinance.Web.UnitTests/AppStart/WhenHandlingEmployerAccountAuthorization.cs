@@ -131,7 +131,7 @@ public class WhenHandlingEmployerAccountAuthorization
         EmployerUserAccountItem serviceResponse,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         [Frozen] Mock<IUserAccountService> employerAccountService,
-        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> configuration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> configuration,
         EmployerAccountAuthorisationHandler authorizationHandler)
     {
         //Arrange
@@ -172,7 +172,7 @@ public class WhenHandlingEmployerAccountAuthorization
         EmployerUserAccountItem serviceResponse,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         [Frozen] Mock<IUserAccountService> employerAccountService,
-        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> configuration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> configuration,
         EmployerAccountAuthorisationHandler authorizationHandler)
     {
         //Arrange
@@ -324,7 +324,7 @@ public class WhenHandlingEmployerAccountAuthorization
         EmployerIdentifier employerIdentifier,
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
-        [Frozen] Mock<IOptions<EmployerFinanceConfiguration>> forecastingConfiguration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> forecastingConfiguration,
         EmployerAccountAuthorisationHandler authorizationHandler)
     {
         //Arrange

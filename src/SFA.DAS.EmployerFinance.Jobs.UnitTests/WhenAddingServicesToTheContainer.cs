@@ -9,7 +9,6 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Jobs.Extensions;
 using SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 using SFA.DAS.EmployerFinance.Jobs.ServiceRegistrations;
-using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
@@ -33,15 +32,11 @@ public class WhenAddingServicesToTheContainer
     private static void SetupServiceCollection(IServiceCollection services)
     {
         var configuration = GenerateConfiguration();
-        var financeConfiguration = configuration
-            .GetSection(nameof(EmployerFinanceConfiguration))
-            .Get<EmployerFinanceConfiguration>();
-
         services.AddSingleton<IConfiguration>(configuration);
         services.AddConfigurationSections(configuration);
         services.AddNServiceBus();
         services.AddDataRepositories();
-        services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+        services.AddDatabaseRegistration();
         services.AddUnitOfWork();
         services.AddMediatR(typeof(Program));
         services.AddLogging(_ => { });
@@ -58,11 +53,11 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
-                new("EmployerFinanceConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
+                new("EmployerFinanceJobsConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("PaymentsEventsApi:ApiBaseUrl", "test"),
                 new("PaymentsEventsApi:IdentifierUri", "test"),
-                new("EmployerFinanceConfiguration:ServiceBusConnectionString", "test"),
-                new("EmployerFinanceConfiguration:NServiceBusLicense", "test"),
+                new("EmployerFinanceJobsConfiguration:ServiceBusConnectionString", "test"),
+                new("EmployerFinanceJobsConfiguration:NServiceBusLicense", "test"),
                 new("EnvironmentName", "LOCAL"),
                 new("DeclarationsEnabled", "true"),
             }

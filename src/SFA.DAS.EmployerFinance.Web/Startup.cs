@@ -45,7 +45,7 @@ public class Startup
 
         services.AddConfigurationOptions(_configuration);
 
-        var employerFinanceConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
+        var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceWebConfiguration)).Get<EmployerFinanceWebConfiguration>();
 
         var identityServerConfiguration = _configuration
             .GetSection(nameof(IdentityServerConfiguration))
@@ -53,11 +53,11 @@ public class Startup
 
         services.AddOrchestrators();
 
-        services.AddDatabaseRegistration(employerFinanceConfiguration.DatabaseConnectionString);
+        services.AddDatabaseRegistration();
         services.AddDataRepositories();
         services.AddHmrcServices();
 
-        if (employerFinanceConfiguration.UseGovSignIn)
+        if (employerFinanceWebConfiguration.UseGovSignIn)
         {
             services.AddMaMenuConfiguration("SignOut", _configuration["ResourceEnvironmentName"]);   
         }
@@ -107,7 +107,7 @@ public class Startup
         services.AddNServiceBusClientUnitOfWork();
         services
             .AddUnitOfWork()
-            .AddEntityFramework(employerFinanceConfiguration)
+            .AddEntityFramework(employerFinanceWebConfiguration)
             .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
         services.AddNServiceBusClientUnitOfWork();
             

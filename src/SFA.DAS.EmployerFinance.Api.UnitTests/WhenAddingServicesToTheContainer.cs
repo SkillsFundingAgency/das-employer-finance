@@ -64,7 +64,7 @@ public class WhenAddingServicesToTheContainer
         services.AddDistributedMemoryCache();
         services.AddApplicationServices();
         //services.AddAuthenticationServices();
-        services.AddDatabaseRegistration(financeConfiguration.DatabaseConnectionString);
+        services.AddDatabaseRegistration();
         services.AddDataRepositories();
         services.AddOrchestrators();
         services.AddLogging();

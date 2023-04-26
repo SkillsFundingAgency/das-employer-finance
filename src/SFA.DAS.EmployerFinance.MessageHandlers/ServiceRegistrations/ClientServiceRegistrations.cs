@@ -18,8 +18,8 @@ public static class ClientServiceRegistrations
 
         services.AddHttpClient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>((provider, client) =>
         {
-            var financeConfiguration = provider.GetService<EmployerFinanceConfiguration>();
-            client.BaseAddress = new Uri(financeConfiguration.Hmrc.BaseUrl);
+            var hmrcConfiguration = provider.GetService<HmrcConfiguration>();
+            client.BaseAddress = new Uri(hmrcConfiguration.BaseUrl);
         });
 
         services.AddTransient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>();

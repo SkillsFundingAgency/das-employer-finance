@@ -16,7 +16,7 @@ public class WhenIGetContent : QueryBaseTest<GetContentRequestHandler, GetConten
 
     private string _cacheKey;
     private string _content;
-    public EmployerFinanceConfiguration EmployerFinanceConfiguration;
+    public EmployerFinanceWebConfiguration EmployerFinanceWebConfiguration;
 
     private Mock<IContentApiClient> _mockContentService;
     private Mock<ICacheStorageService> _mockCacheStorageService;
@@ -28,13 +28,13 @@ public class WhenIGetContent : QueryBaseTest<GetContentRequestHandler, GetConten
         _clientId = "eas-fin";
         _contentType = "banner";
 
-        EmployerFinanceConfiguration = new EmployerFinanceConfiguration()
+        EmployerFinanceWebConfiguration = new EmployerFinanceWebConfiguration()
         {
             ApplicationId = "eas-fin",
             DefaultCacheExpirationInMinutes = 1
         };
         _content = "<p> Example content </p>";
-        _cacheKey = EmployerFinanceConfiguration.ApplicationId + "_banner";
+        _cacheKey = EmployerFinanceWebConfiguration.ApplicationId + "_banner";
 
         _mockContentService = new Mock<IContentApiClient>();
         _mockCacheStorageService = new Mock<ICacheStorageService>();
@@ -50,7 +50,7 @@ public class WhenIGetContent : QueryBaseTest<GetContentRequestHandler, GetConten
         };
 
         RequestHandler = new GetContentRequestHandler(RequestValidator.Object, Mock.Of<ILogger<GetContentRequestHandler>>(),
-            _mockContentService.Object, EmployerFinanceConfiguration);
+            _mockContentService.Object, EmployerFinanceWebConfiguration);
     }
 
     [Test]

@@ -6,10 +6,10 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
 {
     public class UrlActionHelper : IUrlActionHelper
     {
-        private readonly EmployerFinanceConfiguration _configuration;
+        private readonly EmployerFinanceWebConfiguration _configuration;
         private readonly IActionContextAccessor _actionContextAccessor;
 
-        public UrlActionHelper(EmployerFinanceConfiguration configuration, IActionContextAccessor actionContextAccessor)
+        public UrlActionHelper(EmployerFinanceWebConfiguration configuration, IActionContextAccessor actionContextAccessor)
         {
             _configuration = configuration;
             _actionContextAccessor = actionContextAccessor;
