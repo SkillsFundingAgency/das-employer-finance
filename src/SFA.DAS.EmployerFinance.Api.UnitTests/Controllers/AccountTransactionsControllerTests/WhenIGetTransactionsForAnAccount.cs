@@ -48,7 +48,7 @@ public class WhenIGetTransactionsForAnAccount
         var model = ((OkObjectResult)response).Value as Transactions;
 
         model?.Should().NotBeNull();
-        model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
+        transactionsResponse.Data?.TransactionLines.Should().BeEquivalentTo(model, options => options.Excluding(x => x.ResourceUri));
     }
 
     [Test]
@@ -136,10 +136,8 @@ public class WhenIGetTransactionsForAnAccount
         var model = ((OkObjectResult)response).Value as Transactions;
 
         model?.Should().NotBeNull();
-        model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
+        model?.Should().BeEquivalentTo(transactionsResponse.Data.TransactionLines, opts => opts.ExcludingMissingMembers());
         model?.PreviousMonthUri.Should().BeNullOrEmpty();
-
-        //_urlHelper.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()));
 
         _urlHelper.Setup(x => x.RouteUrl(
             It.Is<UrlRouteContext>(c =>
@@ -202,6 +200,6 @@ public class WhenIGetTransactionsForAnAccount
         var model = ((OkObjectResult)response).Value as Transactions;
 
         model?.Should().NotBeNull();
-        model?.ShouldAllBeEquivalentTo(transactionsResponse.Data.TransactionLines, options => options.Excluding(x => x.ResourceUri));
+        model?.Should().BeEquivalentTo(transactionsResponse.Data.TransactionLines, opts => opts.ExcludingMissingMembers());
     }
 }

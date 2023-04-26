@@ -63,7 +63,7 @@ public class WhenIGetTheTransactionSummaryForAnAccount
         var model = ((OkObjectResult)response).Value as List<TransactionSummary>;
 
         model?.Should().NotBeNull();
-        model?.ShouldAllBeEquivalentTo(transactionSummaryResponse.Data, x => x.Excluding(y => y.Href));
+        model?.Should().BeEquivalentTo(transactionSummaryResponse.Data, x => x.Excluding(y => y.Href));
         model?.First().Href.Should().Be(firstExpectedUri);
         model?.Last().Href.Should().Be(secondExpectedUri);
     }      

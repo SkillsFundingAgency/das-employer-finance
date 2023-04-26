@@ -24,7 +24,7 @@ public class WhenIGetLevyForAnAccount : AccountLevyControllerTests
 
         model?.Should().NotBeNull();
         Assert.IsTrue(model?.TrueForAll(x => x.HashedAccountId == hashedAccountId));
-        model?.ShouldAllBeEquivalentTo(levyResponse.Declarations, options => options.Excluding(x => x.HashedAccountId).Excluding(x => x.PayeSchemeReference));
+        levyResponse.Declarations?.Should().BeEquivalentTo(model, options => options.Excluding(x => x.HashedAccountId).Excluding(x => x.PayeSchemeReference));
         Assert.IsTrue(model? [0].PayeSchemeReference == levyResponse.Declarations[0].EmpRef);
     }
 }

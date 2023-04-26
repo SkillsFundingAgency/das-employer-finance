@@ -6,7 +6,7 @@ public static class ObjectExtensions
     {
         try
         {
-            source.ShouldBeEquivalentTo(expectation);
+            source.Should().BeEquivalentTo(expectation);
         }
         catch (Exception)
         {
