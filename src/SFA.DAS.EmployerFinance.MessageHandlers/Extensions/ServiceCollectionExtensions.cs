@@ -22,6 +22,10 @@ public static class ServiceCollectionExtensions
                 var configuration = p.GetService<IConfiguration>();
                 var isLocal = configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
 
+                var logger = p.GetService<ILogger<Program>>();
+                logger.LogInformation(employerFinanceConfiguration.DatabaseConnectionString);
+                logger.LogInformation(employerFinanceConfiguration.ServiceBusConnectionString);
+
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
                     .UseErrorQueue($"{EndpointName}-errors")
                     .UseInstallers()
