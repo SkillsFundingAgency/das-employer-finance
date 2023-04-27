@@ -326,7 +326,7 @@
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
                                     "value": "[reference(concat('UIAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
                                 },
                                 {
@@ -453,7 +453,7 @@
                                     "value": "[parameters('environmentName')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
                                     "value": "[reference(concat('ApiAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
                                 },
                                 {
@@ -612,7 +612,7 @@
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
                                     "value": "[reference(concat('WorkerAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
                                 },
                                 {
