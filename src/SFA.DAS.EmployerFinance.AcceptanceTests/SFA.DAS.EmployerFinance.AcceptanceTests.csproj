@@ -5,13 +5,13 @@
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.1.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="NLog.Schema" Version="4.5.3" />
     <PackageReference Include="SFA.DAS.Authentication" Version="1.1.2" />
     <PackageReference Include="SFA.DAS.Authorization.EmployerUserRoles" Version="6.0.52" />
     <PackageReference Include="SFA.DAS.AutoConfiguration" Version="2.2.17" />
-    <PackageReference Include="SFA.DAS.EmployerAccounts.Messages" Version="1.6.3167" />
+    <PackageReference Include="SFA.DAS.EmployerAccounts.Messages" Version="1.6.3195" />
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
     <PackageReference Include="SFA.DAS.NLog.Targets.Redis" Version="1.2.1" />
     <PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="16.0.21" />
