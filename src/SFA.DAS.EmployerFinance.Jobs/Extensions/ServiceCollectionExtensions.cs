@@ -28,12 +28,12 @@ public static class ServiceCollectionExtensions
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
                     .UseErrorQueue($"{EndpointName}-errors")
                     .UseInstallers()
-                    .UseOutbox()
                     .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
-                    .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal);
+                    .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
+                    .UseSendOnly();
 
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
 
