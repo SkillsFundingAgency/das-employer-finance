@@ -34,7 +34,7 @@ public static class ConfigurationServiceRegistrations
         services.Configure<CommitmentsApiV2ClientConfiguration>(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)));
         services.AddSingleton(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)).Get<CommitmentsApiV2ClientConfiguration>());
 
-        var encodingConfigJson = configuration.GetSection("SFA.DAS.Encoding").Value;
+        var encodingConfigJson = configuration.GetSection(ConfigurationKeys.EncodingConfig).Value;
         var encodingConfig = JsonConvert.DeserializeObject<EncodingConfig>(encodingConfigJson);
         services.AddSingleton(encodingConfig);
         

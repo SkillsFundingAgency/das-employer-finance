@@ -54,9 +54,9 @@ public static class HostExtensions
             
             builder.AddAzureTableStorage(options =>
                 {
-                    options.ConfigurationKeys = new[] { ConfigurationKeys.EmployerFinanceJobs };
+                    options.ConfigurationKeys = new[] { ConfigurationKeys.EmployerFinanceJobs, ConfigurationKeys.EncodingConfig };
                     options.PreFixConfigurationKeys = false;
-                    options.ConfigurationKeysRawJsonResult = new[] { "SFA.DAS.Encoding" };
+                    options.ConfigurationKeysRawJsonResult = new[] { ConfigurationKeys.EncodingConfig };
                 }
             );
             builder.Build();
