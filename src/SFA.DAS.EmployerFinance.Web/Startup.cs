@@ -45,7 +45,7 @@ public class Startup
 
         services.AddConfigurationOptions(_configuration);
 
-        var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceWebConfiguration)).Get<EmployerFinanceWebConfiguration>();
+        var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceWebConfiguration>();
 
         var identityServerConfiguration = _configuration
             .GetSection(nameof(IdentityServerConfiguration))
