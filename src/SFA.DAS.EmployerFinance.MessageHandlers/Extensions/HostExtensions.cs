@@ -1,4 +1,4 @@
-﻿using NLog.Extensions.Logging;
+using NLog.Extensions.Logging;
 using SFA.DAS.Configuration;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Commands.RenameAccount;
