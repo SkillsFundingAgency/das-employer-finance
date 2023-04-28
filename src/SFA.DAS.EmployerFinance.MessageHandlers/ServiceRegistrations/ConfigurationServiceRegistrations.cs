@@ -26,10 +26,10 @@ public static class ConfigurationServiceRegistrations
         services.AddSingleton(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient).Get<PaymentsEventsApiClientLocalConfiguration>());
 
         services.Configure<TokenServiceApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.TokenServiceApi));
-        services.AddSingleton(cfg => cfg.GetService<IOptions<TokenServiceApiClientConfiguration>>().Value);
+        services.AddSingleton<ITokenServiceApiClientConfiguration>(cfg => cfg.GetService<IOptions<TokenServiceApiClientConfiguration>>().Value);
 
         services.Configure<HmrcConfiguration>(configuration.GetSection(ConfigurationKeys.Hmrc));
-        services.AddSingleton(cfg => cfg.GetService<IOptions<HmrcConfiguration>>().Value);
+        services.AddSingleton<IHmrcConfiguration>(cfg => cfg.GetService<IOptions<HmrcConfiguration>>().Value);
 
         services.Configure<CommitmentsApiV2ClientConfiguration>(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)));
         services.AddSingleton(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)).Get<CommitmentsApiV2ClientConfiguration>());
@@ -43,9 +43,6 @@ public static class ConfigurationServiceRegistrations
             .Get<EmployerFinanceOuterApiConfiguration>();
 
         services.AddSingleton(outerApiConfiguration);
-
-        services.AddSingleton<IHmrcConfiguration, HmrcConfiguration>();
-        services.AddSingleton<ITokenServiceApiClientConfiguration, TokenServiceApiClientConfiguration>();
 
         return services;
     }

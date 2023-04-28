@@ -14,10 +14,10 @@ public static class HmrcServiceRegistrations
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
         services.AddSingleton<IHmrcService, HmrcService>();
         services.AddSingleton<IHttpResponseLogger, HttpResponseLogger>();
-        services.AddSingleton<ITokenServiceApiClient, TokenServiceApiClient>();
+        services.AddSingleton<ITokenServiceApiClient>(_ => new TokenServiceApiClient(_.GetService<ITokenServiceApiClientConfiguration>()));
         services.AddSingleton<IAzureAdAuthenticationService, AzureAdAuthenticationService>();
         services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
-
+        
         return services;
     }
 }
