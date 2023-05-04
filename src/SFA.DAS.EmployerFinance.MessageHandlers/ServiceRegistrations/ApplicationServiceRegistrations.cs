@@ -28,8 +28,8 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ILevyEventFactory, LevyEventFactory>();
         services.AddTransient<IGenericEventFactory, GenericEventFactory>();
         services.AddSingleton<IEncodingService, EncodingService>();
-        services.AddSingleton<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
-        services.AddSingleton<IEventPublisher, EventPublisher>();
+        services.AddScoped<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
+        services.AddScoped<IEventPublisher, EventPublisher>();
 
         return services;
     }

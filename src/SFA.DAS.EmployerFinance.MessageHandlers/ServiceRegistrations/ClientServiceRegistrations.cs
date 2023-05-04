@@ -1,6 +1,7 @@
-﻿using HMRC.ESFA.Levy.Api.Client;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using System.Net.Http;
+using HMRC.ESFA.Levy.Api.Client;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Provider.Events.Api.Client;
 
@@ -16,13 +17,11 @@ public static class ClientServiceRegistrations
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
         services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
 
-        services.AddHttpClient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>((provider, client) =>
+        services.AddTransient<IApprenticeshipLevyApiClient>(serviceProvider =>
         {
-            var hmrcConfiguration = provider.GetService<HmrcConfiguration>();
-            client.BaseAddress = new Uri(hmrcConfiguration.BaseUrl);
+            var client = new HttpClient { BaseAddress = new Uri(serviceProvider.GetService<IHmrcConfiguration>().BaseUrl) };
+            return new ApprenticeshipLevyApiClient(client);
         });
-
-        services.AddTransient<IApprenticeshipLevyApiClient, ApprenticeshipLevyApiClient>();
 
         return services;
     }
