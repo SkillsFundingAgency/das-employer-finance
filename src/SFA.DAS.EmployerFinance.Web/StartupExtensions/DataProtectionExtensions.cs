@@ -9,7 +9,7 @@ public static class AddDataProtectionExtensions
     public static IServiceCollection AddDataProtection(this IServiceCollection services, IConfiguration configuration)
     {
             
-        var config = configuration.GetSection(nameof(EmployerFinanceWebConfiguration)).Get<EmployerFinanceWebConfiguration>();
+        var config = configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceWebConfiguration>();
 
         if (config == null
             || string.IsNullOrEmpty(config.DataProtectionKeysDatabase)
