@@ -6,6 +6,7 @@ public static class ConfigurationKeys
     public static string PaymentEventsApiClient => $"PaymentsEventsApi";
     public static string Hmrc => $"Hmrc";
     public static string TokenServiceApi => $"TokenServiceApi";
+    public static string EventsApi => $"EventsApi";
 
     public const string EmployerFinanceJobs = "SFA.DAS.EmployerFinance.Jobs";
 
