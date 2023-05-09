@@ -6,6 +6,7 @@ using SFA.DAS.NServiceBus.Configuration.MicrosoftDependencyInjection;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.Hosting;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
+using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 
@@ -34,7 +35,8 @@ public static class ServiceCollectionExtensions
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
-                    .UseServicesBuilder(new UpdateableServiceProvider(services));
+                    .UseServicesBuilder(new UpdateableServiceProvider(services))
+                    .UseUnitOfWork();
                 
                 if (!string.IsNullOrEmpty(employerFinanceConfiguration.NServiceBusLicense))
                 {
