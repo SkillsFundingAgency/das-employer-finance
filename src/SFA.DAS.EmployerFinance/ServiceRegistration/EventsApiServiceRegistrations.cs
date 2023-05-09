@@ -13,8 +13,6 @@ public static class EventsApiServiceRegistrations
             return new EventsApi(config);
         });
 
-        services.AddTransient<IEventsApi>(_ => new EventsApi(null));
-
         return services;
     }
 }
