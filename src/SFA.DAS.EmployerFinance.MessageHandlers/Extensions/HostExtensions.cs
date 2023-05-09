@@ -83,7 +83,6 @@ public static class HostExtensions
             services.AddCachesRegistrations(context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
             services.AddEmployerFinanceOuterApi();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
-            services.BuildServiceProvider();
         });
 
         return hostBuilder;
