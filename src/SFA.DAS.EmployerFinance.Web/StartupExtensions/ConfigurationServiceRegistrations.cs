@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.Encoding;
+using SFA.DAS.Events.Api.Client.Configuration;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
@@ -19,7 +20,9 @@ public static class ConfigurationServiceRegistrations
             
         services.Configure<IAccountApiConfiguration>(configuration.GetSection(nameof(AccountApiConfiguration)));
         services.AddSingleton<IAccountApiConfiguration>(configuration.GetSection(nameof(AccountApiConfiguration)).Get<AccountApiConfiguration>());
-            
+
+        services.Configure<EventsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.EventsApi));
+        services.AddSingleton<IEventsApiClientConfiguration>(cfg => cfg.GetService<IOptions<EventsApiClientConfiguration>>().Value);
 
         services.Configure<CommitmentsApiV2ClientConfiguration>(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)));
         services.AddSingleton(configuration.GetSection(nameof(CommitmentsApiV2ClientConfiguration)).Get<CommitmentsApiV2ClientConfiguration>());
