@@ -9,5 +9,7 @@
         public decimal StartingTransferAllowance { get; set; }
         public string FinancialYearString { get; set; }
         public string HashedAccountID { get; set; }
+        public decimal CurrentYearEstimatedSpend { get; set; }
+        public decimal EstimatedRemainingAllowance { get { return StartingTransferAllowance - CurrentYearEstimatedSpend; } }
     }
 }
