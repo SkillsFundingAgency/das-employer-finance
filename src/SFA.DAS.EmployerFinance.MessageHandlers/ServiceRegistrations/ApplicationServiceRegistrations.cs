@@ -11,6 +11,7 @@ using SFA.DAS.EmployerFinance.Types.Models;
 using SFA.DAS.Encoding;
 using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.UnitOfWork.NServiceBus.Services;
+using SFA.DAS.UnitOfWork.Pipeline;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 
@@ -29,6 +30,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IGenericEventFactory, GenericEventFactory>();
         services.AddSingleton<IEncodingService, EncodingService>();
         services.AddScoped<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
+        services.AddScoped<IUnitOfWork, UnitOfWork.NServiceBus.Pipeline.UnitOfWork>();
         services.AddScoped<IEventPublisher, EventPublisher>();
 
         return services;
