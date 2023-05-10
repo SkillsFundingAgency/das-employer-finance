@@ -27,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.DependencyResolution
             {
                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
 
-                return environmentName.Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase)
+                return environmentName.Equals("L", StringComparison.CurrentCultureIgnoreCase)
                     ? new SqlConnection(GetConnectionString(c))
                     : new SqlConnection
                     {
