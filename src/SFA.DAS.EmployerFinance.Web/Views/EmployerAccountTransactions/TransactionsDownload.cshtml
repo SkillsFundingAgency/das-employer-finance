@@ -14,7 +14,6 @@
 
     var exampleClosingDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     var exampleStartingDate = exampleClosingDate.AddMonths(-12);
-    
 }
 
 
@@ -92,7 +91,7 @@
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
-            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions")" class="govuk-breadcrumbs__link">Finance</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.FinanceIndex" asp-route-hashedAccountId="@ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]" class="govuk-breadcrumbs__link">Finance</a></li>
             <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
         </ol>
     </div>

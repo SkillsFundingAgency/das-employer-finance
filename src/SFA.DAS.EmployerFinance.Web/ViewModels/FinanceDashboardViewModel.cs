@@ -2,7 +2,7 @@
 
 public class FinanceDashboardViewModel
 {
-    public string AccountHashedId { get; set; }
+    public string HashedAccountId { get; set; }
     public decimal CurrentLevyFunds { get; set; }
     public decimal? ExpiringFunds { get; set; }
     public DateTime? ExpiryDate { get; set; }

@@ -3,7 +3,7 @@
 @using SFA.DAS.EmployerFinance.Web.Authorization
 @{
     var tagManagerCode = "GTM-KWQBWGJ";
-    string accountId = (string)this.ViewContext.RouteData.Values[RouteValueKeys.AccountHashedId] ?? "";
+    string accountId = (string)this.ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId] ?? "";
     ViewBag.HideHeaderBorder = true;
     var footerModel = new FooterModel { AccountId = accountId, UsePrivacyV2 = true };
     

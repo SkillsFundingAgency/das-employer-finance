@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 [TestFixture]
 public class WhenISubmitTheApprovedTransferConnectionInvitationPage
 {
-    private const string AccountHashedId = "ABC123";
+    private const string HashedAccountId = "ABC123";
 
     private TransferConnectionInvitationsController _controller;
     private readonly ApprovedTransferConnectionInvitationViewModel _viewModel = new ApprovedTransferConnectionInvitationViewModel();
@@ -18,8 +18,8 @@ public class WhenISubmitTheApprovedTransferConnectionInvitationPage
     public void Arrange()
     {
         var urlHelper = new Mock<IUrlActionHelper>();
-        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{AccountHashedId}/teams");
-        urlHelper.Setup(x => x.EmployerCommitmentsV2Action("")).Returns($"/{AccountHashedId}");
+        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{HashedAccountId}/teams");
+        urlHelper.Setup(x => x.EmployerCommitmentsV2Action("")).Returns($"/{HashedAccountId}");
             
         _controller = new TransferConnectionInvitationsController(null, _mediator.Object, urlHelper.Object, Mock.Of<IEncodingService>());
     }
@@ -29,10 +29,10 @@ public class WhenISubmitTheApprovedTransferConnectionInvitationPage
     {
         _viewModel.Choice = "GoToApprenticesPage";
 
-        var result = _controller.Approved(AccountHashedId, "",_viewModel) as RedirectResult;
+        var result = _controller.Approved(HashedAccountId, "",_viewModel) as RedirectResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Url, Is.EqualTo($"/{AccountHashedId}"));
+        Assert.That(result.Url, Is.EqualTo($"/{HashedAccountId}"));
     }
 
     [Test]
@@ -40,9 +40,9 @@ public class WhenISubmitTheApprovedTransferConnectionInvitationPage
     {
         _viewModel.Choice = "GoToHomepage";
 
-        var result = _controller.Approved(AccountHashedId, "", _viewModel) as RedirectResult;
+        var result = _controller.Approved(HashedAccountId, "", _viewModel) as RedirectResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));
+        Assert.That(result.Url, Is.EqualTo($"/accounts/{HashedAccountId}/teams"));
     }
 }

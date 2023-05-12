@@ -50,14 +50,14 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
         });
 
         _logger.LogInformation("account : {HashedAccountId}  getAccountFinanceOverview: {GetAccountFinanceOverview} ", hashedAccountId, getAccountFinanceOverview);
-        _logger.LogInformation(" account.ApprenticeshipEmployerType: {ApprenticeshipEmployerType}  AccountHashedId: {HashedAccountId} CurrentLevyFunds: {CurrentFunds} ", accountDetailViewModel.ApprenticeshipEmployerType, hashedAccountId, getAccountFinanceOverview.CurrentFunds);
+        _logger.LogInformation(" account.ApprenticeshipEmployerType: {ApprenticeshipEmployerType}  HashedAccountId: {HashedAccountId} CurrentLevyFunds: {CurrentFunds} ", accountDetailViewModel.ApprenticeshipEmployerType, hashedAccountId, getAccountFinanceOverview.CurrentFunds);
 
         var viewModel = new OrchestratorResponse<FinanceDashboardViewModel>
         {
             Data = new FinanceDashboardViewModel
             {
                 IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
-                AccountHashedId = hashedAccountId,
+                HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = getAccountFinanceOverview.CurrentFunds,
                 ExpiringFunds = getAccountFinanceOverview.ExpiringFundsAmount,
                 ExpiryDate = getAccountFinanceOverview.ExpiringFundsExpiryDate,

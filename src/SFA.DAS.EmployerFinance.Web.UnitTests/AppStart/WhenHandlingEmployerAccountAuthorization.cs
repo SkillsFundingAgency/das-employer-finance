@@ -29,7 +29,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         var context = new AuthorizationHandlerContext(new [] {ownerRequirement}, claimsPrinciple, null);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -56,7 +56,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         var context = new AuthorizationHandlerContext(new [] {ownerRequirement}, claimsPrinciple, null);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -84,7 +84,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         var context = new AuthorizationHandlerContext(new [] {ownerRequirement}, claimsPrinciple, null);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -111,7 +111,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,accountId.ToUpper());
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,accountId.ToUpper());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
 
         //Act
@@ -151,7 +151,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId, accountId.ToUpper());
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, accountId.ToUpper());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -192,7 +192,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,accountId.ToUpper());
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,accountId.ToUpper());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -230,7 +230,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,accountId.ToUpper());
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,accountId.ToUpper());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -256,7 +256,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -309,7 +309,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -337,7 +337,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -362,7 +362,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var context = new AuthorizationHandlerContext(new[] {ownerRequirement}, claimsPrinciple, null);
         var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(responseMock);
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act

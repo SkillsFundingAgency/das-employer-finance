@@ -38,7 +38,7 @@ public class WhenCheckingEmployerAccountRole
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -83,7 +83,7 @@ public class WhenCheckingEmployerAccountRole
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,"ABC123");
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -105,7 +105,7 @@ public class WhenCheckingEmployerAccountRole
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,"ABC123");
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -129,7 +129,7 @@ public class WhenCheckingEmployerAccountRole
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,"ABC123");
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
@@ -153,7 +153,7 @@ public class WhenCheckingEmployerAccountRole
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.AccountHashedId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act

@@ -23,7 +23,7 @@ public class WhenIViewFinanceDashboard
             {
                 Data = new FinanceDashboardViewModel
                 {
-                    AccountHashedId = ExpectedHashedAccountId,
+                    HashedAccountId = ExpectedHashedAccountId,
                     CurrentLevyFunds = ExpectedCurrentFunds
                 }
             });
@@ -48,7 +48,7 @@ public class WhenIViewFinanceDashboard
         var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
         Assert.IsNotNull(model);
         Assert.IsNotNull(model.Data);
-        Assert.AreEqual(ExpectedHashedAccountId, model.Data.AccountHashedId);
+        Assert.AreEqual(ExpectedHashedAccountId, model.Data.HashedAccountId);
     }
 
     [Test]

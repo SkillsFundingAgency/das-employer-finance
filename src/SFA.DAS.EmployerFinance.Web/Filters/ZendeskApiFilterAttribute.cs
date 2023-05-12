@@ -11,7 +11,7 @@ public class ZendeskApiFilterAttribute : ActionFilterAttribute
         var controller = filterContext.Controller as Controller;
         if (controller != null)
         {
-            var accountIdFromUrl = controller.RouteData.Values[RouteValueKeys.AccountHashedId]?.ToString().ToUpper();
+            var accountIdFromUrl = controller.RouteData.Values[RouteValueKeys.HashedAccountId]?.ToString().ToUpper();
 
             controller.ViewBag.ZendeskApiData = new ZendeskApiData
             {

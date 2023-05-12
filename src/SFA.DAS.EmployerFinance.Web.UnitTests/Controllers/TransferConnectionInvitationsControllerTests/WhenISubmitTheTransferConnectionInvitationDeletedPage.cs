@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionIn
 [TestFixture]
 public class WhenISubmitTheTransferConnectionInvitationDeletedPage
 {
-    private const string AccountHashedId = "ABC123";
+    private const string HashedAccountId = "ABC123";
     private const string TransferHashedId = "XYZ123";
 
     private TransferConnectionInvitationsController _controller;
@@ -18,7 +18,7 @@ public class WhenISubmitTheTransferConnectionInvitationDeletedPage
     public void Arrange()
     {
         var urlHelper = new Mock<IUrlActionHelper>();
-        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{AccountHashedId}/teams");
+        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{HashedAccountId}/teams");
         _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object, Mock.Of<IEncodingService>());
     }
 
@@ -27,7 +27,7 @@ public class WhenISubmitTheTransferConnectionInvitationDeletedPage
     {
         _viewModel.Choice = "GoToTransfersPage";
 
-        var result = _controller.Deleted(AccountHashedId,TransferHashedId,_viewModel) as RedirectToActionResult;
+        var result = _controller.Deleted(HashedAccountId,TransferHashedId,_viewModel) as RedirectToActionResult;
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result.ActionName, Is.EqualTo("Index"));
@@ -39,9 +39,9 @@ public class WhenISubmitTheTransferConnectionInvitationDeletedPage
     {
         _viewModel.Choice = "GoToHomepage";
 
-        var result = _controller.Deleted(AccountHashedId,TransferHashedId,_viewModel) as RedirectResult;
+        var result = _controller.Deleted(HashedAccountId,TransferHashedId,_viewModel) as RedirectResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));
+        Assert.That(result.Url, Is.EqualTo($"/accounts/{HashedAccountId}/teams"));
     }
 }

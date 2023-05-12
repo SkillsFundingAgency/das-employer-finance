@@ -100,7 +100,7 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-@colummSize">
         <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
-            <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.AccountHashedId" class="govuk-link govuk-link--no-visited-state">
+            <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 View transactions
             </a>
         </h2>
@@ -108,7 +108,7 @@
     </div>
     <div class="govuk-grid-column-one-@colummSize">
         <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
-            <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.AccountHashedId" class="govuk-link govuk-link--no-visited-state">
+            <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Download transactions
             </a>
         </h2>
@@ -127,7 +127,7 @@
     }
     <div class="govuk-grid-column-one-@colummSize">
         <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
-            <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.AccountHashedId" class="govuk-link govuk-link--no-visited-state">
+            <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Transfers
             </a>
         </h2>
