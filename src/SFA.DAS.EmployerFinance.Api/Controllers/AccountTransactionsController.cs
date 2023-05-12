@@ -35,10 +35,10 @@ public class AccountTransactionsController : ControllerBase
         return Ok(result);
     }
 
-    [Route("{year?}/{month?}", Name = "GetTransactions")]
+    [Route("{year}/{month}", Name = "GetTransactions")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpGet]
-    public async Task<IActionResult> GetTransactions(string hashedAccountId, int year = 0, int month = 0)
+    public async Task<IActionResult> GetTransactions(string hashedAccountId, int year, int month)
     {
         var result = await GetAccountTransactions(hashedAccountId, year, month);
 
