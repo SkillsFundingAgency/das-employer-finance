@@ -15,6 +15,8 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IDasLevyService, DasLevyService>();
         services.AddTransient<ICurrentDateTime, CurrentDateTime>();
 
+        services.AddSingleton<IHmrcDateService, HmrcDateService>();
+
         return services;
     }
 }

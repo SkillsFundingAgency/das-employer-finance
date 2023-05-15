@@ -32,6 +32,7 @@ public static class ApplicationServiceRegistrations
         services.AddScoped<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
         services.AddScoped<IUnitOfWork, UnitOfWork.NServiceBus.Pipeline.UnitOfWork>();
         services.AddScoped<IEventPublisher, EventPublisher>();
+        services.AddSingleton<IHmrcDateService, HmrcDateService>();
 
         return services;
     }
