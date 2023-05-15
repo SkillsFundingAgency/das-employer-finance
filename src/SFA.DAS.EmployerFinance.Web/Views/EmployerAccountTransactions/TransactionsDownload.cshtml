@@ -14,6 +14,7 @@
 
     var exampleClosingDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     var exampleStartingDate = exampleClosingDate.AddMonths(-12);
+    string hashedAccountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]?.ToString();
 }
 
 
@@ -25,7 +26,7 @@
         <h1 class="govuk-heading-xl">Download transactions</h1>
         <p>Enter a start and end date to download transactions within a specific date range.</p>
 
-        @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", FormMethod.Post, new { novalidate = "novalidate" }))
+        @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", new { hashedAccountId }, FormMethod.Post, true, new { novalidate = "novalidate" }))
         {
             
             <div asp-fieldname="StartDate.Month, StartDate.Year" class="govuk-form-group">
