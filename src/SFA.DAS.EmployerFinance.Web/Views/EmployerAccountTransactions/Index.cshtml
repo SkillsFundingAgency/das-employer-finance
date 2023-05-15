@@ -136,10 +136,10 @@
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a href="@UrlHelpers.EmployerAccountsAction("teams")">Home</a></li>
-            <li>@ViewBag.Title</li>
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction("teams")" class="govuk-breadcrumbs__link">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
         </ol>
     </div>
 }
