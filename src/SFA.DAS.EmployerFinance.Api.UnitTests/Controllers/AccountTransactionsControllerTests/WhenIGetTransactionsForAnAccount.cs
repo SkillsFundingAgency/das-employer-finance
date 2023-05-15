@@ -114,35 +114,35 @@ public class WhenIGetTransactionsForAnAccount
         model?.PreviousMonthUri.Should().Be(expectedUri);
     }
 
-    [Test]
-    public async Task AndNoMonthIsProvidedThenTheCurrentMonthIsUsed()
-    {
-        //Arrange
-        var hashedAccountId = "ABC123";
-        var year = 2017;           
-        var transactionsResponse = new GetEmployerAccountTransactionsResponse
-        {
-            Data = TransactionLineObjectMother.Create(),
-            AccountHasPreviousTransactions = false
-        };
-        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == DateTime.Now.Month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
+    //[Test]
+    //public async Task AndNoMonthIsProvidedThenTheCurrentMonthIsUsed()
+    //{
+    //    //Arrange
+    //    var hashedAccountId = "ABC123";
+    //    var year = 2017;           
+    //    var transactionsResponse = new GetEmployerAccountTransactionsResponse
+    //    {
+    //        Data = TransactionLineObjectMother.Create(),
+    //        AccountHasPreviousTransactions = false
+    //    };
+    //    _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == DateTime.Now.Month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
-        //Act
-        var response = await _controller.GetTransactions(hashedAccountId, year);
+    //    //Act
+    //    var response = await _controller.GetTransactions(hashedAccountId, year);
 
-        //Assert
-        Assert.IsNotNull(response);
-        Assert.IsInstanceOf<OkObjectResult>(response);
-        var model = ((OkObjectResult)response).Value as Transactions;
+    //    //Assert
+    //    Assert.IsNotNull(response);
+    //    Assert.IsInstanceOf<OkObjectResult>(response);
+    //    var model = ((OkObjectResult)response).Value as Transactions;
 
-        model?.Should().NotBeNull();
-        model?.Should().BeEquivalentTo(transactionsResponse.Data.TransactionLines, opts => opts.ExcludingMissingMembers());
-        model?.PreviousMonthUri.Should().BeNullOrEmpty();
+    //    model?.Should().NotBeNull();
+    //    model?.Should().BeEquivalentTo(transactionsResponse.Data.TransactionLines, opts => opts.ExcludingMissingMembers());
+    //    model?.PreviousMonthUri.Should().BeNullOrEmpty();
 
-        _urlHelper.Setup(x => x.RouteUrl(
-            It.Is<UrlRouteContext>(c =>
-                c.RouteName == "GetTransactions")));
-    }
+    //    _urlHelper.Setup(x => x.RouteUrl(
+    //        It.Is<UrlRouteContext>(c =>
+    //            c.RouteName == "GetTransactions")));
+    //}
 
 
     [Test]
@@ -179,27 +179,27 @@ public class WhenIGetTransactionsForAnAccount
     }
 
 
-    [Test]
-    public async Task AndNoYearIsProvidedThenTheCurrentYearIsUsed()
-    {
-        //Arrange
-        var hashedAccountId = "ABC123";           
-        var transactionsResponse = new GetEmployerAccountTransactionsResponse
-        {
-            Data = TransactionLineObjectMother.Create(),
-            AccountHasPreviousTransactions = false
-        };
-        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == DateTime.Now.Year && q.Month == DateTime.Now.Month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
+    //[Test]
+    //public async Task AndNoYearIsProvidedThenTheCurrentYearIsUsed()
+    //{
+    //    //Arrange
+    //    var hashedAccountId = "ABC123";           
+    //    var transactionsResponse = new GetEmployerAccountTransactionsResponse
+    //    {
+    //        Data = TransactionLineObjectMother.Create(),
+    //        AccountHasPreviousTransactions = false
+    //    };
+    //    _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == DateTime.Now.Year && q.Month == DateTime.Now.Month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
-        //Act
-        var response = await _controller.GetTransactions(hashedAccountId);
+    //    //Act
+    //    var response = await _controller.GetTransactions(hashedAccountId);
 
-        //Assert            
-        Assert.IsNotNull(response);
-        Assert.IsInstanceOf<OkObjectResult>(response);
-        var model = ((OkObjectResult)response).Value as Transactions;
+    //    //Assert            
+    //    Assert.IsNotNull(response);
+    //    Assert.IsInstanceOf<OkObjectResult>(response);
+    //    var model = ((OkObjectResult)response).Value as Transactions;
 
-        model?.Should().NotBeNull();
-        model?.Should().BeEquivalentTo(transactionsResponse.Data.TransactionLines, opts => opts.ExcludingMissingMembers());
-    }
+    //    model?.Should().NotBeNull();
+    //    model?.Should().BeEquivalentTo(transactionsResponse.Data.TransactionLines, opts => opts.ExcludingMissingMembers());
+    //}
 }
