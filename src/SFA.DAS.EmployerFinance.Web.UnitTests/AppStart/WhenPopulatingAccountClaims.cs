@@ -66,22 +66,22 @@ public class WhenPopulatingAccountClaims
         string idamsIdentifier,
         EmployerUserAccounts accountData,
         [Frozen] Mock<IUserAccountService> accountService,
-        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> forecastingConfiguration,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> financeConfiguration,
         EmployerAccountPostAuthenticationClaimsHandler handler)
     {
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, string.Empty);
         accountService.Setup(x => x.GetUserAccounts(idamsIdentifier, "")).ReturnsAsync(accountData);
-        forecastingConfiguration.Object.Value.UseGovSignIn = false;
+        financeConfiguration.Object.Value.UseGovSignIn = false;
         
         var actual = await handler.GetClaims(tokenValidatedContext);
-        
-        accountService.Verify(x=>x.GetUserAccounts(nameIdentifier, string.Empty), Times.Never);
-        accountService.Verify(x=>x.GetUserAccounts(idamsIdentifier, string.Empty), Times.Once);
+
+        accountService.Verify(x => x.GetUserAccounts(nameIdentifier, string.Empty), Times.Never);
+        accountService.Verify(x => x.GetUserAccounts(idamsIdentifier, string.Empty), Times.Once);
         actual.Should().ContainSingle(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
         var actualClaimValue = actual.First(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier)).Value;
         JsonConvert.SerializeObject(accountData.EmployerAccounts.ToDictionary(k => k.AccountId)).Should().Be(actualClaimValue);
-        actual.FirstOrDefault(c=>c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier)).Should().BeNull();
-        actual.FirstOrDefault(c=>c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Should().BeNull();
+        actual.FirstOrDefault(c => c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier)).Should().NotBeNull();
+        actual.FirstOrDefault(c => c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Should().BeNull();
     }
 
     private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress)
@@ -90,18 +90,19 @@ public class WhenPopulatingAccountClaims
         {
             new(ClaimTypes.NameIdentifier, nameIdentifier),
             new(EmployerClaims.IdamsUserIdClaimTypeIdentifier, idamsIdentifier),
-            new(ClaimTypes.Email, emailAddress)
+            new(ClaimTypes.Email, emailAddress),
+            new(EmployerClaims.IdamsUserEmailClaimTypeIdentifier, emailAddress)
         });
-        
+
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(identity));
-        return new TokenValidatedContext(new DefaultHttpContext(), new AuthenticationScheme(",","", typeof(TestAuthHandler)),
+        return new TokenValidatedContext(new DefaultHttpContext(), new AuthenticationScheme(",", "", typeof(TestAuthHandler)),
             new OpenIdConnectOptions(), Mock.Of<ClaimsPrincipal>(), new AuthenticationProperties())
         {
             Principal = claimsPrincipal
         };
     }
-    
-    
+
+
     private class TestAuthHandler : IAuthenticationHandler
     {
         public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
