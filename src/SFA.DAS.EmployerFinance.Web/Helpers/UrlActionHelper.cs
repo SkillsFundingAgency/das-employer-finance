@@ -29,11 +29,11 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             return NonAccountsAction(baseUrl, path);
         }
 
-        public string LevyTransfersMatchingAccountAction(string path)
+        public string LevyTransfersMatchingAccountAction(string path, bool withAccountContext = true)
         {
             var baseUrl = _configuration.LevyTransferMatchingBaseUrl;
 
-            return AccountAction(baseUrl, path);
+            return AccountAction(baseUrl, path, withAccountContext);
         }
 
         public string EmployerFinanceAction(string path)
@@ -58,10 +58,17 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             return Action(baseUrl, path);
         }
 
-        private string AccountAction(string baseUrl, string path)
+        private string AccountAction(string baseUrl, string path, bool withAccountContext = true)
         {
-            var hashedAccountId = _actionContextAccessor.ActionContext.RouteData.Values[ControllerConstants.AccountHashedIdRouteKeyName];
-            var accountPath = hashedAccountId == null ? $"accounts/{path}" : $"accounts/{hashedAccountId}/{path}";
+            string accountPath = string.Empty;
+
+            if (withAccountContext)
+            {
+                var hashedAccountId = _actionContextAccessor.ActionContext.RouteData.Values[ControllerConstants.AccountHashedIdRouteKeyName];
+                accountPath = hashedAccountId == null ? $"accounts/{path}" : $"accounts/{hashedAccountId}/{path}";
+            }
+
+            path = string.IsNullOrEmpty(accountPath) ? path : accountPath;
 
             return Action(baseUrl, accountPath);
         }
