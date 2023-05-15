@@ -33,6 +33,7 @@ namespace SFA.DAS.EmployerFinance.Configuration
         public string LevyTransferMatchingBaseUrl { get; set; }
         public string MessageServiceBusConnectionString => LegacyServiceBusConnectionString;
         public string NServiceBusLicense { get; set; }
+        public int MinimumTransferFunds { get; set; }
         public string PublicAllowedHashstringCharacters { get; set; }
         public string PublicHashstring { get; set; }
         public string ServiceBusConnectionString { get; set; }

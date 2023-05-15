@@ -4,6 +4,7 @@ using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
@@ -17,12 +18,13 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
         private readonly IHashingService _hashingService;
         private readonly ITransfersService _transfersService;
         private readonly IAccountApiClient _accountApiClient;
+        private readonly EmployerFinanceConfiguration _configuration;
 
         protected TransfersOrchestrator()
         {
         }
 
-        public TransfersOrchestrator(
+        public TransfersOrchestrator(EmployerFinanceConfiguration configuration,
             IAuthorizationService authorizationService,
             IHashingService hashingService,
             ITransfersService transfersService,
@@ -32,6 +34,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
             _hashingService = hashingService;
             _transfersService = transfersService;
             _accountApiClient = accountApiClient;
+            _configuration = configuration;
         }
 
         public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)
@@ -58,6 +61,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
                     FinancialYearString = DateTime.UtcNow.ToFinancialYearString(),
                     HashedAccountID = hashedAccountId,
                     CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
+                    MinimumTransferFunds = _configuration.MinimumTransferFunds
                 }
             };
         }

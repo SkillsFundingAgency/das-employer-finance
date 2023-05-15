@@ -48,13 +48,19 @@
 
         <div class="column-two-thirds">
             <h2 class="heading-medium">My pledges</h2>
-            <p>Create a public funding pledge which is shown online so that businesses can apply to you for a transfer of funds.</p>
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">Warning</span>
+                    You need a minimum of £@Model.Data.MinimumTransferFunds left on your estimated remaining transfer balance to make another pledge.
+                </strong>
+            </div>
             <div class="panel panel-border-wide">
                 You have <strong>@Model.Data.PledgesCount</strong> transfer pledges.
             </div>
             @if (Model.Data.RenderCreateTransfersPledgeButton)
             {
-                <a class="button" href="@Url.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton">Create a transfers pledge</a>
+                <a class="button" href="@Url.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton" @(Model.Data.EstimatedRemainingAllowance < Model.Data.MinimumTransferFunds? "disabled": "")) >Create a transfers pledge</a>
             }
             <a href="@Url.LevyTransfersMatchingAccountAction("pledges")" class="button button-secondary">View my transfer pledges and applications</a>
         </div>
