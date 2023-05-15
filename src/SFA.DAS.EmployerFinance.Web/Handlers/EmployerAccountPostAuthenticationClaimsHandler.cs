@@ -40,6 +40,12 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
                 userId = tokenValidatedContext.Principal.Claims
                     .First(c => c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier))
                     .Value;
+
+                email = tokenValidatedContext.Principal.Claims
+                .First(c => c.Type.Equals(EmployerClaims.IdamsUserEmailClaimTypeIdentifier)).Value;
+
+                claims.AddRange(tokenValidatedContext.Principal.Claims);
+                claims.Add(new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier, userId));
             }
                 
             var result = await _userAccountService.GetUserAccounts(userId, email);
@@ -52,11 +58,17 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
             var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
             var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
             claims.Add(associatedAccountsClaim);
+
             if (!_employerFinanceConfiguration.UseGovSignIn)
             {
                 return claims;
             }
-                
+
+            if (result.IsSuspended)
+            {
+                claims.Add(new Claim(ClaimTypes.AuthorizationDecision, "Suspended"));
+            }
+
             claims.Add(new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier, result.EmployerUserId));
             claims.Add(new Claim(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier, result.FirstName + " " + result.LastName));
             
