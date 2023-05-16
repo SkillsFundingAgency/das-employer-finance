@@ -10,7 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.WebJobs.Host.Storage" Version="4.1.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.29.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.Web" Version="2.21.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NLog.Schema" Version="5.1.2" />
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
