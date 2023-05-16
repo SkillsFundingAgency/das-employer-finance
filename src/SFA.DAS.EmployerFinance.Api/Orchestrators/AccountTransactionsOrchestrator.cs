@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 
@@ -10,14 +11,16 @@ public class AccountTransactionsOrchestrator
 {
     private readonly IMediator _mediator;
     private readonly ILogger<AccountTransactionsOrchestrator> _logger;
-    
-    public AccountTransactionsOrchestrator(IMediator mediator, ILogger<AccountTransactionsOrchestrator> logger)
+    private readonly ILinkGeneratorWrapper _linkGenerator;
+
+    public AccountTransactionsOrchestrator(IMediator mediator, ILogger<AccountTransactionsOrchestrator> logger, ILinkGeneratorWrapper linkGenerator)
     {
         _mediator = mediator;
         _logger = logger;
+        _linkGenerator = linkGenerator;
     }
       
-    public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month, IUrlHelper urlHelper)
+    public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month)
     {
         _logger.LogInformation("Requesting account transactions for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
 
@@ -33,7 +36,7 @@ public class AccountTransactionsOrchestrator
             Year = year,
             Month = month
         };
-        response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x, urlHelper)));
+        response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x)));
             
         _logger.LogInformation("Received account transactions response for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
         return response;
@@ -52,7 +55,7 @@ public class AccountTransactionsOrchestrator
         return response.Data;
     }
 
-    private static Transaction ConvertToTransactionViewModel(string hashedAccountId, Models.Transaction.TransactionLine transactionLine, IUrlHelper urlHelper)
+    private Transaction ConvertToTransactionViewModel(string hashedAccountId, Models.Transaction.TransactionLine transactionLine)
     {
         var viewModel = new Transaction
         {
@@ -61,13 +64,13 @@ public class AccountTransactionsOrchestrator
             Description = transactionLine.Description,
             TransactionType = (TransactionItemType)transactionLine.TransactionType,
             DateCreated = transactionLine.DateCreated,
-            SubTransactions = transactionLine.SubTransactions?.Select(x => ConvertToTransactionViewModel(hashedAccountId, x, urlHelper)).ToList(),
+            SubTransactions = transactionLine.SubTransactions?.Select(x => ConvertToTransactionViewModel(hashedAccountId, x)).ToList(),
             TransactionDate = transactionLine.TransactionDate
         };
 
         if (transactionLine.TransactionType == Models.Transaction.TransactionItemType.Declaration)
         {
-            viewModel.ResourceUri = urlHelper.RouteUrl("GetLevyForPeriod", new { hashedAccountId, payrollYear = transactionLine.PayrollYear, payrollMonth = transactionLine.PayrollMonth });
+            viewModel.ResourceUri = _linkGenerator.GetPathByName("GetLevyForPeriod", new { hashedAccountId, payrollYear = transactionLine.PayrollYear, payrollMonth = transactionLine.PayrollMonth });
         }
 
         return viewModel;

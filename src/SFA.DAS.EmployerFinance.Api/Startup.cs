@@ -30,7 +30,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddApiConfigurationSections(_configuration);
-        
+
         var employerFinanceConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
         var isDevelopment = _configuration.IsDevOrLocal();
 
@@ -56,34 +56,33 @@ public class Startup
 
         services.AddDatabaseRegistration();
         services.AddDataRepositories();
-        
+        services.AddRouting();
 
         services.AddMediatorValidators();
         services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
-        
+
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-        
+
         services.Configure<ApiBehaviorOptions>(opt => { opt.SuppressModelStateInvalidFilter = true; })
             .AddMvc(opt =>
             {
                 if (!_configuration.IsDevOrLocal())
                 {
-                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>( )));
+                    opt.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
                 }
 
                 opt.AddValidation();
 
                 opt.Conventions.Add(new ApiExplorerGroupPerVersionConvention());
             });
-        
+
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        services.AddScoped<IUrlHelper>(factory =>
+        services.AddScoped<IUrlHelper>(sp =>
         {
-            var actionContext = factory.GetService<IActionContextAccessor>()
-                .ActionContext;
+            var actionContext = sp.GetService<IActionContextAccessor>().ActionContext;
             return new UrlHelper(actionContext);
         });
 
@@ -108,9 +107,7 @@ public class Startup
             .UseAuthorization()
             .UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             })
             .UseSwagger()
             .UseSwaggerUI(opt =>

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Routing;
-using SFA.DAS.EmployerFinance.Api.Controllers;
+﻿using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsControllerTests;
@@ -12,17 +12,16 @@ public class WhenIGetTheTransactionSummaryForAnAccount
     private AccountTransactionsController _controller;
     private Mock<IMediator> _mediator;
     private Mock<ILogger<AccountTransactionsOrchestrator>> _logger;
-    private Mock<IUrlHelper> _urlHelper;
+    private Mock<ILinkGeneratorWrapper> _linkGenerator;
 
     [SetUp]
     public void Arrange()
     {
         _mediator = new Mock<IMediator>();
         _logger = new Mock<ILogger<AccountTransactionsOrchestrator>>();
-        _urlHelper = new Mock<IUrlHelper>();
-        var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object);
-        _controller = new AccountTransactionsController(orchestrator, _urlHelper.Object);
-        _controller.Url = _urlHelper.Object;
+        _linkGenerator = new Mock<ILinkGeneratorWrapper>();
+        var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object, _linkGenerator.Object);
+        _controller = new AccountTransactionsController(orchestrator, _linkGenerator.Object);
     }
 
     [Test]
@@ -38,20 +37,29 @@ public class WhenIGetTheTransactionSummaryForAnAccount
              
 
         var firstExpectedUri = "someuri";
-        _urlHelper.Setup(
-                x =>
-                    x.RouteUrl(
-                        It.Is<UrlRouteContext>(c =>
-                            c.RouteName == "GetTransactions" && c.Values.IsEquivalentTo(new { hashedAccountId, year = transactionSummaryResponse.Data.First().Year, month = transactionSummaryResponse.Data.First().Month }))))
+
+        _linkGenerator.Setup(
+                x => x.GetPathByName(
+                    "GetTransactions", 
+                    It.Is<object>(o => o.IsEquivalentTo(new 
+                    { 
+                        hashedAccountId, 
+                        year = transactionSummaryResponse.Data.First().Year, 
+                        month = transactionSummaryResponse.Data.First().Month 
+                    }))))
             .Returns(firstExpectedUri);
 
         var secondExpectedUri = "someotheruri";
 
-        _urlHelper.Setup(
-                x =>
-                    x.RouteUrl(
-                        It.Is<UrlRouteContext>(c =>
-                            c.RouteName== "GetTransactions" && c.Values.IsEquivalentTo(new { hashedAccountId, year = transactionSummaryResponse.Data.Last().Year, month = transactionSummaryResponse.Data.Last().Month }))))
+        _linkGenerator.Setup(
+                x => x.GetPathByName(
+                    "GetTransactions",
+                    It.Is<object>(o => o.IsEquivalentTo(new
+                    { 
+                        hashedAccountId, 
+                        year = transactionSummaryResponse.Data.Last().Year, 
+                        month = transactionSummaryResponse.Data.Last().Month 
+                    }))))
             .Returns(secondExpectedUri);
 
         //Act
