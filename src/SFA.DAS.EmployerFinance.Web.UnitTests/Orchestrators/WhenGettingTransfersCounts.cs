@@ -7,6 +7,7 @@ using SFA.DAS.Authorization.Features.Services;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -23,6 +24,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         private Mock<ITransfersService> _transfersService;
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
+        public EmployerFinanceConfiguration EmployerFinanceConfiguration;
 
         private const string HashedAccountId = "123ABC";
         private const long AccountId = 1234;
@@ -34,9 +36,12 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
             _hashingService = new Mock<IHashingService>();
             _transfersService = new Mock<ITransfersService>();
             _accountApiClient = new Mock<IAccountApiClient>();
-            _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);            
-
-            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);
+            _hashingService.Setup(h => h.DecodeValue(HashedAccountId)).Returns(AccountId);
+            EmployerFinanceConfiguration = new EmployerFinanceConfiguration()
+            {
+                MinimumTransferFunds = 2000
+            };
+            _orchestrator = new TransfersOrchestrator(EmployerFinanceConfiguration, _authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);
         }
 
         [TestCase(true, true)]

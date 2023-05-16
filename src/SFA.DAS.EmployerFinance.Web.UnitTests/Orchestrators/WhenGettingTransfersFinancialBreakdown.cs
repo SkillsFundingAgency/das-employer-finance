@@ -7,6 +7,7 @@ using SFA.DAS.Authorization.Features.Services;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -24,6 +25,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
         private Mock<IAccountApiClient> _accountApiClient;
         private Mock<IFeatureTogglesService<EmployerFeatureToggle>> _featureTogglesService;
         private GetFinancialBreakdownResponse _financialBreakdownResponse;
+        public EmployerFinanceConfiguration EmployerFinanceConfiguration;
 
         private const string HashedAccountId = "123ABC";
         private const long AccountId = 1234;
@@ -48,7 +50,12 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators
                 AccountId = AccountId
             });
 
-            _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);
+            EmployerFinanceConfiguration = new EmployerFinanceConfiguration()
+            {
+                MinimumTransferFunds = 2000
+            };
+
+            _orchestrator = new TransfersOrchestrator(EmployerFinanceConfiguration, _authorisationService.Object, _hashingService.Object, _transfersService.Object, _accountApiClient.Object);
         }
         [Test]
         public async Task CheckFinancialBreakdownViewModel()
