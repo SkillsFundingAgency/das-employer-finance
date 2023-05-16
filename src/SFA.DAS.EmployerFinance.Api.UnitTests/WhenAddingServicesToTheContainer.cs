@@ -63,6 +63,7 @@ public class WhenAddingServicesToTheContainer
         services.AddApiConfigurationSections(configuration);
         services.AddDistributedMemoryCache();
         services.AddApplicationServices();
+        services.AddRouting();
         //services.AddAuthenticationServices();
         services.AddDatabaseRegistration();
         services.AddDataRepositories();

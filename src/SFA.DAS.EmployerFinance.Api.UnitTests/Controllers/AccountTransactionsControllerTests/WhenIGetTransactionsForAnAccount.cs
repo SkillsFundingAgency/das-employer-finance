@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Routing;
-using SFA.DAS.EmployerFinance.Api.Controllers;
+﻿using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.AccountTransactionsControllerTests;
@@ -11,18 +11,17 @@ public class WhenIGetTransactionsForAnAccount
     private AccountTransactionsController _controller;
     private Mock<IMediator> _mediator;
     private Mock<ILogger<AccountTransactionsOrchestrator>> _logger;
-    private Mock<IUrlHelper> _urlHelper;
+    private Mock<ILinkGeneratorWrapper> _linkGenerator;
 
     [SetUp]
     public void Arrange()
     {
         _mediator = new Mock<IMediator>();
         _logger = new Mock<ILogger<AccountTransactionsOrchestrator>>();
-        _urlHelper = new Mock<IUrlHelper>();
+        _linkGenerator = new Mock<ILinkGeneratorWrapper>();
            
-        var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object);
-        _controller = new AccountTransactionsController(orchestrator, _urlHelper.Object);
-        _controller.Url = _urlHelper.Object;
+        var orchestrator = new AccountTransactionsOrchestrator(_mediator.Object, _logger.Object, _linkGenerator.Object);
+        _controller = new AccountTransactionsController(orchestrator, _linkGenerator.Object);
     }
 
     [Test]
@@ -75,12 +74,6 @@ public class WhenIGetTransactionsForAnAccount
 
         model?.Should().NotBeNull();
         model?.PreviousMonthUri.Should().BeNullOrEmpty();
-
-        //_urlHelper.Verify();//.Verify(x => x.RouteUrl("GetTransactions", It.IsAny<object>()), Times.Never);
-
-        _urlHelper.Setup(x => x.RouteUrl(
-            It.Is<UrlRouteContext>(c =>
-                c.RouteName == "GetTransactions")));
     }
 
     [Test]
@@ -102,9 +95,15 @@ public class WhenIGetTransactionsForAnAccount
         //Act
         var expectedUri = "someuri";
 
-        _urlHelper.Setup(x => x.RouteUrl(
-                It.Is<UrlRouteContext>(c =>
-                    c.RouteName == "GetTransactions" && c.Values.IsEquivalentTo(new { hashedAccountId, year = year - 1, month = 12 }))))
+        _linkGenerator.Setup(
+                x => x.GetPathByName(
+                    "GetTransactions",
+                    It.Is<object>(o => o.IsEquivalentTo(new
+                    {
+                        hashedAccountId,
+                        year = year - 1,
+                        month = 12
+                    }))))
             .Returns(expectedUri);
 
         //Assert
@@ -164,10 +163,15 @@ public class WhenIGetTransactionsForAnAccount
 
         var expectedUri = "someuri";
 
-        _urlHelper.Setup(x =>x.RouteUrl(
-                It.Is<UrlRouteContext>(c =>
-                    c.RouteName == "GetLevyForPeriod" &&
-                    c.Values.IsEquivalentTo(new { hashedAccountId = hashedAccountId, payrollYear = levyTransaction.TransactionLines[0].PayrollYear, payrollMonth = levyTransaction.TransactionLines[0].PayrollMonth }))))
+        _linkGenerator.Setup(
+                x => x.GetPathByName(
+                    "GetLevyForPeriod",
+                    It.Is<object>(o => o.IsEquivalentTo(new
+                    {
+                        hashedAccountId = hashedAccountId,
+                        payrollYear = levyTransaction.TransactionLines[0].PayrollYear,
+                        payrollMonth = levyTransaction.TransactionLines[0].PayrollMonth
+                    }))))
             .Returns(expectedUri);
 
         //Act

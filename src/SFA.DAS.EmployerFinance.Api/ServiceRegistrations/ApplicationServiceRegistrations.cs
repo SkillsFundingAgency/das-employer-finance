@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -16,6 +17,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ICurrentDateTime, CurrentDateTime>();
 
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
+        services.AddScoped<ILinkGeneratorWrapper, LinkGeneratorWrapper>();
 
         return services;
     }
