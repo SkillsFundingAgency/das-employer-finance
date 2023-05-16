@@ -5,6 +5,7 @@
     var tagManagerCode = "GTM-KWQBWGJ";
     string accountId = (string)this.ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId] ?? "";
     ViewBag.HideHeaderBorder = true;
+    var cookieBannerModel = new CookieBannerModel { AccountId = accountId };
     var footerModel = new FooterModel { AccountId = accountId, UsePrivacyV2 = true };
     
 }
@@ -47,6 +48,8 @@
             document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
         </script>
         <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
+
+            <partial name="_CookieBanner" model="@cookieBannerModel"></partial>
 
         @* ReSharper disable once Mvc.PartialViewNotResolved *@
         <partial name="_Header">
