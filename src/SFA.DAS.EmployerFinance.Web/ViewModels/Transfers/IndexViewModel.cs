@@ -11,6 +11,6 @@
         public string HashedAccountID { get; set; }
         public decimal CurrentYearEstimatedSpend { get; set; }
         public decimal EstimatedRemainingAllowance { get { return StartingTransferAllowance - CurrentYearEstimatedSpend; } }
-        public int MinimumTransferFunds { get; set; } = 2000;
+        public int MinimumTransferFunds { get; set; }
     }
 }
