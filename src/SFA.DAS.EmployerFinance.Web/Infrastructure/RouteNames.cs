@@ -8,4 +8,6 @@ public static class RouteNames
     public const string DownloadTransactionsPost = "download-transactions-post";
     
     public const string TransferConnectionsIndex = "transfer-connections";
+
+    public const string SignOut = "SignOut";
 }

@@ -11,6 +11,7 @@ using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.Handlers;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
 using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
@@ -59,11 +60,11 @@ public class Startup
 
         if (employerFinanceWebConfiguration.UseGovSignIn)
         {
-            services.AddMaMenuConfiguration("SignOut", _configuration["ResourceEnvironmentName"]);   
+            services.AddMaMenuConfiguration(RouteNames.SignOut, _configuration["ResourceEnvironmentName"]);   
         }
         else
         {
-            services.AddMaMenuConfiguration("SignOut", identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);    
+            services.AddMaMenuConfiguration(RouteNames.SignOut, identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);    
         }
             
         //MAC-192

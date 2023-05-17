@@ -2,6 +2,7 @@
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.GovUK.Auth.Services;
 
@@ -51,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return Redirect(_urlHelper.EmployerAccountsAction("cookieConsent"));
         }
 
-        [Route("signOut")]
+        [Route("signOut", Name = RouteNames.SignOut)]
         public async Task<IActionResult> SignOutUser()
         {
             var idToken = await HttpContext.GetTokenAsync("id_token");
