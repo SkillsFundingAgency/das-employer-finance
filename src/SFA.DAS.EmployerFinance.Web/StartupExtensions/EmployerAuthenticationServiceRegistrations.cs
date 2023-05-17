@@ -18,6 +18,7 @@ public static class EmployerAuthenticationServiceRegistrations
         services.AddSingleton<IAuthorizationHandler, EmployerAccountAllRolesAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, EmployerAccountOwnerAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, AccountActiveAuthorizationHandler>();//TODO remove after gov one login go live
+        services.AddSingleton<IStubAuthenticationService, StubAuthenticationService>();//TODO remove after gov one login go live
         services.AddTransient<IUserAccountService, UserAccountService>();
             
         services.AddAuthorization(options =>
