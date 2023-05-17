@@ -1,6 +1,9 @@
-﻿namespace SFA.DAS.EmployerFinance.Api.Controllers;
+﻿using Microsoft.AspNetCore.Authorization;
 
-[Route("ping")]
+namespace SFA.DAS.EmployerFinance.Api.Controllers;
+
+[AllowAnonymous]
+[Route("")]
 public class PingController : ControllerBase
 {
     [HttpGet]
