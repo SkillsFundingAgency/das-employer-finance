@@ -7,8 +7,8 @@ using SFA.DAS.EmployerFinance.Web.ViewModels;
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     //TODO This should be removed
-    [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
-    [Route("healthcheck")]
+    
+    
     public class HealthCheckController : Controller
     {
         private readonly IMediator _mediator;
@@ -19,7 +19,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             _mediator = mediator;
             _mapper = mapper;
         }
-
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
+        [HttpGet]
+        [Route("healthcheck")]
         public async Task<IActionResult> Index(GetHealthCheckQuery query)
         {
             var response = await _mediator.Send(query);
@@ -27,13 +29,22 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
             return View(model);
         }
-
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
         [HttpPost]
+        [Route("healthcheck")]
         public async Task<IActionResult> Index(RunHealthCheckCommand command)
         {
             await _mediator.Send(command);
 
             return RedirectToAction("Index");
+        }
+
+        //TODO and replace with proper health check
+        [HttpGet]
+        [Route("Content/lib/govuk-frontend/dist/assets/images/favicon.ico")]
+        public IActionResult FileCheck()
+        {
+            return Ok();
         }
     }
 }
