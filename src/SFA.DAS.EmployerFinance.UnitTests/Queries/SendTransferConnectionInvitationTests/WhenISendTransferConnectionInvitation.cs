@@ -56,10 +56,11 @@ public class WhenISendTransferConnectionInvitation
         }));
 
         _encodingService = new Mock<IEncodingService>();
-        _encodingService.Setup(x => x.Decode(_receiverAccount.PublicHashedId, EncodingType.PublicAccountId))
-            .Returns(_receiverAccount.Id);
-        _encodingService.Setup(x => x.Decode(_senderAccount.PublicHashedId, EncodingType.PublicAccountId))
-            .Returns(_senderAccount.Id);
+        _encodingService.Setup(x => x.TryDecode(_receiverAccount.PublicHashedId, EncodingType.PublicAccountId, out It.Ref<long>.IsAny))
+            .Returns(true).Callback((string a, EncodingType b, out long c) =>
+            {
+                c= _receiverAccount.Id;
+            });
         
         _handler = new SendTransferConnectionInvitationQueryHandler(
             _employerAccountRepository.Object, 
@@ -112,6 +113,17 @@ public class WhenISendTransferConnectionInvitation
     public void ThenShouldThrowValidationExceptionIfReceiverAccountIsNull()
     {
         _employerAccountRepository.Setup(s => s.Get(_receiverAccount.Id)).ReturnsAsync((Account)null);
+
+        var exception = Assert.ThrowsAsync<ValidationException>( () => _handler.Handle(_query, CancellationToken.None));
+
+        Assert.That(exception.ValidationResult.MemberNames.First().Split("|")[1], Is.EqualTo("You must enter a valid account ID"));
+    }
+    
+    [Test]
+    public void ThenShouldThrowValidationExceptionIfReceiverAccountIsNotDecoded()
+    {
+        _encodingService.Setup(x => x.TryDecode(_query.ReceiverAccountPublicHashedId, EncodingType.PublicAccountId, out It.Ref<long>.IsAny))
+            .Returns(false);
 
         var exception = Assert.ThrowsAsync<ValidationException>( () => _handler.Handle(_query, CancellationToken.None));
 

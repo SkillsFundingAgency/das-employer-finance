@@ -29,7 +29,12 @@ public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<Send
 
     public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
     {
-        var receiverAccount = await _employerAccountRepository.Get(_encodingService.Decode(message.ReceiverAccountPublicHashedId, EncodingType.PublicAccountId));
+        var result = _encodingService.TryDecode(message.ReceiverAccountPublicHashedId, EncodingType.PublicAccountId, out long decode);
+        if (!result)
+        {
+            ThrowValidationException("ReceiverAccountPublicHashedId", "You must enter a valid account ID");
+        }
+        var receiverAccount = await _employerAccountRepository.Get(decode);
 
         if (receiverAccount == null || receiverAccount.Id == message.AccountId)
         {
