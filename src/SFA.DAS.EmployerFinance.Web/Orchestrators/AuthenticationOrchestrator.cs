@@ -13,8 +13,6 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
         public AuthenticationOrchestrator(IMediator mediator)
         {
-            if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator));
             _mediator = mediator;
         }
 

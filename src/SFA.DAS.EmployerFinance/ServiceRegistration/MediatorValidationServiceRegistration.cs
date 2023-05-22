@@ -5,6 +5,7 @@ using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
@@ -56,5 +57,6 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<GetPayeSchemeByRefQuery> , GetPayeSchemeByRefValidator>();
         services.AddTransient<IValidator<GetAccountFinanceOverviewQuery> , GetAccountFinanceOverviewQueryValidator>();
         services.AddTransient<IValidator<GetEmployerAccountDetailByHashedIdQuery> , GetEmployerAccountDetailByHashedIdValidator>();
+        services.AddTransient<IValidator<UpsertRegisteredUserCommand> , UpsertRegisteredUserCommandValidator>();
     }
 }
