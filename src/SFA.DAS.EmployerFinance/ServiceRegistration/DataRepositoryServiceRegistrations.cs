@@ -20,7 +20,7 @@ public static class DataRepositoryServiceRegistrations
         services.AddScoped<ITransferRepository, TransferRepository>();
         services.AddScoped<ITransferConnectionInvitationRepository, TransferConnectionInvitationRepository>();
         services.AddScoped<IUserAccountRepository, UserAccountRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
 
         return services;
     }
