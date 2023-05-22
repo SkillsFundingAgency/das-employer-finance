@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Models.UserProfile;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
@@ -9,21 +10,22 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 
     public class AuthenticationOrchestrator : IAuthenticationOrchestrator
     {
-        private readonly IMediator _mediator;
-
-        public AuthenticationOrchestrator(IMediator mediator)
+        private readonly IUserRepository _userRepository;
+        
+        public AuthenticationOrchestrator(IUserRepository userRepository)
         {
-            _mediator = mediator;
+            _userRepository = userRepository;
         }
 
         public async Task SaveIdentityAttributes(string userRef, string email, string firstName, string lastName)
         {
-            await _mediator.Send(new UpsertRegisteredUserCommand
+            await _userRepository.Upsert(new User
             {
-                EmailAddress = email,
-                UserRef = userRef,
+                Ref = new Guid(userRef),
+                Email = email,
+                FirstName = firstName,
                 LastName = lastName,
-                FirstName = firstName
+                CorrelationId = Guid.NewGuid().ToString()
             });
         }
     }
