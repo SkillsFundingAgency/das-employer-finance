@@ -49,8 +49,9 @@ public class TransfersOrchestrator
                 ApplicationsCount = indexTask.Result.ApplicationsCount,
                 RenderCreateTransfersPledgeButton = renderCreateTransfersPledgeButton,                    
                 StartingTransferAllowance = accountDetail.Result.StartingTransferAllowance,
-                FinancialYearString = DateTime.UtcNow.ToFinancialYearString(),
-                HashedAccountID = hashedAccountId
+                FinancialYearString = DateTime.UtcNow.Year.ToString(),
+                HashedAccountID = hashedAccountId,
+                CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
             }
         };
     }
