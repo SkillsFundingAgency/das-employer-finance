@@ -26,10 +26,10 @@
 
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-one-half">
-                    <span class="bold-small">
+                    <p class="app-finance-figure__title" id="lbl-transfer-allowance">
                         Transfer allowance as at 6 April @Model.Data.FinancialYearString
-                    </span>
-                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-funds">@Model.Data.StartingTransferAllowance.ToString("C0", culture)</div>
+                    </p>
+                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-allowance">@Model.Data.StartingTransferAllowance.ToString("C0", culture)</div>
                 </div>
             </div>
             <p>
@@ -42,11 +42,10 @@
 
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-one-half">
-
-                    <span class="bold-small">
+                    <p class="app-finance-figure__title" id="lbl-transfer-estimated-remaining">
                         Estimated remaining transfer balance.
-                    </span>
-                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-funds">@Model.Data.EstimatedRemainingAllowance.ToString("C0", culture)</div>
+                    </p>
+                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure app-finance-figure--highlight" aria-labelledby="lbl-transfer-estimated-remaining">@Model.Data.EstimatedRemainingAllowance.ToString("C0", culture)</div>
                 </div>
             </div>
             <p>
