@@ -24,30 +24,22 @@
 
             <h2 class="govuk-heading-m">Transfer allowance information.</h2>
 
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-half">
-                    <p class="app-finance-figure__title" id="lbl-transfer-allowance">
-                        Transfer allowance as at 6 April @Model.Data.FinancialYearString
-                    </p>
-                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-allowance">@Model.Data.StartingTransferAllowance.ToString("C0", culture)</div>
-                </div>
+            <div class="app-box">
+                <p class="govuk-body app-box__title">Transfer allowance as at 6 April @Model.Data.FinancialYearString</p>
+                <p class="govuk-body govuk-!-font-size-48 app-box__figure">@Model.Data.StartingTransferAllowance.ToString("C0", culture)</p>
             </div>
+
             <p>
                 This is calculated at 25% of the previous financial year’s apprenticeship levy funds. This is shown in your account after 20 April.
             </p>
 
-
-
             <h2 class="govuk-heading-m">Estimated remaining transfer balance.</h2>
 
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-half">
-                    <p class="app-finance-figure__title" id="lbl-transfer-estimated-remaining">
-                        Estimated remaining transfer balance.
-                    </p>
-                    <div class="govuk-body govuk-!-font-size-24 app-finance-figure app-finance-figure--highlight" aria-labelledby="lbl-transfer-estimated-remaining">@Model.Data.EstimatedRemainingAllowance.ToString("C0", culture)</div>
-                </div>
+            <div class="app-box app-box--highlight">
+                <p class="govuk-body app-box__title">Estimated remaining transfer balance</p>
+                <p class="govuk-body govuk-!-font-size-48 app-box__figure">@Model.Data.EstimatedRemainingAllowance.ToString("C0", culture)</p>
             </div>
+
             <p>
                 This is an estimate of your transfer balance, minus any funds that may already be committed such as existing pledges.
             </p>
