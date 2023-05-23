@@ -15,6 +15,7 @@ public static class DatabaseServiceRegistrations
         }, ServiceLifetime.Transient);
 
         services.AddTransient(provider => new Lazy<EmployerFinanceDbContext>(provider.GetService<EmployerFinanceDbContext>()));
+        services.AddScoped(provider => provider.GetService<EmployerFinanceDbContext>());
 
         return services;
     }
