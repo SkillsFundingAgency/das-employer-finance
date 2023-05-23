@@ -6,9 +6,9 @@ namespace SFA.DAS.EmployerFinance.Data;
 
 public class UserRepository : IUserRepository
 {
-    private readonly Lazy<EmployerFinanceDbContext> _db;
+    private readonly EmployerFinanceDbContext _db;
 
-    public UserRepository(Lazy<EmployerFinanceDbContext> db)
+    public UserRepository(EmployerFinanceDbContext db)
     {
         _db = db;
     }
@@ -23,10 +23,10 @@ public class UserRepository : IUserRepository
         parameters.Add("@lastName", user.LastName, DbType.String);
         parameters.Add("@correlationId", user.CorrelationId, DbType.String);
 
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(
+        return _db.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[UpsertUser] @userRef, @email, @firstName, @lastName, @correlationId",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: _db.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
     }
 }
