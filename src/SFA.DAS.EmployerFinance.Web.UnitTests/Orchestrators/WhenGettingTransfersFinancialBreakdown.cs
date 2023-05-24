@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Authentication;
@@ -16,6 +17,7 @@ public class WhenGettingTransfersFinancialBreakdown
     private Mock<ITransfersService> _transfersService;
     private Mock<IAccountApiClient> _accountApiClient;
     private GetFinancialBreakdownResponse _financialBreakdownResponse;
+    public EmployerFinanceConfiguration _employerFinanceConfiguration;
 
     private const string HashedAccountId = "123ABC";
     private const long AccountId = 1234;
@@ -37,7 +39,12 @@ public class WhenGettingTransfersFinancialBreakdown
             AccountId = AccountId
         });
 
-        _orchestrator = new TransfersOrchestrator(Mock.Of<IEmployerAccountAuthorisationHandler>(), _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+        _employerFinanceConfiguration = new EmployerFinanceConfiguration()
+        {
+            MinimumTransferFunds = 2000
+        };
+
+        _orchestrator = new TransfersOrchestrator(_employerFinanceConfiguration, Mock.Of<IEmployerAccountAuthorisationHandler>(), _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
     }
     [Test]
     public async Task CheckFinancialBreakdownViewModel()
