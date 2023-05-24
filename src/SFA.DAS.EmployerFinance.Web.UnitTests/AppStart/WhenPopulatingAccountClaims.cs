@@ -87,7 +87,7 @@ public class WhenPopulatingAccountClaims
     }
 
     [Test, MoqAutoData]
-    public async Task Then_The_UserIsUperserted_For_Gov(
+    public async Task Then_The_User_Is_Uperserted_For_Gov(
         string nameIdentifier,
         string idamsIdentifier,
         string emailAddress,
@@ -99,7 +99,7 @@ public class WhenPopulatingAccountClaims
     {
         accountData.IsSuspended = false;
         financeConfiguration.Object.Value.UseGovSignIn = true;
-        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress);
+        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
         accountService.Setup(x => x.GetUserAccounts(nameIdentifier, emailAddress)).ReturnsAsync(accountData);
 
         var actual = await handler.GetClaims(tokenValidatedContext);
@@ -108,7 +108,7 @@ public class WhenPopulatingAccountClaims
     }
 
     [Test, MoqAutoData]
-    public async Task Then_The_UserIsUperserted_For_EmployerUsers_User(
+    public async Task Then_The_User_Is_Uperserted_For_EmployerUsers_User(
         string nameIdentifier,
         string idamsIdentifier,
         string emailAddress,
@@ -118,7 +118,7 @@ public class WhenPopulatingAccountClaims
         [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> financeConfiguration,
         EmployerAccountPostAuthenticationClaimsHandler handler)
     {
-        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress);
+        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
         accountService.Setup(x => x.GetUserAccounts(idamsIdentifier, emailAddress)).ReturnsAsync(accountData);
         financeConfiguration.Object.Value.UseGovSignIn = false;
 
@@ -127,7 +127,7 @@ public class WhenPopulatingAccountClaims
         authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(idamsIdentifier, emailAddress, accountData.FirstName, accountData.LastName));
     }
 
-    private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress)
+    private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress, Mock<IAuthenticationOrchestrator> authenticationOrchestrator = null)
     {
         var identity = new ClaimsIdentity(new List<Claim>
         {
@@ -138,7 +138,13 @@ public class WhenPopulatingAccountClaims
         });
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(identity));
-        return new TokenValidatedContext(new DefaultHttpContext(), new AuthenticationScheme(",", "", typeof(TestAuthHandler)),
+        var defaultHttpContext = new DefaultHttpContext();
+        var mockServiceProvider = new Mock<IServiceProvider>();
+        authenticationOrchestrator ??= new Mock<IAuthenticationOrchestrator>();
+        mockServiceProvider.Setup(x => x.GetService(typeof(IAuthenticationOrchestrator))).Returns(authenticationOrchestrator.Object);
+        
+        defaultHttpContext.RequestServices = mockServiceProvider.Object;
+        return new TokenValidatedContext(defaultHttpContext, new AuthenticationScheme(",", "", typeof(TestAuthHandler)),
             new OpenIdConnectOptions(), Mock.Of<ClaimsPrincipal>(), new AuthenticationProperties())
         {
             Principal = claimsPrincipal

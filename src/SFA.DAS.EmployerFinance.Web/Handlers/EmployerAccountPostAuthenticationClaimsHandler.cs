@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -11,15 +13,13 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
     {
         private readonly EmployerFinanceWebConfiguration _employerFinanceConfiguration;
         private readonly IUserAccountService _userAccountService;
-        private readonly IAuthenticationOrchestrator _authenticationOrchestrator;
 
         public EmployerAccountPostAuthenticationClaimsHandler(
             IUserAccountService userAccountService, 
-            IOptions<EmployerFinanceWebConfiguration> employerFinanceConfiguration,
-            IAuthenticationOrchestrator authenticationOrchestrator)
+            IOptions<EmployerFinanceWebConfiguration> employerFinanceConfiguration
+            )
         {
             _userAccountService = userAccountService;
-            _authenticationOrchestrator = authenticationOrchestrator;
             _employerFinanceConfiguration = employerFinanceConfiguration.Value;
         }
 
@@ -61,7 +61,9 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
             claims.Add(associatedAccountsClaim);
 
             //TODO: This needs removing and was only added back into this area to facilitate the completion of the NET6 upgrade work. If finance is going to keep a local cache of users then it needs a better way to keep it in sync
-            await _authenticationOrchestrator.SaveIdentityAttributes(userId, email, result.FirstName, result.LastName);
+            //resolving the Orchestrator like this as it cant be injected into the middleware being scoped.
+            var authenticationOrchestrator = tokenValidatedContext.HttpContext.RequestServices.GetService<IAuthenticationOrchestrator>();
+            await authenticationOrchestrator.SaveIdentityAttributes(userId, email, result.FirstName, result.LastName);
 
             if (!_employerFinanceConfiguration.UseGovSignIn)
             {
