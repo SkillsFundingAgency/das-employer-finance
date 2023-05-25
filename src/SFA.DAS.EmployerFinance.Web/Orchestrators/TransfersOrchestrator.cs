@@ -15,10 +15,9 @@ public class TransfersOrchestrator
     private readonly IEncodingService _encodingService;
     private readonly ITransfersService _transfersService;
     private readonly IAccountApiClient _accountApiClient;
-    private readonly EmployerFinanceConfiguration _configuration;
+    private const int minimumTransferFunds = 2000;
 
-
-    public TransfersOrchestrator(EmployerFinanceConfiguration configuration,
+    public TransfersOrchestrator(
         IEmployerAccountAuthorisationHandler authorizationService,
         IEncodingService encodingService,
         ITransfersService transfersService,
@@ -28,7 +27,6 @@ public class TransfersOrchestrator
         _encodingService = encodingService;
         _transfersService = transfersService;
         _accountApiClient = accountApiClient;
-        _configuration = configuration;
 
     }
 
@@ -44,9 +42,12 @@ public class TransfersOrchestrator
         await Task.WhenAll(indexTask, accountDetail);
 
         Enum.TryParse(accountDetail.Result.ApprenticeshipEmployerType, true, out ApprenticeshipEmployerType employerType);
-       
+
+        var estimatedRemainingAllowance = accountDetail.Result.StartingTransferAllowance - indexTask.Result.CurrentYearEstimatedCommittedSpend;
+        var exceedsMinimumTransferFundRequirement = estimatedRemainingAllowance >= minimumTransferFunds;
+        
         return new OrchestratorResponse<IndexViewModel>
-        {
+        {   
             Data = new IndexViewModel
             {
                 IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
@@ -57,7 +58,8 @@ public class TransfersOrchestrator
                 FinancialYearString = DateTime.UtcNow.Year.ToString(),
                 HashedAccountID = hashedAccountId,
                 CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
-                MinimumTransferFunds = _configuration.MinimumTransferFunds
+                EstimatedRemainingAllowance = estimatedRemainingAllowance,
+                HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement
             }
         };
     }

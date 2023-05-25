@@ -48,13 +48,13 @@
             <a href="/accounts/@Model.Data.HashedAccountID/transfers/financial-breakdown" class="govuk-button govuk-button--secondary">View my transfer finances</a>
 
             <h2 class="govuk-heading-m">My pledges</h2>
-            @if (Model.Data.EstimatedRemainingAllowance < Model.Data.MinimumTransferFunds)
+            @if (Model.Data.HasMinimumTransferFunds)
             {
                 <div class="govuk-warning-text">
                     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                     <strong class="govuk-warning-text__text">
                         <span class="govuk-warning-text__assistive">Warning</span>
-                        You need a minimum of £@Model.Data.MinimumTransferFunds left on your estimated remaining transfer balance to make another pledge.
+                        You need a minimum of £2000 left on your estimated remaining transfer balance to make another pledge.
                     </strong>
                 </div>
             }
@@ -72,7 +72,7 @@
     <div class="govuk-button-group">
         @if (Model.Data.RenderCreateTransfersPledgeButton)
         {
-            <button class="govuk-button" href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton" @(Model.Data.EstimatedRemainingAllowance < Model.Data.MinimumTransferFunds ? "disabled" : "")>Create a transfers pledge</button>
+            <button class="govuk-button" href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton" @(Model.Data.HasMinimumTransferFunds ? "disabled" : "")>Create a transfers pledge</button>
         }
         <a href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges")" class="govuk-button govuk-button--secondary">View my transfer pledges and applications</a>
     </div>

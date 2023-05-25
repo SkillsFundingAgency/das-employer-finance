@@ -21,8 +21,6 @@ public class TransfersControllerTests
     private Mock<IAccountApiClient> _accountApiClient;
     private GetFinancialBreakdownResponse _financialBreakdownResponse;
     private AccountDetailViewModel _accountDetailViewModel;
-    public EmployerFinanceConfiguration _employerFinanceConfiguration;
-
 
     private const string HashedAccountId = "123ABC";
     private const long AccountId = 1234;
@@ -43,13 +41,8 @@ public class TransfersControllerTests
         _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
         _accountDetailViewModel = new AccountDetailViewModel();
         _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
-
-        _employerFinanceConfiguration = new EmployerFinanceConfiguration()
-        {
-            MinimumTransferFunds = 2000
-        };
-
-        _orchestrator = new TransfersOrchestrator(_employerFinanceConfiguration, _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+        
+        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
 
         _controller = new TransfersController(_orchestrator);
     }

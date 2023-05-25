@@ -10,7 +10,7 @@ public class IndexViewModel
     public string FinancialYearString { get; set; }
     public string HashedAccountID { get; set; }
     public decimal CurrentYearEstimatedSpend { get; set; }
-    public decimal EstimatedRemainingAllowance { get { return StartingTransferAllowance - CurrentYearEstimatedSpend; } }
-    public int MinimumTransferFunds { get; set; }
+    public decimal EstimatedRemainingAllowance { get; set; } 
+    public bool HasMinimumTransferFunds { get; set; }
 
 }

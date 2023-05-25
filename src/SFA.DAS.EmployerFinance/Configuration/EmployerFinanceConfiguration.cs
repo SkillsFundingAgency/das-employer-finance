@@ -11,7 +11,6 @@ public class EmployerFinanceConfiguration
     public virtual int FundsExpiryPeriod { get; set; }
 
     public string EmployerFinanceBaseUrl { get; set; }
-    public int MinimumTransferFunds { get; set; }
 
 }
 
