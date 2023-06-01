@@ -15,6 +15,7 @@
     var exampleClosingDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     var exampleStartingDate = exampleClosingDate.AddMonths(-12);
     string hashedAccountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]?.ToString();
+    ViewData["CustomOrder"] = TransactionDownloadViewModel.BuildPropertyOrderDictionary();
 }
 
 
