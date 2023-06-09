@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Events.Messages;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.Messaging.Interfaces;
 
@@ -6,9 +7,9 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
 public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTransferConnectionRequestEvent>
 {
-    private readonly IMessagePublisher _messagePublisher;
+    private readonly ILegacyTopicMessagePublisher _messagePublisher;
 
-    public SentTransferConnectionRequestEventHandler(IMessagePublisher messagePublisher)
+    public SentTransferConnectionRequestEventHandler(ILegacyTopicMessagePublisher messagePublisher)
     {
         _messagePublisher = messagePublisher;
     }

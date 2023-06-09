@@ -9,12 +9,14 @@ public class EmployerFinanceConfiguration
     public string ServiceBusConnectionString { get; set; }
     public string RedisConnectionString { get; set; }
     public virtual int FundsExpiryPeriod { get; set; }
-
     public string EmployerFinanceBaseUrl { get; set; }
 }
 
 public class EmployerFinanceJobsConfiguration : EmployerFinanceConfiguration
-{ }
+{
+    public string LegacyServiceBusConnectionString { get; set; }
+    public string MessageServiceBusConnectionString => LegacyServiceBusConnectionString;
+}
 
 public class EmployerFinanceWebConfiguration : EmployerFinanceConfiguration
 {
