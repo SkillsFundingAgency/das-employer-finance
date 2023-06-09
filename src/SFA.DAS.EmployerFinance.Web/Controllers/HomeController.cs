@@ -82,7 +82,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             authenticationProperties.Parameters.Clear();
             authenticationProperties.Parameters.Add("id_token", idToken);
 
-            SignOut(authenticationProperties,CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme) ;
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme, authenticationProperties);
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, authenticationProperties);
         }
 
         [HttpGet]
