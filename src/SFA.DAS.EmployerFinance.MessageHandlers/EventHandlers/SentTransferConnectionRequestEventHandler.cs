@@ -1,7 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Events.Messages;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
-using SFA.DAS.Messaging.Interfaces;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 

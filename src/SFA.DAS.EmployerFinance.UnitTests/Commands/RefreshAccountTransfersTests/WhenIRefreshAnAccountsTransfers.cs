@@ -5,7 +5,6 @@ using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.Messaging.Interfaces;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTests;
@@ -25,7 +24,6 @@ public class WhenIRefreshAnAccountsTransfers
     private Mock<ILogger<RefreshAccountTransfersCommandHandler>> _logger;
     private ICollection<AccountTransfer> _transfers;
     private RefreshAccountTransfersCommand _command;
-    private Mock<IMessagePublisher> _messagePublisher;
     private AccountTransferDetails _details;
     private AccountTransfer _accountTransfer;
 
@@ -37,7 +35,6 @@ public class WhenIRefreshAnAccountsTransfers
         _paymentService = new Mock<IPaymentService>();
         _transferRepository = new Mock<ITransferRepository>();
         _accountRepository = new Mock<IAccountRepository>();
-        _messagePublisher = new Mock<IMessagePublisher>();
         _logger = new Mock<ILogger<RefreshAccountTransfersCommandHandler>>();
 
         _details = new AccountTransferDetails

@@ -1,21 +1,20 @@
 ﻿using System.Net;
 using System.Net.Http;
 using SFA.DAS.EmployerFinance.Http;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Http.HttpResponseLoggerTests;
 
 public class WhenIReceiveNoResponse
 {
-    private Mock<ILog> _logger;
+    private Mock<ILogger<HttpResponseLogger>> _logger;
     private HttpResponseLogger _httpResponseLogger;
     private HttpResponseMessage _httpResponseMessage;
 
     [SetUp]
     public void Arrange()
     {
-        _logger = new Mock<ILog>();
-        _httpResponseLogger = new HttpResponseLogger(Mock.Of<ILogger<HttpResponseLogger>>());
+        _logger = new Mock<ILogger<HttpResponseLogger>>();
+        _httpResponseLogger = new HttpResponseLogger(_logger.Object);
         _httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
             Content = null,
@@ -29,13 +28,10 @@ public class WhenIReceiveNoResponse
     [Test]
     public async Task ThenTheContentShouldNotBeLogged()
     {
-        // Arrange
-        _logger.Setup(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
-
         // Act
         await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
         // Assert
-        _logger.Verify(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()), Times.Never);
+        _logger.VerifyLogging(It.IsAny<string>(), LogLevel.Debug, Times.Never());
     }
 }
