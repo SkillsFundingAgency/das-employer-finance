@@ -105,7 +105,6 @@ public class Startup
 
         });
 
-        services.AddNServiceBusClientUnitOfWork();
         services
             .AddUnitOfWork()
             .AddEntityFramework(employerFinanceWebConfiguration)
