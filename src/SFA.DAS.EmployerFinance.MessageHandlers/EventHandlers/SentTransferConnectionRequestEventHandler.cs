@@ -7,14 +7,18 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTransferConnectionRequestEvent>
 {
     private readonly ILegacyTopicMessagePublisher _messagePublisher;
+    private readonly ILogger<SentTransferConnectionRequestEventHandler> _logger;
 
-    public SentTransferConnectionRequestEventHandler(ILegacyTopicMessagePublisher messagePublisher)
+    public SentTransferConnectionRequestEventHandler(ILegacyTopicMessagePublisher messagePublisher, ILogger<SentTransferConnectionRequestEventHandler> logger)
     {
         _messagePublisher = messagePublisher;
+        _logger = logger;
     }
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
+        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEvent)} handler.");
+
         await _messagePublisher.PublishAsync(new SentTransferConnectionInvitationEvent
         {
             TransferConnectionInvitationId = message.TransferConnectionRequestId,
@@ -29,5 +33,7 @@ public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTra
             SentByUserName = message.SentByUserName,
             CreatedAt = message.Created
         });
+
+        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEvent)} handler.");
     }
 }
