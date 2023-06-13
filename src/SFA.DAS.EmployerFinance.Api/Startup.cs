@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.EmployerFinance.Api.Authentication;
@@ -9,6 +10,7 @@ using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Filters;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
@@ -87,6 +89,12 @@ public class Startup
         });
 
         services.AddApplicationInsightsTelemetry();
+
+        if (_configuration["Environment"] != "DEV")
+        {
+            services.AddHealthChecks()
+                .AddDbContextCheck<EmployerFinanceDbContext>();
+        }
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -102,6 +110,7 @@ public class Startup
 
         app.UseHttpsRedirection()
             .UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
+            .UseHealthChecks()
             .UseAuthentication()
             .UseRouting()
             .UseAuthorization()
