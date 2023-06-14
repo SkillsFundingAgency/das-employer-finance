@@ -76,14 +76,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("SignOutCleanup")]
         public async Task SignOutCleanup()
         {
-            var idToken = await HttpContext.GetTokenAsync("id_token");
-
-            var authenticationProperties = new AuthenticationProperties();
-            authenticationProperties.Parameters.Clear();
-            authenticationProperties.Parameters.Add("id_token", idToken);
-
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme, authenticationProperties);
-            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, authenticationProperties);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         [HttpGet]
