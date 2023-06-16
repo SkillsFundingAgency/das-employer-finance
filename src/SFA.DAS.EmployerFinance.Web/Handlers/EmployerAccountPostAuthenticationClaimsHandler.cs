@@ -63,7 +63,7 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
             //TODO: This needs removing and was only added back into this area to facilitate the completion of the NET6 upgrade work. If finance is going to keep a local cache of users then it needs a better way to keep it in sync
             //resolving the Orchestrator like this as it cant be injected into the middleware being scoped.
             var authenticationOrchestrator = tokenValidatedContext.HttpContext.RequestServices.GetService<IAuthenticationOrchestrator>();
-            await authenticationOrchestrator.SaveIdentityAttributes(userId, email, result.FirstName, result.LastName);
+            await authenticationOrchestrator.SaveIdentityAttributes(result.EmployerUserId, email, result.FirstName, result.LastName);
 
             if (!_employerFinanceConfiguration.UseGovSignIn)
             {

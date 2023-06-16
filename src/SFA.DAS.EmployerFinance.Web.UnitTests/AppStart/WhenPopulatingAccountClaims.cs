@@ -102,9 +102,9 @@ public class WhenPopulatingAccountClaims
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
         accountService.Setup(x => x.GetUserAccounts(nameIdentifier, emailAddress)).ReturnsAsync(accountData);
 
-        var actual = await handler.GetClaims(tokenValidatedContext);
+        await handler.GetClaims(tokenValidatedContext);
 
-        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(nameIdentifier, emailAddress, accountData.FirstName, accountData.LastName));
+        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(accountData.EmployerUserId, emailAddress, accountData.FirstName, accountData.LastName));
     }
 
     [Test, MoqAutoData]
@@ -122,9 +122,9 @@ public class WhenPopulatingAccountClaims
         accountService.Setup(x => x.GetUserAccounts(idamsIdentifier, emailAddress)).ReturnsAsync(accountData);
         financeConfiguration.Object.Value.UseGovSignIn = false;
 
-        var actual = await handler.GetClaims(tokenValidatedContext);
+        await handler.GetClaims(tokenValidatedContext);
 
-        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(idamsIdentifier, emailAddress, accountData.FirstName, accountData.LastName));
+        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(accountData.EmployerUserId, emailAddress, accountData.FirstName, accountData.LastName));
     }
 
     private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress, Mock<IAuthenticationOrchestrator> authenticationOrchestrator = null)
