@@ -34,7 +34,8 @@ public static class ApplicationServiceRegistrations
         services.AddScoped<IUnitOfWork, UnitOfWork.NServiceBus.Pipeline.UnitOfWork>();
         services.AddScoped<IEventPublisher, EventPublisher>();
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
-        
+
+        services.AddScoped<ITopicClientFactory, TopicClientFactory>();
         services.AddScoped<ILegacyTopicMessagePublisher>(sp =>
         {
             var clientFactory = sp.GetService<ITopicClientFactory>();
