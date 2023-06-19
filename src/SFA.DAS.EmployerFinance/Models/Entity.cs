@@ -6,7 +6,7 @@ public abstract class Entity
 {
     protected void Publish<T>(Action<T> action) where T : new()
     {
-        UnitOfWorkContext.AddEvent<object>(() =>
+        UnitOfWorkContext.AddEvent(() =>
         {
             var message = new T();
             action(message);
