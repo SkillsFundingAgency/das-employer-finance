@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SFA.DAS.NServiceBus;
 
 namespace SFA.DAS.EmployerFinance.Messages.Events
 {
-    public class RefreshEmployerLevyDataCompletedEvent
+    public class RefreshEmployerLevyDataCompletedEvent : Event
     {
         public long AccountId { get; set; }
         public short PeriodMonth { get; set; }
@@ -12,6 +12,5 @@ namespace SFA.DAS.EmployerFinance.Messages.Events
         /// </summary>
         public bool LevyImported { get; set; }
         public decimal LevyTransactionValue { get; set; }
-        public DateTime Created { get; set; }
     }
 }
