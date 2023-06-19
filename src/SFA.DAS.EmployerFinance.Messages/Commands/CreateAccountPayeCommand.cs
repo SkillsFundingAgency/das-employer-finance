@@ -1,6 +1,8 @@
-﻿namespace SFA.DAS.EmployerFinance.Messages.Commands
+﻿using SFA.DAS.NServiceBus;
+
+namespace SFA.DAS.EmployerFinance.Messages.Commands
 {
-    public class CreateAccountPayeCommand
+    public class CreateAccountPayeCommand : Command
     {
         public CreateAccountPayeCommand(long accountId, string empRef, string name, string aorn)
         {

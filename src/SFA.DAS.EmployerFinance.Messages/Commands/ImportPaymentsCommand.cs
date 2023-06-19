@@ -1,6 +1,8 @@
-﻿namespace SFA.DAS.EmployerFinance.Messages.Commands
+﻿using SFA.DAS.NServiceBus;
+
+namespace SFA.DAS.EmployerFinance.Messages.Commands
 {
-    public class ImportPaymentsCommand
+    public class ImportPaymentsCommand : Command
     {
     }
 }
