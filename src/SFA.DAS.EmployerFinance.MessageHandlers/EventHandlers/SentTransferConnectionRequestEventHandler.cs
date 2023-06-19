@@ -34,6 +34,6 @@ public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTra
             CreatedAt = message.Created
         });
 
-        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEvent)} handler.");
+        _logger.LogInformation($"Completed {nameof(SentTransferConnectionRequestEvent)} handler.");
     }
 }
