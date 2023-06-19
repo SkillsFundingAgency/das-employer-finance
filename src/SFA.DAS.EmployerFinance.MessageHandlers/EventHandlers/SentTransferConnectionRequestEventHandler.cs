@@ -17,7 +17,7 @@ public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTra
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
-        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEvent)} handler.");
+        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEventHandler)} handler.");
 
         await _messagePublisher.PublishAsync(new SentTransferConnectionInvitationEvent
         {
@@ -34,6 +34,6 @@ public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTra
             CreatedAt = message.Created
         });
 
-        _logger.LogInformation($"Completed {nameof(SentTransferConnectionRequestEvent)} handler.");
+        _logger.LogInformation($"Completed {nameof(SentTransferConnectionRequestEventHandler)} handler.");
     }
 }
