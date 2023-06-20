@@ -1,35 +1,32 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Commands.CreateAccount
+namespace SFA.DAS.EmployerFinance.Commands.CreateAccount;
+
+public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,Unit>
 {
-    public class CreateAccountCommandHandler : AsyncRequestHandler<CreateAccountCommand>
+    private readonly IAccountRepository _accountRepository;
+    private readonly ILogger<CreateAccountCommandHandler> _logger;
+
+    public CreateAccountCommandHandler(IAccountRepository accountRepository, ILogger<CreateAccountCommandHandler> logger)
     {
-        private readonly IAccountRepository _accountRepository;
-        private readonly ILog _logger;
-
-        public CreateAccountCommandHandler(IAccountRepository accountRepository, ILog logger)
-        {
-            _accountRepository = accountRepository;
-            _logger = logger;
-        }
-
-        protected override async Task HandleCore(CreateAccountCommand message)
-        {
-            try
-            {
-                await _accountRepository.CreateAccount(message.Id, message.Name);
-
-                _logger.Info($"Account {message.Id} created");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Could not create account");
-                throw;
-            }
-        }
+        _accountRepository = accountRepository;
+        _logger = logger;
     }
+
+    public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _accountRepository.CreateAccount(request.Id, request.Name);
+
+            _logger.LogInformation("Account {Id} created", request.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not create account");
+            throw;
+        }
+
+        return Unit.Value;
+    }        
 }

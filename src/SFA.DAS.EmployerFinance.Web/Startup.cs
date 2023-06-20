@@ -1,148 +1,153 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IdentityModel.Tokens;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using Microsoft.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.Cookies;
-using NLog;
-using Owin;
-using SFA.DAS.Authentication;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
+using NServiceBus.ObjectBuilder.MSDependencyInjection;
+using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Web;
-using SFA.DAS.EmployerFinance.Web.App_Start;
-using SFA.DAS.EmployerFinance.Web.Authentication;
-using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.EmployerUsers.WebClientComponents;
-using SFA.DAS.OidcMiddleware;
+using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Web.Extensions;
+using SFA.DAS.EmployerFinance.Web.Filters;
+using SFA.DAS.EmployerFinance.Web.Handlers;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
+using SFA.DAS.EmployerFinance.Web.StartupExtensions;
+using SFA.DAS.GovUK.Auth.AppStart;
+using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
+using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
+using SFA.DAS.UnitOfWork.Mvc.Extensions;
+using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 
-[assembly: OwinStartup(typeof(Startup))]
+namespace SFA.DAS.EmployerFinance.Web;
 
-namespace SFA.DAS.EmployerFinance.Web
+public class Startup
 {
-    public class Startup
+    private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _environment;
+   
+    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
-        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        _environment = environment;
 
-        public void Configuration(IAppBuilder app)
-        {
-            var config = StructuremapMvc.StructureMapDependencyScope.Container.GetInstance<EmployerFinanceConfiguration>();
-            var constants = new Constants(config.Identity);
-            var urlHelper = new UrlHelper();
-
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = "Cookies",
-                ExpireTimeSpan = new TimeSpan(0, 10, 0),
-                SlidingExpiration = true
-            });
-
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = "TempState",
-                AuthenticationMode = AuthenticationMode.Passive
-            });
-
-            app.UseCodeFlowAuthentication(new OidcMiddlewareOptions
-            {
-                BaseUrl = config.Identity.BaseAddress,
-                ClientId = config.Identity.ClientId,
-                ClientSecret = config.Identity.ClientSecret,
-                Scopes = config.Identity.Scopes,
-                AuthorizeEndpoint = constants.AuthorizeEndpoint(),
-                TokenEndpoint = constants.TokenEndpoint(),
-                UserInfoEndpoint = constants.UserInfoEndpoint(),
-                TokenSigningCertificateLoader = GetSigningCertificate(config.Identity.UseCertificate),
-                TokenValidationMethod = config.Identity.UseCertificate ? TokenValidationMethod.SigningKey : TokenValidationMethod.BinarySecret,
-                AuthenticatedCallback = identity =>
-                {
-                    var authenticationOrchestrator = StructuremapMvc.StructureMapDependencyScope.Container.GetInstance<AuthenticationOrchestrator>();
-                    PostAuthentiationAction(identity, authenticationOrchestrator, constants);
-                }
-            });
-
-            ConfigurationFactory.Current = new IdentityServerConfigurationFactory(config);
-            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
-        }
-
-        private static Func<X509Certificate2> GetSigningCertificate(bool useCertificate)
-        {
-            if (!useCertificate)
-            {
-                return null;
-            }
-
-            return () =>
-            {
-                var store = new X509Store(StoreLocation.CurrentUser);
-
-                store.Open(OpenFlags.ReadOnly);
-
-                try
-                {
-                    var thumbprint = ConfigurationManager.AppSettings["TokenCertificateThumbprint"];
-                    var certificates = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
-
-                    if (certificates.Count < 1)
-                    {
-                        throw new Exception($"Could not find certificate with thumbprint '{thumbprint}' in CurrentUser store.");
-                    }
-
-                    return certificates[0];
-                }
-                finally
-                {
-                    store.Close();
-                }
-            };
-        }
-
-        private static void PostAuthentiationAction(ClaimsIdentity identity, AuthenticationOrchestrator authenticationOrchestrator, Constants constants)
-        {
-            Logger.Info("Retrieving claims from OIDC server.");
-
-            var userRef = identity.Claims.FirstOrDefault(claim => claim.Type == constants.Id())?.Value;
-            var email = identity.Claims.FirstOrDefault(claim => claim.Type == constants.Email())?.Value;
-            var firstName = identity.Claims.FirstOrDefault(claim => claim.Type == constants.GivenName())?.Value;
-            var lastName = identity.Claims.FirstOrDefault(claim => claim.Type == constants.FamilyName())?.Value;
-
-            Logger.Info($"Retrieved claims from OIDC server for user with external ID '{userRef}'.");
-
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, identity.Claims.First(c => c.Type == constants.Id()).Value));
-            identity.AddClaim(new Claim(ClaimTypes.Name, identity.Claims.First(c => c.Type == constants.DisplayName()).Value));
-            identity.AddClaim(new Claim("sub", identity.Claims.First(c => c.Type == constants.Id()).Value));
-            identity.AddClaim(new Claim("email", identity.Claims.First(c => c.Type == constants.Email()).Value));
-
-            Task.Run(async () => await authenticationOrchestrator.SaveIdentityAttributes(userRef, email, firstName, lastName)).Wait();
-        }
+        _configuration = configuration.BuildDasConfiguration();
     }
 
-    public class Constants
+    public void ConfigureServices(IServiceCollection services)
     {
-        private readonly string _baseUrl;
-        private readonly IdentityServerConfiguration _configuration;
+        services.AddHttpContextAccessor();
 
-        public Constants(IdentityServerConfiguration configuration)
+        services.AddOptions();
+
+        services.AddLogging();
+
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+        services.AddConfigurationOptions(_configuration);
+
+        var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceWebConfiguration>();
+
+        var identityServerConfiguration = _configuration
+            .GetSection(nameof(IdentityServerConfiguration))
+            .Get<IdentityServerConfiguration>();
+
+        services.AddOrchestrators();
+
+        services.AddDatabaseRegistration();
+        services.AddDataRepositories();
+        services.AddHmrcServices();
+
+        if (employerFinanceWebConfiguration.UseGovSignIn)
         {
-            _baseUrl = configuration.ClaimIdentifierConfiguration.ClaimsBaseUrl;
-            _configuration = configuration;
+            services.AddMaMenuConfiguration(RouteNames.SignOut, _configuration["ResourceEnvironmentName"]);   
+        }
+        else
+        {
+            services.AddMaMenuConfiguration(RouteNames.SignOut, identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);    
+        }
+            
+        //MAC-192
+        services.AddApplicationServices(_configuration);
+
+        services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
+
+        services.AddEventsApi();
+        //services.AddNotifications(_configuration);
+        services.AddEmployerFinanceApi();
+
+        services.AddAuthenticationServices();
+
+        if (_configuration.UseGovUkSignIn())
+        {
+            services.AddAndConfigureGovUkAuthentication(_configuration,
+                typeof(EmployerAccountPostAuthenticationClaimsHandler),
+                "",
+                "/service/SignIn-Stub");
+        }
+        else
+        {
+            services.AddAndConfigureEmployerAuthentication(identityServerConfiguration);
         }
 
-        public string AuthorizeEndpoint() => $"{_configuration.BaseAddress}{_configuration.AuthorizeEndPoint}";
-        public string ChangeEmailLink() => _configuration.BaseAddress.Replace("/identity", "") + string.Format(_configuration.ChangeEmailLink, _configuration.ClientId);
-        public string ChangePasswordLink() => _configuration.BaseAddress.Replace("/identity", "") + string.Format(_configuration.ChangePasswordLink, _configuration.ClientId);
-        public string DisplayName() => _baseUrl + _configuration.ClaimIdentifierConfiguration.DisplayName;
-        public string Email() => _baseUrl + _configuration.ClaimIdentifierConfiguration.Email;
-        public string FamilyName() => _baseUrl + _configuration.ClaimIdentifierConfiguration.FaimlyName;
-        public string GivenName() => _baseUrl + _configuration.ClaimIdentifierConfiguration.GivenName;
-        public string Id() => _baseUrl + _configuration.ClaimIdentifierConfiguration.Id;
-        public string LogoutEndpoint() => $"{_configuration.BaseAddress}{_configuration.LogoutEndpoint}";
-        public string TokenEndpoint() => $"{_configuration.BaseAddress}{_configuration.TokenEndpoint}";
-        public string UserInfoEndpoint() => $"{_configuration.BaseAddress}{_configuration.UserInfoEndpoint}";
+        services.Configure<IISServerOptions>(options => { options.AutomaticAuthentication = false; });
+
+        services.Configure<RouteOptions>(options =>
+        {
+
+        }).AddMvc(options =>
+        {
+            options.Filters.Add(new AnalyticsFilterAttribute());
+            if (!_configuration.IsDev())
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            }
+
+        });
+
+        services
+            .AddEntityFramework(employerFinanceWebConfiguration)
+            .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>()
+            .AddNServiceBusClientUnitOfWork();
+            
+        services.AddApplicationInsightsTelemetry();
+
+        if (!_environment.IsDevelopment())
+        {
+            services.AddDataProtection(_configuration);
+        }
+#if DEBUG
+        services.AddControllersWithViews(o => { })
+            .AddRazorRuntimeCompilation();
+#endif            
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseAuthentication();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseAuthorization();
+        app.UseUnitOfWork();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+        });
+    }
+        
+    public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
+    {
+        serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal());
+        var serviceDescriptor = serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
+        serviceProvider.Remove(serviceDescriptor);
+        serviceProvider.AddScoped<IClientOutboxStorageV2, ClientOutboxPersisterV2>();
     }
 }

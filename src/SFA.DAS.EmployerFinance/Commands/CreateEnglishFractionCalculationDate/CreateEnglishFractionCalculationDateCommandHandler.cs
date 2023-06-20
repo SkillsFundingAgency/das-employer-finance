@@ -1,36 +1,38 @@
-﻿using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.Validation;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate
+namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+
+public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandler<CreateEnglishFractionCalculationDateCommand,Unit>
 {
-    public class CreateEnglishFractionCalculationDateCommandHandler : AsyncRequestHandler<CreateEnglishFractionCalculationDateCommand>
+    private readonly IValidator<CreateEnglishFractionCalculationDateCommand> _validator;
+    private readonly IEnglishFractionRepository _englishFractionRepository;
+    private readonly ILogger<CreateEnglishFractionCalculationDateCommandHandler> _logger;
+
+    public CreateEnglishFractionCalculationDateCommandHandler(
+        IValidator<CreateEnglishFractionCalculationDateCommand> validator, 
+        IEnglishFractionRepository englishFractionRepository,
+        ILogger<CreateEnglishFractionCalculationDateCommandHandler> logger)
     {
-        private readonly IValidator<CreateEnglishFractionCalculationDateCommand> _validator;
-        private readonly IEnglishFractionRepository _englishFractionRepository;
-        private readonly ILog _logger;
+        _validator = validator;
+        _englishFractionRepository = englishFractionRepository;
+        _logger = logger;
+    }
 
-        public CreateEnglishFractionCalculationDateCommandHandler(IValidator<CreateEnglishFractionCalculationDateCommand> validator, IEnglishFractionRepository englishFractionRepository, ILog logger)
+    public async Task<Unit> Handle(CreateEnglishFractionCalculationDateCommand request, CancellationToken cancellationToken)
+    {
+        var validationResult = _validator.Validate(request);
+
+        if (!validationResult.IsValid())
         {
-            _validator = validator;
-            _englishFractionRepository = englishFractionRepository;
-            _logger = logger;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        protected override async Task HandleCore(CreateEnglishFractionCalculationDateCommand message)
-        {
-            var validationResult = _validator.Validate(message);
+        await _englishFractionRepository.SetLastUpdateDate(request.DateCalculated);
 
-            if (!validationResult.IsValid())
-            {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
-            }
+        _logger.LogInformation("English Fraction CalculationDate updated to {DateCalculated}.", request.DateCalculated.ToString("dd MMM yyyy"));
 
-            await _englishFractionRepository.SetLastUpdateDate(message.DateCalculated);
-
-            _logger.Info($"English Fraction CalculationDate updated to {message.DateCalculated.ToString("dd MMM yyyy")}");
-        }
+        return Unit.Value;
     }
 }

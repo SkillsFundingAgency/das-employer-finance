@@ -1,25 +1,23 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SFA.DAS.Events.Api.Types;
 
-namespace SFA.DAS.EmployerFinance.Factories
+namespace SFA.DAS.EmployerFinance.Factories;
+
+public class GenericEventFactory : IGenericEventFactory
 {
-    public class GenericEventFactory : IGenericEventFactory
+    public GenericEvent Create<T>(T value)
     {
-        public GenericEvent Create<T>(T value)
+        var typeName = typeof(T).Name;
+
+        var serialisedObject = JsonConvert.SerializeObject(value);
+
+        var payload = serialisedObject;
+
+        return new GenericEvent
         {
-            var typeName = typeof(T).Name;
-
-            var serialisedObject = JsonConvert.SerializeObject(value);
-
-            var payload = serialisedObject;
-
-            return new GenericEvent
-            {
-                Type = typeName,
-                Payload = payload,
-                CreatedOn = DateTime.Now
-            };
-        }
+            Type = typeName,
+            Payload = payload,
+            CreatedOn = DateTime.Now
+        };
     }
 }

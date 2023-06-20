@@ -1,49 +1,46 @@
-﻿using MediatR;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.Validation;
-using System;
-using System.Threading.Tasks;
-using SFA.DAS.HashingService;
+﻿using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount
+namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
+
+public class GetEmployerAccountHashedHandler : IRequestHandler<GetEmployerAccountHashedQuery, GetEmployerAccountResponse>
 {
-    public class GetEmployerAccountHashedHandler : IAsyncRequestHandler<GetEmployerAccountHashedQuery, GetEmployerAccountResponse>
+    private readonly IEmployerAccountRepository _employerAccountRepository;
+    private readonly IValidator<GetEmployerAccountHashedQuery> _validator;
+    private readonly IEncodingService _encodingService;
+
+    public GetEmployerAccountHashedHandler(
+        IEmployerAccountRepository employerAccountRepository,
+        IValidator<GetEmployerAccountHashedQuery> validator,
+        IEncodingService encodingService)
     {
-        private readonly IEmployerAccountRepository _employerAccountRepository;
-        private readonly IValidator<GetEmployerAccountHashedQuery> _validator;
-        private readonly IHashingService _hashingService;
+        _employerAccountRepository = employerAccountRepository;
+        _validator = validator;
+        _encodingService = encodingService;
+    }
 
-        public GetEmployerAccountHashedHandler(
-            IEmployerAccountRepository employerAccountRepository,
-            IValidator<GetEmployerAccountHashedQuery> validator,
-            IHashingService hashingService)
+    public async Task<GetEmployerAccountResponse> Handle(GetEmployerAccountHashedQuery message,CancellationToken cancellationToken)
+    {
+        var result = await _validator.ValidateAsync(message);
+
+        if (!result.IsValid())
         {
-            _employerAccountRepository = employerAccountRepository;
-            _validator = validator;
-            _hashingService = hashingService;
+            throw new ValidationException(result.ConvertToDataAnnotationsValidationResult(),null,null);
         }
 
-        public async Task<GetEmployerAccountResponse> Handle(GetEmployerAccountHashedQuery message)
+        if (result.IsUnauthorized)
         {
-            var result = await _validator.ValidateAsync(message);
-
-            if (!result.IsValid())
-            {
-                throw new InvalidRequestException(result.ValidationDictionary);
-            }
-
-            if (result.IsUnauthorized)
-            {
-                throw new UnauthorizedAccessException();
-            }
-
-            var accountId = _hashingService.DecodeValue(message.HashedAccountId);
-            var employerAccount = await _employerAccountRepository.Get(accountId);
-
-            return new GetEmployerAccountResponse
-            {
-                Account = employerAccount
-            };
+            throw new UnauthorizedAccessException();
         }
+
+        var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
+        var employerAccount = await _employerAccountRepository.Get(accountId);
+
+        return new GetEmployerAccountResponse
+        {
+            Account = employerAccount
+        };
     }
 }

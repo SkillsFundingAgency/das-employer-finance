@@ -1,0 +1,14 @@
+﻿@using System.Globalization
+
+@model SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.TransferAllowanceViewModel
+
+@{
+    var culture = new CultureInfo("en-GB");
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        <p class="app-finance-figure__title" id="lbl-transfer-funds">Remaining transfer allowance</p>
+        <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-funds">@Model.RemainingTransferAllowance.ToString("C0", culture)</div>
+    </div>
+</div>

@@ -1,11 +1,9 @@
 using SFA.DAS.EmployerFinance.Models.Transaction;
-using System;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels
+namespace SFA.DAS.EmployerFinance.Web.ViewModels;
+
+public class TransactionViewModel
 {
-    public class TransactionViewModel
-    {
-        public decimal CurrentBalance { get; set; }
-        public AggregationData Data { get; set; }
-    }
+    public decimal CurrentBalance { get; set; }
+    public AggregationData Data { get; set; }
 }

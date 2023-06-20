@@ -1,8 +1,4 @@
-﻿using System.Threading.Tasks;
-using MediatR;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+﻿using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 using SFA.DAS.EmployerFinance.Services;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Services.DasAccountServiceTests
@@ -30,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.DasAccountServiceTests
             await _dasAccountService.UpdatePayeScheme(expectedEmpref);
 
             //Assert
-            _mediator.Verify(x=>x.SendAsync(It.Is<UpdatePayeInformationCommand>(c=>c.PayeRef.Equals(expectedEmpref))));
+            _mediator.Verify(x=>x.Send(It.Is<UpdatePayeInformationCommand>(c=>c.PayeRef.Equals(expectedEmpref)), CancellationToken.None));
         }
     }
 }

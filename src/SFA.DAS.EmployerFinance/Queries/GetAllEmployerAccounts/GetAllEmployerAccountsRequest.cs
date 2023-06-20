@@ -1,8 +1,5 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts
+public class GetAllEmployerAccountsRequest : IRequest<GetAllEmployerAccountsResponse>
 {
-    public class GetAllEmployerAccountsRequest : IAsyncRequest<GetAllEmployerAccountsResponse>
-    {
-    }
 }

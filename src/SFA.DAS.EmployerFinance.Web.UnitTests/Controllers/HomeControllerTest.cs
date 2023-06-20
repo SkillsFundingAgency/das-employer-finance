@@ -1,48 +1,35 @@
-﻿using Moq;
-using NUnit.Framework;
-using SFA.DAS.Authentication;
+﻿using Microsoft.Extensions.Configuration;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using System.Web.Mvc;
+using SFA.DAS.GovUK.Auth.Services;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers;
+
+[TestFixture]
+public class HomeControllerTest
 {
-    [TestFixture]
-    public class HomeControllerTest
+    private HomeController _homeController;
+    private const string ExpectedUrl = "https://localhost";
+
+    [SetUp]
+    public void Arrange()
     {
-        private EmployerFinanceConfiguration _configuration;
-        private Mock<IDependencyResolver> _dependancyResolver;
-        private HomeController _homeController;
+        var urlHelper = new Mock<IUrlActionHelper>();
+        urlHelper.Setup(x => x.LegacyEasAction("")).Returns(ExpectedUrl);
+            
+        _homeController =
+            new HomeController(Mock.Of<ZenDeskConfiguration>(), urlHelper.Object, Mock.Of<IStubAuthenticationService>(), Mock.Of<IConfiguration>());
+    }
 
-        [SetUp]
-        public void Arrange()
-        {
-            _configuration = new EmployerFinanceConfiguration
-            {
-                EmployerPortalBaseUrl = "https://localhost"
-            };
+    [Test]
+    public void IndexRedirectsToPortalSite()
+    {
+        // Act
+        var result = _homeController.Index() as RedirectResult;
 
-            _dependancyResolver = new Mock<IDependencyResolver>();
-            _dependancyResolver.Setup(r => r.GetService(typeof(EmployerFinanceConfiguration))).Returns(_configuration);
-
-            DependencyResolver.SetResolver(_dependancyResolver.Object);
-
-            _homeController =
-                new HomeController(Mock.Of<IAuthenticationService>(), Mock.Of<EmployerFinanceConfiguration>())
-                {
-                    Url = new UrlHelper()
-                };
-        }
-
-        [Test]
-        public void IndexRedirectsToPortalSite()
-        {
-            // Act
-            var result = _homeController.Index() as RedirectResult;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(_configuration.EmployerPortalBaseUrl, result.Url);
-        }
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(ExpectedUrl, result.Url);
     }
 }

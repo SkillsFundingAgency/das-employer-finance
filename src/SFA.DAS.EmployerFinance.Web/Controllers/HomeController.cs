@@ -1,32 +1,36 @@
-﻿using System.Web;
-using SFA.DAS.Authentication;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Web.Extensions;
+﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
-using System.Web.Mvc;
-using System.Collections.Generic;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
+using SFA.DAS.GovUK.Auth.Models;
+using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [RoutePrefix("service")]
+    [Route("service")]
     public class HomeController : Controller
-    {
-        private readonly IAuthenticationService _owinWrapper;
-        private readonly EmployerFinanceConfiguration _configuration;
+    { 
+        private readonly ZenDeskConfiguration _configuration;
+        private readonly IUrlActionHelper _urlHelper;
+        private readonly IStubAuthenticationService _stubAuthenticationService;
+        private readonly IConfiguration _config;
 
-        public HomeController(IAuthenticationService owinWrapper, EmployerFinanceConfiguration configuration)
+        public HomeController(ZenDeskConfiguration configuration, IUrlActionHelper urlHelper, IStubAuthenticationService stubAuthenticationService, IConfiguration config)
         {
-            _owinWrapper = owinWrapper;
             _configuration = configuration;
+            _urlHelper = urlHelper;
+            _stubAuthenticationService = stubAuthenticationService;
+            _config = config;
         }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            return Redirect(Url.LegacyEasAction(string.Empty));
+            return Redirect(_urlHelper.LegacyEasAction(string.Empty));
         }
 
-        [Authorize]
-        public ActionResult SignedIn()
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
+        public IActionResult SignedIn()
         {
             return View();
         }
@@ -34,50 +38,92 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [HttpGet]
         [Route("{HashedAccountId}/privacy", Order = 0)]
         [Route("privacy", Order = 1)]
-        public ActionResult Privacy()
+        public IActionResult Privacy()
         {
-            return Redirect(Url.EmployerAccountsAction("service", "privacy"));
+            //return Redirect(_urlHelper.EmployerAccountsAction("service", "privacy"));
+            return View();
         }
 
         [HttpGet]
         [Route("{HashedAccountId}/cookieConsent", Order = 0)]
         [Route("cookieConsent", Order = 1)]
-        public ActionResult CookieConsent()
+        public IActionResult CookieConsent()
         {
-            return Redirect(Url.EmployerAccountsAction("cookieConsent"));
-        }       
+            return Redirect(_urlHelper.EmployerAccountsAction("cookieConsent"));
+        }
 
-        [Route("signOut")]
-        public ActionResult SignOut()
+        [Route("signOut", Name = RouteNames.SignOut)]
+        public async Task<IActionResult> SignOutUser()
         {
-            _owinWrapper.SignOutUser();
+            var idToken = await HttpContext.GetTokenAsync("id_token");
 
-            var owinContext = HttpContext.GetOwinContext();
-            var authenticationManager = owinContext.Authentication;
-            var idToken = authenticationManager.User.FindFirst("id_token")?.Value;
-            var constants = new Constants(_configuration.Identity);
-
-            return new RedirectResult(string.Format(constants.LogoutEndpoint(), idToken));
+            var authenticationProperties = new AuthenticationProperties();
+            authenticationProperties.Parameters.Clear();
+            authenticationProperties.Parameters.Add("id_token", idToken);
+            var schemes = new List<string>
+            {
+                CookieAuthenticationDefaults.AuthenticationScheme
+            };
+            _ = bool.TryParse(_config["StubAuth"], out var stubAuth);
+            if (!stubAuth)
+            {
+                schemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
+            }
+            
+            return SignOut(authenticationProperties, schemes.ToArray());
         }
 
         [Route("SignOutCleanup")]
-        public void SignOutCleanup()
+        public async Task SignOutCleanup()
         {
-            _owinWrapper.SignOutUser();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         [HttpGet]
         [Route("help")]
-        public ActionResult Help()
+        public IActionResult Help()
         {
             return RedirectPermanent(_configuration.ZenDeskHelpCentreUrl);
         }
 
-        [Authorize]
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
         [Route("signIn")]
-        public ActionResult SignIn()
+        public IActionResult SignIn()
         {
             return RedirectToAction(ControllerConstants.IndexActionName);
-        }       
+        }
+
+#if DEBUG
+        [HttpGet]
+        [Route("SignIn-Stub")]
+        public IActionResult SigninStub()
+        {
+            return View("SigninStub", new List<string>{_config["StubId"],_config["StubEmail"]});
+        }
+        [HttpPost]
+        [Route("SignIn-Stub")]
+        public async Task<IActionResult> SigninStubPost()
+        {
+            
+            var claims = await _stubAuthenticationService.GetStubSignInClaims(new StubAuthUserDetails
+            {
+                Email = _config["StubEmail"],
+                Id = _config["StubId"]
+            });
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims,
+                new AuthenticationProperties());
+            
+            return RedirectToRoute("Signed-in-stub");
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("signed-in-stub", Name = "Signed-in-stub")]
+        public IActionResult SignedInStub()
+        {
+            return View();
+        }
+#endif
     }
 }

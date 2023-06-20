@@ -1,69 +1,71 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.MarkerInterfaces;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation
+namespace SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
+
+public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<SendTransferConnectionInvitationQuery, SendTransferConnectionInvitationResponse>
 {
-    public class SendTransferConnectionInvitationQueryHandler : IAsyncRequestHandler<SendTransferConnectionInvitationQuery, SendTransferConnectionInvitationResponse>
+    private readonly IEmployerAccountRepository _employerAccountRepository;
+    private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
+    private readonly IMapper _mapper;
+    private readonly IEncodingService _encodingService;
+
+    public SendTransferConnectionInvitationQueryHandler(
+        IEmployerAccountRepository employerAccountRepository,
+        ITransferConnectionInvitationRepository transferConnectionInvitationRepository,
+        IMapper mapper,
+        IEncodingService encodingService)
     {
-        private readonly IEmployerAccountRepository _employerAccountRepository;
-        private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
-        private readonly IMapper _mapper;
+        _employerAccountRepository = employerAccountRepository;
+        _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
+        _mapper = mapper;
+        _encodingService = encodingService;
+    }
 
-        public SendTransferConnectionInvitationQueryHandler(
-            IEmployerAccountRepository employerAccountRepository,
-            ITransferConnectionInvitationRepository transferConnectionInvitationRepository,
-            IMapper mapper)
+    public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
+    {
+        var result = _encodingService.TryDecode(message.ReceiverAccountPublicHashedId, EncodingType.PublicAccountId, out long decode);
+        if (!result)
         {
-            _employerAccountRepository = employerAccountRepository;
-            _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
-            _mapper = mapper;
+            ThrowValidationException("ReceiverAccountPublicHashedId", "You must enter a valid account ID");
+        }
+        var receiverAccount = await _employerAccountRepository.Get(decode);
+
+        if (receiverAccount == null || receiverAccount.Id == message.AccountId)
+        {
+            ThrowValidationException("ReceiverAccountPublicHashedId", "You must enter a valid account ID");
         }
 
-        public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message)
-        {
-            var receiverAccount = await _employerAccountRepository.Get(message.ReceiverAccountPublicHashedId);
-
-            if (receiverAccount == null || receiverAccount.Id == message.AccountId)
-            {
-                ThrowValidationException<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId, "You must enter a valid account ID");
-            }
-
-            var anyTransferConnectionToSameReceiverInvitations = 
-                await _transferConnectionInvitationRepository.AnyTransferConnectionInvitations(
-                    message.AccountId, 
-                    receiverAccount.Id, 
-                    new List<TransferConnectionInvitationStatus> { TransferConnectionInvitationStatus.Pending, TransferConnectionInvitationStatus.Approved});
+        var anyTransferConnectionToSameReceiverInvitations = 
+            await _transferConnectionInvitationRepository.AnyTransferConnectionInvitations(
+                message.AccountId, 
+                receiverAccount.Id, 
+                new List<TransferConnectionInvitationStatus> { TransferConnectionInvitationStatus.Pending, TransferConnectionInvitationStatus.Approved});
                
-            if (anyTransferConnectionToSameReceiverInvitations)
-            {
-                ThrowValidationException<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId, "You can't connect with this employer because they already have a pending or accepted connection request");
-            }
-
-            var senderAccount = await _employerAccountRepository.Get(message.AccountId);
-
-            return new SendTransferConnectionInvitationResponse
-            {
-                ReceiverAccount = _mapper.Map<AccountDto>(receiverAccount),
-                SenderAccount = _mapper.Map<AccountDto>(senderAccount),
-            };
-        }
-
-        private void ThrowValidationException<T>(Expression<Func<T, object>> property, string message) where T : class
+        if (anyTransferConnectionToSameReceiverInvitations)
         {
-            var ex = new ValidationException();
-            ex.AddError<T>(property, message);
-            throw ex;
+            ThrowValidationException("ReceiverAccountPublicHashedId", "You can't connect with this employer because they already have a pending or accepted connection request");
         }
+
+        var senderAccount = await _employerAccountRepository.Get(message.AccountId);
+
+        return new SendTransferConnectionInvitationResponse
+        {
+            ReceiverAccount = _mapper.Map<AccountDto>(receiverAccount),
+            SenderAccount = _mapper.Map<AccountDto>(senderAccount),
+        };
+    }
+
+    private void ThrowValidationException(string property, string message)
+    {
+        var validationResult = new Validation.ValidationResult();
+        validationResult.AddError(property,message);
+        var ex = new ValidationException();
+        throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
     }
 }

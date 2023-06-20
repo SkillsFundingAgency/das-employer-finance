@@ -1,115 +1,110 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.Validation;
-using SFA.DAS.EmployerFinance.Data;
+using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Events.ProcessPayment;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.NLog.Logger;
+using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.Provider.Events.Api.Types;
 
-namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData
+namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
+
+public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDataCommand, Unit>
 {
-    public class RefreshPaymentDataCommandHandler : AsyncRequestHandler<RefreshPaymentDataCommand>
+    private readonly IEventPublisher _eventPublisher;
+    private readonly IValidator<RefreshPaymentDataCommand> _validator;
+    private readonly IPaymentService _paymentService;
+    private readonly IDasLevyRepository _dasLevyRepository;
+    private readonly IMediator _mediator;
+    private readonly ILogger<RefreshPaymentDataCommandHandler> _logger;
+
+
+    public RefreshPaymentDataCommandHandler(
+        IEventPublisher eventPublisher,
+        IValidator<RefreshPaymentDataCommand> validator,
+        IPaymentService paymentService,
+        IDasLevyRepository dasLevyRepository,
+        IMediator mediator,
+        ILogger<RefreshPaymentDataCommandHandler> logger)
     {
-        private readonly IEventPublisher _eventPublisher;
-        private readonly IValidator<RefreshPaymentDataCommand> _validator;
-        private readonly IPaymentService _paymentService;
-        private readonly IDasLevyRepository _dasLevyRepository;
-        private readonly IMediator _mediator;
-        private readonly ILog _logger;
+        _eventPublisher = eventPublisher;
+        _validator = validator;
+        _paymentService = paymentService;
+        _dasLevyRepository = dasLevyRepository;
+        _mediator = mediator;
+        _logger = logger;
+    }
 
+    public async Task<Unit> Handle(RefreshPaymentDataCommand request, CancellationToken cancellationToken)
+    {
+        var validationResult = _validator.Validate(request);
 
-        public RefreshPaymentDataCommandHandler(
-            IEventPublisher eventPublisher,
-            IValidator<RefreshPaymentDataCommand> validator,
-            IPaymentService paymentService,
-            IDasLevyRepository dasLevyRepository,
-            IMediator mediator,
-            ILog logger)
+        if (!validationResult.IsValid())
         {
-            _eventPublisher = eventPublisher;
-            _validator = validator;
-            _paymentService = paymentService;
-            _dasLevyRepository = dasLevyRepository;
-            _mediator = mediator;
-            _logger = logger;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        protected override async Task HandleCore(RefreshPaymentDataCommand message)
+        ICollection<PaymentDetails> payments = null;
+
+        try
         {
-            var validationResult = _validator.Validate(message);
+            _logger.LogInformation($"GetAccountPayments for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
-            if (!validationResult.IsValid())
-            {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
-            }
-
-            ICollection<PaymentDetails> payments = null;
-
-            try
-            {
-                _logger.Info($"GetAccountPayments for AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-
-                payments = await _paymentService.GetAccountPayments(message.PeriodEnd, message.AccountId, message.CorrelationId);
-            }
-            catch (WebException ex)
-            {
-                _logger.Error(ex, $"Unable to get payment information for AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-            }
-
-            if (payments == null || !payments.Any())
-            {
-                _logger.Info($"GetAccountPayments did not find any payments for AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-
-                await PublishRefreshPaymentDataCompletedEvent(message, false);
-
-                return;
-            }
-
-            _logger.Info($"GetAccountPaymentIds for AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-
-            var failingPayment = payments.Where(p => p.ApprenticeshipId == 743445).ToList();
-
-            var existingPaymentIds = await _dasLevyRepository.GetAccountPaymentIds(message.AccountId);
-            var newPayments = payments.Where(p => !existingPaymentIds.Contains(p.Id)).ToArray();
-
-            if (!newPayments.Any())
-            {
-                _logger.Info($"No new payments for AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}'");
-
-                await PublishRefreshPaymentDataCompletedEvent(message, false);
-
-                return;
-            }
-
-            _logger.Info($"CreatePayments for new payments AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-
-            var newNonFullyFundedPayments = newPayments.Where(p => p.FundingSource != FundingSource.FullyFundedSfa);
-
-            await _dasLevyRepository.CreatePayments(newNonFullyFundedPayments);
-            await _mediator.PublishAsync(new ProcessPaymentEvent { AccountId = message.AccountId });
-
-            await PublishRefreshPaymentDataCompletedEvent(message, true);
-
-            _logger.Info($"Finished publishing ProcessPaymentEvent and PaymentCreatedMessage messages for AccountId = '{message.AccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+            payments = await _paymentService.GetAccountPayments(request.PeriodEnd, request.AccountId, request.CorrelationId);
+        }
+        catch (WebException ex)
+        {
+            _logger.LogError(ex, $"Unable to get payment information for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
         }
 
-        private async Task PublishRefreshPaymentDataCompletedEvent(RefreshPaymentDataCommand message, bool hasPayments)
+        if (payments == null || !payments.Any())
         {
-            await _eventPublisher.Publish(new RefreshPaymentDataCompletedEvent()
-            {
-                AccountId = message.AccountId,
-                Created = DateTime.UtcNow,
-                PeriodEnd = message.PeriodEnd,
-                PaymentsProcessed = hasPayments
-            });
+            _logger.LogInformation($"GetAccountPayments did not find any payments for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+
+            await PublishRefreshPaymentDataCompletedEvent(request, false);
+
+            return Unit.Value;
         }
+
+        _logger.LogInformation($"GetAccountPaymentIds for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+
+        var failingPayment = payments.Where(p => p.ApprenticeshipId == 743445).ToList();
+
+        var existingPaymentIds = await _dasLevyRepository.GetAccountPaymentIds(request.AccountId);
+        var newPayments = payments.Where(p => !existingPaymentIds.Contains(p.Id)).ToArray();
+
+        if (!newPayments.Any())
+        {
+            _logger.LogInformation($"No new payments for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}'");
+
+            await PublishRefreshPaymentDataCompletedEvent(request, false);
+
+            return Unit.Value;
+        }
+
+        _logger.LogInformation($"CreatePayments for new payments AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+
+        var newNonFullyFundedPayments = newPayments.Where(p => p.FundingSource != FundingSource.FullyFundedSfa);
+
+        await _dasLevyRepository.CreatePayments(newNonFullyFundedPayments);
+        await _mediator.Publish(new ProcessPaymentEvent { AccountId = request.AccountId }, cancellationToken);
+
+        await PublishRefreshPaymentDataCompletedEvent(request, true);
+
+        _logger.LogInformation($"Finished publishing ProcessPaymentEvent and PaymentCreatedMessage messages for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
+
+        return Unit.Value;
+    }
+
+    private Task PublishRefreshPaymentDataCompletedEvent(RefreshPaymentDataCommand message, bool hasPayments)
+    {
+        return _eventPublisher.Publish(new RefreshPaymentDataCompletedEvent()
+        {
+            AccountId = message.AccountId,
+            Created = DateTime.UtcNow,
+            PeriodEnd = message.PeriodEnd,
+            PaymentsProcessed = hasPayments
+        });
     }
 }

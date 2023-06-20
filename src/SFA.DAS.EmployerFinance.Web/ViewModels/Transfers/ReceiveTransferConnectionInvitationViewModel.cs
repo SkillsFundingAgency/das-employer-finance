@@ -1,28 +1,22 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using AutoMapper;
-using SFA.DAS.Authorization.ModelBinding;
-using SFA.DAS.EmployerFinance.Dtos;
+﻿using SFA.DAS.EmployerFinance.Web.Attributes;
 
-namespace SFA.DAS.EmployerFinance.Web.ViewModels
+namespace SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+
+public class ReceiveTransferConnectionInvitationViewModel
 {
-    public class ReceiveTransferConnectionInvitationViewModel : IAuthorizationContextModel
-    {
-        [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
+    [IgnoreMap]
+    public string TransferConnectionInvitationId { get; set; }
 
-        [IgnoreMap]
-        [Required]
-        public Guid UserRef { get; set; }
+    [Required(ErrorMessage = "Select an option")]
+    [RegularExpression("Approve|Reject", ErrorMessage = "Select an option")]
+    public string Choice { get; set; }
 
-        [Required]
-        public int? TransferConnectionInvitationId { get; set; }
+    [IgnoreMap]
+    public string HashedAccountId { get; set; }
+    [IgnoreMap]
+    public int NotHashedTransferConnectionInvitationId { get; set; }
 
-        [Required(ErrorMessage = "Option required")]
-        [RegularExpression("Approve|Reject", ErrorMessage = "Option required")]
-        public string Choice { get; set; }
-
-        public TransferConnectionInvitationDto TransferConnectionInvitation { get; set; }
-    }
+    public string SenderAccountName { get; set; }
+    public string PendingChangeUserFullName { get; set; }
+    public DateTime PendingChangeCreatedDate { get; set; }
 }

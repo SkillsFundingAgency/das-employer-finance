@@ -1,32 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using SFA.DAS.NLog.Logger;
+﻿using System.Net.Http;
+namespace SFA.DAS.EmployerFinance.Http;
 
-namespace SFA.DAS.EmployerFinance.Http
+public class HttpResponseLogger : IHttpResponseLogger
 {
-    public class HttpResponseLogger : IHttpResponseLogger
+    private readonly ILogger<HttpResponseLogger> _logger;
+
+    public HttpResponseLogger(ILogger<HttpResponseLogger> logger)
     {
-        public async Task LogResponseAsync(ILog logger, HttpResponseMessage response)
-        {
-            if (IsContentStringType(response))
-            {
-                var content = await response.Content.ReadAsStringAsync();
+        _logger = logger;
+    }
 
-                logger.Debug("Logged response", new Dictionary<string, object>()
-                {
-                    { "StatusCode", response.StatusCode },
-                    { "Reason", response.ReasonPhrase },
-                    { "Content", content }
-                });
-            }
-        }
-
-        private bool IsContentStringType(HttpResponseMessage response)
+    public async Task LogResponseAsync(HttpResponseMessage response)
+    {
+        if (IsContentStringType(response))
         {
-            return response?.Content?.Headers?.ContentType != null && (
-                       response.Content.Headers.ContentType.MediaType.StartsWith("text") ||
-                       response.Content.Headers.ContentType.MediaType == "application/json");
+            var content = await response.Content.ReadAsStringAsync();
+
+            _logger.LogDebug("Logged response. StatusCode: '{StatusCode}'. Reason: '{Reason}'. Content: '{Content}'.", response.StatusCode, response.ReasonPhrase, content);
         }
+    }
+
+    private static bool IsContentStringType(HttpResponseMessage response)
+    {
+        return response?.Content?.Headers?.ContentType != null && (
+            response.Content.Headers.ContentType.MediaType.StartsWith("text") ||
+            response.Content.Headers.ContentType.MediaType == "application/json");
     }
 }

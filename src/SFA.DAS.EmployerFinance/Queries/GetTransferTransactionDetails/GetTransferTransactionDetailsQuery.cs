@@ -1,20 +1,17 @@
-﻿using MediatR;
-using System.ComponentModel.DataAnnotations;
-using AutoMapper;
-using SFA.DAS.Authorization.ModelBinding;
+﻿using System.ComponentModel.DataAnnotations;
+using AutoMapper.Configuration.Annotations;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
+
+public class GetTransferTransactionDetailsQuery : IRequest<GetTransferTransactionDetailsResponse>
 {
-    public class GetTransferTransactionDetailsQuery : IAuthorizationContextModel, IAsyncRequest<GetTransferTransactionDetailsResponse>
-    {
-        [IgnoreMap]
-        [Required]
-        public long? AccountId { get; set; }
+    [Ignore]
+    [Required]
+    public long? AccountId { get; set; }
 
-        [Required]
-        public string TargetAccountPublicHashedId { get; set; }
+    [Required]
+    public string TargetAccountPublicHashedId { get; set; }
 
-        [Required]
-        public string PeriodEnd { get; set; }
-    }
+    [Required]
+    public string PeriodEnd { get; set; }
 }

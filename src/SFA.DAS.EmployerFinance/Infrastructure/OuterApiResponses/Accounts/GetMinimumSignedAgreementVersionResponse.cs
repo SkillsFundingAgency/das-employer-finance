@@ -1,7 +1,6 @@
-﻿namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts
+﻿namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
+
+public class GetMinimumSignedAgreementVersionResponse
 {
-    public class GetMinimumSignedAgreementVersionResponse
-    {
-        public int MinimumSignedAgreementVersion { get; set; }
-    }
+    public int MinimumSignedAgreementVersion { get; set; }
 }

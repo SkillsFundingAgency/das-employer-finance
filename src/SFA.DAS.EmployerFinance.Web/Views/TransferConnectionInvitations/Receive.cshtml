@@ -1,5 +1,7 @@
-﻿@using SFA.DAS.Validation.Mvc
-@model SFA.DAS.EmployerFinance.Web.ViewModels.ReceiveTransferConnectionInvitationViewModel
+﻿@using SFA.DAS.EmployerFinance.Web.Infrastructure
+@using SFA.DAS.EmployerFinance.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.ReceiveTransferConnectionInvitationViewModel
 
 @{
     ViewBag.Title = "Receive transfer connection request";
@@ -8,59 +10,63 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connections/requests/receive";
 }
 
-@Html.Partial("_ValidationSummary", ViewData.ModelState)
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <h1 class="heading-xlarge">Connection request details</h1>
-        <p>@Model.TransferConnectionInvitation.SenderAccount.Name wants to connect with you. Once you approve the connection request you'll be able to request transfer funds from this employer.</p>
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.TransferConnectionInvitationId)
-            <div class="form-group">
-                <table>
-                    <tbody>
-                        @{
-                            var pendingChange = Model.TransferConnectionInvitation.GetPendingChange();
-                        }
-                        <tr>
-                            <td>Sending employer</td>
-                            <td>@Model.TransferConnectionInvitation.SenderAccount.Name</td>
-                        </tr>
-                        <tr>
-                            <td>Sent by</td>
-                            <td>@pendingChange.User.FullName</td>
-                        </tr>
-                        <tr>
-                            <td>Sent on</td>
-                            <td>@pendingChange.CreatedDate.ToString("d MMMM yyyy")</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Connection request details</h1>
+        <p>@Model.SenderAccountName wants to connect with you. Once you approve the connection request you'll be able to request transfer funds from this employer.</p>
+        <dl class="govuk-summary-list">
+            
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Sending employer</dt>
+                <dd class="govuk-summary-list__value">@Model.SenderAccountName</dd>
             </div>
-            <div class="form-group @(Html.IsValid(m => m.Choice) ? "" : "error")">
-                <fieldset>
-                    <legend>
-                        <span class="form-label-bold">Do you wish to connect to this employer?</span>
-                        @Html.ValidationMessageFor(m => m.Choice)
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Sent by</dt>
+                <dd class="govuk-summary-list__value">@Model.PendingChangeUserFullName</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Sent on</dt>
+                <dd class="govuk-summary-list__value">@Model.PendingChangeCreatedDate.ToString("d MMMM yyyy")</dd>
+            </div>
+        </dl>
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Receive" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.TransferConnectionInvitationId">
+            <input type="hidden" asp-for="TransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="HashedAccountId"/>
+            <input type="hidden" asp-for="NotHashedTransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="SenderAccountName"/>
+            <input type="hidden" asp-for="PendingChangeUserFullName"/>
+            <input type="hidden" asp-for="PendingChangeCreatedDate"/>
+            <div asp-fieldname="Choice">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 class="govuk-fieldset__heading">
+                            Do you wish to connect to this employer?
+                        </h2>
                     </legend>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "Approve")
-                        Yes, I want to approve the connection request
-                    </label>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "Reject")
-                        No, I want to reject this request
-                    </label>
+                    <span esfa-validation-for="Choice" class="govuk-error-message"></span>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="Approve" asp-for="Choice" value="Approve" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="Approve">
+                                Yes, I want to approve the connection request
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="Reject" asp-for="Choice" value="Reject" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="Reject">
+                                No, I want to reject this request
+                            </label>
+                        </div>
+                    </div>
                 </fieldset>
             </div>
-            <button class="button" type="submit">Continue</button>
-        }
+            <button class="govuk-button" type="submit">Continue</button>
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs" id="js-breadcrumbs">
-        <a aria-label="Back" class="link-back" href="@Url.Action("Index", "TransferConnections")">Back</a>
-    </div>
+    <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId" class="govuk-back-link">Back</a>
 }

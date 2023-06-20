@@ -1,8 +1,6 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using NUnit.Framework;
+﻿using System.Globalization;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
 {
@@ -21,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
         {
             var formattedFileData = PaymentFormatter.GetFileData(TransactionDownloadLines);
 
-            var formattedFileContent = Encoding.UTF8.GetString(formattedFileData);
+            var formattedFileContent = System.Text.Encoding.UTF8.GetString(formattedFileData);
 
             var rows = formattedFileContent.Split(
                 new[] { Environment.NewLine },
@@ -58,7 +56,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
         {
             var formattedFileData = PaymentFormatter.GetFileData(TransactionDownloadLines); 
 
-            var formattedFileContent = Encoding.UTF8.GetString(formattedFileData);
+            var formattedFileContent = System.Text.Encoding.UTF8.GetString(formattedFileData);
 
             var rows = formattedFileContent.Split(
                 new[] { Environment.NewLine },

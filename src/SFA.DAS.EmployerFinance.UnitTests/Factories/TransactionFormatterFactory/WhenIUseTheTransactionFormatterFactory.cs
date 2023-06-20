@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.Common.Domain.Types;
+﻿using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
 

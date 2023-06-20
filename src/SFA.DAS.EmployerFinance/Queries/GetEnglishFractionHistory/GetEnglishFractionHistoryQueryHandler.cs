@@ -1,37 +1,35 @@
-﻿using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.HashingService;
-using SFA.DAS.Validation;
+﻿using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
+namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+
+public class GetEnglishFractionHistoryQueryHandler : IRequestHandler<GetEnglishFractionHistoryQuery, GetEnglishFractionHistoryResposne>
 {
-    public class GetEnglishFractionHistoryQueryHandler : IAsyncRequestHandler<GetEnglishFractionHistoryQuery, GetEnglishFractionHistoryResposne>
+    private readonly IValidator<GetEnglishFractionHistoryQuery> _validator;
+    private readonly IDasLevyRepository _dasLevyRepository;
+    private readonly IEncodingService _encodingService;
+
+    public GetEnglishFractionHistoryQueryHandler(IValidator<GetEnglishFractionHistoryQuery> validator, IDasLevyRepository dasLevyRepository, IEncodingService encodingService)
     {
-        private readonly IValidator<GetEnglishFractionHistoryQuery> _validator;
-        private readonly IDasLevyRepository _dasLevyRepository;
-        private readonly IHashingService _hashingService;
+        _validator = validator;
+        _dasLevyRepository = dasLevyRepository;
+        _encodingService = encodingService;
+    }
 
-        public GetEnglishFractionHistoryQueryHandler(IValidator<GetEnglishFractionHistoryQuery> validator, IDasLevyRepository dasLevyRepository, IHashingService hashingService)
+    public async Task<GetEnglishFractionHistoryResposne> Handle(GetEnglishFractionHistoryQuery message,CancellationToken cancellationToken)
+    {
+        var validationResult = _validator.Validate(message);
+
+        if (!validationResult.IsValid())
         {
-            _validator = validator;
-            _dasLevyRepository = dasLevyRepository;
-            _hashingService = hashingService;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        public async Task<GetEnglishFractionHistoryResposne> Handle(GetEnglishFractionHistoryQuery message)
-        {
-            var validationResult = _validator.Validate(message);
+        var accountId =     _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
+        var fractionDetail = await _dasLevyRepository.GetEnglishFractionHistory(accountId, message.EmpRef);
 
-            if (!validationResult.IsValid())
-            {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
-            }
-
-            var accountId = _hashingService.DecodeValue(message.HashedAccountId);
-            var fractionDetail = await _dasLevyRepository.GetEnglishFractionHistory(accountId, message.EmpRef);
-
-            return new GetEnglishFractionHistoryResposne {FractionDetail = fractionDetail};
-        }
+        return new GetEnglishFractionHistoryResposne {FractionDetail = fractionDetail};
     }
 }

@@ -1,20 +1,15 @@
-﻿using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
-using SFA.DAS.HashingService;
-using SFA.DAS.Validation;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
 {
     public class WhenIGetLevyDeclarations : QueryBaseTest<GetLevyDeclarationQueryHandler, GetLevyDeclarationRequest, GetLevyDeclarationResponse>
     {
         private Mock<IDasLevyRepository> _repository;
-        private Mock<IHashingService> _hashingService;
+        private Mock<IEncodingService> _encodingService;
         public override GetLevyDeclarationRequest Query { get; set; }
         public override GetLevyDeclarationQueryHandler RequestHandler { get; set; }
         public override Mock<IValidator<GetLevyDeclarationRequest>> RequestValidator { get; set; }
@@ -28,21 +23,21 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
 
             Query = new GetLevyDeclarationRequest { HashedAccountId = "ABC123" };
 
-            _hashingService = new Mock<IHashingService>();
-            _hashingService.Setup(x => x.DecodeValue(Query.HashedAccountId)).Returns(ExpectedAccountId);
+            _encodingService = new Mock<IEncodingService>();
+            _encodingService.Setup(x => x.Decode(Query.HashedAccountId,EncodingType.AccountId)).Returns(ExpectedAccountId);
 
             _repository = new Mock<IDasLevyRepository>();
             _expectedLevyDeclarationViews = LevyDeclarationViewsObjectMother.Create(ExpectedAccountId);
             _repository.Setup(x => x.GetAccountLevyDeclarations(It.IsAny<long>())).ReturnsAsync(_expectedLevyDeclarationViews);
 
-            RequestHandler = new GetLevyDeclarationQueryHandler(_repository.Object, RequestValidator.Object, _hashingService.Object);
+            RequestHandler = new GetLevyDeclarationQueryHandler(_repository.Object, RequestValidator.Object, _encodingService.Object);
         }
 
         [Test]
         public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
         {
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             _repository.Verify(x => x.GetAccountLevyDeclarations(ExpectedAccountId), Times.Once);
@@ -52,7 +47,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
         public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
         {
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.IsNotNull(actual);

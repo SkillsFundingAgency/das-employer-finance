@@ -1,7 +1,6 @@
 ﻿
-namespace SFA.DAS.EmployerFinance.Models.Transaction
+namespace SFA.DAS.EmployerFinance.Models.Transaction;
+
+public class ExpiredFundTransactionLine : TransactionLine
 {
-    public class ExpiredFundTransactionLine : TransactionLine
-    {
-    }
 }

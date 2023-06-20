@@ -1,37 +1,28 @@
-﻿using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RemoveAccountPayeTests
+namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RemoveAccountPayeTests;
+
+public class WhenIHandleTheCommand
 {
-    public class WhenIHandleTheCommand
+    private RemoveAccountPayeCommandHandler _handler;
+    private Mock<IPayeRepository> _payeRepository;
+
+    [SetUp]
+    public void Arrange()
     {
-        private RemoveAccountPayeCommandHandler _handler;
-        private Mock<IPayeRepository> _payeRepository;
-        private Mock<ILog> _logger;
-        
-        [SetUp]
-        public void Arrange()
-        {
-            _payeRepository = new Mock<IPayeRepository>();
+        _payeRepository = new Mock<IPayeRepository>();
+        _handler = new RemoveAccountPayeCommandHandler(_payeRepository.Object, Mock.Of<ILogger<RemoveAccountPayeCommandHandler>>());
+    }
 
-            _logger = new Mock<ILog>();
+    [Test]
+    public async Task ThenThePayeSchemeIsRemoved()
+    {
+        var accountId = 123443;
+        var payeRef = "ABC/12343534";
 
-            _handler = new RemoveAccountPayeCommandHandler(_payeRepository.Object, _logger.Object);
-        }
+        await _handler.Handle(new RemoveAccountPayeCommand(accountId, payeRef), CancellationToken.None);
 
-        [Test]
-        public async Task ThenThePayeSchemeIsRemoved()
-        {
-            var accountId = 123443;
-            var payeRef = "ABC/12343534";
-
-            await _handler.Handle(new RemoveAccountPayeCommand(accountId, payeRef));
-
-            _payeRepository.Verify(x => x.RemovePayeScheme(accountId, payeRef));
-        }
+        _payeRepository.Verify(x => x.RemovePayeScheme(accountId, payeRef));
     }
 }

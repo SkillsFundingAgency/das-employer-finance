@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Moq;
@@ -20,11 +21,11 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         public Task Handle_WhenHandlingEvent_ThenShouldSendCreateAccountLegalEntityCommand()
         {
             return RunAsync(f => f.Handler.Handle(f.Message, Mock.Of<IMessageHandlerContext>()),
-                f => f.Mediator.Verify(x => x.SendAsync(It.Is<CreateAccountLegalEntityCommand>(p =>
+                f => f.Mediator.Verify(x => x.Send(It.Is<CreateAccountLegalEntityCommand>(p =>
                         p.AccountId == f.AccountId &&
                         p.LegalEntityId == f.LegalEntityId &&
                         p.Id == f.AccountLegalEntityId
-                    ))));
+                    ),CancellationToken.None)));
         }
     }
 

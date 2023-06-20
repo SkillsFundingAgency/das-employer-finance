@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+﻿using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPayeSchemeByRefTests
 {

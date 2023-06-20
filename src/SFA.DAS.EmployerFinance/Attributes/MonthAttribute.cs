@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.EmployerFinance.Messages;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.EmployerFinance.Attributes

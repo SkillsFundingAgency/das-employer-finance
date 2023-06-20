@@ -1,8 +1,7 @@
-﻿namespace SFA.DAS.EmployerFinance.Queries.GetContent
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetContent;
+
+public class GetContentResponse
 {
-    public class GetContentResponse
-    {
-        public string Content { get; set; }
-        public bool HasFailed { get; set; }
-    }
+    public string Content { get; set; }
+    public bool HasFailed { get; set; }
 }

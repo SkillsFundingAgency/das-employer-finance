@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
-using FluentAssertions;
-using MediatR;
-using Moq;
-using NUnit.Framework;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
+using SFA.DAS.EmployerFinance.TestCommon.DatabaseMock;
 using SFA.DAS.EmployerFinance.UnitTests.Builders;
 using SFA.DAS.Testing;
-using SFA.DAS.Testing.EntityFramework;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries
 {
@@ -35,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
     public class GetHealthCheckQueryHandlerTestsFixture
     {
         public GetHealthCheckQuery GetHealthCheckQuery { get; set; }
-        public IAsyncRequestHandler<GetHealthCheckQuery, GetHealthCheckQueryResponse> Handler { get; set; }
+        public IRequestHandler<GetHealthCheckQuery, GetHealthCheckQueryResponse> Handler { get; set; }
         public Mock<EmployerFinanceDbContext> Db { get; set; }
         public IConfigurationProvider ConfigurationProvider { get; set; }
         public List<HealthCheck> HealthChecks { get; set; }
@@ -52,14 +45,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
                 new HealthCheckBuilder().WithId(2).Build()
             };
 
-            Db.Setup(d => d.HealthChecks).Returns(new DbSetStub<HealthCheck>(HealthChecks));
+            Db.Setup(d => d.HealthChecks).ReturnsDbSet(HealthChecks);
 
-            Handler = new GetHealthCheckQueryHandler(new Lazy<EmployerFinanceDbContext>(() => Db.Object), ConfigurationProvider);
+            Handler = new GetHealthCheckQueryHandler(Db.Object, ConfigurationProvider);
         }
 
         public Task<GetHealthCheckQueryResponse> Handle()
         {
-            return Handler.Handle(GetHealthCheckQuery);
+            return Handler.Handle(GetHealthCheckQuery, CancellationToken.None);
         }
     }
 }

@@ -1,55 +1,49 @@
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using MediatR;
-using Moq;
-using NUnit.Framework;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests;
+
+[TestFixture]
+public class WhenISubmitTheStartTransferConnectionInvitationPage
 {
-    [TestFixture]
-    public class WhenISubmitTheStartTransferConnectionInvitationPage
+    private const string ReceiverAccountPublicHashedId = "XYZ987";
+
+    private TransferConnectionInvitationsController _controller;
+    private StartTransferConnectionInvitationViewModel _viewModel;
+    private readonly Mock<IMediator> _mediator = new Mock<IMediator>();
+
+    [SetUp]
+    public void Arrange()
     {
-        private const string ReceiverAccountPublicHashedId = "XYZ987";
+        _mediator.Setup(m => m.Send(It.IsAny<SendTransferConnectionInvitationQuery>(), CancellationToken.None)).ReturnsAsync(new SendTransferConnectionInvitationResponse());
 
-        private TransferConnectionInvitationsController _controller;
-        private StartTransferConnectionInvitationViewModel _viewModel;
-        private readonly Mock<IMediator> _mediator = new Mock<IMediator>();
+        _controller = new TransferConnectionInvitationsController(null, _mediator.Object, Mock.Of<IUrlActionHelper>(), Mock.Of<IEncodingService>());
 
-        [SetUp]
-        public void Arrange()
+        _viewModel = new StartTransferConnectionInvitationViewModel
         {
-            _mediator.Setup(m => m.SendAsync(It.IsAny<SendTransferConnectionInvitationQuery>())).ReturnsAsync(new SendTransferConnectionInvitationResponse());
+            ReceiverAccountPublicHashedId = ReceiverAccountPublicHashedId
+        };
+    }
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object);
+    [Test]
+    public async Task ThenAGetTransferConnectionInvitationAccountQueryShouldBeSent()
+    {
+        await _controller.Start(ReceiverAccountPublicHashedId,_viewModel);
 
-            _viewModel = new StartTransferConnectionInvitationViewModel
-            {
-                ReceiverAccountPublicHashedId = ReceiverAccountPublicHashedId
-            };
-        }
+        _mediator.Verify(m => m.Send(It.Is<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId), CancellationToken.None), Times.Once);
+    }
 
-        [Test]
-        public async Task ThenAGetTransferConnectionInvitationAccountQueryShouldBeSent()
-        {
-            await _controller.Start(_viewModel);
+    [Test]
+    public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
+    {
+        var result = await _controller.Start(ReceiverAccountPublicHashedId, _viewModel) as RedirectToActionResult;
 
-            _mediator.Verify(m => m.SendAsync(It.Is<SendTransferConnectionInvitationQuery>(q => q.ReceiverAccountPublicHashedId == _viewModel.ReceiverAccountPublicHashedId)), Times.Once);
-        }
-
-        [Test]
-        public async Task ThenIShouldBeRedirectedToTheSendTransferConnectionInvitationPage()
-        {
-            var result = await _controller.Start(_viewModel) as RedirectToRouteResult;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Send"));
-            Assert.That(result.RouteValues.ContainsKey("controller"), Is.False);
-            Assert.That(result.RouteValues.TryGetValue("ReceiverAccountPublicHashedId", out var receiverPublicHashedAccountId), Is.True);
-            Assert.That(receiverPublicHashedAccountId, Is.EqualTo(ReceiverAccountPublicHashedId));
-        }
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ActionName, Is.EqualTo("Send"));
+        Assert.That(result.RouteValues.TryGetValue("ReceiverAccountPublicHashedId", out var receiverPublicHashedAccountId), Is.True);
+        Assert.That(receiverPublicHashedAccountId, Is.EqualTo(ReceiverAccountPublicHashedId));
     }
 }

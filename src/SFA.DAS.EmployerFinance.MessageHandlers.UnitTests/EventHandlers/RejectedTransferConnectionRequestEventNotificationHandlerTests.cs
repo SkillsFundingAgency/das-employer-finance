@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
@@ -44,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         public RejectedTransferConnectionRequestEventNotificationHandler Handler { get; set; }
 
         public RejectedTransferConnectionRequestEvent Event { get; set; }
-        
+
         public RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture()
         {
             AddSenderAccount();
@@ -57,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             Handler = new RejectedTransferConnectionRequestEventNotificationHandler(
                 Configuration,
                 OuterApiClient.Object,
-                Logger.Object,
+                    Mock.Of<ILogger<RejectedTransferConnectionRequestEventNotificationHandler>>(),
                 NotificationsApiClient.Object);
         }
 

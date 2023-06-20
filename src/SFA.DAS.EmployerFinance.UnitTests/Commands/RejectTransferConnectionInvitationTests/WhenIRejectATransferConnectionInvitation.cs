@@ -1,16 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 using SFA.DAS.EmployerFinance.TestCommon.Builders;
-using SFA.DAS.EmployerFinance.TestCommon.Helpers;
 using SFA.DAS.UnitOfWork.Context;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInvitation
@@ -34,7 +28,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         {
             _employerAccountRepository = new Mock<IEmployerAccountRepository>();
             _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
-            _userRepository = new Mock<IUserAccountRepository>();
+            _userRepository = new Mock<IUserAccountRepository>(); 
+            
+            var hashedAccountId = "ABC123";
+            var publicHashedAccountId = "ABCDEFGHJKLMN12345";
 
             _receiverUser = new User
             {
@@ -48,16 +45,16 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
             {
                 Id = 333333,
                 Name = "Sender",
-                HashingService = new TestHashingService(),
-                PublicHashingService = new TestPublicHashingService()
+                HashedId = hashedAccountId,
+                PublicHashedId = publicHashedAccountId
             };
 
             _receiverAccount = new Account
             {
                 Id = 222222,
                 Name = "Receiver",
-                HashingService = new TestHashingService(),
-                PublicHashingService = new TestPublicHashingService()
+                HashedId = "DEF123",
+                PublicHashedId = "GHHD3876"
             };
 
             _unitOfWorkContext = new UnitOfWorkContext();
@@ -93,7 +90,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         {
             var now = DateTime.UtcNow;
 
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             Assert.That(_transferConnectionInvitation.Status, Is.EqualTo(TransferConnectionInvitationStatus.Rejected));
             Assert.That(_transferConnectionInvitation.Changes.Count, Is.EqualTo(1));
@@ -113,7 +110,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         [Test]
         public async Task ThenShouldPublishRejectedTransferConnectionInvitationEvent()
         {
-            await _handler.Handle(_command);
+            await _handler.Handle(_command, CancellationToken.None);
 
             var messages = _unitOfWorkContext.GetEvents().ToList();
             var message = messages.OfType<RejectedTransferConnectionRequestEvent>().FirstOrDefault();
@@ -138,7 +135,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
         {
             _command.AccountId = _senderAccount.Id;
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command), "Requires rejector account is the receiver account.");
+            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(_command, CancellationToken.None), "Requires rejector account is the receiver account.");
         }
 
         [Test]
@@ -153,7 +150,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
 
             _transferConnectionInvitationRepository.Setup(r => r.Get(_transferConnectionInvitation.Id)).ReturnsAsync(_transferConnectionInvitation);
 
-            Assert.ThrowsAsync<Exception>(() => _handler.Handle(_command), "Requires transfer connection invitation is pending.");
+            Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(_command, CancellationToken.None), "Requires transfer connection invitation is pending.");
         }
     }
 }

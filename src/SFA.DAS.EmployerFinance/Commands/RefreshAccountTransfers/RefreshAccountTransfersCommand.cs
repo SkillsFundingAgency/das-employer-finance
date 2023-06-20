@@ -1,12 +1,9 @@
-﻿using System;
-using MediatR;
+﻿
+namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 
-namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
+public class RefreshAccountTransfersCommand : IRequest<Unit>
 {
-    public class RefreshAccountTransfersCommand : IAsyncRequest
-    {
-        public long ReceiverAccountId { get; set; }
-        public string PeriodEnd { get; set; }
-        public Guid CorrelationId { get; set; }
-    }
+    public long ReceiverAccountId { get; set; }
+    public string PeriodEnd { get; set; }
+    public Guid CorrelationId { get; set; }
 }

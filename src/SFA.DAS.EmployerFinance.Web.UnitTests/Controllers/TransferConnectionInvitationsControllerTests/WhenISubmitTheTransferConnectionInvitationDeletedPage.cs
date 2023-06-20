@@ -1,61 +1,47 @@
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using MediatR;
-using Moq;
-using NUnit.Framework;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using SFA.DAS.EmployerFinance.Web.Helpers;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests;
+
+[TestFixture]
+public class WhenISubmitTheTransferConnectionInvitationDeletedPage
 {
-    [TestFixture]
-    public class WhenISubmitTheTransferConnectionInvitationDeletedPage
+    private const string HashedAccountId = "ABC123";
+    private const string TransferHashedId = "XYZ123";
+
+    private TransferConnectionInvitationsController _controller;
+    private DeletedTransferConnectionInvitationViewModel _viewModel = new DeletedTransferConnectionInvitationViewModel();
+        
+    [SetUp]
+    public void Arrange()
     {
-        private const string AccountHashedId = "ABC123";
+        var urlHelper = new Mock<IUrlActionHelper>();
+        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{HashedAccountId}/teams");
+        _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object, Mock.Of<IEncodingService>());
+    }
 
-        private TransferConnectionInvitationsController _controller;
-        private DeletedTransferConnectionInvitationViewModel _viewModel = new DeletedTransferConnectionInvitationViewModel();
-        private readonly Mock<IMediator> _mediator = new Mock<IMediator>();
+    [Test]
+    public void ThenIShouldBeRedirectedToTransfersDashboardIfIChoseOption1()
+    {
+        _viewModel.Choice = "GoToTransfersPage";
 
-        [SetUp]
-        public void Arrange()
-        {
-            var routeData = new RouteData();
+        var result = _controller.Deleted(HashedAccountId,TransferHashedId,_viewModel) as RedirectToActionResult;
 
-            routeData.Values[ControllerConstants.AccountHashedIdRouteKeyName] = AccountHashedId;
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ActionName, Is.EqualTo("Index"));
+        Assert.That(result.ControllerName, Is.EqualTo("TransferConnections"));
+    }
 
-            var urlHelper = new UrlHelper(new RequestContext(Mock.Of<HttpContextBase>(), routeData));
+    [Test]
+    public void ThenIShouldBeRedirectedToHomePageIfIChoseOption2()
+    {
+        _viewModel.Choice = "GoToHomepage";
 
-            _mediator.Setup(m => m.SendAsync(It.IsAny<IAsyncRequest<long>>()));
+        var result = _controller.Deleted(HashedAccountId,TransferHashedId,_viewModel) as RedirectResult;
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object) { Url = urlHelper };
-        }
-
-        [Test]
-        public void ThenIShouldBeRedirectedToTransfersDashboardIfIChoseOption1()
-        {
-            _viewModel.Choice = "GoToTransfersPage";
-
-            var result = _controller.Deleted(_viewModel) as RedirectToRouteResult;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.RouteValues.TryGetValue("action", out var actionName), Is.True);
-            Assert.That(actionName, Is.EqualTo("Index"));
-            Assert.That(result.RouteValues.TryGetValue("controller", out var controllerName), Is.True);
-            Assert.That(controllerName, Is.EqualTo("TransferConnections"));
-        }
-
-        [Test]
-        public void ThenIShouldBeRedirectedToHomePageIfIChoseOption2()
-        {
-            _viewModel.Choice = "GoToHomepage";
-
-            var result = _controller.Deleted(_viewModel) as RedirectResult;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));
-        }
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Url, Is.EqualTo($"/accounts/{HashedAccountId}/teams"));
     }
 }

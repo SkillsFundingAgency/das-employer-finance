@@ -1,8 +1,5 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetHealthCheck
+public class GetHealthCheckQuery : IRequest<GetHealthCheckQueryResponse>
 {
-    public class GetHealthCheckQuery : IAsyncRequest<GetHealthCheckQueryResponse>
-    {
-    }
 }

@@ -1,15 +1,14 @@
-﻿@using SFA.DAS.EmployerFinance.Web.Filters
-@using System.Web
+@using SFA.DAS.EmployerFinance.Web.Filters
 
 <script>
     @if (ViewBag.GaData == null)
     {
-        ViewBag.GaData = new AnalyticsFilter.GaData();
+        ViewBag.GaData = new AnalyticsFilterAttribute.GaData();
     }
     window.dataLayer = window.dataLayer || [];
     dataLayer.push({
         'event': '@ViewBag.GaData.DataLoaded',
-        'loggedIn': '@HttpContext.Current.User.Identity.IsAuthenticated',
+        'loggedIn': '@ViewContext.HttpContext.User.Identity?.IsAuthenticated',
         'userID': '@ViewBag.GaData.UserId',
         'vpv': '@ViewBag.GaData.Vpv',
         'acc': '@ViewBag.GaData.Acc',

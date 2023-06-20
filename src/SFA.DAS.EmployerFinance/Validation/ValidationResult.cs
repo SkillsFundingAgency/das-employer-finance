@@ -1,36 +1,35 @@
-using System.Collections.Generic;
-using System.Linq;
+namespace SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Validation
+public class ValidationResult
 {
-    public class ValidationResult
+    public bool IsUnauthorized { get; set; }
+    public Dictionary<string, string> ValidationDictionary { get; set; }
+
+    public ValidationResult()
     {
-        public bool IsUnauthorized { get; set; }
-        public Dictionary<string, string> ValidationDictionary { get; set; }
+        ValidationDictionary = new Dictionary<string, string>();
+    }
 
-        public ValidationResult()
+    public void AddError(string propertyName)
+    {
+        ValidationDictionary.Add(propertyName, $"{propertyName} has not been supplied");
+    }
+
+    public void AddError(string propertyName, string validationError)
+    {
+        ValidationDictionary.Add(propertyName, validationError);
+    }
+
+    public List<string> ErrorList => ValidationDictionary.Select(c => c.Key + "|" + c.Value).ToList();
+        
+
+    public bool IsValid()
+    {
+        if (ValidationDictionary == null)
         {
-            ValidationDictionary = new Dictionary<string, string>();
+            return false;
         }
 
-        public void AddError(string propertyName)
-        {
-            ValidationDictionary.Add(propertyName, $"{propertyName} has not been supplied");
-        }
-
-        public void AddError(string propertyName, string validationError)
-        {
-            ValidationDictionary.Add(propertyName, validationError);
-        }
-
-        public bool IsValid()
-        {
-            if (ValidationDictionary == null)
-            {
-                return false;
-            }
-
-            return !ValidationDictionary.Any();
-        }
+        return !ValidationDictionary.Any();
     }
 }

@@ -46,10 +46,9 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.UnitTests.Extensions
             }
 
             var actualResult = await TransactionRepositoryExtensions.WaitForStableResult(
-                        GetNextValue,
-                        cancellationTokenSource.Token, 
+                        GetNextValue, 
                         pollInterval, 
-                        stableReadCount);
+                        stableReadCount, cancellationTokenSource.Token);
 
             Assert.AreEqual(expectedResult, actualResult);
 

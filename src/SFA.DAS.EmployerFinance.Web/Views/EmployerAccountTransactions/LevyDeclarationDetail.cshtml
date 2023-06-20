@@ -1,6 +1,10 @@
 ﻿@using System.Globalization
-@using SFA.DAS.EmployerFinance.Web.Extensions
-@model OrchestratorResponse<TransactionLineViewModel<SFA.DAS.EmployerFinance.Models.Levy.LevyDeclarationTransactionLine>>
+@using SFA.DAS.EmployerFinance.Interfaces
+@using SFA.DAS.EmployerFinance.Web.Infrastructure
+
+@inject IUrlActionHelper UrlHelpers;
+
+@model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<TransactionLineViewModel<SFA.DAS.EmployerFinance.Models.Levy.LevyDeclarationTransactionLine>>
 
 @{
     var culture = new CultureInfo("en-GB");
@@ -15,81 +19,87 @@
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
 }
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <h1 class="heading-xlarge">@paymentType</h1>
-        <p>Date <b>@Model.Data.TransactionDate.ToGdsFormatFull()</b></p>
-    </div>
-</div>
-<div class="grid-row">
-    <div class="column-full">
-        <table class="small responsive--desktop">
-            <thead>
-                <tr>
-                    <th id="th-ps" scope="col">PAYE scheme</th>
-                    <th id="th-pd" scope="col">Payroll date</th>
-                    <th id="th-ld" class="numeric" scope="col">Levy declared</th>
-                    <th id="th-ef" class="numeric nowrap" scope="col">English %</th>
-                    <th id="th-tu" class="numeric" scope="col">10% top up</th>
-                    <th id="th-pi" class="numeric" scope="col">Your funds</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="total total--top">
-                    <th scope="row" colspan="5" id="th-total"><span class="vh">Total</span></th>
-                    <td data-label="Your funds total" class="numeric" headers="th-total">@Model.Data.Amount.ToString("C2", culture)</td>
-                </tr>
 
-            @{
-                var orderedTransactions = Model.Data.SubTransactions.OrderBy(t => t.PayrollDate);
-                foreach (var aggregationLineItem in orderedTransactions)
-                {
-                    <tr class="responsive-tr">
-                        <td data-label="PAYE scheme" headers="th-ps">
-                            <span>@aggregationLineItem.EmpRef</span>
-                            <span>@aggregationLineItem.PayeSchemeName</span>
-                        </td>
-                        <td data-label="Payroll date" headers="th-pd">
-                            @aggregationLineItem.PayrollDate.ToGdsFormatWithoutDayAbbrMonth()
-                        </td>
-                        <td data-label="Levy declared" headers="th-ld" class="numeric">
-                            @(aggregationLineItem.Amount.ToString("C2", culture))
-                        </td>
-                        <td data-label="English %" headers="th-ef" class="numeric nowrap">
-                            @($"{aggregationLineItem.EnglishFraction:P3}")
-                        </td>
-                        <td data-label="10% top up" headers="th-tu" class="numeric">
-                            @(aggregationLineItem.TopUp.ToString("C2", culture))
-                        </td>
-                        <td data-label="Your funds" headers="th-pi" class="numeric">
-                            @((aggregationLineItem.LineAmount).ToString("C2", culture))
-                        </td>
-                    </tr>
-                }
-            }
-                <tr class="total">
-                    <th scope="row" colspan="5" id="th-total"><span class="vh">Total</span></th>
-                    <td data-label="Your funds total" class="numeric" headers="th-total">@Model.Data.Amount.ToString("C2", culture)</td>
-                </tr>
-            </tbody>
-        </table>
+<h1 class="govuk-heading-xl">@paymentType</h1>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Date </dt>
+                <dd class="govuk-summary-list__value">@Model.Data.TransactionDate.ToGdsFormatFull()</dd>
+            </div>
+        </dl>
     </div>
 </div>
-<div class="grid-row">
+
+
+<table class="govuk-table das-table--responsive govuk-!-font-size-16">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">PAYE scheme</th>
+            <th class="govuk-table__header" scope="col">Payroll date</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Levy declared</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">English %</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">10% top up</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Your funds</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row app-table__row--total app-table__row--total-top">
+            <th scope="row" colspan="5" class="app-table__header app-table__header--total"><span class="govuk-visually-hidden">Total</span></th>
+            <td data-label="Your funds total" class="govuk-table__cell govuk-table__cell--numeric  govuk-!-font-weight-bold">@Model.Data.Amount.ToString("C2", culture)</td>
+        </tr>
+    @{
+        var orderedTransactions = Model.Data.SubTransactions.OrderBy(t => t.PayrollDate);
+        foreach (var aggregationLineItem in orderedTransactions)
+        {
+            <tr class="govuk-table__row">
+                <td data-label="PAYE scheme" class="govuk-table__cell">
+                    <span>@aggregationLineItem.EmpRef</span>
+                    <span>@aggregationLineItem.PayeSchemeName</span>
+                </td>
+                <td data-label="Payroll date" class="govuk-table__cell">
+                    @aggregationLineItem.PayrollDate.ToGdsFormatWithoutDayAbbrMonth()
+                </td>
+                <td data-label="Levy declared" class="govuk-table__cell govuk-table__cell--numeric">
+                    @(aggregationLineItem.Amount.ToString("C2", culture))
+                </td>
+                <td data-label="English %" class="govuk-table__cell govuk-table__cell--numeric">
+                    @($"{aggregationLineItem.EnglishFraction:P3}")
+                </td>
+                <td data-label="10% top up" class="govuk-table__cell govuk-table__cell--numeric">
+                    @(aggregationLineItem.TopUp.ToString("C2", culture))
+                </td>
+                <td data-label="Your funds" class="govuk-table__cell govuk-table__cell--numeric">
+                    @((aggregationLineItem.LineAmount).ToString("C2", culture))
+                </td>
+            </tr>
+        }
+    }
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell app-table__cell--transparent" colspan="5"> </td>
+            <td data-label="Your funds total" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.Amount.ToString("C2", culture)</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="govuk-grid-row">
     <div class="column-two-thirds">
-        @Html.Partial("_WhatIsEnglishPercentage")
-        <div class="panel panel-border-wide panel-filled-purple panel-top-margin">
-            <p><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/employer-enquiries" target="_blank">Contact HMRC</a> if the levied amount isn't what you expected. </p>
+        @await Html.PartialAsync("_WhatIsEnglishPercentage")
+        <div class="govuk-inset-text">
+            <p><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/employer-enquiries" target="_blank" rel="noopener" class="govuk-link">Contact HMRC</a> if the levied amount isn't what you expected. </p>
         </div>
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction($"teams")">Home</a></li>
-            <li><a href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new {year = Model.Data.TransactionDate.Year, month = Model.Data.TransactionDate.Month})">Your transactions</a></li>
-            <li>@paymentType details</li>
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerFinanceAction($"teams")" class="govuk-breadcrumbs__link">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.Data.HashedAccountId" asp-route-year="@Model.Data.TransactionDate.Year" asp-route-month="@Model.Data.TransactionDate.Month" class="govuk-breadcrumbs__link">Your transactions</a></li>
+            <li class="govuk-breadcrumbs__list-item">@paymentType details</li>
         </ol>
     </div>
 }

@@ -1,35 +1,32 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Commands.RenameAccount
+namespace SFA.DAS.EmployerFinance.Commands.RenameAccount;
+
+public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,Unit>
 {
-    public class RenameAccountCommandHandler : AsyncRequestHandler<RenameAccountCommand>
+    private readonly IAccountRepository _accountRepository;
+    private readonly ILogger<RenameAccountCommandHandler> _logger;
+
+    public RenameAccountCommandHandler(IAccountRepository accountRepository, ILogger<RenameAccountCommandHandler> logger)
     {
-        private readonly IAccountRepository _accountRepository;
-        private readonly ILog _logger;
+        _accountRepository = accountRepository;
+        _logger = logger;
+    }
 
-        public RenameAccountCommandHandler(IAccountRepository accountRepository, ILog logger)
+    public async Task<Unit> Handle(RenameAccountCommand request,CancellationToken cancellationToken)
+    {
+        try
         {
-            _accountRepository = accountRepository;
-            _logger = logger;
+            await _accountRepository.RenameAccount(request.Id, request.Name);
+
+            _logger.LogInformation($"Account {request.Id} renamed");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not rename account");
+            throw;
         }
 
-        protected override async Task HandleCore(RenameAccountCommand message)
-        {
-            try
-            {
-                await _accountRepository.RenameAccount(message.Id, message.Name);
-
-                _logger.Info($"Account {message.Id} renamed");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Could not rename account");
-                throw;
-            }
-        }
+        return Unit.Value;
     }
 }

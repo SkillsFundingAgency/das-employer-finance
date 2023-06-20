@@ -1,21 +1,19 @@
-using System.Threading.Tasks;
-using MediatR;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Services
+namespace SFA.DAS.EmployerFinance.Services;
+
+public class DasAccountService : IDasAccountService
 {
-    public class DasAccountService : IDasAccountService
+    private readonly IMediator _mediator;
+
+    public DasAccountService(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        public DasAccountService(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
-        public async Task UpdatePayeScheme(string empRef)
-        {
-            await _mediator.SendAsync(new UpdatePayeInformationCommand {PayeRef = empRef});
-        }
+    public async Task UpdatePayeScheme(string empRef)
+    {
+        await _mediator.Send(new UpdatePayeInformationCommand {PayeRef = empRef});
     }
 }

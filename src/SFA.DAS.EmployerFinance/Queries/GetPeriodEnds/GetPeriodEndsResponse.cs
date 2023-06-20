@@ -1,11 +1,8 @@
-﻿
-using System.Collections.Generic;
-using SFA.DAS.EmployerFinance.Models.Payments;
+﻿using SFA.DAS.EmployerFinance.Models.Payments;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds
+namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
+
+public class GetPeriodEndsResponse
 {
-    public class GetPeriodEndsResponse
-    {
-        public List<PeriodEnd> CurrentPeriodEnds { get; set; }
-    }
+    public List<PeriodEnd> CurrentPeriodEnds { get; set; }
 }

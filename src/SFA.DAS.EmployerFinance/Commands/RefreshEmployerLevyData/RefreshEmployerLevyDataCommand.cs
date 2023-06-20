@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using MediatR;
-using SFA.DAS.EmployerFinance.Models.HmrcLevy;
+﻿using SFA.DAS.EmployerFinance.Models.HmrcLevy;
 
-namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData
+namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
+
+public class RefreshEmployerLevyDataCommand : IRequest<Unit>
 {
-    public class RefreshEmployerLevyDataCommand : IAsyncRequest
-    {
-        public long AccountId { get; set; }
-        public ICollection<EmployerLevyData> EmployerLevyData { get; set; }
-    }
+    public long AccountId { get; set; }
+    public ICollection<EmployerLevyData> EmployerLevyData { get; set; }
 }

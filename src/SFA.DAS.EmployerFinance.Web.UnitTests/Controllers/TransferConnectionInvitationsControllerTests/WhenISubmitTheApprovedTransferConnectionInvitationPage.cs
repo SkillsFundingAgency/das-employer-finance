@@ -1,56 +1,48 @@
-﻿using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using MediatR;
-using Moq;
-using NUnit.Framework;
+﻿using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using SFA.DAS.EmployerFinance.Web.Helpers;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests;
+
+[TestFixture]
+public class WhenISubmitTheApprovedTransferConnectionInvitationPage
 {
-    [TestFixture]
-    public class WhenISubmitTheApprovedTransferConnectionInvitationPage
+    private const string HashedAccountId = "ABC123";
+
+    private TransferConnectionInvitationsController _controller;
+    private readonly ApprovedTransferConnectionInvitationViewModel _viewModel = new ApprovedTransferConnectionInvitationViewModel();
+    private readonly Mock<IMediator> _mediator = new Mock<IMediator>();
+
+    [SetUp]
+    public void Arrange()
     {
-        private const string AccountHashedId = "ABC123";
+        var urlHelper = new Mock<IUrlActionHelper>();
+        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{HashedAccountId}/teams");
+        urlHelper.Setup(x => x.EmployerCommitmentsV2Action("")).Returns($"/{HashedAccountId}");
+            
+        _controller = new TransferConnectionInvitationsController(null, _mediator.Object, urlHelper.Object, Mock.Of<IEncodingService>());
+    }
 
-        private TransferConnectionInvitationsController _controller;
-        private readonly ApprovedTransferConnectionInvitationViewModel _viewModel = new ApprovedTransferConnectionInvitationViewModel();
-        private readonly Mock<IMediator> _mediator = new Mock<IMediator>();
+    [Test]
+    public void ThenIShouldBeRedirectedToTheApprenticesPageIfIChoseOption1()
+    {
+        _viewModel.Choice = "GoToApprenticesPage";
 
-        [SetUp]
-        public void Arrange()
-        {
-            var routeData = new RouteData();
+        var result = _controller.Approved(HashedAccountId, "",_viewModel) as RedirectResult;
 
-            routeData.Values[ControllerConstants.AccountHashedIdRouteKeyName] = AccountHashedId;
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Url, Is.EqualTo($"/{HashedAccountId}"));
+    }
 
-            var urlHelper = new UrlHelper(new RequestContext(Mock.Of<HttpContextBase>(), routeData));
+    [Test]
+    public void ThenIShouldBeRedirectedToTheHomepageIfIChoseOption2()
+    {
+        _viewModel.Choice = "GoToHomepage";
 
-            _controller = new TransferConnectionInvitationsController(null, _mediator.Object) { Url = urlHelper };
-        }
+        var result = _controller.Approved(HashedAccountId, "", _viewModel) as RedirectResult;
 
-        [Test]
-        public void ThenIShouldBeRedirectedToTheApprenticesPageIfIChoseOption1()
-        {
-            _viewModel.Choice = "GoToApprenticesPage";
-
-            var result = _controller.Approved(_viewModel) as RedirectResult;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Url, Is.EqualTo($"/{AccountHashedId}"));
-        }
-
-        [Test]
-        public void ThenIShouldBeRedirectedToTheHomepageIfIChoseOption2()
-        {
-            _viewModel.Choice = "GoToHomepage";
-
-            var result = _controller.Approved(_viewModel) as RedirectResult;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Url, Is.EqualTo($"/accounts/{AccountHashedId}/teams"));
-        }
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Url, Is.EqualTo($"/accounts/{HashedAccountId}/teams"));
     }
 }

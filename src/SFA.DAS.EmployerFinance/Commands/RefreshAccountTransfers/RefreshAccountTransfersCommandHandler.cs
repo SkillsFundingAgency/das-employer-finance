@@ -1,80 +1,82 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data;
+using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
-using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers
+namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
+
+public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAccountTransfersCommand, Unit>
 {
-    public class RefreshAccountTransfersCommandHandler : AsyncRequestHandler<RefreshAccountTransfersCommand>
+    private readonly IValidator<RefreshAccountTransfersCommand> _validator;
+    private readonly IPaymentService _paymentService;
+    private readonly ITransferRepository _transferRepository;
+    private readonly ILogger<RefreshAccountTransfersCommandHandler> _logger;
+
+    public RefreshAccountTransfersCommandHandler(
+        IValidator<RefreshAccountTransfersCommand> validator,
+        IPaymentService paymentService,
+        ITransferRepository transferRepository,
+        ILogger<RefreshAccountTransfersCommandHandler> logger)
     {
-        private readonly IValidator<RefreshAccountTransfersCommand> _validator;
-        private readonly IPaymentService _paymentService;
-        private readonly ITransferRepository _transferRepository;
-        private readonly ILog _logger;
+        _validator = validator;
+        _paymentService = paymentService;
+        _transferRepository = transferRepository;
+        _logger = logger;
+    }
 
-        public RefreshAccountTransfersCommandHandler(
-            IValidator<RefreshAccountTransfersCommand> validator,
-            IPaymentService paymentService,
-            ITransferRepository transferRepository,
-            ILog logger)
+    public async Task<Unit> Handle(RefreshAccountTransfersCommand request, CancellationToken cancellationToken)
+    {
+        var validationResult = _validator.Validate(request);
+
+        if (!validationResult.IsValid())
         {
-            _validator = validator;
-            _paymentService = paymentService;
-            _transferRepository = transferRepository;
-            _logger = logger;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        protected override async Task HandleCore(RefreshAccountTransfersCommand message)
+        try
         {
-            var validationResult = _validator.Validate(message);
+            _logger.LogInformation("Getting account transfers from payment api for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
+                request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
-            if (!validationResult.IsValid())
-            {
-                throw new InvalidRequestException(validationResult.ValidationDictionary);
-            }
+            var paymentTransfers = await _paymentService.GetAccountTransfers(request.PeriodEnd, request.ReceiverAccountId, request.CorrelationId);
 
-            try
-            {
-                _logger.Info($"Getting account transfers from payment api for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+            _logger.LogInformation("Retrieved payment transfers from payment api for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}", 
+                request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
-                var paymentTransfers = await _paymentService.GetAccountTransfers(message.PeriodEnd, message.ReceiverAccountId, message.CorrelationId);
+            //Handle multiple transfers for the same account, period end and commitment ID by grouping them together
+            //This can happen if delivery months are different by collection months are not for payments
+            var transfers = paymentTransfers.GroupBy(t => new { t.SenderAccountId, t.ReceiverAccountId, CommitmentId = t.ApprenticeshipId, t.PeriodEnd })
+                .Select(g =>
+                {
+                    var firstGroupItem = g.First();
 
-                _logger.Info($"Retrieved payment transfers from payment api for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-
-                //Handle multiple transfers for the same account, period end and commitment ID by grouping them together
-                //This can happen if delivery months are different by collection months are not for payments
-                var transfers = paymentTransfers.GroupBy(t => new { t.SenderAccountId, t.ReceiverAccountId, CommitmentId = t.ApprenticeshipId, t.PeriodEnd })
-                    .Select(g =>
+                    return new AccountTransfer
                     {
-                        var firstGroupItem = g.First();
+                        PeriodEnd = firstGroupItem.PeriodEnd,
+                        Amount = g.Sum(x => x.Amount),
+                        ApprenticeshipId = firstGroupItem.ApprenticeshipId,
+                        ReceiverAccountId = firstGroupItem.ReceiverAccountId,
+                        SenderAccountId = firstGroupItem.SenderAccountId,
+                        Type = firstGroupItem.Type
+                    };
+                }).ToArray();
 
-                        return new AccountTransfer
-                        {
-                            PeriodEnd = firstGroupItem.PeriodEnd,
-                            Amount = g.Sum(x => x.Amount),
-                            ApprenticeshipId = firstGroupItem.ApprenticeshipId,
-                            ReceiverAccountId = firstGroupItem.ReceiverAccountId,
-                            SenderAccountId = firstGroupItem.SenderAccountId,
-                            Type = firstGroupItem.Type
-                        };
-                    }).ToArray();
+            _logger.LogInformation("Retrieved {TransfersLength} grouped account transfers from payment api for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
+                transfers.Length, request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
 
-                _logger.Info($"Retrieved {transfers.Length} grouped account transfers from payment api for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
-
-                await _transferRepository.CreateAccountTransfers(transfers);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Could not process transfers for Account Id {message.ReceiverAccountId} and Period End {message.PeriodEnd}, CorrelationId = {message.CorrelationId}");
-                throw;
-            }
-
-            _logger.Info($"Refresh account transfers handler complete for AccountId = '{message.ReceiverAccountId}' and PeriodEnd = '{message.PeriodEnd}' CorrelationId: {message.CorrelationId}");
+            await _transferRepository.CreateAccountTransfers(transfers);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not process transfers for Account Id {ReceiverAccountId} and Period End {PeriodEnd}, CorrelationId = {CorrelationId}", 
+                request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
+            throw;
+        }
+
+        _logger.LogInformation("Refresh account transfers handler complete for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
+            request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
+
+        return Unit.Value;
     }
 }

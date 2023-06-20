@@ -1,15 +1,12 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MediatR;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.Validation;
+using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Validation;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries
 {
     public abstract class QueryBaseTest<THandler, TRequest, TResponse>
-        where THandler : IAsyncRequestHandler<TRequest, TResponse>
-        where TRequest : IAsyncRequest<TResponse>
+        where THandler : IRequestHandler<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
     {
         public abstract TRequest Query { get; set; }
         public abstract THandler RequestHandler { get; set; }
@@ -35,7 +32,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
         public async Task ThenTheReturnValueIsAssignableToTheResponse()
         {
             //Act
-            var actual = await RequestHandler.Handle(Query);
+            var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.IsAssignableFrom<TResponse>(actual);
@@ -45,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
         public async Task ThenTheValidatorIsCalled()
         {
             //Act
-            await RequestHandler.Handle(Query);
+            await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
             Assert.AreEqual(1, _validationCallCount);
@@ -59,7 +56,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
             RequestValidator.Setup(x => x.ValidateAsync(It.IsAny<TRequest>())).ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string> { { "", "" } } });
 
             //Act
-            Assert.ThrowsAsync<InvalidRequestException>(async () => await RequestHandler.Handle(Query));
+            Assert.ThrowsAsync<ValidationException>( () =>  RequestHandler.Handle(Query, CancellationToken.None));
         }
     }
 }

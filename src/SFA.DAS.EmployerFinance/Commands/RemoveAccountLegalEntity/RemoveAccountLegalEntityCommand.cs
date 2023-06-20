@@ -1,14 +1,11 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountLegalEntity;
 
-namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountLegalEntity
+public class RemoveAccountLegalEntityCommand : IRequest<Unit>
 {
-    public class RemoveAccountLegalEntityCommand : IAsyncRequest
+    public RemoveAccountLegalEntityCommand(long id)
     {
-        public RemoveAccountLegalEntityCommand(long id)
-        {
-            Id = id;
-        }
-
-        public long Id { get; set; }
+        Id = id;
     }
+
+    public long Id { get; set; }
 }

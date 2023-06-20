@@ -1,0 +1,13 @@
+namespace SFA.DAS.EmployerFinance.Validation;
+
+public static class ValidationResultExtensions
+{
+    public static System.ComponentModel.DataAnnotations.ValidationResult ConvertToDataAnnotationsValidationResult(this ValidationResult result)
+    {
+        var errorMessages = result.ErrorList.Aggregate((x, y) => $"{x}{Environment.NewLine}{y}");
+
+        return new System.ComponentModel.DataAnnotations.ValidationResult(
+            $"The following parameters have failed validation{Environment.NewLine}{errorMessages}",
+            result.ErrorList);
+    }
+}

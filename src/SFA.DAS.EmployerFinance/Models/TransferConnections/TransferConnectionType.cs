@@ -1,8 +1,7 @@
-﻿namespace SFA.DAS.EmployerFinance.Models.TransferConnections
+﻿namespace SFA.DAS.EmployerFinance.Models.TransferConnections;
+
+public enum TransferConnectionType
 {
-    public enum TransferConnectionType
-    {
-        Sender = 1,
-        Receiver = 2
-    }
+    Sender = 1,
+    Receiver = 2
 }

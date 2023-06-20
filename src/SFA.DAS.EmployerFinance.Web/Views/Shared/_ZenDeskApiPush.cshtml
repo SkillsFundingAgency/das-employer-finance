@@ -1,9 +1,15 @@
-﻿<script type="text/javascript">
-    zE(function() {
+﻿@using SFA.DAS.EmployerFinance.Web.Filters;
+
+@{ 
+    var zendeskApiData = ViewBag.ZendeskApiData as ZendeskApiFilterAttribute.ZendeskApiData ?? new ZendeskApiFilterAttribute.ZendeskApiData();
+}
+
+<script nws-csp-add-nonce="true" type="text/javascript">
+    zE(function () {
         zE.identify({
-            name: '@ViewBag.GaData.UserName',
-            email: '@ViewBag.GaData.UserEmail',
-            organization: '@ViewBag.GaData.Acc'
+            name: '@zendeskApiData.Name',
+            email: '@zendeskApiData.Email',
+            organization: '@zendeskApiData.Organization'
         });
     });
 </script>

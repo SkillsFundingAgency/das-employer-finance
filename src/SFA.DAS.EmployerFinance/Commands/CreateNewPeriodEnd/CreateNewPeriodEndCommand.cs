@@ -1,10 +1,8 @@
-﻿using MediatR;
-using SFA.DAS.EmployerFinance.Models.Payments;
+﻿using SFA.DAS.EmployerFinance.Models.Payments;
 
-namespace SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd
+namespace SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
+
+public class CreateNewPeriodEndCommand : IRequest<Unit>
 {
-    public class CreateNewPeriodEndCommand : IAsyncRequest
-    {
-        public PeriodEnd NewPeriodEnd { get; set; }
-    }
+    public PeriodEnd NewPeriodEnd { get; set; }
 }

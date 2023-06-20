@@ -10,13 +10,12 @@ using Moq;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.NLog.Logger;
 using TechTalk.SpecFlow;
 using SFA.DAS.EmployerFinance.Interfaces;
-
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
 {

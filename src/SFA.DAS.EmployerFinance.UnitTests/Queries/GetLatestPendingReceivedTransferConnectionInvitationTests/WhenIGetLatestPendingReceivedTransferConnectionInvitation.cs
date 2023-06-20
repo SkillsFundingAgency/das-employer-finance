@@ -1,8 +1,5 @@
-using System.Threading.Tasks;
 using AutoMapper;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetLatestPendingReceivedTransferConnectionInvitation;
@@ -49,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLatestPendingReceivedTran
 
         public async Task Handle()
         {
-            await Handler.Handle(Query);
+            await Handler.Handle(Query, CancellationToken.None);
         }
 
         public void VerifyGetLatestByReceiverIsCalled()

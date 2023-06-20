@@ -1,17 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using AutoMapper;
-using MediatR;
-using SFA.DAS.Authorization.ModelBinding;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitation
+public class GetTransferConnectionInvitationQuery : IRequest<GetTransferConnectionInvitationResponse>
 {
-    public class GetTransferConnectionInvitationQuery : IAuthorizationContextModel, IAsyncRequest<GetTransferConnectionInvitationResponse>
-    {
-        [IgnoreMap]
-        [Required]
-        public long AccountId { get; set; }
+    public long? TransferConnectionInvitationId { get; set; }
 
-        [Required]
-        public int? TransferConnectionInvitationId { get; set; }
-    }
+    public long AccountId { get; set; }
 }

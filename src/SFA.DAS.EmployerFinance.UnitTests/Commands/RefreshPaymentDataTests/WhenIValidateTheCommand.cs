@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
+﻿using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
 {

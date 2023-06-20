@@ -1,10 +1,6 @@
-﻿using MediatR;
-using System.Collections.Generic;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountBalances
+public class GetAccountBalancesRequest : IRequest<GetAccountBalancesResponse>
 {
-    public class GetAccountBalancesRequest : IAsyncRequest<GetAccountBalancesResponse>
-    {
-        public List<long> AccountIds { get; set; }
-    }
+    public List<long> AccountIds { get; set; }
 }

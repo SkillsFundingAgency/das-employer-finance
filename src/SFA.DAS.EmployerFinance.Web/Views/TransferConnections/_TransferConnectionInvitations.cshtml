@@ -1,0 +1,82 @@
+@using SFA.DAS.EmployerFinance.Models.TransferConnections
+@model SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.TransferConnectionInvitationsViewModel
+
+<h2 class="govuk-heading-l">
+   Connection requests
+</h2>
+<h3 class="govuk-heading-m" id="heading-emp-send">Employers you are connecting with to send funds to</h3>
+@if (Model.TransferSenderConnectionInvitations.Any())
+{
+<table class="govuk-table das-table--responsive" id="connections-send" aria-labelledby="heading-emp-send">
+   <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+         <th class="govuk-table__header das-table-cell-width-50" scope="col">Employer</th>
+         <th class="govuk-table__header  das-table-cell-width-35" scope="col">Status</th>
+         <th class="govuk-table__header  das-table-cell-width-15">&nbsp;</th>
+      </tr>
+   </thead>
+   <tbody class="govuk-table__body">
+      @foreach (var transferConnectionInvitation in Model.TransferSenderConnectionInvitations)
+      {
+      <tr class="govuk-table__row">
+         <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.ReceiverAccount.Name</td>
+         <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
+         <td class="govuk-table__cell govuk-table__cell--numeric">
+            <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId })" class="govuk-link">
+                Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.ReceiverAccount.Name request</span>
+            </a>
+         </td>
+      </tr>
+      }
+   </tbody>
+</table>
+}
+else
+{
+<div class="govuk-inset-text">
+   You have no pending or approved requests
+</div>
+}
+
+<h3 class="govuk-heading-m" id="heading-emp-rec">Employers you are connecting with to receive funds from</h3>
+@if (Model.TransferReceiverConnectionInvitations.Any())
+{
+<table class="govuk-table das-table--responsive" id="connections-receive" aria-labelledby="heading-emp-rec">
+   <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+         <th class="govuk-table__header das-table-cell-width-50" scope="col">Employer</th>
+         <th class="govuk-table__header das-table-cell-width-35" scope="col">Status</th>
+         <th class="govuk-table__header das-table-cell-width-15">&nbsp;</th>
+      </tr>
+   </thead>
+   <tbody class="govuk-table__body">
+      @foreach (var transferConnectionInvitation in Model.TransferReceiverConnectionInvitations)
+      {
+      <tr class="govuk-table__row">
+         <td data-label="Employer" class="govuk-table__cell">@transferConnectionInvitation.SenderAccount.Name</td>
+         <td data-label="Status" class="govuk-table__cell">@transferConnectionInvitation.Status.ToString()</td>
+         <td class="govuk-table__cell govuk-table__cell--numeric">
+         @if (transferConnectionInvitation.Status == TransferConnectionInvitationStatus.Pending) 
+         {
+            <a href="@Url.Action("Receive", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId})" class="govuk-link">
+               Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
+            </a>
+         } 
+         else 
+         {
+            <a href="@Url.Action("Details", "TransferConnectionInvitations", new { transferConnectionInvitationId = transferConnectionInvitation.HashedId, hashedAccountId=Model.HashedAccountId })" class="govuk-link">
+               Details<span class="govuk-visually-hidden"> about the @transferConnectionInvitation.SenderAccount.Name request</span>
+            </a>
+         }
+         </td>
+      </tr>
+      }
+   </tbody>
+</table>
+}
+else
+{
+<div class="govuk-inset-text">
+   You have no pending or approved requests
+</div>
+}

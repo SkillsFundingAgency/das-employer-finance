@@ -1,9 +1,6 @@
-using MediatR;
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnections
+public class GetTransferConnectionsQuery : IRequest<GetTransferConnectionsResponse>
 {
-    public class GetTransferConnectionsQuery : IAsyncRequest<GetTransferConnectionsResponse>
-    {
-        public long AccountId { get; set; }
-    }
+    public long AccountId { get; set; }
 }

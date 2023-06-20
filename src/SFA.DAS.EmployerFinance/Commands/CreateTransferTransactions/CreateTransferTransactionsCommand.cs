@@ -1,12 +1,9 @@
-﻿using System;
-using MediatR;
+﻿
+namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 
-namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions
+public class CreateTransferTransactionsCommand : IRequest<Unit>
 {
-    public class CreateTransferTransactionsCommand : IAsyncRequest
-    {
-        public long ReceiverAccountId { get; set; }
-        public string PeriodEnd { get; set; }
-        public Guid CorrelationId { get; set; }
-    }
+    public long ReceiverAccountId { get; set; }
+    public string PeriodEnd { get; set; }
+    public Guid CorrelationId { get; set; }
 }

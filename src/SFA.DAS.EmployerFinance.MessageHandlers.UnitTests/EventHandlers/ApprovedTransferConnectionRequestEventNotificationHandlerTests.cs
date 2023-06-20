@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
@@ -57,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             Handler = new ApprovedTransferConnectionRequestEventNotificationHandler(
                 Configuration,
                 OuterApiClient.Object,
-                Logger.Object,
+                Mock.Of<ILogger<ApprovedTransferConnectionRequestEventNotificationHandler>>(),
                 NotificationsApiClient.Object);
         }
 

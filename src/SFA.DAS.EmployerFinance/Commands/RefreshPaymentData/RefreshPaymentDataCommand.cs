@@ -1,12 +1,9 @@
-﻿using System;
-using MediatR;
+﻿
+namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 
-namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData
+public class RefreshPaymentDataCommand : IRequest<Unit>
 {
-    public class RefreshPaymentDataCommand : IAsyncRequest
-    {
-        public long AccountId { get; set; }
-        public string PeriodEnd { get; set; }
-        public Guid CorrelationId { get; set; }
-    }
+    public long AccountId { get; set; }
+    public string PeriodEnd { get; set; }
+    public Guid CorrelationId { get; set; }
 }

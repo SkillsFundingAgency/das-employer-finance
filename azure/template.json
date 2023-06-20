@@ -29,6 +29,12 @@
         "sharedServiceBusName": {
             "type": "string"
         },
+        "employerApprenticeshipServiceResourceGroupName": {
+            "type": "string"
+        },
+        "employerApprenticeshipServiceServiceBusName": {
+            "type": "string"
+        },
         "environmentName": {
             "type": "string"
         },
@@ -128,9 +134,19 @@
         "financeApiIdaAudience": {
             "type": "string"
         },
+        "cdnUrl": {
+            "type": "string"
+        },
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow()]"
+        },
+        "stubAuth": {
+            "type": "string"
+        },
+        "websiteRunFromPackage": {
+            "type": "int",
+            "defaultValue": 0
         }
     },
     "variables": {
@@ -140,9 +156,12 @@
         "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
         "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
         "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
-        "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]"
+        "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
+        "configNames": "SFA.DAS.EmployerFinance.Web,SFA.DAS.Employer.GovSignIn,SFA.DAS.Encoding",
+        "configNamesApi": "SFA.DAS.EmployerFinance,SFA.DAS.Encoding"
     },
-    "resources": [{
+    "resources": [
+        {
             "apiVersion": "2020-06-01",
             "name": "[variables('resourceGroupName')]",
             "type": "Microsoft.Resources/resourceGroups",
@@ -273,7 +292,8 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -290,12 +310,24 @@
                                     "value": "[parameters('environmentName')]"
                                 },
                                 {
+                                    "name": "ResourceEnvironmentName",
+                                    "value": "[parameters('resourceEnvironmentName')]"
+                                },
+                                {
+                                    "name": "ConfigNames",
+                                    "value": "[variables('configNames')]"
+                                },
+                                {
+                                    "name": "Version",
+                                    "value": "1.0"
+                                },
+                                {
                                     "name": "StorageConnectionString",
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
-                                    "name": "InstrumentationKey",
-                                    "value": "[reference(concat('UIAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                    "value": "[reference(concat('UIAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
                                 },
                                 {
                                     "name": "WEBSITE_LOAD_CERTIFICATES",
@@ -304,6 +336,14 @@
                                 {
                                     "name": "TokenCertificateThumbprint",
                                     "value": "[parameters('employerUsersTokenSigningCertificateThumbprint')]"
+                                },
+                                {
+                                    "name": "Cdn:Url",
+                                    "value": "[parameters('cdnUrl')]"
+                                },
+                                {
+                                    "name": "StubAuth",
+                                    "value": "[parameters('stubAuth')]"
                                 }
                             ]
                         }
@@ -395,7 +435,8 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -412,8 +453,8 @@
                                     "value": "[parameters('environmentName')]"
                                 },
                                 {
-                                    "name": "InstrumentationKey",
-                                    "value": "[reference(concat('ApiAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                    "value": "[reference(concat('ApiAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
                                 },
                                 {
                                     "name": "IdaTenant",
@@ -422,6 +463,10 @@
                                 {
                                     "name": "FinanceApiIdaAudience",
                                     "value": "[parameters('financeApiIdaAudience')]"
+                                },
+                                {
+                                    "name": "ConfigNames",
+                                    "value": "[variables('configNamesApi')]"
                                 }
                             ]
                         }
@@ -545,7 +590,8 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "LoggingRedisConnectionString",
                                     "value": "[parameters('loggingRedisConnectionString')]"
                                 },
@@ -566,15 +612,20 @@
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[reference(concat('WorkerAppInsights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                    "value": "[reference(concat('WorkerAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                },
+                                {
+                                    "name": "WEBSITE_RUN_FROM_PACKAGE",
+                                    "value": "[parameters('websiteRunFromPackage')]"
                                 }
                             ]
                         }
                     },
                     "appServiceConnectionStrings": {
                         "value": {
-                            "array": [{
+                            "array": [
+                                {
                                     "name": "AzureWebJobsDashboard",
                                     "connectionString": "[parameters('sharedStorageAccountConnectionString')]",
                                     "type": "Custom"
@@ -601,7 +652,7 @@
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "[concat('role-assignments-fin', copyIndex(), '-', parameters('utcValue'))]",
+            "name": "[concat('role-assignments-fin-shared-service-bus-', copyIndex(), '-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "properties": {
@@ -619,6 +670,34 @@
                     },
                     "resourceName": {
                         "value": "[parameters('sharedServiceBusName')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "role-assignments",
+                "count": 5
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[concat('role-assignments-fin-eas-service-bus-', copyIndex(), '-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('employerApprenticeshipServiceResourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "principalId": {
+                        "value": "[createArray(reference(concat('UIAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('UIAppService-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('ApiAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat('ApiAppService-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value, reference(concat('WorkerAppService-', parameters('utcValue'))).outputs.managedServiceIdentityId.value)[copyIndex()]]"
+                    },
+                    "assignmentType": {
+                        "value": "ServiceBusOwner"
+                    },
+                    "resourceName": {
+                        "value": "[parameters('employerApprenticeshipServiceServiceBusName')]"
                     }
                 }
             },

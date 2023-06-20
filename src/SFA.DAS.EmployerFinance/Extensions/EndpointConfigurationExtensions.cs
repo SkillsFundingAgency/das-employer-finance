@@ -1,43 +1,26 @@
-﻿using System;
-using NServiceBus;
-using SFA.DAS.AutoConfiguration;
-using SFA.DAS.EmployerFinance.Messages.Commands;
+﻿using NServiceBus;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
-using StructureMap;
 
-namespace SFA.DAS.EmployerFinance.Extensions
+namespace SFA.DAS.EmployerFinance.Extensions;
+
+public static class EndpointConfigurationExtensions
 {
-    public static class EndpointConfigurationExtensions
+    public static EndpointConfiguration UseAzureServiceBusTransport(this EndpointConfiguration config, Func<string> connectionStringBuilder, bool isLocal)
     {
-        public static EndpointConfiguration UseAzureServiceBusTransport(this EndpointConfiguration config, Func<string> connectionStringBuilder, IContainer container)
+        if (isLocal)
         {
-            var isDevelopment = container.GetInstance<IEnvironmentService>().IsCurrent(DasEnv.LOCAL);
-
-            if (isDevelopment)
-            {
-                var transport = config.UseTransport<LearningTransport>();
-                transport.Transactions(TransportTransactionMode.ReceiveOnly);
-                ConfigureRouting(transport.Routing());
-            }
-
-            else
-            {
-                config.UseAzureServiceBusTransport(connectionStringBuilder(), ConfigureRouting);
-            }
-            
-            config.UseMessageConventions();
-            
-            return config;
+            var transport = config.UseTransport<LearningTransport>();
+            transport.Transactions(TransportTransactionMode.ReceiveOnly);
+            transport.Routing().AddRouting();
+        }
+        else
+        {
+            config.UseAzureServiceBusTransport(connectionStringBuilder(), s => s.AddRouting());
         }
 
-        private static void ConfigureRouting(RoutingSettings routing)
-        {
-            routing.RouteToEndpoint(
-                typeof(ImportLevyDeclarationsCommand).Assembly,
-                typeof(ImportLevyDeclarationsCommand).Namespace,
-                "SFA.DAS.EmployerFinance.MessageHandlers"
-            );
-        }
-    }    
+        config.UseMessageConventions();
+
+        return config;
+    }
 }

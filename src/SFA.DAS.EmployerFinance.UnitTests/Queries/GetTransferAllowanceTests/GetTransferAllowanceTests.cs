@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Testing;
@@ -133,7 +128,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferAllowanceTests
 
             try
             {
-                Response = await handler.Handle(query);
+                Response = await handler.Handle(query, CancellationToken.None);
             }
             catch (Exception e)
             {

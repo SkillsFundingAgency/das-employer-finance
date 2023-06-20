@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+﻿using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalculationDateCommandTests
 {

@@ -1,9 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
 using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.TrainingCourses;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.TrainingCourses;

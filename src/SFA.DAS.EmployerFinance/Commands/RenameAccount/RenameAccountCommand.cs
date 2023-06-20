@@ -1,16 +1,14 @@
-﻿using MediatR;
+﻿
+namespace SFA.DAS.EmployerFinance.Commands.RenameAccount;
 
-namespace SFA.DAS.EmployerFinance.Commands.RenameAccount
+public class RenameAccountCommand : IRequest<Unit>
 {
-    public class RenameAccountCommand : IAsyncRequest
+    public RenameAccountCommand(long id, string name)
     {
-        public RenameAccountCommand(long id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
-
-        public long Id { get; }
-        public string Name { get; }
+        Id = id;
+        Name = name;
     }
+
+    public long Id { get; }
+    public string Name { get; }
 }

@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
-using System.Collections.Generic;
+﻿using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
 {

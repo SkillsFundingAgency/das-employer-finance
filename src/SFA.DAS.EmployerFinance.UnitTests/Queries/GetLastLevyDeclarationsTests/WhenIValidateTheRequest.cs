@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
+﻿using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
 {

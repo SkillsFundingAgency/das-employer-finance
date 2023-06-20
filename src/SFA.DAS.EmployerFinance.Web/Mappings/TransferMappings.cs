@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
-using SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
-using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Queries.GetApprovedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetReceivedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Queries.GetRejectedTransferConnectionInvitation;
@@ -15,6 +14,7 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Web.Mappings
 {
@@ -39,7 +39,8 @@ namespace SFA.DAS.EmployerFinance.Web.Mappings
 
             CreateMap<GetRejectedTransferConnectionInvitationResponse, RejectedTransferConnectionInvitationViewModel>()
                 .ForMember(m => m.Choice, o => o.Ignore())
-                .ForMember(m => m.TransferConnectionInvitationId, o => o.MapFrom(r => r.TransferConnectionInvitation.Id));
+                //.ForMember(m => m.TransferConnectionInvitationId, o => o.MapFrom(r => r.TransferConnectionInvitation.Id))
+                ;
 
             CreateMap<GetSentTransferConnectionInvitationResponse, SentTransferConnectionInvitationViewModel>()
                 .ForMember(m => m.Choice, o => o.Ignore());
@@ -54,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.Web.Mappings
 
             CreateMap<GetTransferConnectionInvitationResponse, TransferConnectionInvitationViewModel>()
                 .ForMember(m => m.Choice, o => o.Ignore())
-                .ForMember(m => m.TransferConnectionInvitationId, o => o.MapFrom(r => r.TransferConnectionInvitation.Id));
+                .ForMember(m => m.Id, o => o.MapFrom(r => r.TransferConnectionInvitation.Id));
 
             CreateMap<GetTransferConnectionInvitationsResponse, TransferConnectionInvitationsViewModel>();
 

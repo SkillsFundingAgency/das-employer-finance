@@ -1,45 +1,46 @@
-using System;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Data;
+using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser
+namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+
+public class UpsertRegisteredUserCommandHandler : IRequestHandler<UpsertRegisteredUserCommand, Unit>
 {
-    public class UpsertRegisteredUserCommandHandler : AsyncRequestHandler<UpsertRegisteredUserCommand>
+    private readonly IValidator<UpsertRegisteredUserCommand> _validator;
+    private readonly ILogger<UpsertRegisteredUserCommandHandler> _logger;
+    private readonly IUserRepository _userRepository;
+
+    public UpsertRegisteredUserCommandHandler(
+        IValidator<UpsertRegisteredUserCommand> validator,
+        ILogger<UpsertRegisteredUserCommandHandler> logger,
+        IUserRepository userRepository)
     {
-        private readonly IValidator<UpsertRegisteredUserCommand> _validator;
-        private readonly ILog _logger;
-        private readonly IUserRepository _userRepository;
+        _validator = validator;
+        _logger = logger;
+        _userRepository = userRepository;
+    }
 
-        public UpsertRegisteredUserCommandHandler(
-            IValidator<UpsertRegisteredUserCommand> validator,
-            ILog logger,
-            IUserRepository userRepository)
+    public async Task<Unit> Handle(UpsertRegisteredUserCommand request,CancellationToken cancellationToken)
+    {
+        var validationResult = _validator.Validate(request);
+
+        if (!validationResult.IsValid())
         {
-            _validator = validator;
-            _logger = logger;
-            _userRepository = userRepository;
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        protected override async Task HandleCore(UpsertRegisteredUserCommand message)
+        await _userRepository.Upsert(new User
         {
-            var validationResult = _validator.Validate(message);
+            Ref = new Guid(request.UserRef),
+            Email = request.EmailAddress,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            CorrelationId = request.CorrelationId
+        });
 
-            if (!validationResult.IsValid()) throw new InvalidRequestException(validationResult.ValidationDictionary);
+        _logger.LogInformation("Upserted user with email={EmailAddress}, userRef={UserRef}, lastName={LastName}, firstName={FirstName}", request.EmailAddress, request.UserRef,request.FirstName, request.LastName);
 
-            await _userRepository.Upsert(new User
-            {
-                Ref = new Guid(message.UserRef),
-                Email = message.EmailAddress,
-                FirstName = message.FirstName,
-                LastName = message.LastName,
-                CorrelationId = message.CorrelationId
-            });
-
-            _logger.Info($"Upserted user with email={message.EmailAddress}, userRef={message.UserRef}, lastName={message.LastName}, firstName={message.FirstName}");
-        }
+        return Unit.Value;
     }
 }

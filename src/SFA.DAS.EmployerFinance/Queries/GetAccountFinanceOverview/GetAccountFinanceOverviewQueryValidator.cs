@@ -1,33 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview
+namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+
+public class GetAccountFinanceOverviewQueryValidator : IValidator<GetAccountFinanceOverviewQuery>
 {
-    public class GetAccountFinanceOverviewQueryValidator : IValidator<GetAccountFinanceOverviewQuery>
+    public ValidationResult Validate(GetAccountFinanceOverviewQuery query)
     {
-        private readonly IAuthorizationService _authorizationService;
+        throw new NotImplementedException();
+    }
 
-        public GetAccountFinanceOverviewQueryValidator(IAuthorizationService authorizationService)
-        {
-            _authorizationService = authorizationService;
-        }
+    public async Task<ValidationResult> ValidateAsync(GetAccountFinanceOverviewQuery query)
+    {
+        var result = new ValidationResult();
 
-        public ValidationResult Validate(GetAccountFinanceOverviewQuery query)
-        {
-            throw new NotImplementedException();
-        }
+        result.IsUnauthorized = true;
 
-        public async Task<ValidationResult> ValidateAsync(GetAccountFinanceOverviewQuery query)
-        {
-            var result = new ValidationResult();
-
-            result.IsUnauthorized = !_authorizationService.IsAuthorized(EmployerUserRole.Any);
-
-            return result;
-        }
+        return result;
     }
 }

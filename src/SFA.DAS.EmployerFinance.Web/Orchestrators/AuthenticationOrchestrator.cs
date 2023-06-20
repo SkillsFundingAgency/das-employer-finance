@@ -1,29 +1,31 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Models.UserProfile;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators
 {
-    public class AuthenticationOrchestrator
+    public interface IAuthenticationOrchestrator
     {
-        private readonly IMediator _mediator;
+        Task SaveIdentityAttributes(string userRef, string email, string firstName, string lastName);
+    }
 
-        public AuthenticationOrchestrator(IMediator mediator)
+    public class AuthenticationOrchestrator : IAuthenticationOrchestrator
+    {
+        private readonly IUserRepository _userRepository;
+        
+        public AuthenticationOrchestrator(IUserRepository userRepository)
         {
-            if (mediator == null)
-                throw new ArgumentNullException(nameof(mediator));
-            _mediator = mediator;
+            _userRepository = userRepository;
         }
 
         public async Task SaveIdentityAttributes(string userRef, string email, string firstName, string lastName)
         {
-            await _mediator.SendAsync(new UpsertRegisteredUserCommand
+            await _userRepository.Upsert(new User
             {
-                EmailAddress = email,
-                UserRef = userRef,
+                Ref = new Guid(userRef),
+                Email = email,
+                FirstName = firstName,
                 LastName = lastName,
-                FirstName = firstName
+                CorrelationId = Guid.NewGuid().ToString()
             });
         }
     }

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Models.ProjectedCalculations;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Validation;
+using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests
 {
@@ -26,7 +21,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         private Mock<ICurrentDateTime> _currentDateTime;
         private Mock<IDasForecastingService> _dasForecastingService;
         private Mock<IDasLevyService> _levyService;
-        private Mock<ILog> _logger;
+        private Mock<ILogger<GetAccountFinanceOverviewQueryHandler>> _logger;
         private Mock<IValidator<GetAccountFinanceOverviewQuery>> _validator;
         private GetAccountFinanceOverviewQuery _query;
         private AccountProjectionSummary _accountProjectionSummary;
@@ -35,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         public void Setup()
         {
             _now = DateTime.UtcNow;
-            _logger = new Mock<ILog>();
+            _logger = new Mock<ILogger<GetAccountFinanceOverviewQueryHandler>>();
             _currentDateTime = new Mock<ICurrentDateTime>();
             _dasForecastingService = new Mock<IDasForecastingService>();
             _levyService = new Mock<IDasLevyService>();
@@ -75,7 +70,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         [Test]
         public async Task ThenTheExpiringFundsShouldHaveTheCorrectAccountId()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.AccountId.Should().Be(ExpectedAccountId);
             response.CurrentFunds.Should().Be(ExpectedBalance);
@@ -84,7 +79,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         [Test]
         public async Task ThenTheExpiringFundsShouldHaveTheCorrectAmount()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsAmount.Should().Be(ExpectedBalance);
         }
@@ -92,7 +87,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         [Test]
         public async Task ThenTheExpiringFundsShouldHaveTheCorrectExpiryDate()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsExpiryDate.Should().BeSameDateAs(_now);
         }
@@ -109,7 +104,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
 
             _accountProjectionSummary.ExpiringAccountFunds.ExpiryAmounts.AddRange(expiryAmountsBeforeToday);
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsExpiryDate.Should().BeSameDateAs(_now);
         }
@@ -119,7 +114,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _dasForecastingService.Setup(s => s.GetAccountProjectionSummary(ExpectedAccountId)).ReturnsAsync((AccountProjectionSummary)null);
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.AccountId.Should().Be(ExpectedAccountId);
         }
@@ -129,7 +124,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _dasForecastingService.Setup(s => s.GetAccountProjectionSummary(ExpectedAccountId)).ReturnsAsync((AccountProjectionSummary)null);
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsExpiryDate.Should().NotHaveValue();
         }
@@ -139,7 +134,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _dasForecastingService.Setup(s => s.GetAccountProjectionSummary(ExpectedAccountId)).ReturnsAsync((AccountProjectionSummary)null);
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsAmount.Should().NotHaveValue();
         }
@@ -149,7 +144,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _accountProjectionSummary.ExpiringAccountFunds.ExpiryAmounts = new List<ExpiringFunds>();
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.AccountId.Should().Be(ExpectedAccountId);
         }
@@ -159,7 +154,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _accountProjectionSummary.ExpiringAccountFunds.ExpiryAmounts = new List<ExpiringFunds>();
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsExpiryDate.Should().NotHaveValue();
         }
@@ -169,7 +164,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _accountProjectionSummary.ExpiringAccountFunds.ExpiryAmounts = new List<ExpiringFunds>();
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsAmount.Should().NotHaveValue();
         }
@@ -179,7 +174,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _accountProjectionSummary.ExpiringAccountFunds.ExpiryAmounts.ForEach(a => a.PayrollDate = a.PayrollDate.AddMonths(13));
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsExpiryDate.Should().NotHaveValue();
         }
@@ -189,7 +184,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
         {
             _accountProjectionSummary.ExpiringAccountFunds.ExpiryAmounts.ForEach(a => a.PayrollDate = a.PayrollDate.AddMonths(13));
 
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
 
             response.ExpiringFundsAmount.Should().NotHaveValue();
         }
@@ -202,7 +197,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
                 ValidationDictionary = new Dictionary<string, string> { { "Test Error", "Error" } }
             });
 
-            Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_query));
+            Assert.ThrowsAsync<ValidationException>(() => _handler.Handle(_query, CancellationToken.None));
         }
     }
 }

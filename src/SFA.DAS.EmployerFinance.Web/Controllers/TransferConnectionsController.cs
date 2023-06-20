@@ -1,100 +1,141 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
-using MediatR;
-using SFA.DAS.Authorization.EmployerFeatures.Models;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Features.Services;
-using SFA.DAS.Authorization.Mvc.Attributes;
+using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.Employer.Shared.UI.Attributes;
+using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
-using SFA.DAS.EmployerFinance.Web.Helpers;
+using SFA.DAS.EmployerFinance.Web.Authentication;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [DasAuthorize(EmployerUserRole.Any)]
-    [RoutePrefix("accounts/{HashedAccountId}/transfers/connections")]
+    [SetNavigationSection(NavigationSection.AccountsFinance)]
+    [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
+    [Route("accounts/{HashedAccountId}/transfers/connections")]
     public class TransferConnectionsController : Controller
     {
-        private readonly ILog _logger;
+        private readonly ILogger<TransferConnectionsController> _logger;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
-        private readonly IFeatureTogglesService<EmployerFeatureToggle> _featureTogglesService;
+        private readonly IEncodingService _encodingService;
 
-        public TransferConnectionsController(ILog logger, IMapper mapper, IMediator mediator, IFeatureTogglesService<EmployerFeatureToggle> featureTogglesService)
+        public TransferConnectionsController(ILogger<TransferConnectionsController> logger, IMapper mapper, IMediator mediator, IEncodingService encodingService)
         {
             _logger = logger;
             _mapper = mapper;
             _mediator = mediator;
-            _featureTogglesService = featureTogglesService;
+            _encodingService = encodingService;
         }
 
-        [Route]
-        public async Task<ActionResult> Index(GetEmployerAccountDetailByHashedIdQuery query)
+        [HttpGet]
+        [Route("",Name = RouteNames.TransferConnectionsIndex)]
+        public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
         {
-            // redirecting to access denied only when the feature toggle is not enabled, this is not checking
-            // whether the feature is authorized, as the view is always displayed when the feature is enabled
-            // and the content is different when the feature is not authorized
-            var featureToggle = _featureTogglesService.GetFeatureToggle("TransferConnectionRequests");
-            if (!featureToggle.IsEnabled)
+            var response = await _mediator.Send(new GetEmployerAccountDetailByHashedIdQuery
             {
-                return RedirectToAction(ControllerConstants.IndexActionName, ControllerConstants.AccessDeniedControllerName, 
-                    new { hashedAccountId = query.HashedAccountId });
-            }
+                HashedAccountId = hashedAccountId
+            });
 
-            var response = await _mediator.SendAsync(query);
-            ViewBag.ApprenticeshipEmployerType = response.AccountDetail.ApprenticeshipEmployerType;
-            return View();
-        }
+            var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+            //This cant be done with Task.WhenAll
+            var transferAllowance = await TransferAllowance(accountId);
+            var transferConnectionInvitationAuthorization =await TransferConnectionInvitationAuthorization(accountId);
+            var transferConnectionInvitations =  await TransferConnectionInvitations(accountId);
+            var transferRequests = await TransferRequests(accountId);
 
-        [ChildActionOnly]
-        public ActionResult TransferAllowance(GetTransferAllowanceQuery query)
-        {
-            var response = Task.Run(() => _mediator.SendAsync(query)).GetAwaiter().GetResult();
-            var model = _mapper.Map<TransferAllowanceViewModel>(response);
-
-            return PartialView(model);
-        }
-
-        [ChildActionOnly]
-        public ActionResult TransferConnectionInvitationAuthorization(GetTransferConnectionInvitationAuthorizationQuery query)
-        {
-            var response = Task.Run(() => _mediator.SendAsync(query)).GetAwaiter().GetResult();
-            var model = _mapper.Map<TransferConnectionInvitationAuthorizationViewModel>(response);
-
-            return PartialView(model);
-        }
-
-        [ChildActionOnly]
-        public ActionResult TransferConnectionInvitations(GetTransferConnectionInvitationsQuery query)
-        {
-            var response = Task.Run(() => _mediator.SendAsync(query)).GetAwaiter().GetResult();
-            var model = _mapper.Map<TransferConnectionInvitationsViewModel>(response);
+            transferConnectionInvitationAuthorization.HashedAccountId = hashedAccountId;
             
-            return PartialView(model);
+            var model = new TransferViewModel
+            {
+                ApprenticeshipEmployerType = response.AccountDetail.ApprenticeshipEmployerType,
+                TransferAllowanceViewModel = transferAllowance,
+                TransferConnectionInvitationAuthorizationViewModel = transferConnectionInvitationAuthorization,
+                TransferConnectionInvitationsViewModel = transferConnectionInvitations,
+                TransferRequest = transferRequests,
+            };
+            
+            return View(model);
+        }
+        
+        public async Task<TransferAllowanceViewModel> TransferAllowance(long accountId)
+        {
+            var response = await _mediator.Send(new GetTransferAllowanceQuery
+            {
+                AccountId = accountId
+            });
+            return _mapper.Map<TransferAllowanceViewModel>(response);
         }
 
-        [ChildActionOnly]
-        public ActionResult TransferRequests(GetTransferRequestsQuery query)
+        
+        public async Task<TransferConnectionInvitationAuthorizationViewModel> TransferConnectionInvitationAuthorization(long accountId)
+        {
+            var response = await _mediator.Send(new GetTransferConnectionInvitationAuthorizationQuery
+            {
+                AccountId = accountId
+            });
+            return _mapper.Map<TransferConnectionInvitationAuthorizationViewModel>(response);
+        }
+
+        public async Task<TransferConnectionInvitationsViewModel> TransferConnectionInvitations(long accountId)
+        {
+            var response = await _mediator.Send(new GetTransferConnectionInvitationsQuery
+            {
+                AccountId = accountId
+            });
+
+            return new TransferConnectionInvitationsViewModel
+            {
+                AccountId = response.AccountId,
+                HashedAccountId = _encodingService.Encode(response.AccountId, EncodingType.AccountId),
+                TransferSenderConnectionInvitations = response.TransferConnectionInvitations
+                    .Where(p => p.SenderAccount.Id.Equals(response.AccountId)).Select(c =>
+                        new TransferConnectionInvitationDto
+                        {
+                            Changes = c.Changes,
+                            Id = c.Id,
+                            Status = c.Status,
+                            CreatedDate = c.CreatedDate,
+                            ReceiverAccount = c.ReceiverAccount,
+                            SenderAccount = c.SenderAccount,
+                            HashedId = _encodingService.Encode(c.Id, EncodingType.TransferRequestId)
+                        }),
+                TransferReceiverConnectionInvitations = response.TransferConnectionInvitations
+                    .Where(p => p.ReceiverAccount.Id.Equals(response.AccountId)).Select(c =>
+                        new TransferConnectionInvitationDto
+                        {
+                            Changes = c.Changes,
+                            Id = c.Id,
+                            Status = c.Status,
+                            CreatedDate = c.CreatedDate,
+                            ReceiverAccount = c.ReceiverAccount,
+                            SenderAccount = c.SenderAccount,
+                            HashedId = _encodingService.Encode(c.Id, EncodingType.TransferRequestId)
+                        })
+            };
+            
+        }
+
+        public async Task<TransferRequestsViewModel> TransferRequests(long accountId)
         {
             try
             {
-                var response = Task.Run(() => _mediator.SendAsync(query)).GetAwaiter().GetResult();
-                var model = _mapper.Map<TransferRequestsViewModel>(response);
-
-                return PartialView(model);
+                var response = await _mediator.Send(new GetTransferRequestsQuery
+                {
+                    AccountId = accountId
+                });
+                return _mapper.Map<TransferRequestsViewModel>(response);
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Failed to get transfer requests");
+                _logger.LogWarning(ex, "Failed to get transfer requests");
 
-                return new EmptyResult();
+                return null;
             }
         }
     }

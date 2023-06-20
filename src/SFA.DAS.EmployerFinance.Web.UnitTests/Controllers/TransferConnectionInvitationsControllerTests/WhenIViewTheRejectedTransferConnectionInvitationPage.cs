@@ -1,55 +1,64 @@
-﻿using System.Threading.Tasks;
-using System.Web.Mvc;
-using AutoMapper;
-using MediatR;
-using Moq;
-using NUnit.Framework;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Queries.GetRejectedTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests
+namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionInvitationsControllerTests;
+
+[TestFixture]
+public class WhenIViewTheRejectedTransferConnectionInvitationPage
 {
-    [TestFixture]
-    public class WhenIViewTheRejectedTransferConnectionInvitationPage
+    private const string HashedAccountId = "ABC123";
+    private const long AccountId = 4567;
+    private const string HashedTransferConnectionInvitationId = "XYZ567";
+    private const long TransferConnectionInvitationId = 9876;
+    private TransferConnectionInvitationsController _controller;
+    private IConfigurationProvider _configurationProvider;
+    private IMapper _mapper;
+    private Mock<IMediator> _mediator;
+    private GetRejectedTransferConnectionInvitationResponse _response;
+
+    [SetUp]
+    public void Arrange()
     {
-        private TransferConnectionInvitationsController _controller;
-        private IConfigurationProvider _configurationProvider;
-        private IMapper _mapper;
-        private Mock<IMediator> _mediator;
-        private readonly GetRejectedTransferConnectionInvitationQuery _query = new GetRejectedTransferConnectionInvitationQuery();
-        private readonly GetRejectedTransferConnectionInvitationResponse _response = new GetRejectedTransferConnectionInvitationResponse();
+        var fixture = new Fixture();
+        _configurationProvider = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
+        _mapper = _configurationProvider.CreateMapper();
+        _mediator = new Mock<IMediator>();
+        _response = fixture.Create<GetRejectedTransferConnectionInvitationResponse>();
+        var encodingService = new Mock<IEncodingService>();
+        encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
+        encodingService.Setup(x => x.Decode(HashedTransferConnectionInvitationId, EncodingType.TransferRequestId)).Returns(TransferConnectionInvitationId);
+        _mediator.Setup(m =>
+            m.Send(
+                It.Is<GetRejectedTransferConnectionInvitationQuery>(c =>
+                    c.AccountId.Equals(AccountId) &&
+                    c.TransferConnectionInvitationId.Equals(TransferConnectionInvitationId)),
+                CancellationToken.None)).ReturnsAsync(_response);
 
-        [SetUp]
-        public void Arrange()
-        {
-            _configurationProvider = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
-            _mapper = _configurationProvider.CreateMapper();
-            _mediator = new Mock<IMediator>();
+        _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object, null, encodingService.Object);
+    }
 
-            _mediator.Setup(m => m.SendAsync(_query)).ReturnsAsync(_response);
+    [Test]
+    public async Task ThenAGetRejectedTransferConnectionQueryShouldBeSent()
+    {
+        await _controller.Rejected(HashedAccountId,HashedTransferConnectionInvitationId);
 
-            _controller = new TransferConnectionInvitationsController(_mapper, _mediator.Object);
-        }
+        _mediator.Verify(m => m.Send(It.Is<GetRejectedTransferConnectionInvitationQuery>(c =>
+            c.AccountId.Equals(AccountId) &&
+            c.TransferConnectionInvitationId.Equals(TransferConnectionInvitationId)), CancellationToken.None), Times.Once);
+    }
 
-        [Test]
-        public async Task ThenAGetRejectedTransferConnectionQueryShouldBeSent()
-        {
-            await _controller.Rejected(_query);
+    [Test]
+    public async Task ThenIShouldBeShownTheApprovedTransferConnectionInvitationPage()
+    {
+        var result = await _controller.Rejected(HashedAccountId,HashedTransferConnectionInvitationId) as ViewResult;
+        var model = result?.Model as RejectedTransferConnectionInvitationViewModel;
 
-            _mediator.Verify(m => m.SendAsync(_query), Times.Once);
-        }
-
-        [Test]
-        public async Task ThenIShouldBeShownTheApprovedTransferConnectionInvitationPage()
-        {
-            var result = await _controller.Rejected(_query) as ViewResult;
-            var model = result?.Model as RejectedTransferConnectionInvitationViewModel;
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.ViewName, Is.EqualTo(""));
-            Assert.That(model, Is.Not.Null);
-        }
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.ViewName, Is.Null);
+        Assert.That(model, Is.Not.Null);
     }
 }

@@ -1,5 +1,4 @@
-﻿@using SFA.DAS.Validation.Mvc
-@model SFA.DAS.EmployerFinance.Web.ViewModels.SendTransferConnectionInvitationViewModel
+@model SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.SendTransferConnectionInvitationViewModel
 
 @{
     ViewBag.Title = "Send transfer connection request";
@@ -8,57 +7,59 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connections/requests/send";
 }
 
-@Html.Partial("_ValidationSummary", ViewData.ModelState)
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <h1 class="heading-xlarge">Confirm details</h1>
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.ReceiverAccountPublicHashedId)
-            <div class="form-group">
-                <table>
-                    <tbody>
-                        <tr>
-                            <th scope="row" class="no-wrap">Sending employer</th>
-                            <td>@Model.SenderAccount.Name</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="no-wrap">Receiving employer</th>
-                            <td>@Model.ReceiverAccount.Name</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class="no-wrap">Receiving account ID</th>
-                            <td>@Model.ReceiverAccountPublicHashedId</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="form-group @(Html.IsValid(m => m.Choice) ? "" : "error")">
-                <fieldset>
-                    <legend>
-                        <span class="form-label-bold">Do you want to connect with this receiving employer?</span>
-                        @Html.ValidationMessageFor(m => m.Choice)
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Confirm details</h1>
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Send" asp-route-hashedAccountId="@Model.HashedAccountId">
+            <input type="hidden" asp-for="SenderAccountName">
+            <input type="hidden" asp-for="ReceiverAccountName">
+            <input type="hidden" asp-for="ReceiverAccountPublicHashedId">
+            <table class="govuk-table">
+                <tbody class="govuk-table__body">
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header das-no-wrap">Sending employer</th>
+                        <td class="govuk-table__cell">@Model.SenderAccountName</td>
+                    </tr>
+                    <tr class="govuk-table-row">
+                        <th scope="row" class="govuk-table__header das-no-wrap">Receiving employer</th>
+                        <td class="govuk-table__cell">@Model.ReceiverAccountName</td>
+                    </tr>
+                    <tr class="govuk-table-row">
+                        <th scope="row" class="govuk-table__header das-no-wrap">Receiving account ID</th>
+                        <td class="govuk-table__cell">@Model.ReceiverAccountPublicHashedId</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div asp-fieldname="Choice">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 class="govuk-fieldset__heading">
+                            Do you want to connect with this receiving employer?
+                        </h2>
                     </legend>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "Confirm")
-                        Yes, I want to send a request to connect
-                    </label>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "ReEnterAccountId")
-                        No, I want to re-enter the account ID
-                    </label>
+                    <span esfa-validation-for="Choice" class="govuk-error-message"></span>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="Confirm" asp-for="Choice" value="Confirm" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="Confirm">
+                                Yes, I want to send a request to connect
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="ReEnterAccountId" asp-for="Choice" value="ReEnterAccountId" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="ReEnterAccountId">
+                                No, I want to re-enter the account ID
+                            </label>
+                        </div>
+                    </div>
                 </fieldset>
             </div>
-            <button class="button" type="submit">Continue</button>
-        }
+            <button class="govuk-button" type="submit">Continue</button>
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs" id="js-breadcrumbs">
-        <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Start", "TransferConnectionInvitations")">Back</a></li>
-        </ol>
-    </div>
+    <a class="govuk-back-link" href="@Url.Action("Start", "TransferConnectionInvitations",new {Model.HashedAccountId})">Back</a>
 }

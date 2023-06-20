@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using SFA.DAS.EmployerFinance.Models.Levy;
+﻿using SFA.DAS.EmployerFinance.Models.Levy;
 
-namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions
+namespace SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
+
+public class FindEmployerAccountLevyDeclarationTransactionsResponse
 {
-    public class FindEmployerAccountLevyDeclarationTransactionsResponse
-    {
-        public List<LevyDeclarationTransactionLine> Transactions { get; set; }
-        public decimal Total { get; set; }
-    }
+    public List<LevyDeclarationTransactionLine> Transactions { get; set; }
+    public decimal Total { get; set; }
 }

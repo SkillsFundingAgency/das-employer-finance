@@ -1,26 +1,23 @@
-﻿using MediatR;
-using SFA.DAS.EmployerFinance.Data;
-using System.Data.Entity;
-using System.Threading.Tasks;
+﻿using SFA.DAS.EmployerFinance.Data;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments
+namespace SFA.DAS.EmployerFinance.Queries.GetTotalPayments;
+
+public class GetTotalPaymentsQueryHandler : IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
 {
-    public class GetTotalPaymentsQueryHandler
-        : IAsyncRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>
+    private readonly EmployerFinanceDbContext _financeDb;
+
+    public GetTotalPaymentsQueryHandler(EmployerFinanceDbContext financeDb)
     {
-        private readonly EmployerFinanceDbContext _financeDb;
+        _financeDb = financeDb;
+    }
 
-        public GetTotalPaymentsQueryHandler(EmployerFinanceDbContext financeDb)
-        {
-            _financeDb = financeDb;
-        }
+    public async Task<GetTotalPaymentsResponse> Handle(GetTotalPaymentsQuery message,CancellationToken cancellationToken)
+    {
+        var paymentsCount = await _financeDb.Payments.CountAsync(cancellationToken);
 
-        public async Task<GetTotalPaymentsResponse> Handle(GetTotalPaymentsQuery message)
+        return new GetTotalPaymentsResponse
         {
-            return new GetTotalPaymentsResponse
-            {
-                TotalPayments = await _financeDb.Payments.CountAsync()
-            };
-        }
+            TotalPayments = paymentsCount
+        };
     }
 }

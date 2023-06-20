@@ -1,66 +1,54 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using AutoMapper;
-using MediatR;
-using SFA.DAS.Authentication;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Mvc.Attributes;
-using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+﻿using AutoMapper;
+using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.Employer.Shared.UI.Attributes;
+using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
+using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation.Mvc;
+using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [RoutePrefix("accounts/{HashedAccountId}")]
-    [DasAuthorize(EmployerUserRole.Any)]
-    public class EmployerAccountTransactionsController : BaseController
+    [SetNavigationSection(NavigationSection.AccountsFinance)]
+    [Route("accounts/{HashedAccountId}")]
+    [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
+    public class EmployerAccountTransactionsController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
-        private readonly ILog _logger;
+        private readonly IEncodingService _encodingService;
 
-        private readonly IAuthenticationService _owinWrapper;
-        private readonly EmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
+        private readonly IEmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
 
         public EmployerAccountTransactionsController(
-            IAuthenticationService owinWrapper,
-            EmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
+            IEmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
             IMapper mapper,
             IMediator mediator,
-            ILog logger)
-        : base(owinWrapper)
+            IEncodingService encodingService)
         {
-            _owinWrapper = owinWrapper;
             _accountTransactionsOrchestrator = accountTransactionsOrchestrator;
 
             _mapper = mapper;
             _mediator = mediator;
-            _logger = logger;
+            _encodingService = encodingService;
         }
 
         [Route("finance/provider/summary")]
-        [Route("balance/provider/summary")]
-        public async Task<ActionResult> ProviderPaymentSummary(string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> ProviderPaymentSummary([FromRoute]string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
         {
-            var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate);
 
             return View(ControllerConstants.ProviderPaymentSummaryViewName, viewModel);
         }
 
-        [Route("finance")]
-        [Route("balance")]
-        public async Task<ActionResult> Index(GetAccountFinanceOverviewQuery query)
+        [Route("finance", Name = RouteNames.FinanceIndex)]
+        public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
         {
-            _logger.Info($"EmployerAccountTransactionsController Index GetAccountFinanceOverviewQuery  AccountHashedId : {query.AccountHashedId} AccountId : {query.AccountId} ");
 
-            var viewModel = await _accountTransactionsOrchestrator.Index(query);
-
-            _logger.Info($"After calling  _accountTransactionsOrchestrator ViewModel : {viewModel} viewModel.RedirectUrl : {viewModel.RedirectUrl} ");
+            var viewModel = await _accountTransactionsOrchestrator.Index(hashedAccountId);
 
             if (viewModel.RedirectUrl != null)
                 return Redirect(viewModel.RedirectUrl);
@@ -68,28 +56,47 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return View(viewModel);
         }
 
-        [ImportModelStateFromTempData]
-        [Route("finance/downloadtransactions")]
+        [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsGet)]
         public ActionResult TransactionsDownload()
         {
             return View(new TransactionDownloadViewModel());
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [ValidateModelState]
-        [Route("finance/downloadtransactions")]
-        public async Task<ActionResult> TransactionsDownload(TransactionDownloadViewModel model)
+        [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsPost)]
+        public async Task<IActionResult> TransactionsDownload([FromRoute]string hashedAccountId, TransactionDownloadViewModel model)
         {
-            var response = await _mediator.SendAsync(model.GetTransactionsDownloadQuery);
-            return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var response = await _mediator.Send(new GetTransactionsDownloadQuery
+                {
+                    AccountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId),
+                    DownloadFormat = model.DownloadFormat,
+                    EndDate = model.EndDate,
+                    StartDate = model.StartDate
+                });
+                return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
+            }
+            catch (ValidationException e)
+            {
+                foreach (var member in e.ValidationResult.MemberNames)
+                {
+                    ModelState.AddModelError(member.Split('|')[0], member.Split('|')[1]);
+                }
+                return View(model);
+            }
         }
 
-        [Route("finance/{year}/{month}")]
-        [Route("balance/{year}/{month}")]
-        public async Task<ActionResult> TransactionsView(string hashedAccountId, int year, int month)
+        [HttpGet]
+        [Route("finance/{year}/{month}", Name = RouteNames.TransactionsView)]
+        public async Task<IActionResult> TransactionsView([FromRoute]string hashedAccountId, [FromRoute]int year, [FromRoute]int month)
         {
-            var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month, _owinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month);
 
             if (transactionViewResult.Data.Account == null)
             {
@@ -104,39 +111,36 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
 
         [Route("finance/levyDeclaration/details")]
-        [Route("balance/levyDeclaration/details")]
-        public async Task<ActionResult> LevyDeclarationDetail(string hashedAccountId, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> LevyDeclarationDetail([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
         {
-            var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+            var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate);
 
             return View(ControllerConstants.LevyDeclarationDetailViewName, viewModel);
         }
 
         [Route("finance/course/standard/summary")]
-        [Route("balance/course/standard/summary")]
-        public async Task<ActionResult> CourseStandardPaymentSummary(string hashedAccountId, long ukprn, string courseName,
+        public async Task<IActionResult> CourseStandardPaymentSummary(string hashedAccountId, long ukprn, string courseName,
             int? courseLevel, DateTime fromDate, DateTime toDate)
         {
             return await CourseFrameworkPaymentSummary(hashedAccountId, ukprn, courseName, courseLevel, null, fromDate, toDate);
         }
 
         [Route("finance/course/framework/summary")]
-        [Route("balance/course/framework/summary")]
-        public async Task<ActionResult> CourseFrameworkPaymentSummary(string hashedAccountId, long ukprn, string courseName,
+        public async Task<IActionResult> CourseFrameworkPaymentSummary(string hashedAccountId, long ukprn, string courseName,
             int? courseLevel, int? pathwayCode, DateTime fromDate, DateTime toDate)
         {
             var orchestratorResponse = await _accountTransactionsOrchestrator.GetCoursePaymentSummary(
                 hashedAccountId, ukprn, courseName, courseLevel, pathwayCode,
-                fromDate, toDate, OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName));
+                fromDate, toDate);
 
             return View(ControllerConstants.CoursePaymentSummaryViewName, orchestratorResponse.Data);
         }
 
         [Route("finance/transfer/details")]
-        [Route("balance/transfer/details")]
-        public async Task<ActionResult> TransferDetail(GetTransferTransactionDetailsQuery query)
+        public async Task<IActionResult> TransferDetail([FromRoute]string hashedAccountId, GetTransferTransactionDetailsQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            query.AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+            var response = await _mediator.Send(query);
 
             var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);
             return View(ControllerConstants.TransferDetailsViewName, model);

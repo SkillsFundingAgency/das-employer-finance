@@ -1,70 +1,34 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Web;
-using System.Web.Mvc;
-using SFA.DAS.Authentication;
-using SFA.DAS.EmployerFinance.Web.Helpers;
-using SFA.DAS.Validation;
+﻿using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     public class BaseController : Controller
     {
-        public IAuthenticationService OwinWrapper;
+        private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
 
-        public BaseController(IAuthenticationService owinWrapper)
+        private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
+
+        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage)
         {
-            OwinWrapper = owinWrapper;
+            _flashMessage = flashMessage;
         }
 
-        protected override ViewResult View(string viewName, string masterName, object model)
+       public BaseController() { }
+
+        public void AddFlashMessageToCookie(FlashMessageViewModel model)
         {
-            var orchestratorResponse = model as OrchestratorResponse;
+            _flashMessage.Delete(FlashMessageCookieName);
 
-            if (orchestratorResponse == null)
-            {
-                return base.View(viewName, masterName, model);
-            }
-
-            var invalidRequestException = orchestratorResponse.Exception as InvalidRequestException;
-
-            if (invalidRequestException != null)
-            {
-                foreach (var errorMessageItem in invalidRequestException.ErrorMessages)
-                {
-                    ModelState.AddModelError(errorMessageItem.Key, errorMessageItem.Value);
-                }
-
-                if (orchestratorResponse.Status == HttpStatusCode.BadRequest)
-                {
-                    return ReturnViewResult(ControllerConstants.BadRequestViewName, masterName, orchestratorResponse);
-                }
-
-                return ReturnViewResult(viewName, masterName, orchestratorResponse);
-            }
-
-            if (orchestratorResponse.Status == HttpStatusCode.OK)
-            {
-                return ReturnViewResult(viewName, masterName, orchestratorResponse);
-            }
-
-            if (orchestratorResponse.Status >= HttpStatusCode.BadRequest)
-            {
-                throw new HttpException((int)orchestratorResponse.Status, orchestratorResponse.Status.ToString());
-            }
-
-            if (orchestratorResponse.Exception != null)
-            {
-                throw orchestratorResponse.Exception;
-            }
-
-            throw new Exception($"Orchestrator response of type '{model.GetType()}' could not be handled.");
+            _flashMessage.Create(model, FlashMessageCookieName);
         }
-        private ViewResult ReturnViewResult(string viewName, string masterName, OrchestratorResponse orchestratorResponse)
+
+        public FlashMessageViewModel GetFlashMessageViewModelFromCookie()
         {
-            return base.View(viewName, masterName, orchestratorResponse);
+            var flashMessageViewModelFromCookie = _flashMessage.Get(FlashMessageCookieName);
+            _flashMessage.Delete(FlashMessageCookieName);
+            return flashMessageViewModelFromCookie;
         }
+
     }
 }

@@ -1,39 +1,39 @@
 ﻿using System.Threading.Tasks;
-using System.Web.Http;
-using MediatR;
-using SFA.DAS.EmployerFinance.Api.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
-using SFA.DAS.HashingService;
+using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Api.Controllers
+namespace SFA.DAS.EmployerFinance.Api.Controllers;
+
+[Authorize(Policy = ApiRoles.ReadUserAccounts)]
+[Route("api/accounts")]
+public class TransferConnectionsController : ControllerBase
 {
-    [ApiAuthorize(Roles = "ReadUserAccounts")]
-    [RoutePrefix("api/accounts")]
-    public class TransferConnectionsController : ApiController
+    private readonly IMediator _mediator;
+    private readonly IEncodingService _encodingService;
+
+    public TransferConnectionsController(IMediator mediator, IEncodingService encodingService)
     {
-        private readonly IMediator _mediator;
-        private readonly IHashingService _hashingService;
+        _mediator = mediator;
+        _encodingService = encodingService;
+    }
 
-        public TransferConnectionsController(IMediator mediator, IHashingService hashingService)
-        {
-            _mediator = mediator;
-            _hashingService = hashingService;
-        }
+    [HttpGet]
+    [Route("{hashedAccountId}/transfers/connections")]
+    public async Task<IActionResult> GetTransferConnections(string hashedAccountId)
+    {
+        var accountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId);
 
-        [Route("{hashedAccountId}/transfers/connections")]
-        public async Task<IHttpActionResult> GetTransferConnections(string hashedAccountId)
-        {
-            var accountId = _hashingService.DecodeValue(hashedAccountId);
+        var response = await _mediator.Send(new GetTransferConnectionsQuery { AccountId = accountId });
+        return Ok(response.TransferConnections);
+    }
 
-            var response = await _mediator.SendAsync(new GetTransferConnectionsQuery { AccountId = accountId });
-            return Ok(response.TransferConnections);
-        }
-
-        [Route("internal/{accountId}/transfers/connections")]
-        public async Task<IHttpActionResult> GetTransferConnections(long accountId)
-        {
-            var response = await _mediator.SendAsync(new GetTransferConnectionsQuery { AccountId = accountId });
-            return Ok(response.TransferConnections);
-        }
+    [HttpGet]
+    [Route("internal/{accountId}/transfers/connections")]
+    public async Task<IActionResult> GetTransferConnections(long accountId)
+    {
+        var response = await _mediator.Send(new GetTransferConnectionsQuery { AccountId = accountId });
+        return Ok(response.TransferConnections);
     }
 }

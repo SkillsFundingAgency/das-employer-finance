@@ -271,6 +271,12 @@ src/Tools/PhantomJS/tools/phantomjs/ChangeLog
 App_Data/
 src/SFA.DAS.EmployerAccounts.ReadStore/SFA.DAS.EmployerAccounts.ReadStore/SFA.DAS.EmployerAccounts.ReadStore.csproj.DotSettings
 
-.sonarqube/
-SonarQube.Analysis.xml
-**/*.slconfig
+#Upgrade Assistant files
+*.sarif
+*.clef
+/src/SFA.DAS.EmployerFinance.Api/*nlog.txt
+/src/SFA.DAS.EmployerFinance.Web/appsettings.Development.json
+.vscode
+/src/SFA.DAS.EmployerFinance.Api/**nlog.txt
+
+src/SFA.DAS.EmployerFinance.Api/appsettings.Development.json

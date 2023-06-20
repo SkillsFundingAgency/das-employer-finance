@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SFA.DAS.EmployerFinance.Extensions
+﻿namespace SFA.DAS.EmployerFinance.Extensions
 {
     public static class DateTimeExtensions
     {

@@ -1,22 +1,18 @@
-﻿using System;
-using FluentAssertions;
+﻿namespace SFA.DAS.EmployerFinance.Api.UnitTests;
 
-namespace SFA.DAS.EmployerFinance.Api.UnitTests
+public static class ObjectExtensions
 {
-    public static class ObjectExtensions
+    public static bool IsEquivalentTo(this object source, object expectation)
     {
-        public static bool IsEquivalentTo(this object source, object expectation)
+        try
         {
-            try
-            {
-                source.ShouldBeEquivalentTo(expectation);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return true;
+            source.Should().BeEquivalentTo(expectation);
         }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

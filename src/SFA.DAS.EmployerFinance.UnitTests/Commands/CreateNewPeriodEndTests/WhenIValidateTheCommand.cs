@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
+﻿using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Models.Payments;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests

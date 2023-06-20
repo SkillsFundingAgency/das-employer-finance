@@ -2,13 +2,12 @@
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 
-namespace SFA.DAS.EmployerFinance.Mappings
+namespace SFA.DAS.EmployerFinance.Mappings;
+
+public class UserMappings : Profile
 {
-    public class UserMappings : Profile
+    public UserMappings()
     {
-        public UserMappings()
-        {
-            CreateMap<User, UserDto>();
-        }
+        CreateMap<User, UserDto>();
     }
 }

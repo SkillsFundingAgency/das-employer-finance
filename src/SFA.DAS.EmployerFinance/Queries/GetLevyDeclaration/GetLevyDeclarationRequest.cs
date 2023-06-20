@@ -1,9 +1,6 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration
+public class GetLevyDeclarationRequest : IRequest<GetLevyDeclarationResponse>
 {
-    public class GetLevyDeclarationRequest : IAsyncRequest<GetLevyDeclarationResponse>
-    {
-        public string HashedAccountId { get; set; }
-    }
+    public string HashedAccountId { get; set; }
 }

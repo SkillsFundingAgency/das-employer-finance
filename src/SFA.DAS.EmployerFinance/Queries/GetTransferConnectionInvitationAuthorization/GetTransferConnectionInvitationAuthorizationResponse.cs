@@ -1,11 +1,11 @@
-﻿using SFA.DAS.Authorization.Results;
+﻿
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
+
+public class GetTransferConnectionInvitationAuthorizationResponse
 {
-    public class GetTransferConnectionInvitationAuthorizationResponse
-    {
-        public AuthorizationResult AuthorizationResult { get; set; }
-        public bool IsValidSender { get; set; }
-        public decimal TransferAllowancePercentage { get; set; }
-    }
+    public bool AuthorizationResult { get; set; }
+    public bool AgreementSigned { get; set; }
+    public bool IsValidSender { get; set; }
+    public decimal TransferAllowancePercentage { get; set; }
 }

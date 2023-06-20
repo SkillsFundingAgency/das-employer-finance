@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
-using SFA.DAS.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateRequired
 {
@@ -31,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateReq
             _englishFractionRepository.Setup(x => x.GetLastUpdateDate()).ReturnsAsync(DateTime.Now.AddDays(-1));
 
             //Act
-            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest());
+            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest(), CancellationToken.None);
 
             //Assert
             Assert.IsTrue(result.UpdateRequired); 
@@ -47,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateReq
             _englishFractionRepository.Setup(x => x.GetLastUpdateDate()).ReturnsAsync(updateTime);
 
             //Act
-            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest());
+            var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest(),CancellationToken.None);
 
             //Assert
             Assert.IsFalse(result.UpdateRequired);

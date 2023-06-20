@@ -1,9 +1,6 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration
+public class GetHMRCLevyDeclarationQuery : IRequest<GetHMRCLevyDeclarationResponse>
 {
-    public class GetHMRCLevyDeclarationQuery : IAsyncRequest<GetHMRCLevyDeclarationResponse>
-    {
-        public string EmpRef { get; set; }
-    }
+    public string EmpRef { get; set; }
 }

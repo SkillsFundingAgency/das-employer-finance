@@ -1,6 +1,9 @@
 ﻿@using System.Globalization
-@using SFA.DAS.EmployerFinance.Web.Extensions
+@using SFA.DAS.EmployerFinance.Interfaces
 @using SFA.DAS.Common.Domain.Types;
+
+@inject IUrlActionHelper UrlHelpers;
+
 @model CoursePaymentDetailsViewModel
 
 @{
@@ -11,16 +14,22 @@
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
 }
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <div class="hgroup">
-            <h1 class="heading-xlarge">Payment: apprentice details</h1>
-            <dl class="inline">
-                <dt>Date</dt>
-                <dd>@Model.PaymentDate.ToString("dd MMMM yyyy")</dd>
-                <dt>Payment to</dt>
-                <dd>@Model.ProviderName</dd>
-                <dt>Course</dt>
+<h1 class="govuk-heading-xl">Payment: apprentice details</h1>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Date</dt>
+                <dd class="govuk-summary-list__value">@Model.PaymentDate.ToString("dd MMMM yyyy")</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Payment to</dt>
+                <dd class="govuk-summary-list__value">@Model.ProviderName</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Course</dt>
                 @{
                     string courseTitle;
 
@@ -38,76 +47,74 @@
                         }
                     }
                 }
-                <dd>@courseTitle</dd>
-            </dl>
-        </div>
+                <dd class="govuk-summary-list__value">@courseTitle</dd>
+            </div>
+        </dl>
     </div>
 </div>
 
-<div class="grid-row">
-    <div class="column-full">
-        <table class="responsive">
-            <thead>
-                <tr>
-                    <th colspan="@(Model.ShowNonCoInvesmentPaymentsTotal ? "2" : "1")"></th>
-                    <th class="highlight colgroup" scope="colgroup" colspan="2">Co-investment</th>
-                    <th colspan="2"></th>
+
+        <table class="govuk-table das-table--responsive">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th class="govuk-table__header" colspan="@(Model.ShowNonCoInvesmentPaymentsTotal ? "2" : "1")"></th>
+                    <th class="govuk-table__header app-table__cell--highlight app-table__cell--colgroup" scope="colgroup" colspan="2">Co-investment</th>
+                    <th class="govuk-table__header" colspan="2"></th>
                 </tr>
-                <tr>
-                    <th scope="col" class="tw-20">Apprentice</th>
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header das-table-cell-width-20">Apprentice</th>
                     @if (Model.ShowNonCoInvesmentPaymentsTotal)
                     {
-                        <th scope="col" class="numeric tw-20">@(Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy ? "Paid from levy" : "Transferred funds")</th>
+                        <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">@(Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy ? "Paid from levy" : "Transferred funds")</th>
                     }
-                    <th scope="col" class="numeric tw-20 highlight">Government contribution</th>
-                    <th scope="col" class="numeric tw-20 highlight no-wrap">Your contribution</th>
-                    <th scope="col" class="numeric tw-20">Amount</th>
+                    <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20 app-table__cell--highlight">Government contribution</th>
+                    <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20 app-table__cell--highlight">Your contribution</th>
+                    <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">Amount</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="govuk-table__body">
                 @foreach (var coursePaymentSummary in Model.ApprenticePayments)
                 {
-                    <tr class="responsive-tr">
+                    <tr class="govuk-table__row">
                         @if (string.IsNullOrEmpty(@coursePaymentSummary.ApprenticeName))
                         {
-                            <td data-label="Apprentice"><em>Not available</em></td>
+                            <td class="govuk-table__cell" data-label="Apprentice"><em>Not available</em></td>
                         }
                         else
                         {
-                            <td data-label="Apprentice">@coursePaymentSummary.ApprenticeName</td>
+                            <td class="govuk-table__cell" data-label="Apprentice">@coursePaymentSummary.ApprenticeName</td>
                         }
 
                         @if (Model.ShowNonCoInvesmentPaymentsTotal)
                         {
-                            <td class="numeric" data-label="Paid from levy">@coursePaymentSummary.LevyPaymentAmount.ToString("C2", culture)</td>
+                            <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Paid from levy">@coursePaymentSummary.LevyPaymentAmount.ToString("C2", culture)</td>
                         }
-                        <td class="numeric highlight" data-label="Government contribution">@coursePaymentSummary.SFACoInvestmentAmount.ToString("C2", culture)</td>
-                        <td class="numeric highlight" data-label="Your contribution">@coursePaymentSummary.EmployerCoInvestmentAmount.ToString("C2", culture)</td>
-                        <td class="numeric" data-label="Amount">@coursePaymentSummary.TotalAmount.ToString("C2", culture)</td>
+                        <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Government contribution">@coursePaymentSummary.SFACoInvestmentAmount.ToString("C2", culture)</td>
+                        <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Your contribution">@coursePaymentSummary.EmployerCoInvestmentAmount.ToString("C2", culture)</td>
+                        <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Amount">@coursePaymentSummary.TotalAmount.ToString("C2", culture)</td>
                     </tr>
                 }
-            </tbody>
-            <tfoot>
-                <tr class="total">
-                    <td data-label="Totals"> </td>
+                <tr class="govuk-table__row">
+                    <td data-label="Totals" class="app-table__cell--transparent"> </td>
                     @if (Model.ShowNonCoInvesmentPaymentsTotal)
                     {
-                        <td data-label="Paid from levy" class="total numeric no-wrap">@Model.LevyPaymentsTotal.ToString("C2", culture)</td>
+                        <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.LevyPaymentsTotal.ToString("C2", culture)</td>
                     }
-                    <td data-label="Government contribution" class="highlight total numeric no-wrap">@Model.SFACoInvestmentTotal.ToString("C2", culture)</td>
-                    <td data-label="Your contribution" class="highlight total numeric no-wrap">@Model.EmployerCoInvestmentTotal.ToString("C2", culture)</td>
-                    <td data-label="Amount" class="total numeric no-wrap">@Model.PaymentsTotal.ToString("C2", culture)</td>
+                    <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.SFACoInvestmentTotal.ToString("C2", culture)</td>
+                    <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.EmployerCoInvestmentTotal.ToString("C2", culture)</td>
+                    <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.PaymentsTotal.ToString("C2", culture)</td>
                 </tr>
-            </tfoot>
+            </tbody>
         </table>
-        <div class="panel">
+
+        <div class="govuk-inset-text">
             <p>It's up to you and your training provider to decide when your contribution is paid.</p>
         </div>
 
         @if (Model.PaymentDate.Equals(new DateTime(2017, 09, 14)))
         {
-            <div class="panel">
-                <h3 class="heading-small">Why are there two payments to individual providers this month?</h3>
+            <div class="govuk-inset-text">
+                <h3 class="govuk-heading-s">Why are there two payments to individual providers this month?</h3>
                 <p>
                     The second payment is the result of final adjustments made by the training providers
                     for the academic year ending 31 July 2017. These payments only occur in September and October.
@@ -117,8 +124,8 @@
 
         @if (Model.PaymentDate.Equals(new DateTime(2017, 11, 2)))
         {
-            <div class="panel panel-top-margin">
-                <h3 class="heading-small">Note on payments dated 2 November</h3>
+            <div class="govuk-inset-text">
+                <h3 class="govuk-heading-s">Note on payments dated 2 November</h3>
                 <p>
                     Payments on 2 November are for final costs submitted by training providers for training
                     during the academic year ending July 31 2017. The amount was calculated based on your
@@ -126,18 +133,16 @@
                 </p>
             </div>
         }
-    </div>
-</div>
 
 
 
 
 @section breadcrumb {
-    <div class="breadcrumbs" id="js-breadcrumbs">
-        <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction($"accounts/{@Model.HashedAccountId}/teams")">Home</a></li>
-            <li><a href="@Url.Action("Index", "EmployerAccountTransactions")">Your transactions</a></li>
-            <li>Debit details</li>
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction($"accounts/{@Model.HashedAccountId}/teams")" class="govuk-breadcrumbs__link">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions")" class="govuk-breadcrumbs__link">Your transactions</a></li>
+            <li class="govuk-breadcrumbs__list-item">Debit details</li>
         </ol>
     </div>
 }

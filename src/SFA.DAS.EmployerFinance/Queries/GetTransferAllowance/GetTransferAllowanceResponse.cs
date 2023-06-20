@@ -1,10 +1,9 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Transfers;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferAllowance
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
+
+public class GetTransferAllowanceResponse
 {
-    public class GetTransferAllowanceResponse
-    {
-        public TransferAllowance TransferAllowance { get; set; }
-        public decimal TransferAllowancePercentage { get; set; }
-    }
+    public TransferAllowance TransferAllowance { get; set; }
+    public decimal TransferAllowancePercentage { get; set; }
 }

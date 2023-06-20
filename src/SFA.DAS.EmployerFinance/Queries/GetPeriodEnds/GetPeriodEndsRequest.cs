@@ -1,8 +1,5 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetPeriodEnds
+public class GetPeriodEndsRequest : IRequest<GetPeriodEndsResponse>
 {
-    public class GetPeriodEndsRequest : IAsyncRequest<GetPeriodEndsResponse>
-    {
-    }
 }

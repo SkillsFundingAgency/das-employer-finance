@@ -1,8 +1,7 @@
-﻿namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers
+﻿namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
+
+public class GetCountsResponse
 {
-    public class GetCountsResponse
-    {
-        public int PledgesCount { get; set; }
-        public int ApplicationsCount { get; set; }
-    }
+    public int PledgesCount { get; set; }
+    public int ApplicationsCount { get; set; }
 }

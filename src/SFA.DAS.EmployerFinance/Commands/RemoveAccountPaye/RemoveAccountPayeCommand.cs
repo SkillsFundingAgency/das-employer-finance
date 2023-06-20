@@ -1,16 +1,13 @@
-﻿using MediatR;
+﻿namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
 
-namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye
+public class RemoveAccountPayeCommand : IRequest<Unit>
 {
-    public class RemoveAccountPayeCommand : IAsyncRequest
-    {
-        public long AccountId { get; }
-        public string PayeRef { get; }
+    public long AccountId { get; }
+    public string PayeRef { get; }
 
-        public RemoveAccountPayeCommand(long accountId, string payeRef)
-        {
-            AccountId = accountId;
-            PayeRef = payeRef;
-        }
+    public RemoveAccountPayeCommand(long accountId, string payeRef)
+    {
+        AccountId = accountId;
+        PayeRef = payeRef;
     }
 }

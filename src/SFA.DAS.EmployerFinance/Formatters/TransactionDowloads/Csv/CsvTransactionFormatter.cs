@@ -1,33 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
-namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
+namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
+
+public abstract class CsvTransactionFormatter
 {
-    public abstract class CsvTransactionFormatter
+    public string MimeType => "text/csv";
+
+    public string FileExtension => "csv";
+
+    public DownloadFormatType DownloadFormatType => DownloadFormatType.CSV;
+
+    public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions)
     {
-        public string MimeType => "text/csv";
+        var builder = new StringBuilder();
 
-        public string FileExtension => "csv";
+        builder.AppendLine(CreateHeaders());
 
-        public DownloadFormatType DownloadFormatType =>
-            DownloadFormatType.CSV;
-
-        public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions)
-        {
-            var builder = new StringBuilder();
-
-            builder.AppendLine(CreateHeaders());
-
-            WriteRowsCsv(transactions, builder);
+        WriteRowsCsv(transactions, builder);
 			
-			var csvContent = builder.ToString();
+        var csvContent = builder.ToString();
 
-            return System.Text.Encoding.UTF8.GetBytes(csvContent);
-        }
-
-        protected abstract string CreateHeaders();
-
-        protected abstract void WriteRowsCsv(IEnumerable<TransactionDownloadLine> transactions, StringBuilder builder);
+        return System.Text.Encoding.UTF8.GetBytes(csvContent);
     }
+
+    protected abstract string CreateHeaders();
+
+    protected abstract void WriteRowsCsv(IEnumerable<TransactionDownloadLine> transactions, StringBuilder builder);
 }

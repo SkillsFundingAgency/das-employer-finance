@@ -1,14 +1,14 @@
-﻿using System.Threading.Tasks;
-using System.Web.Mvc;
-using SFA.DAS.Authorization.EmployerUserRoles.Options;
-using SFA.DAS.Authorization.Mvc.Attributes;
+﻿using SFA.DAS.Employer.Shared.UI;
+using SFA.DAS.Employer.Shared.UI.Attributes;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [DasAuthorize(EmployerUserRole.Any)]
-    [RoutePrefix("accounts/{HashedAccountId}")] 
-    public class TransfersController : Controller
+    [SetNavigationSection(NavigationSection.AccountsFinance)]
+    [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
+    [Route("accounts/{HashedAccountId}")] 
+    public class TransfersController :Controller
     {
         private readonly TransfersOrchestrator _transfersOrchestrator;
 
@@ -19,17 +19,16 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         [HttpGet]
         [Route("transfers")]
-        public async Task<ActionResult> Index(string hashedAccountId)
+        public async Task<IActionResult> Index(string hashedAccountId)
         {
-            var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId);
+            var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId, User);
 
             return View(viewModel);
         }
 
-        [DasAuthorize("EmployerFeature.FinanceDetails")]
         [HttpGet]
         [Route("transfers/financial-breakdown")]
-        public async Task<ActionResult> FinancialBreakdown(string hashedAccountId)
+        public async Task<IActionResult> FinancialBreakdown(string hashedAccountId)
         {
             var viewModel = await _transfersOrchestrator.GetFinancialBreakdownViewModel(hashedAccountId);
             return View(viewModel);

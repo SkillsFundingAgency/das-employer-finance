@@ -1,5 +1,8 @@
-﻿@using SFA.DAS.Validation.Mvc
-@model SFA.DAS.EmployerFinance.Web.ViewModels.RejectedTransferConnectionInvitationViewModel
+﻿
+@using SFA.DAS.EmployerFinance.Web.Infrastructure
+@using SFA.DAS.EmployerFinance.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SFA.DAS.EmployerFinance.Web.ViewModels.Transfers.RejectedTransferConnectionInvitationViewModel
 
 @{
     ViewBag.Title = "Rejected transfer connection request";
@@ -8,76 +11,87 @@
     ViewBag.GaData.Vpv = "/accounts/transfers/connection/requests/rejected";
 }
 
-@Html.Partial("_ValidationSummary", ViewData.ModelState)
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <div class="success-summary">
-            <h1 class="bold-large">Connection request rejected</h1>
-            <p><i class="icon-green-tick"></i> You've successfully rejected this connection request</p>
-        </div>
-        <h1 class="heading-xlarge">Connection request details</h1>
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(m => m.TransferConnectionInvitationId)
-            <div class="form-group">
-                <table>
-                    <tbody>
-                        @{
-                            var pendingChange = Model.TransferConnectionInvitation.GetPendingChange();
-                        }
-                        <tr>
-                            <td>Status</td>
-                            <td>@Model.TransferConnectionInvitation.Status.ToString()</td>
-                        </tr>
-                        <tr>
-                            <td>Sending employer</td>
-                            <td>@Model.TransferConnectionInvitation.SenderAccount.Name</td>
-                        </tr>
-                        <tr>
-                            <td>Sent by</td>
-                            <td>@pendingChange.User.FullName</td>
-                        </tr>
-                        <tr>
-                            <td>Sent on</td>
-                            <td>@pendingChange.CreatedDate.ToString("d MMMM yyyy")</td>
-                        </tr>
-                        <tr>
-                            <td>Receiving employer</td>
-                            <td>@Model.TransferConnectionInvitation.ReceiverAccount.Name</td>
-                        </tr>
-                        <tr>
-                            <td>Receiver account ID</td>
-                            <td>@Model.TransferConnectionInvitation.ReceiverAccount.PublicHashedId</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+<partial model="@ViewData.ModelState" name="_ValidationSummary"/>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Connection request rejected
+                </h2>
             </div>
-            <div class="form-group @(Html.IsValid(m => m.Choice) ? "" : "error")">
-                <fieldset>
-                    <legend>
-                        <span class="form-label-bold">Do you want to delete this connection request?</span>
-                        @Html.ValidationMessageFor(m => m.Choice)
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-body">You've successfully rejected this connection request</p>
+            </div>
+        </div>
+
+        <h1 class="govuk-heading-xl">Connection request details</h1>
+        <form method="POST" asp-controller="TransferConnectionInvitations" asp-action="Rejected" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-transferConnectionInvitationId="@Model.HashedTransferConnectionInvitationId">
+            <input type="hidden" asp-for="HashedAccountId"/>
+            <input type="hidden" asp-for="HashedTransferConnectionInvitationId"/>
+            <input type="hidden" asp-for="Status"/>
+            <input type="hidden" asp-for="SenderAccountName"/>
+            <input type="hidden" asp-for="PendingUserName"/>
+            <input type="hidden" asp-for="PendingChangeCreatedDate"/>
+            <input type="hidden" asp-for="ReceiverAccountName"/>
+            <input type="hidden" asp-for="ReceiverAccountPublicHashedId"/>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Status</dt>
+                    <dd class="govuk-summary-list__value">@Model.Status</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Sending employer</dt>
+                    <dd class="govuk-summary-list__value">@Model.SenderAccountName</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Sent by</dt>
+                    <dd class="govuk-summary-list__value">@Model.PendingUserName</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Sent on</dt>
+                    <dd class="govuk-summary-list__value">@Model.PendingChangeCreatedDate.ToString("d MMMM yyyy")</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Receiving employer</dt>
+                    <dd class="govuk-summary-list__value">@Model.ReceiverAccountName</dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Receiver account ID</dt>
+                    <dd class="govuk-summary-list__value">@Model.ReceiverAccountPublicHashedId</dd>
+                </div>
+            </dl>
+            <div asp-fieldname="Choice">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h2 class="govuk-fieldset__heading">
+                            Do you want to delete this connection request?
+                        </h2>
                     </legend>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "Confirm")
-                        Yes, delete this connection
-                    </label>
-                    <label class="block-label selection-button-radio">
-                        @Html.RadioButtonFor(m => m.Choice, "GoToTransfersPage")
-                        No, go back to transfers
-                    </label>
+                    <span esfa-validation-for="Choice" class="govuk-error-message"></span>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="Confirm" asp-for="Choice" value="Confirm" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="Confirm">
+                                Yes, delete this connection
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="GoToTransfersPage" asp-for="Choice" value="GoToTransfersPage" type="radio">
+                            <label class="govuk-label govuk-radios__label" for="GoToTransfersPage">
+                                No, go back to transfers
+                            </label>
+                        </div>
+                    </div>
                 </fieldset>
             </div>
-            <button class="button" type="submit">Continue</button>
-        }
+            <button class="govuk-button" type="submit">Continue</button>
+        </form>
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a class="link-back" href="@Url.Action("Index", "TransferConnections")">Back</a></li>
-        </ol>
-    </div>
+    <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.HashedAccountId"  class="govuk-back-link">Back</a>
 }

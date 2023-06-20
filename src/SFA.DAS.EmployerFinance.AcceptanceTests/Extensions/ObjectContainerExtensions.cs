@@ -10,16 +10,15 @@ using SFA.DAS.Authentication;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Events.Api.Client;
-using SFA.DAS.HashingService;
 using SFA.DAS.NLog.Logger;
-using SFA.DAS.UnitOfWork;
 using SFA.DAS.UnitOfWork.Managers;
 using StructureMap;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
 {
@@ -31,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
             objectContainer.RegisterInstance<EmployerAccountTransactionsController>(container);
             objectContainer.RegisterInstance<EmployerFinanceConfiguration>(container);
             objectContainer.RegisterInstance<IContainer>(container);
-            objectContainer.RegisterInstance<IHashingService>(container);
+            objectContainer.RegisterInstance<IEncodingService>(container);
             objectContainer.RegisterInstance<ILog>(container);
             objectContainer.RegisterInstance<IMediator>(container);
             objectContainer.RegisterInstance<IMessageSession>(container);

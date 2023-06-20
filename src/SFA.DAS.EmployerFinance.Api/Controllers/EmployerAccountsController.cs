@@ -1,48 +1,47 @@
-﻿using SFA.DAS.EmployerFinance.Api.Attributes;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Http;
 
-namespace SFA.DAS.EmployerFinance.Api.Controllers
+namespace SFA.DAS.EmployerFinance.Api.Controllers;
+
+[Route("api/accounts")]
+public class EmployerAccountsController : ControllerBase
 {
-    [RoutePrefix("api/accounts")]
-    public class EmployerAccountsController : ApiController
+    private readonly FinanceOrchestrator _financeOrchestrator;
+
+    public EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
     {
-        private readonly FinanceOrchestrator _financeOrchestrator;
+        _financeOrchestrator = financeOrchestrator;
+    }      
 
-        public EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
+    [Route("balances")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [HttpPost]
+    public async Task<IActionResult> GetAccountBalances([FromBody]List<string> accountIds)
+    {
+        var result = await _financeOrchestrator.GetAccountBalances(accountIds);
+
+        if (result == null)
         {
-            _financeOrchestrator = financeOrchestrator;
-        }      
-
-        [Route("balances")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
-        [HttpPost]
-        public async Task<IHttpActionResult> GetAccountBalances(List<string> accountIds)
-        {
-            var result = await _financeOrchestrator.GetAccountBalances(accountIds);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return NotFound();
         }
 
-        [Route("{hashedAccountId}/transferAllowance")]
-        [ApiAuthorize(Roles = "ReadAllEmployerAccountBalances")]
-        public async Task<IHttpActionResult> GetTransferAllowance(string hashedAccountId)
+        return Ok(result);
+    }
+
+    [HttpGet]
+    [Route("{hashedAccountId}/transferAllowance")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetTransferAllowance(string hashedAccountId)
+    {
+        var result = await _financeOrchestrator.GetTransferAllowance(hashedAccountId);
+
+        if (result == null)
         {
-            var result = await _financeOrchestrator.GetTransferAllowance(hashedAccountId);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return NotFound();
         }
+
+        return Ok(result);
     }
 }

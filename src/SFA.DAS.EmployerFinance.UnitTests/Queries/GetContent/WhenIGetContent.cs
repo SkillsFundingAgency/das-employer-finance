@@ -1,93 +1,82 @@
-﻿using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Configuration;
+﻿using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.GetContent;
-using SFA.DAS.NLog.Logger;
-using SFA.DAS.Validation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent
+namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent;
+
+public class WhenIGetContent : QueryBaseTest<GetContentRequestHandler, GetContentRequest, GetContentResponse>
 {
-    public class WhenIGetContent : QueryBaseTest<GetContentRequestHandler, GetContentRequest, GetContentResponse>
+    public override GetContentRequest Query { get; set; }
+    public override GetContentRequestHandler RequestHandler { get; set; }
+    public override Mock<IValidator<GetContentRequest>> RequestValidator { get; set; }
+
+    private string _contentType;
+    private string _clientId;
+
+    private string _cacheKey;
+    private string _content;
+    public EmployerFinanceWebConfiguration EmployerFinanceWebConfiguration;
+
+    private Mock<IContentApiClient> _mockContentService;
+    private Mock<ICacheStorageService> _mockCacheStorageService;
+
+    [SetUp]
+    public void Arrange()
     {
-        public override GetContentRequest Query { get; set; }
-        public override GetContentRequestHandler RequestHandler { get; set; }
-        public override Mock<IValidator<GetContentRequest>> RequestValidator { get; set; }
+        SetUp();
+        _clientId = "eas-fin";
+        _contentType = "banner";
 
-        private string _contentType;
-        private string _clientId;
-
-        private string CacheKey;
-        private string Content;
-        public EmployerFinanceConfiguration EmployerFinanceConfiguration;
-
-        private Mock<ILog> MockLogger;
-        private Mock<IContentApiClient> MockContentService;
-        private Mock<ICacheStorageService> MockCacheStorageService;
-
-        [SetUp]
-        public void Arrange()
+        EmployerFinanceWebConfiguration = new EmployerFinanceWebConfiguration()
         {
-            SetUp();
-            _clientId = "eas-fin";
-            _contentType = "banner";
+            ApplicationId = "eas-fin",
+            DefaultCacheExpirationInMinutes = 1
+        };
+        _content = "<p> Example content </p>";
+        _cacheKey = EmployerFinanceWebConfiguration.ApplicationId + "_banner";
 
-            EmployerFinanceConfiguration = new EmployerFinanceConfiguration()
-            {
-                ApplicationId = "eas-fin",
-                DefaultCacheExpirationInMinutes = 1
-            };
-            Content = "<p> Example content </p>";
-            CacheKey = EmployerFinanceConfiguration.ApplicationId + "_banner";
-
-            MockLogger = new Mock<ILog>();
-            MockContentService = new Mock<IContentApiClient>();
-            MockCacheStorageService = new Mock<ICacheStorageService>();
+        _mockContentService = new Mock<IContentApiClient>();
+        _mockCacheStorageService = new Mock<ICacheStorageService>();
             
 
-            MockContentService
-                .Setup(cs => cs.Get(_contentType, _clientId))
-                .ReturnsAsync(Content);
+        _mockContentService
+            .Setup(cs => cs.Get(_contentType, _clientId))
+            .ReturnsAsync(_content);
 
-            Query = new GetContentRequest
-            {
-                ContentType = "banner"
-            };
-
-            RequestHandler = new GetContentRequestHandler(RequestValidator.Object, MockLogger.Object,
-                MockContentService.Object, MockCacheStorageService.Object, EmployerFinanceConfiguration);
-        }
-
-        [Test]
-        public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
+        Query = new GetContentRequest
         {
-            NotStoredInCacheSetup();
+            ContentType = "banner"
+        };
 
-            await RequestHandler.Handle(Query);
+        RequestHandler = new GetContentRequestHandler(RequestValidator.Object, Mock.Of<ILogger<GetContentRequestHandler>>(),
+            _mockContentService.Object, EmployerFinanceWebConfiguration);
+    }
 
-            MockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
-        }
+    [Test]
+    public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
+    {
+        NotStoredInCacheSetup();
 
-        [Test]
-        public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
-        {
-            NotStoredInCacheSetup();
+        await RequestHandler.Handle(Query, CancellationToken.None);
 
-            await RequestHandler.Handle(Query);
+        _mockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
+    }
 
-            MockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
-        }
+    [Test]
+    public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
+    {
+        NotStoredInCacheSetup();
 
-        private void NotStoredInCacheSetup()
-        {
-            MockCacheStorageService.Setup(c => c.TryGet(CacheKey, out Content)).Returns(false);
-            MockContentService.Setup(c => c.Get("banner", CacheKey))
-                .ReturnsAsync(Content);
-        }
+        await RequestHandler.Handle(Query, CancellationToken.None);
+
+        _mockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
+    }
+
+    private void NotStoredInCacheSetup()
+    {
+        _mockCacheStorageService.Setup(c => c.TryGet(_cacheKey, out _content)).Returns(false);
+        _mockContentService.Setup(c => c.Get("banner", _cacheKey))
+            .ReturnsAsync(_content);
     }
 }

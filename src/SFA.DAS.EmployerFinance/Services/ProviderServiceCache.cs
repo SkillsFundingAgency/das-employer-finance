@@ -1,37 +1,35 @@
 ﻿using SFA.DAS.Caches;
-using System;
-using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Services
+namespace SFA.DAS.EmployerFinance.Services;
+
+public class ProviderServiceCache : IProviderService
 {
-    public class ProviderServiceCache : IProviderService
+    private readonly IInProcessCache _inProcessCache;
+    private readonly IProviderService _providerService;
+
+    public ProviderServiceCache(IProviderService providerService, IInProcessCache inProcessCache)
     {
-        private readonly IInProcessCache _inProcessCache;
-        private readonly IProviderService _providerService;
+        _providerService = providerService;
+        _inProcessCache = inProcessCache;
+    }
 
-        public ProviderServiceCache(IProviderService providerService, IInProcessCache inProcessCache)
+    public async Task<Models.ApprenticeshipProvider.Provider> Get(long ukPrn)
+    {
+        var cachedProvider = _inProcessCache.Get<Models.ApprenticeshipProvider.Provider>($"{nameof(Models.ApprenticeshipProvider.Provider)}_{ukPrn}");
+
+        if (cachedProvider != null)
         {
-            _providerService = providerService;
-            _inProcessCache = inProcessCache;
+            return cachedProvider;
         }
 
-        public async Task<Models.ApprenticeshipProvider.Provider> Get(long ukPrn)
+        var provider = await _providerService.Get(ukPrn);
+
+        if (provider != null)
         {
-            var cachedProvider = _inProcessCache.Get<Models.ApprenticeshipProvider.Provider>($"{nameof(Models.ApprenticeshipProvider.Provider)}_{ukPrn}");
-
-            if (cachedProvider != null)
-            {
-                return cachedProvider;
-            }
-
-            var provider = await _providerService.Get(ukPrn);
-
-            if (provider != null)
-            {
-                _inProcessCache.Set($"{nameof(Models.ApprenticeshipProvider.Provider)}_{ukPrn}", provider, new DateTimeOffset(DateTime.UtcNow.Add(new TimeSpan(1, 0, 0))));
-            }
-
-            return provider;           
+            _inProcessCache.Set($"{nameof(Models.ApprenticeshipProvider.Provider)}_{ukPrn}", provider, new DateTimeOffset(DateTime.UtcNow.Add(new TimeSpan(1, 0, 0))));
         }
+
+        return provider;           
     }
 }

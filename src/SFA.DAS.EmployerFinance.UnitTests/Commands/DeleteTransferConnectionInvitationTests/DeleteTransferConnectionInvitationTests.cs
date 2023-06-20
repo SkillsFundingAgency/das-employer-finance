@@ -1,16 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.DeleteSentTransferConnectionInvitation;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 using SFA.DAS.EmployerFinance.TestCommon.Builders;
-using SFA.DAS.EmployerFinance.TestCommon.Helpers;
 using SFA.DAS.Testing;
 using SFA.DAS.UnitOfWork.Context;
 
@@ -156,7 +150,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId, TransferConnectionInvitationStatus.Pending)]
         public void Handle_WhenDeleting_ThenShouldThrowExceptionIfNotRejected(long deletingAccountId, TransferConnectionInvitationStatus status)
         {
-            Assert.ThrowsAsync<Exception>(() =>
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
                 RunAsync(
                     act: f => f.Handle(status, deletingAccountId),
                     assert: null), "Requires transfer connection invitation is rejected.");
@@ -190,11 +184,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public DeleteTransferConnectionInvitationTestFixture WithSenderAccount(long senderAccountId)
         {
+            var hashedAccountId = "ABC123";
+
             SenderAccount = new Account
             {
                 Id = senderAccountId,
                 Name = "Sender",
-                HashingService = new TestHashingService()
+                HashedId = hashedAccountId
             };
 
             EmployerAccountRepositoryMock
@@ -206,11 +202,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public DeleteTransferConnectionInvitationTestFixture WithReceiverAccount(long receiverAccountId)
         {
+            var hashedAccountId = "ABC123";
             ReceiverAccount = new Account
             {
                 Id = receiverAccountId,
                 Name = "Receiver",
-                HashingService = new TestHashingService()
+                HashedId = hashedAccountId
             };
 
             EmployerAccountRepositoryMock
@@ -265,11 +262,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
             public const long TestUserId = 789;
         }
 
-        public long TestSenderAccountId => Constants.TestSenderAccountId;
+        public static long TestSenderAccountId => Constants.TestSenderAccountId;
 
-        public long TestReceiverAccountId => Constants.TestReceiverAccountId;
+        public static long TestReceiverAccountId => Constants.TestReceiverAccountId;
 
-        public long TestUserId => Constants.TestUserId;
+        public static long TestUserId => Constants.TestUserId;
 
         public Task Handle(TransferConnectionInvitationStatus status, long deletingAccountId)
         {
@@ -287,7 +284,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
             var handler = CreateHandler();
 
-            return handler.Handle(command);
+            return handler.Handle(command, CancellationToken.None);
         }
 
         private DeleteTransferConnectionInvitationCommandHandler CreateHandler()

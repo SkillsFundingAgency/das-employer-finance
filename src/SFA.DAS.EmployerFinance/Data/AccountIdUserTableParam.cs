@@ -1,51 +1,47 @@
-﻿using Dapper;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient.Server;
 
-namespace SFA.DAS.EmployerFinance.Data
+namespace SFA.DAS.EmployerFinance.Data;
+
+public class AccountIdUserTableParam : SqlMapper.IDynamicParameters
 {
-    public class AccountIdUserTableParam : SqlMapper.IDynamicParameters
+    private ICollection<SqlParameter> _additionalParameters { get; }
+
+    private readonly IEnumerable<long> _accountIds;
+    public AccountIdUserTableParam(IEnumerable<long> accountIds)
     {
-        private ICollection<SqlParameter> _additionalParameters { get; }
+        _accountIds = accountIds;
+        _additionalParameters = new List<SqlParameter>();
+    }
 
-        readonly IEnumerable<long> _accountIds;
-        public AccountIdUserTableParam(IEnumerable<long> accountIds)
+    public void AddParameters(IDbCommand command, SqlMapper.Identity identity)
+    {
+        var sqlCommand = (SqlCommand)command;
+        sqlCommand.CommandType = CommandType.StoredProcedure;
+
+        var accountList = new List<SqlDataRecord>();
+
+        SqlMetaData[] tvpDefinition = { new("AccountId", SqlDbType.BigInt) };
+
+        foreach (var accountId in _accountIds)
         {
-            _accountIds = accountIds;
-            _additionalParameters = new List<SqlParameter>();
+            var rec = new SqlDataRecord(tvpDefinition);
+            rec.SetInt64(0, accountId);
+            accountList.Add(rec);
         }
 
-        public void AddParameters(IDbCommand command, SqlMapper.Identity identity)
-        {
-            var sqlCommand = (SqlCommand)command;
-            sqlCommand.CommandType = CommandType.StoredProcedure;
+        var p = sqlCommand.Parameters.Add("@accountIds", SqlDbType.Structured);
+        p.Direction = ParameterDirection.Input;
+        p.TypeName = "[employer_financial].[AccountIds]";
+        p.Value = accountList;
 
-            var accountList = new List<Microsoft.SqlServer.Server.SqlDataRecord>();
+        sqlCommand.Parameters.AddRange(_additionalParameters.ToArray());
+    }
 
-            Microsoft.SqlServer.Server.SqlMetaData[] tvpDefinition = { new Microsoft.SqlServer.Server.SqlMetaData("AccountId", SqlDbType.BigInt) };
+    public void Add(string parameterName, object parameterValue, DbType parameterType)
+    {
+        var parameter = new SqlParameter(parameterName, parameterType) { Value = parameterValue };
 
-            foreach (var accountId in _accountIds)
-            {
-                Microsoft.SqlServer.Server.SqlDataRecord rec = new Microsoft.SqlServer.Server.SqlDataRecord(tvpDefinition);
-                rec.SetInt64(0, accountId);
-                accountList.Add(rec);
-            }
-
-            var p = sqlCommand.Parameters.Add("@accountIds", SqlDbType.Structured);
-            p.Direction = ParameterDirection.Input;
-            p.TypeName = "[employer_financial].[AccountIds]";
-            p.Value = accountList;
-
-            sqlCommand.Parameters.AddRange(_additionalParameters.ToArray());
-        }
-
-        public void Add(string parameterName, object parameterValue, DbType parameterType)
-        {
-            var parameter = new SqlParameter(parameterName, parameterType) { Value = parameterValue };
-
-            _additionalParameters.Add(parameter);
-        }
+        _additionalParameters.Add(parameter);
     }
 }

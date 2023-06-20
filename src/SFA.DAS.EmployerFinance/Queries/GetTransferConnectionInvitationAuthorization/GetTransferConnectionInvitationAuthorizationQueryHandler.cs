@@ -1,40 +1,44 @@
-﻿using System.Threading.Tasks;
-using MediatR;
-using SFA.DAS.Authorization.Services;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
+using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization
+namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
+
+public class GetTransferConnectionInvitationAuthorizationQueryHandler : IRequestHandler<GetTransferConnectionInvitationAuthorizationQuery, GetTransferConnectionInvitationAuthorizationResponse>
 {
-    public class GetTransferConnectionInvitationAuthorizationQueryHandler : IAsyncRequestHandler<GetTransferConnectionInvitationAuthorizationQuery, GetTransferConnectionInvitationAuthorizationResponse>
+    private readonly ITransferRepository _transferRepository;
+    private readonly EmployerFinanceConfiguration _configuration;
+    private readonly IOuterApiClient _outerApiClient;
+
+    public GetTransferConnectionInvitationAuthorizationQueryHandler(
+        ITransferRepository transferRepository,
+        EmployerFinanceConfiguration configuration,
+        IOuterApiClient outerApiClient
+        )
     {
-        private readonly ITransferRepository _transferRepository;
-        private readonly EmployerFinanceConfiguration _configuration;
-        private readonly IAuthorizationService _authorizationService;
+        _transferRepository = transferRepository;
+        _configuration = configuration;
+        _outerApiClient = outerApiClient;
+    }
 
-        public GetTransferConnectionInvitationAuthorizationQueryHandler(
-            ITransferRepository transferRepository,
-            EmployerFinanceConfiguration configuration,
-            IAuthorizationService authorizationService)
+    public async Task<GetTransferConnectionInvitationAuthorizationResponse> Handle(GetTransferConnectionInvitationAuthorizationQuery message,CancellationToken cancellationToken)
+    {
+        var transferAllowanceTask = _transferRepository.GetTransferAllowance(message.AccountId, _configuration.TransferAllowancePercentage);
+        var agreementTask = _outerApiClient
+            .Get<GetMinimumSignedAgreementVersionResponse>(
+                new GetMinimumSignedAgreementVersionRequest(message.AccountId));
+
+        await Task.WhenAll(transferAllowanceTask, agreementTask);
+        
+        var isValidSender = transferAllowanceTask.Result.RemainingTransferAllowance >= Constants.TransferConnectionInvitations.SenderMinTransferAllowance;
+
+        return new GetTransferConnectionInvitationAuthorizationResponse
         {
-            _transferRepository = transferRepository;
-            _configuration = configuration;
-            _authorizationService = authorizationService;
-        }
-
-        public async Task<GetTransferConnectionInvitationAuthorizationResponse> Handle(GetTransferConnectionInvitationAuthorizationQuery message)
-        {
-            var authorizationResult = await _authorizationService.GetAuthorizationResultAsync("EmployerFeature.TransferConnectionRequests");
-            var transferAllowance = await _transferRepository.GetTransferAllowance(message.AccountId, _configuration.TransferAllowancePercentage);
-
-            var isValidSender = transferAllowance.RemainingTransferAllowance >= Constants.TransferConnectionInvitations.SenderMinTransferAllowance;
-
-            return new GetTransferConnectionInvitationAuthorizationResponse
-            {
-                AuthorizationResult = authorizationResult,
-                IsValidSender = isValidSender,
-                TransferAllowancePercentage = _configuration.TransferAllowancePercentage
-            };
-        }
+            IsValidSender = isValidSender,
+            TransferAllowancePercentage = _configuration.TransferAllowancePercentage,
+            AuthorizationResult = agreementTask.Result.MinimumSignedAgreementVersion >= Constants.TransferConnectionInvitations.MinimumSignedAgreementVersion
+        };
     }
 }

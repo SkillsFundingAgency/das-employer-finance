@@ -1,15 +1,14 @@
-﻿using System.Threading.Tasks;
-using System.Web.Mvc;
-using AutoMapper;
-using MediatR;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 using SFA.DAS.EmployerFinance.Queries.GetHealthCheck;
+using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
-    [Authorize]
-    [RoutePrefix("healthcheck")]
+    //TODO This should be removed
+    
+    
     public class HealthCheckController : Controller
     {
         private readonly IMediator _mediator;
@@ -20,24 +19,32 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             _mediator = mediator;
             _mapper = mapper;
         }
-
-        [Route]
-        public async Task<ActionResult> Index(GetHealthCheckQuery query)
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
+        [HttpGet]
+        [Route("healthcheck")]
+        public async Task<IActionResult> Index(GetHealthCheckQuery query)
         {
-            var response = await _mediator.SendAsync(query);
+            var response = await _mediator.Send(query);
             var model = _mapper.Map<HealthCheckViewModel>(response);
 
             return View(model);
         }
-
+        [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route]
-        public async Task<ActionResult> Index(RunHealthCheckCommand command)
+        [Route("healthcheck")]
+        public async Task<IActionResult> Index(RunHealthCheckCommand command)
         {
-            await _mediator.SendAsync(command);
+            await _mediator.Send(command);
 
             return RedirectToAction("Index");
+        }
+
+        //TODO and replace with proper health check
+        [HttpGet]
+        [Route("Content/lib/govuk-frontend/dist/assets/images/favicon.ico")]
+        public IActionResult FileCheck()
+        {
+            return Ok();
         }
     }
 }

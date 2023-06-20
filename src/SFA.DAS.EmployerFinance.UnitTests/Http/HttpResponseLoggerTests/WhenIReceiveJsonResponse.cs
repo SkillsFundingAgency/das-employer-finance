@@ -1,73 +1,53 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
+using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Http;
-using SFA.DAS.NLog.Logger;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Http.HttpResponseLoggerTests
+namespace SFA.DAS.EmployerFinance.UnitTests.Http.HttpResponseLoggerTests;
+
+public class WhenIReceiveJsonResponse
 {
-    public class WhenIReceiveJsonResponse
+    private Mock<ILogger<HttpResponseLogger>> _logger;
+    private HttpResponseLogger _httpResponseLogger;
+    private HttpResponseMessage _httpResponseMessage;
+
+    public class TestClass
     {
-        private Mock<ILog> _logger;
-        private HttpResponseLogger _httpResponseLogger;
-        private HttpResponseMessage _httpResponseMessage;
+        public string Field1 { get; set; }
+        public int Field2 { get; set; }
+    }
 
-        public class TestClass
+    private readonly TestClass _testContent = new() { Field1 = "Test", Field2 = 123 };
+
+    [SetUp]
+    public void Arrange()
+    {
+        _logger = new Mock<ILogger<HttpResponseLogger>>();
+        _httpResponseLogger = new HttpResponseLogger(_logger.Object);
+        _httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
-            public string Field1 { get; set; }
-            public int Field2 { get; set; }
-        }
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(_testContent)),
+            Headers = { { "ContentType", "application/json" } }
+        };
+    }
 
-        private readonly TestClass _testContent = new TestClass {Field1 = "Test", Field2 = 123};
+    [Test]
+    public async Task ThenTheContentShouldBeLogged()
+    {
+        // Act
+        await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
-        [SetUp]
-        public void Arrange()
-        {
-            _logger = new Mock<ILog>();
-            _httpResponseLogger = new HttpResponseLogger();
-            _httpResponseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
-            {
-                Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(_testContent)),
-                Headers =
-                {
-                    {"ContentType", "application/json"}
-                }
-            };
-        }
+        // Assert
+        _logger.VerifyLogging(It.IsAny<string>(), LogLevel.Debug, Times.Never());
+    }
 
-        [Test]
-        public async Task ThenTheContentShouldBeLogged()
-        {
-            // Arrange
-            _logger.Setup(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
+    [Test]
+    public async Task ThenTheJsonContentShouldBeLogged()
+    {
+        // Act
+        await _httpResponseLogger.LogResponseAsync(_httpResponseMessage);
 
-            // Act
-            await _httpResponseLogger.LogResponseAsync(_logger.Object, _httpResponseMessage);
-
-            // Assert
-            _logger.Verify(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string,object>>()), Times.Once);
-        }
-
-        public async Task ThenTheJsonContentShouldBeLogged()
-        {
-            // Arrange
-            IDictionary<string, object> actualProperties = null;
-            _logger
-                .Setup(l => l.Debug(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
-                .Callback<string, IDictionary<string, object>>((msg, properties) => actualProperties = properties);
-
-            // Act
-            await _httpResponseLogger.LogResponseAsync(_logger.Object, _httpResponseMessage);
-            var content = actualProperties["Content"].ToString();
-            var rehydratedClass = Newtonsoft.Json.JsonConvert.DeserializeObject<TestClass>(content);
-
-            // Assert
-            Assert.IsNotNull(rehydratedClass);
-            Assert.AreEqual(_testContent.Field1, rehydratedClass.Field1);
-            Assert.AreEqual(_testContent.Field2, rehydratedClass.Field2);
-        }
+        // Assert
+        _logger.VerifyLogging($"Logged response. StatusCode: '{_httpResponseMessage.StatusCode}'. Reason: '{_httpResponseMessage.ReasonPhrase}'. Content: '{JsonConvert.SerializeObject(_testContent)}'.");
     }
 }

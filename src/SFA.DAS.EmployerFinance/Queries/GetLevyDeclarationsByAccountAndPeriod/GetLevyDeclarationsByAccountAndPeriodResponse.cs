@@ -1,10 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Levy;
-using System.Collections.Generic;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod
+namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
+
+public class GetLevyDeclarationsByAccountAndPeriodResponse
 {
-    public class GetLevyDeclarationsByAccountAndPeriodResponse
-    {
-        public List<LevyDeclarationItem> Declarations { get; set; }
-    }
+    public List<LevyDeclarationItem> Declarations { get; set; }
 }

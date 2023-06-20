@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using SFA.DAS.EmployerFinance.Models.Levy;
+﻿using SFA.DAS.EmployerFinance.Models.Levy;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFrationHistory
+namespace SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+
+public class GetEnglishFractionHistoryResposne
 {
-    public class GetEnglishFractionHistoryResposne
-    {
-        public IEnumerable<DasEnglishFraction> FractionDetail { get; set; }
-    }
+    public IEnumerable<DasEnglishFraction> FractionDetail { get; set; }
 }

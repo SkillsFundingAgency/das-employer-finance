@@ -1,59 +1,53 @@
-﻿using System;
-using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Services.ProviderServiceTests.ProviderServiceFromDb
+namespace SFA.DAS.EmployerFinance.UnitTests.Services.ProviderServiceTests.ProviderServiceFromDb;
+
+internal class WhenIGetAProvider
 {
-    internal class WhenIGetAProvider
+    private EmployerFinance.Services.ProviderServiceFromDb _sut;
+    private Mock<IDasLevyRepository> _mockDasLevyRepository;
+
+    private string _providerName;
+
+    [SetUp]
+    public void Arrange()
     {
-        private EmployerFinance.Services.ProviderServiceFromDb _sut;
-        private Mock<IDasLevyRepository> _mockDasLevyRepository;
+        _providerName = Guid.NewGuid().ToString();
 
-        private string _providerName;
+        _mockDasLevyRepository = new Mock<IDasLevyRepository>();
 
-        [SetUp]
-        public void Arrange()
-        {
-            _providerName = Guid.NewGuid().ToString();
+        _mockDasLevyRepository
+            .Setup(m => m.FindHistoricalProviderName(It.IsAny<long>()))
+            .ReturnsAsync(_providerName);
 
-            _mockDasLevyRepository = new Mock<IDasLevyRepository>();
+        _sut = new EmployerFinance.Services.ProviderServiceFromDb(_mockDasLevyRepository.Object, Mock.Of<ILogger<EmployerFinance.Services.ProviderServiceFromDb>>());
+    }
 
-            _mockDasLevyRepository
-                .Setup(m => m.FindHistoricalProviderName(It.IsAny<long>()))
-                .ReturnsAsync(_providerName);
+    [Test]
+    public async Task ThenTheHistoricalProviderNameIsRetrievedFromTheRepository()
+    {
+        // arrange 
+        long ukPrn = 1234567890;           
 
-            _sut = new EmployerFinance.Services.ProviderServiceFromDb(_mockDasLevyRepository.Object, Mock.Of<ILog>());
-        }
+        // act
+        var result = await _sut.Get(ukPrn);
 
-        [Test]
-        public async Task ThenTheHistoricalProviderNameIsRetrievedFromTheRepository()
-        {
-            // arrange 
-            long ukPrn = 1234567890;           
+        // assert
+        _mockDasLevyRepository.Verify(m => m.FindHistoricalProviderName(ukPrn), Times.Once);
+    }
 
-            // act
-            var result = await _sut.Get(ukPrn);
+    [Test]
+    public async Task AndTheHistoricalProviderNameExistsInTheDB_ThenAValidProviderIsReturned()
+    {
+        // arrange 
+        long ukPrn = 1234567890;
 
-            // assert
-            _mockDasLevyRepository.Verify(m => m.FindHistoricalProviderName(ukPrn), Times.Once);
-        }
+        // act
+        var result = await _sut.Get(ukPrn);
 
-        [Test]
-        public async Task AndTheHistoricalProviderNameExistsInTheDB_ThenAValidProviderIsReturned()
-        {
-            // arrange 
-            long ukPrn = 1234567890;
-
-            // act
-            var result = await _sut.Get(ukPrn);
-
-            // assert
-            Assert.AreEqual(_providerName, result.Name);
-            Assert.AreEqual(ukPrn, result.Ukprn);
-            Assert.AreEqual(true, result.IsHistoricProviderName);
-        }
+        // assert
+        Assert.AreEqual(_providerName, result.Name);
+        Assert.AreEqual(ukPrn, result.Ukprn);
+        Assert.AreEqual(true, result.IsHistoricProviderName);
     }
 }

@@ -2,13 +2,12 @@
 using SFA.DAS.EmployerFinance.Dtos;
 using SFA.DAS.EmployerFinance.Models;
 
-namespace SFA.DAS.EmployerFinance.Mappings
+namespace SFA.DAS.EmployerFinance.Mappings;
+
+public class HealthCheckMappings : Profile
 {
-    public class HealthCheckMappings : Profile
+    public HealthCheckMappings()
     {
-        public HealthCheckMappings()
-        {
-            CreateMap<HealthCheck, HealthCheckDto>();
-        }
+        CreateMap<HealthCheck, HealthCheckDto>();
     }
 }

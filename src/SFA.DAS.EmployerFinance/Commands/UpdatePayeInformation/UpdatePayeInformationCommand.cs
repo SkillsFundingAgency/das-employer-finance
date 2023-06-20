@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿
+namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 
-namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation
+public class UpdatePayeInformationCommand : IRequest<Unit>
 {
-    public class UpdatePayeInformationCommand : IAsyncRequest
-    {
-        public string PayeRef { get; set; }
-    }
+    public string PayeRef { get; set; }
 }

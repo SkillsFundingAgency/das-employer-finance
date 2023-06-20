@@ -1,38 +1,36 @@
-﻿using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 
-namespace SFA.DAS.EmployerFinance.Services
+namespace SFA.DAS.EmployerFinance.Services;
+
+public class ProviderServiceFromDb : IProviderService
 {
-    public class ProviderServiceFromDb : IProviderService
+    private readonly IDasLevyRepository _dasLevyRepository;
+    private readonly ILogger<ProviderServiceFromDb> _logger;
+
+    public ProviderServiceFromDb(IDasLevyRepository dasLevyRepository, ILogger<ProviderServiceFromDb> logger)
     {
-        private readonly IDasLevyRepository _dasLevyRepository;
-        private readonly ILog _logger;
+        _dasLevyRepository = dasLevyRepository;
+        _logger = logger;
+    }
 
-        public ProviderServiceFromDb(IDasLevyRepository dasLevyRepository, ILog logger)
+    public async Task<Models.ApprenticeshipProvider.Provider> Get(long ukPrn)
+    {
+        _logger.LogInformation($"Getting provider name from previous payments for Ukprn: {ukPrn}");
+        var providerName = await _dasLevyRepository.FindHistoricalProviderName(ukPrn);
+
+        if(providerName == null)
         {
-            _dasLevyRepository = dasLevyRepository;
-            _logger = logger;
+            _logger.LogWarning($"No provider name found for Ukprn:{ukPrn} in previous payments");
         }
 
-        public async Task<Models.ApprenticeshipProvider.Provider> Get(long ukPrn)
+        _logger.LogInformation($"Provider Name {providerName} found for Ukprn: {ukPrn}.");
+
+        return new Models.ApprenticeshipProvider.Provider
         {
-            _logger.Info($"Getting provider name from previous payments for Ukprn: {ukPrn}");
-            var providerName = await _dasLevyRepository.FindHistoricalProviderName(ukPrn);
-
-            if(providerName == null)
-            {
-                _logger.Warn($"No provider name found for Ukprn:{ukPrn} in previous payments");
-            }
-
-            _logger.Info($"Provider Name {providerName} found for Ukprn: {ukPrn}.");
-
-            return new Models.ApprenticeshipProvider.Provider
-            {
-                Name = providerName,
-                Ukprn = ukPrn,
-                IsHistoricProviderName = true
-            };
-        }
+            Name = providerName,
+            Ukprn = ukPrn,
+            IsHistoricProviderName = true
+        };
     }
 }

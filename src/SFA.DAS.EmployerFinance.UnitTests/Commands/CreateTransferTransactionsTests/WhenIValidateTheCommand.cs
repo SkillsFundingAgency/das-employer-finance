@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
+﻿using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsTests
 {

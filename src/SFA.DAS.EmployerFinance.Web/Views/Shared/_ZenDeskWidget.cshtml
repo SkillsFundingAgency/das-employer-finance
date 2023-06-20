@@ -1,4 +1,7 @@
-﻿@using SFA.DAS.EmployerFinance.Web.Extensions;
+﻿@{
+    var snippetUrl = $"https://static.zdassets.com/ekr/snippet.js?key={Configuration["ZenDeskConfiguration:ZenDeskSectionId"]}";
+    var cobrowsingSnippetUrl = $"https://embed-euw1.rcrsv.io/{Configuration["ZenDeskConfiguration:ZenDeskSnippetKey"]}?zwwi=1";
+}
 
 <script type="text/javascript">
     window.zESettings = {
@@ -13,12 +16,12 @@
             },
             helpCenter: {
                 filter: {
-                    section: @Html.GetZenDeskSnippetSectionId()
+                    section: @Configuration["ZenDeskConfiguration:ZenDeskSectionId"]
                 }
             }
         }
     };
 </script>
-<script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=@Html.GetZenDeskSnippetKey()"></script>
-<script id="co-snippet" src="https://embed-euw1.rcrsv.io/@Html.GetZenDeskCobrowsingSnippetKey()?zwwi=1"></script>
+<script id="ze-snippet" src="@snippetUrl"></script>
+<script id="co-snippet" src="@cobrowsingSnippetUrl"></script>
 @Html.SetZenDeskLabels(new string[] { ViewBag.ZenDeskLabel })

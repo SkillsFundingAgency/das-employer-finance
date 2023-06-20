@@ -1,0 +1,162 @@
+/* Finance figures */
+
+.app-finance-figure {
+    background-color: #f3f2f1;
+    border-left-style: solid;
+    border-left-color: #0b0c0c;
+    border-left-width: 10px;
+    line-height: 1;
+    padding: 15px;
+    font-size: 30px;
+}
+
+@media (min-width: 40.0625em) {
+    .app-finance-figure__wrap {
+        padding-left: 50px;
+    }
+}
+
+.app-finance-figure--highlight {
+    border-left-color: #1d70b8;
+}
+
+.app-finance-figure--expiring {
+    border-left-color: #d4351c;
+}
+
+.app-finance-figure__label {
+    margin-top: -5px;
+    margin-bottom: 30px;
+}
+
+.app-finance-figure__title {
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.app-finance-data {
+    font-family: "GDS Transport",arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 40.0625em) {
+    .app-finance-data {
+        padding: 0 0 0 15px;
+        border-left: 2px solid #b1b4b6;
+    }
+}
+
+.app-finance-data__list {
+    margin: 10px 0;
+}
+
+.app-finance-data__title {
+    border-top: 1px solid #b1b4b6;
+    padding-top: 10px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+@media (min-width: 40.0625em) {
+    .app-finance-data__title {
+        border-top: none;
+        font-size: 14px;
+    }
+}
+
+.app-finance-data__definition {
+    font-weight: 700;
+    margin: 0;
+    font-size: 18px;
+}
+
+@media (min-width: 40.0625em) {
+    .app-finance-data__definition {
+        font-size: 24px;
+    }
+}
+
+
+
+
+/* Table */
+
+@media (min-width: 40.0625em) {
+    .das-table--responsive .govuk-table__body tr.app-table__row--total-top {
+        display: none;
+    }
+}
+
+.das-table--responsive .govuk-table__body th.app-table__header--total, 
+.app-table__header--total {
+    display: none;
+}
+
+@media (min-width: 40.0625em) {
+    .das-table--responsive .govuk-table__body th.app-table__header--total, 
+    .app-table__header--total {
+        display: table-cell
+    }
+}
+
+.app-table__cell--highlight {
+    background: #f3f2f1;
+}
+
+.app-table__cell--colgroup {
+    text-align: center;
+}
+
+.app-table__cell--total {
+    border-bottom-width: 2px !important;
+    border-bottom-color: #0b0c0c !important;
+    font-weight: 700;
+}
+
+.app-table__cell--transparent {
+    border-color: transparent !important;
+}
+
+/* Survey */
+
+.app-survey-details {
+    background: #1d70b8;
+    margin-bottom: 0;
+}
+
+.app-survey-details__summary {
+    margin: 5px 10px 6px;
+    color: #fff;
+}
+
+.app-survey-details__summary:hover {
+    color: #fff;
+}
+
+.app-survey-details__summary:hover:focus {
+    color: black;
+}
+
+.app-survey-details__summary:hover:active {
+    color: black;
+}
+
+.app-survey-details__wrapper {
+    padding: 10px;
+}
+
+.app-survey-details__wrapper iframe {
+    width: 100%;
+    height: 300px;
+    display: block;
+    border: none;
+}
+
+/* Forms */
+
+.govuk-error-message + .govuk-error-message {
+    position: relative;
+    top: -10px;
+}

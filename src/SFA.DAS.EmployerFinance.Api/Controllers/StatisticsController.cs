@@ -1,25 +1,25 @@
-﻿using SFA.DAS.EmployerFinance.Api.Attributes;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using System.Threading.Tasks;
-using System.Web.Http;
 
-namespace SFA.DAS.EmployerFinance.Api.Controllers
+namespace SFA.DAS.EmployerFinance.Api.Controllers;
+
+[Authorize(Policy = ApiRoles.ReadUserAccounts)]
+[Route("api/financestatistics")]
+public class StatisticsController : ControllerBase
 {
-    [ApiAuthorize(Roles = "ReadUserAccounts")]
-    [RoutePrefix("api/financestatistics")]
-    public class StatisticsController : ApiController
+    private readonly StatisticsOrchestrator _statisticsOrchestrator;
+
+    public StatisticsController(StatisticsOrchestrator statisticsController)
     {
-        private readonly StatisticsOrchestrator _statisticsOrchestrator;
+        _statisticsOrchestrator = statisticsController;
+    }
 
-        public StatisticsController(StatisticsOrchestrator statisticsOrchestrator)
-        {
-            _statisticsOrchestrator = statisticsOrchestrator;
-        }
-
-        [Route("")]
-        public async Task<IHttpActionResult> GetStatistics()
-        {
-            return Ok(await _statisticsOrchestrator.Get());
-        }
+    [HttpGet]
+    [Route("")]
+    public async Task<IActionResult> GetStatistics()
+    {
+        return Ok(await _statisticsOrchestrator.Get());
     }
 }

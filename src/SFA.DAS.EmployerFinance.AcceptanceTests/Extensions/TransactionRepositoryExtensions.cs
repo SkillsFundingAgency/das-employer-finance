@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.NLog.Logger;
 
@@ -18,15 +19,14 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
         ///     <see cref="cancellationToken"/> can be used to terminate the polls early.
         /// </summary>
         public static async Task<bool> WaitForAllTransactionLinesInDatabase(
-            this ITransactionRepository transactionRepository, 
-            Account account, 
+            this ITransactionRepository transactionRepository,
+            Account account,
             CancellationToken cancellationToken,
             int pollIntervalMsecs = 3000,
             int requiredStableReadCount = 3)
         {
             return await WaitForStableResult(
-                () => transactionRepository.GetPreviousTransactionsCount(account.Id, DateTime.MaxValue),
-                cancellationToken, pollIntervalMsecs, requiredStableReadCount);
+                () => transactionRepository.GetPreviousTransactionsCount(account.Id, DateTime.MaxValue), pollIntervalMsecs, requiredStableReadCount, cancellationToken);
         }
 
 
@@ -37,16 +37,15 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
         ///     number of times. 
         /// </summary>
         /// <param name="resultGetter">Delegate that returns a task of int.</param>
-        /// <param name="cancellationToken"></param>
         /// <param name="pollIntervalMsecs">Frequency that <see cref="resultGetter"/> will be called.</param>
         /// <param name="requiredStableReadCount">
         ///     The number of times that the same result must be received consecutively to indicate that the result is stable.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<bool> WaitForStableResult(
-                Func<Task<int>> resultGetter,
-                CancellationToken cancellationToken,
-                int pollIntervalMsecs,
-                int requiredStableReadCount)
+        public static async Task<bool> WaitForStableResult(Func<Task<int>> resultGetter,
+            int pollIntervalMsecs,
+            int requiredStableReadCount,
+            CancellationToken cancellationToken)
         {
             if (requiredStableReadCount < 2)
             {
@@ -87,7 +86,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
         }
 
         private static bool IsResultStable(
-            Func<Task<int>> resultGetter, 
+            Func<Task<int>> resultGetter,
             ref int count,
             CancellationToken cancellationToken)
         {

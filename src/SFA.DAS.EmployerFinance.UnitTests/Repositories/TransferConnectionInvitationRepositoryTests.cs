@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
+﻿using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.TestCommon.Builders;
@@ -184,7 +178,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLatestPendingReceivedTran
                 ApprovedReceivedTransferConnectionInvitation
             };
 
-            Db.Setup(d => d.TransferConnectionInvitations).Returns(new DbSetStub<TransferConnectionInvitation>(data));
+            Db.Setup(d => d.TransferConnectionInvitations).Returns(() => new DbSetStub<TransferConnectionInvitation>(data));
         }
 
         public async Task GetLatestPendingByReceiver()

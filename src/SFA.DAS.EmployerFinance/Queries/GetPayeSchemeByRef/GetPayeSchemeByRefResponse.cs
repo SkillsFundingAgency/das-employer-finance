@@ -1,9 +1,8 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Account;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef
+namespace SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+
+public class GetPayeSchemeByRefResponse
 {
-   public class GetPayeSchemeByRefResponse
-    {
-        public PayeSchemeView PayeScheme { get; set; }
-    }
+    public PayeSchemeView PayeScheme { get; set; }
 }

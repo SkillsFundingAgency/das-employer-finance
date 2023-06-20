@@ -1,26 +1,36 @@
-﻿@model ModelStateDictionary
-
+﻿@model Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary
+@{
+    var customOrder =  ViewData["CustomOrder"] as Dictionary<string, int>;
+}
 @if(!Model.IsValid)
 {
-    <div class="grid-row notification-wrapper">
-        <div class="column-two-thirds">
-            <div class="error-summary">
-                <ul class="error-summary-list">
-                    @foreach (var modelState in Model)
-                    {
-                        foreach (var error in modelState.Value.Errors)
+    <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div role="alert">
+            <h2 class="govuk-error-summary__title">
+            There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    @foreach (var error in ViewData.ModelState.GroupJoin(customOrder ?? new Dictionary<string, int>(),c=>c.Key, x=> x.Key,
+                        (errorValue, propertyOrder) => new
                         {
+                            errorValue.Key,
+                            errorValue.Value,
+                            Order = propertyOrder.SingleOrDefault(c=>c.Key.Equals(errorValue.Key)).Value
+                        })
+                        .OrderBy(c=>c.Order).ToList())
+                    {
+                            var errorMessage = error.Value.Errors.FirstOrDefault()?.ErrorMessage;
                             <li>
-                                @if (string.IsNullOrWhiteSpace(modelState.Key))
+                                @if (string.IsNullOrWhiteSpace(error.Key))
                                 {
-                                    <a href="#">@error.ErrorMessage</a>
+                                    <a href="#">@errorMessage</a>
                                 }
                                 else
                                 {
-                                    <a href="#@Html.Id(modelState.Key)">@error.ErrorMessage</a>
+                                    <a href="#@Html.Id(error.Key)">@errorMessage</a>
                                 }
                             </li>
-                        }
                     }
                 </ul>
             </div>

@@ -1,4 +1,8 @@
 ﻿@using System.Globalization
+@using SFA.DAS.EmployerFinance.Interfaces 
+
+@inject IUrlActionHelper UrlHelpers;
+
 @model TransferTransactionDetailsViewModel
 
 @{
@@ -9,84 +13,91 @@
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
 }
 
-<div class="grid-row">
-    <div class="column-two-thirds">
+@if (Model.IsCurrentAccountSender)
+{
+    <h1 class="govuk-heading-xl">Levy transfer</h1>
+}
+else
+{
+    <h1 class="govuk-heading-xl">Transfer received</h1>
+}
 
-        @if (Model.IsCurrentAccountSender)
-        {
-            <h1 class="heading-xlarge">Levy transfer</h1>
-        }
-        else
-        {
-            <h1 class="heading-xlarge">Transfer received</h1>
-        }
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Date </dt>
+                <dd class="govuk-summary-list__value">@Model.DateCreated.ToGdsFormatFull()</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Account Name </dt>
+                <dd class="govuk-summary-list__value">@(Model.IsCurrentAccountSender ? Model.ReceiverAccountName : Model.SenderAccountName)</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Account ID </dt>
+                <dd class="govuk-summary-list__value">@(Model.IsCurrentAccountSender ? Model.ReceiverAccountPublicHashedId : Model.SenderAccountPublicHashedId)</dd>
+            </div>
+        </dl>
 
-        <div class="account-info">
-            <p>Date <b>@Model.DateCreated.ToGdsFormatFull()</b></p>
-            <p>Account Name <b>@(Model.IsCurrentAccountSender ? Model.ReceiverAccountName : Model.SenderAccountName)</b></p>
-            <p>Account ID <b>@(Model.IsCurrentAccountSender ? Model.ReceiverAccountPublicHashedId : Model.SenderAccountPublicHashedId)</b></p>
-        </div>
-    </div>
-
-    <div class="column-full">
-
-        <table>
-            <thead>
-                <tr>
-                    <th class="numeric" scope="col">Course</th>
-                    <th class="numeric" scope="col">Apprentices</th>
-                    <th class="numeric" scope="col">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var transferDetail in Model.TransferDetails)
-            {
-                <tr>
-                    <td class="numeric">
-                        @(@transferDetail.CourseLevel.HasValue ? 
-                              $"{transferDetail.CourseName}: level {transferDetail.CourseLevel}" : 
-                              transferDetail.CourseName)
-                    </td>
-                    <td class="numeric">
-                        @transferDetail.ApprenticeCount
-                    </td>
-                    @if (Model.IsCurrentAccountSender)
-                    {
-                        <td class="numeric no-wrap">
-                            @((transferDetail.PaymentTotal * -1).ToString("C2", culture))
-                        </td>
-                    }
-                    else
-                    {
-                        <td class="numeric no-wrap">
-                            @transferDetail.PaymentTotal.ToString("C2", culture)
-                        </td>
-                    }
-                </tr>
-        }
-
-                <tr class="total">
-                    <td colspan="2"></td>
-                    @if (Model.IsCurrentAccountSender)
-                    {
-                        <td class="numeric no-wrap">@((Model.TransferPaymentTotal * -1).ToString("C2", culture))</td>
-                    }
-                    else
-                    {
-                        <td class="numeric no-wrap">@Model.TransferPaymentTotal.ToString("C2", culture)</td>
-                    }
-                </tr>
-            </tbody>
-        </table>
     </div>
 </div>
+<table class="govuk-table das-table--responsive">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Course</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Apprentices</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Amount</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        @foreach (var transferDetail in Model.TransferDetails)
+    {
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+                @(@transferDetail.CourseLevel.HasValue ? 
+                        $"{transferDetail.CourseName}: level {transferDetail.CourseLevel}" : 
+                        transferDetail.CourseName)
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+                @transferDetail.ApprenticeCount
+            </td>
+            @if (Model.IsCurrentAccountSender)
+            {
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @((transferDetail.PaymentTotal * -1).ToString("C2", culture))
+                </td>
+            }
+            else
+            {
+                <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @transferDetail.PaymentTotal.ToString("C2", culture)
+                </td>
+            }
+        </tr>
+}
+
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell app-table__cell--transparent" colspan="2"> </td>
+            @if (Model.IsCurrentAccountSender)
+            {
+                <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@((Model.TransferPaymentTotal * -1).ToString("C2", culture))</td>
+            }
+            else
+            {
+                <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.TransferPaymentTotal.ToString("C2", culture)</td>
+            }
+        </tr>
+    </tbody>
+</table>
+
 @section breadcrumb {
-    <div class="breadcrumbs">
-        <ol role="navigation">
-            <li><a href="@Url.EmployerAccountsAction($"teams")">Home</a></li>
-            <li><a href="@Url.EmployerFinanceAction("finance")">Finance</a></li>
-            <li><a href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new {year = Model.DateCreated.Year, month = Model.DateCreated.Month})">Your transactions</a></li>
-            <li>@(Model.IsCurrentAccountSender ? "Levy details" : "Transfer Details")</li>
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a class="govuk-breadcrumbs__link" href="@UrlHelpers.EmployerAccountsAction($"teams")">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a class="govuk-breadcrumbs__link" href="@UrlHelpers.EmployerFinanceAction("finance")">Finance</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a class="govuk-breadcrumbs__link" href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new {year = Model.DateCreated.Year, month = Model.DateCreated.Month})">Your transactions</a></li>
+            <li class="govuk-breadcrumbs__list-item">@(Model.IsCurrentAccountSender ? "Levy details" : "Transfer Details")</li>
         </ol>
     </div>
 }

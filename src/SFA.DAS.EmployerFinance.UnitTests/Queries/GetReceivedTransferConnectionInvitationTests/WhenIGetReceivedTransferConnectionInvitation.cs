@@ -1,8 +1,5 @@
-﻿using System.Threading.Tasks;
-using AutoMapper;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Data;
+﻿using AutoMapper;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetReceivedTransferConnectionInvitation;
@@ -42,7 +39,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetReceivedTransferConnectio
         [Test]
         public async Task ThenShouldCallRepository()
         {
-            var response = await _handler.Handle(_query);
+            var response = await _handler.Handle(_query, CancellationToken.None);
             _transferConnectionInvitationRepository.Verify(v => v.GetByReceiver(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<TransferConnectionInvitationStatus>()), Times.Once);
         }
     }

@@ -1,25 +1,23 @@
-using System.Threading.Tasks;
-using SFA.DAS.Validation;
+using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration
+namespace SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
+
+public class GetLastLevyDeclarationValidator : IValidator<GetLastLevyDeclarationQuery>
 {
-    public class GetLastLevyDeclarationValidator : IValidator<GetLastLevyDeclarationQuery>
+    public ValidationResult Validate(GetLastLevyDeclarationQuery item)
     {
-        public ValidationResult Validate(GetLastLevyDeclarationQuery item)
+        var validationResult = new ValidationResult();
+
+        if (string.IsNullOrEmpty(item.EmpRef))
         {
-            var validationResult = new ValidationResult();
-
-            if (string.IsNullOrEmpty(item.EmpRef))
-            {
-                validationResult.AddError(nameof(item.EmpRef));
-            }
-
-            return validationResult;
+            validationResult.AddError(nameof(item.EmpRef));
         }
 
-        public Task<ValidationResult> ValidateAsync(GetLastLevyDeclarationQuery item)
-        {
-            throw new System.NotImplementedException();
-        }
+        return validationResult;
+    }
+
+    public Task<ValidationResult> ValidateAsync(GetLastLevyDeclarationQuery item)
+    {
+        throw new System.NotImplementedException();
     }
 }

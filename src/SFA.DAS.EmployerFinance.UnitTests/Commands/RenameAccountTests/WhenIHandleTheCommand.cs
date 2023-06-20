@@ -1,37 +1,29 @@
-﻿using System.Threading.Tasks;
-using Moq;
-using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Commands.RenameAccount;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.NLog.Logger;
+﻿using SFA.DAS.EmployerFinance.Commands.RenameAccount;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RenameAccountTests
+namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RenameAccountTests;
+
+public class WhenIHandleTheCommand
 {
-    public class WhenIHandleTheCommand
-    {
-        private RenameAccountCommandHandler _handler;
-        private Mock<IAccountRepository> _accountRepository;
-        private Mock<ILog> _logger;
+    private RenameAccountCommandHandler _handler;
+    private Mock<IAccountRepository> _accountRepository;
         
-        [SetUp]
-        public void Arrange()
-        {
-            _accountRepository = new Mock<IAccountRepository>();
+    [SetUp]
+    public void Arrange()
+    {
+        _accountRepository = new Mock<IAccountRepository>();
 
-            _logger = new Mock<ILog>();
+        _handler = new RenameAccountCommandHandler(_accountRepository.Object, Mock.Of<ILogger<RenameAccountCommandHandler>>());
+    }
 
-            _handler = new RenameAccountCommandHandler(_accountRepository.Object, _logger.Object);
-        }
+    [Test]
+    public async Task ThenTheAccountIsRenamed()
+    {
+        var accountId = 123443;
+        var name = "Account Name";
 
-        [Test]
-        public async Task ThenTheAccountIsRenamed()
-        {
-            var accountId = 123443;
-            var name = "Account Name";
+        await _handler.Handle(new RenameAccountCommand(accountId, name), CancellationToken.None);
 
-            await _handler.Handle(new RenameAccountCommand(accountId, name));
-
-            _accountRepository.Verify(x => x.RenameAccount(accountId, name));
-        }
+        _accountRepository.Verify(x => x.RenameAccount(accountId, name));
     }
 }
