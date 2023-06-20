@@ -66,7 +66,8 @@ public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : Flu
             TransferRepository.Object,
             UserRepository.Object,
             EmployerFinanceConfiguration,
-            EncodingService.Object
+            EncodingService.Object,
+            Mock.Of<ILogger<SendTransferConnectionInvitationCommandHandler>>()
         );
 
         Command = new SendTransferConnectionInvitationCommand

@@ -3,6 +3,9 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Formatters;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
@@ -67,5 +70,9 @@ public static class ApplicationServiceRegistrations
 
         services.AddTransient<ITransactionFormatterFactory, TransactionFormatterFactory>();
 
+        services.AddTransient<ITransactionFormatter, LevyCsvTransactionFormatter>();
+        services.AddTransient<ITransactionFormatter, NonLevyCsvTransactionFormatter>();
+        services.AddTransient<ITransactionFormatter, LevyExcelTransactionFormatter>();
+        services.AddTransient<ITransactionFormatter, NonLevyExcelTransactionFormatter>();
     }
 }

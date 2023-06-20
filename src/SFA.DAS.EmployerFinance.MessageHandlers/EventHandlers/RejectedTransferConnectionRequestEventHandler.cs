@@ -1,14 +1,14 @@
 ﻿using SFA.DAS.EmployerFinance.Events.Messages;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
-using SFA.DAS.Messaging.Interfaces;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
 public class RejectedTransferConnectionRequestEventHandler : IHandleMessages<RejectedTransferConnectionRequestEvent>
 {
-    private readonly IMessagePublisher _messagePublisher;
+    private readonly ILegacyTopicMessagePublisher _messagePublisher;
 
-    public RejectedTransferConnectionRequestEventHandler(IMessagePublisher messagePublisher)
+    public RejectedTransferConnectionRequestEventHandler(ILegacyTopicMessagePublisher messagePublisher)
     {
         _messagePublisher = messagePublisher;
     }

@@ -8,6 +8,7 @@ public static class OrchestratorsServiceRegistrations
     {
         services.AddTransient<IEmployerAccountTransactionsOrchestrator,EmployerAccountTransactionsOrchestrator>();
         services.AddTransient<TransfersOrchestrator>();
+        services.AddTransient<IAuthenticationOrchestrator, AuthenticationOrchestrator>();
         return services;
     }
 }

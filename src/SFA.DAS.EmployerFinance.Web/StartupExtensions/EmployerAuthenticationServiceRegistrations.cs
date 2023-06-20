@@ -87,7 +87,7 @@ public static class EmployerAuthenticationServiceRegistrations
                 options.Events.OnTokenValidated = async (ctx) =>
                 {
                     var claims = await customClaims.GetClaims(ctx);
-                    ctx.Principal.Identities.First().AddClaims(claims);
+                    ctx.Principal.Identities.First().AddClaims(claims); 
                 };
             });
                 

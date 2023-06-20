@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using AutoFixture.NUnit3;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -5,13 +6,14 @@ using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Models.UserAccounts;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Handlers;
+using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
 public class WhenPopulatingAccountClaims
 {
-    
+
     [Test, MoqAutoData]
     public async Task Then_The_Claims_Are_Populated_For_Gov_User(
         string nameIdentifier,
@@ -25,19 +27,19 @@ public class WhenPopulatingAccountClaims
         accountData.IsSuspended = false;
         forecastingConfiguration.Object.Value.UseGovSignIn = true;
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress);
-        accountService.Setup(x => x.GetUserAccounts(nameIdentifier,emailAddress)).ReturnsAsync(accountData);
-        
+        accountService.Setup(x => x.GetUserAccounts(nameIdentifier, emailAddress)).ReturnsAsync(accountData);
+
         var actual = await handler.GetClaims(tokenValidatedContext);
-        
-        accountService.Verify(x=>x.GetUserAccounts(nameIdentifier,emailAddress), Times.Once);
-        accountService.Verify(x=>x.GetUserAccounts(idamsIdentifier,emailAddress), Times.Never);
+
+        accountService.Verify(x => x.GetUserAccounts(nameIdentifier, emailAddress), Times.Once);
+        accountService.Verify(x => x.GetUserAccounts(idamsIdentifier, emailAddress), Times.Never);
         actual.Should().ContainSingle(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
         var actualClaimValue = actual.First(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier)).Value;
         JsonConvert.SerializeObject(accountData.EmployerAccounts.ToDictionary(k => k.AccountId)).Should().Be(actualClaimValue);
-        actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier)).Value.Should().Be(accountData.EmployerUserId);
-        actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Value.Should().Be(accountData.FirstName + " " + accountData.LastName);
-        actual.First(c=>c.Type.Equals(EmployerClaims.IdamsUserEmailClaimTypeIdentifier)).Value.Should().Be(emailAddress);
-        actual.FirstOrDefault(c=>c.Type.Equals(ClaimTypes.AuthorizationDecision))?.Value.Should().BeNullOrEmpty();
+        actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier)).Value.Should().Be(accountData.EmployerUserId);
+        actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Value.Should().Be(accountData.FirstName + " " + accountData.LastName);
+        actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserEmailClaimTypeIdentifier)).Value.Should().Be(emailAddress);
+        actual.FirstOrDefault(c => c.Type.Equals(ClaimTypes.AuthorizationDecision))?.Value.Should().BeNullOrEmpty();
     }
 
     [Test, MoqAutoData]
@@ -53,11 +55,11 @@ public class WhenPopulatingAccountClaims
         accountData.IsSuspended = true;
         forecastingConfiguration.Object.Value.UseGovSignIn = true;
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress);
-        accountService.Setup(x => x.GetUserAccounts(nameIdentifier,emailAddress)).ReturnsAsync(accountData);
-        
+        accountService.Setup(x => x.GetUserAccounts(nameIdentifier, emailAddress)).ReturnsAsync(accountData);
+
         var actual = await handler.GetClaims(tokenValidatedContext);
-        
-        actual.FirstOrDefault(c=>c.Type.Equals(ClaimTypes.AuthorizationDecision)).Value.Should().Be("Suspended");
+
+        actual.FirstOrDefault(c => c.Type.Equals(ClaimTypes.AuthorizationDecision)).Value.Should().Be("Suspended");
     }
 
     [Test, MoqAutoData]
@@ -72,7 +74,7 @@ public class WhenPopulatingAccountClaims
         var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, string.Empty);
         accountService.Setup(x => x.GetUserAccounts(idamsIdentifier, "")).ReturnsAsync(accountData);
         financeConfiguration.Object.Value.UseGovSignIn = false;
-        
+
         var actual = await handler.GetClaims(tokenValidatedContext);
 
         accountService.Verify(x => x.GetUserAccounts(nameIdentifier, string.Empty), Times.Never);
@@ -84,7 +86,48 @@ public class WhenPopulatingAccountClaims
         actual.FirstOrDefault(c => c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Should().BeNull();
     }
 
-    private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress)
+    [Test, MoqAutoData]
+    public async Task Then_The_User_Is_Uperserted_For_Gov(
+        string nameIdentifier,
+        string idamsIdentifier,
+        string emailAddress,
+        EmployerUserAccounts accountData,
+        [Frozen] Mock<IAuthenticationOrchestrator> authenticationOrchestrator,
+        [Frozen] Mock<IUserAccountService> accountService,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> financeConfiguration,
+        EmployerAccountPostAuthenticationClaimsHandler handler)
+    {
+        accountData.IsSuspended = false;
+        financeConfiguration.Object.Value.UseGovSignIn = true;
+        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
+        accountService.Setup(x => x.GetUserAccounts(nameIdentifier, emailAddress)).ReturnsAsync(accountData);
+
+        await handler.GetClaims(tokenValidatedContext);
+
+        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(accountData.EmployerUserId, emailAddress, accountData.FirstName, accountData.LastName));
+    }
+
+    [Test, MoqAutoData]
+    public async Task Then_The_User_Is_Uperserted_For_EmployerUsers_User(
+        string nameIdentifier,
+        string idamsIdentifier,
+        string emailAddress,
+        EmployerUserAccounts accountData,
+        [Frozen] Mock<IAuthenticationOrchestrator> authenticationOrchestrator,
+        [Frozen] Mock<IUserAccountService> accountService,
+        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> financeConfiguration,
+        EmployerAccountPostAuthenticationClaimsHandler handler)
+    {
+        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
+        accountService.Setup(x => x.GetUserAccounts(idamsIdentifier, emailAddress)).ReturnsAsync(accountData);
+        financeConfiguration.Object.Value.UseGovSignIn = false;
+
+        await handler.GetClaims(tokenValidatedContext);
+
+        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(accountData.EmployerUserId, emailAddress, accountData.FirstName, accountData.LastName));
+    }
+
+    private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress, Mock<IAuthenticationOrchestrator> authenticationOrchestrator = null)
     {
         var identity = new ClaimsIdentity(new List<Claim>
         {
@@ -95,7 +138,13 @@ public class WhenPopulatingAccountClaims
         });
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(identity));
-        return new TokenValidatedContext(new DefaultHttpContext(), new AuthenticationScheme(",", "", typeof(TestAuthHandler)),
+        var defaultHttpContext = new DefaultHttpContext();
+        var mockServiceProvider = new Mock<IServiceProvider>();
+        authenticationOrchestrator ??= new Mock<IAuthenticationOrchestrator>();
+        mockServiceProvider.Setup(x => x.GetService(typeof(IAuthenticationOrchestrator))).Returns(authenticationOrchestrator.Object);
+        
+        defaultHttpContext.RequestServices = mockServiceProvider.Object;
+        return new TokenValidatedContext(defaultHttpContext, new AuthenticationScheme(",", "", typeof(TestAuthHandler)),
             new OpenIdConnectOptions(), Mock.Of<ClaimsPrincipal>(), new AuthenticationProperties())
         {
             Principal = claimsPrincipal
