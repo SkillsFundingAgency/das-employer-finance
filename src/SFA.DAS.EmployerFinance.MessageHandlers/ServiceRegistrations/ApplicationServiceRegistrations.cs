@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -33,6 +34,16 @@ public static class ApplicationServiceRegistrations
         services.AddScoped<IUnitOfWork, UnitOfWork.NServiceBus.Pipeline.UnitOfWork>();
         services.AddScoped<IEventPublisher, EventPublisher>();
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
+
+        services.AddScoped<ITopicClientFactory, TopicClientFactory>();
+        services.AddScoped<ILegacyTopicMessagePublisher>(sp =>
+        {
+            var clientFactory = sp.GetService<ITopicClientFactory>();
+            var logger = sp.GetService<ILogger<LegacyTopicMessagePublisher>>();
+            var config = sp.GetService<EmployerFinanceJobsConfiguration>();
+            
+            return new LegacyTopicMessagePublisher(clientFactory, logger, config.MessageServiceBusConnectionString);
+        });
 
         return services;
     }

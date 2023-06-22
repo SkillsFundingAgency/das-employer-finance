@@ -18,4 +18,17 @@ public class TransactionDownloadViewModel
 
     [Required]
     public DownloadFormatType? DownloadFormat { get; set; }
+    
+    public static Dictionary<string, int> BuildPropertyOrderDictionary()
+    {
+        var propertyOrderDictionary = new Dictionary<string, int>
+        {
+            {"StartDate.Month", 0},
+            {"StartDate.Year", 1},
+            {"EndDate.Month", 2},
+            {"EndDate.Year", 3}
+        };
+
+        return propertyOrderDictionary;
+    }
 }

@@ -31,6 +31,8 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
+        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEventNotificationHandler)}.");
+
         var users = await _outerApiClient.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
             new GetAccountTeamMembersWhichReceiveNotificationsRequest(message.ReceiverAccountId));
 
@@ -73,5 +75,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
                 _logger.LogError(exception, "Unable to send sent transfer request notification to UserRef '{UserRef}' for ReceiverAccountId '{ReceiverAccountId}'", user.UserRef,message.ReceiverAccountId);
             }
         }
+
+        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEventNotificationHandler)}.");
     }
 }

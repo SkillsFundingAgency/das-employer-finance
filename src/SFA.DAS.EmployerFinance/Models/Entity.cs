@@ -4,13 +4,8 @@ namespace SFA.DAS.EmployerFinance.Models;
 
 public abstract class Entity
 {
-    protected void Publish<T>(Action<T> action) where T : new()
+    protected void Publish<T>(Func<T> action) where T : class
     {
-        UnitOfWorkContext.AddEvent<object>(() =>
-        {
-            var message = new T();
-            action(message);
-            return message;
-        });
+        UnitOfWorkContext.AddEvent(action);
     }
 }

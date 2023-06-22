@@ -105,12 +105,10 @@ public class Startup
 
         });
 
-        services.AddNServiceBusClientUnitOfWork();
         services
-            .AddUnitOfWork()
             .AddEntityFramework(employerFinanceWebConfiguration)
-            .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
-        services.AddNServiceBusClientUnitOfWork();
+            .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>()
+            .AddNServiceBusClientUnitOfWork();
             
         services.AddApplicationInsightsTelemetry();
 

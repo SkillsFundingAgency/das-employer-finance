@@ -7,6 +7,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.Notifications.Api.Client.Configuration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
@@ -40,21 +41,26 @@ public static class HostExtensions
 
     public static IHostBuilder ConfigureDasAppConfiguration(this IHostBuilder hostBuilder)
     {
-        
+
         return hostBuilder.ConfigureAppConfiguration((context, builder) =>
         {
-            
-            
+
+
             builder
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
 
             var configuration = builder.Build();
-            
+
             builder.AddAzureTableStorage(options =>
                 {
-                    options.ConfigurationKeys = new[] { ConfigurationKeys.EmployerFinanceJobs, ConfigurationKeys.EncodingConfig };
+                    options.ConfigurationKeys = new[]
+                    {
+                        ConfigurationKeys.EmployerFinanceJobs,
+                        ConfigurationKeys.EncodingConfig,
+                        $"{ConfigurationKeys.FinanceNotifications}:{nameof(NotificationsApiClientConfiguration)}"
+                    };
                     options.PreFixConfigurationKeys = false;
                     options.ConfigurationKeysRawJsonResult = new[] { ConfigurationKeys.EncodingConfig };
                 }
@@ -67,6 +73,7 @@ public static class HostExtensions
     {
         hostBuilder.ConfigureServices((context, services) =>
         {
+            services.AddNotifications(context.Configuration);
             services.AddConfigurationSections(context.Configuration);
             services.AddClientRegistrations();
             services.AddNServiceBus();

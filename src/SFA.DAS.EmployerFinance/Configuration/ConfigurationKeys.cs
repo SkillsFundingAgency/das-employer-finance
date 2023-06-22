@@ -12,4 +12,5 @@ public static class ConfigurationKeys
 
     public const string AzureActiveDirectoryApiConfiguration = "AzureADApiAuthentication";
     public const string EncodingConfig = "SFA.DAS.Encoding";
+    public static string FinanceNotifications = "SFA.DAS.EmployerFinance.Notifications";
 }

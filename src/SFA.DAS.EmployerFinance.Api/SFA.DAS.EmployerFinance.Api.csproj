@@ -18,6 +18,8 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.14" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="6.0.16" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.16" />
 		<PackageReference Include="NLog" Version="5.1.1" />
 		<PackageReference Include="NLog.Schema" Version="4.5.3" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="5.2.1" />

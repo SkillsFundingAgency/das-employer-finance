@@ -1,6 +1,7 @@
 using FluentAssertions.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
+using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
@@ -59,8 +60,8 @@ public class WhenAddingServicesToTheContainer
     [TestCase(typeof(IRequestHandler<GetTransferAllowanceQuery, GetTransferAllowanceResponse>))]
     [TestCase(typeof(IRequestHandler<GetTransferConnectionInvitationAuthorizationQuery, GetTransferConnectionInvitationAuthorizationResponse>))]
     [TestCase(typeof(IRequestHandler<GetTransferConnectionInvitationsQuery, GetTransferConnectionInvitationsResponse>))]
-    [TestCase(typeof(IRequestHandler<GetTransferRequestsQuery, GetTransferRequestsResponse>))]
     [TestCase(typeof(IRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>))]
+    [TestCase(typeof(IRequestHandler<UpsertRegisteredUserCommand, Unit>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Handlers(Type toResolve)
     {
         var serviceCollection = new ServiceCollection();
