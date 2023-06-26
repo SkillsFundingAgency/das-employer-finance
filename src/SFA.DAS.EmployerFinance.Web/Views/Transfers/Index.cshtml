@@ -72,7 +72,7 @@
     <div class="govuk-button-group">
         @if (Model.Data.RenderCreateTransfersPledgeButton)
         {
-            <button class="govuk-button" href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton" @(!Model.Data.HasMinimumTransferFunds ? "disabled" : "")>Create a transfers pledge</button>
+            <a class="govuk-button" href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton" @(!Model.Data.HasMinimumTransferFunds ? "disabled" : "")>Create a transfers pledge</a>
         }
         <a href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges")" class="govuk-button govuk-button--secondary">View my transfer pledges and applications</a>
     </div>
@@ -109,4 +109,3 @@
         </ol>
     </div>
     }
-
