@@ -6,7 +6,7 @@ Array.prototype.forEach.call(limitCharsInNumberFields, function forElement(field
     })
 });
 
-var createTransfersPledgeButton = document.getElementById("CreateTransfersPledgeButton");
+let createTransfersPledgeButton = document.getElementById("CreateTransfersPledgeButton");
 
 // Disable click action on the link if it is disabled
 if (createTransfersPledgeButton.getAttribute("disabled")) {
