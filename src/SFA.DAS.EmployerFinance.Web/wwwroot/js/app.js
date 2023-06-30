@@ -6,11 +6,10 @@ Array.prototype.forEach.call(limitCharsInNumberFields, function forElement(field
     })
 });
 
-let createTransfersPledgeButton = document.getElementById("CreateTransfersPledgeButton");
 
-// Disable click action on the link if it is disabled
-if (createTransfersPledgeButton.getAttribute("disabled")) {
-    createTransfersPledgeButton.addEventListener("click", function (event) {
-        event.preventDefault(); // Prevent the default action of the click event
-    });
-}
+let createTransfersPledgeButton = document.getElementById("CreateTransfersPledgeButton");
+createTransfersPledgeButton.addEventListener("click", function (event) {
+    if (createTransfersPledgeButton.classList.contains("govuk-button--disabled")) {
+        event.preventDefault();
+    }
+});
