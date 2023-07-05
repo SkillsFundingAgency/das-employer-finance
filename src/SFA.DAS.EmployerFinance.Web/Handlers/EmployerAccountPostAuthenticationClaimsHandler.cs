@@ -13,18 +13,22 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
     {
         private readonly EmployerFinanceWebConfiguration _employerFinanceConfiguration;
         private readonly IUserAccountService _userAccountService;
+        private readonly ILogger<EmployerAccountPostAuthenticationClaimsHandler> _logger;
 
         public EmployerAccountPostAuthenticationClaimsHandler(
             IUserAccountService userAccountService, 
-            IOptions<EmployerFinanceWebConfiguration> employerFinanceConfiguration
+            IOptions<EmployerFinanceWebConfiguration> employerFinanceConfiguration,
+            ILogger<EmployerAccountPostAuthenticationClaimsHandler> logger
             )
         {
             _userAccountService = userAccountService;
+            _logger = logger;
             _employerFinanceConfiguration = employerFinanceConfiguration.Value;
         }
 
         public async Task<IEnumerable<Claim>> GetClaims(TokenValidatedContext tokenValidatedContext)
         {
+            _logger.LogInformation("Updating finance claims");
             var claims = new List<Claim>();
         
         
