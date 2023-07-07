@@ -48,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
         {
 
-            var viewModel = await _accountTransactionsOrchestrator.Index(hashedAccountId);
+            var viewModel = await _accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());
 
             if (viewModel.RedirectUrl != null)
                 return Redirect(viewModel.RedirectUrl);

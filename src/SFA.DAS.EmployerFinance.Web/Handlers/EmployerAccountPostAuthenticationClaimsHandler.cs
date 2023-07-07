@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.Handlers
@@ -63,11 +60,6 @@ namespace SFA.DAS.EmployerFinance.Web.Handlers
             var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
             var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
             claims.Add(associatedAccountsClaim);
-
-            //TODO: This needs removing and was only added back into this area to facilitate the completion of the NET6 upgrade work. If finance is going to keep a local cache of users then it needs a better way to keep it in sync
-            //resolving the Orchestrator like this as it cant be injected into the middleware being scoped.
-            var authenticationOrchestrator = tokenValidatedContext.HttpContext.RequestServices.GetService<IAuthenticationOrchestrator>();
-            await authenticationOrchestrator.SaveIdentityAttributes(result.EmployerUserId, email, result.FirstName, result.LastName);
 
             if (!_employerFinanceConfiguration.UseGovSignIn)
             {

@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -10,6 +11,7 @@ using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransact
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using AggregationData = SFA.DAS.EmployerFinance.Models.Transaction.AggregationData;
@@ -23,6 +25,8 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
     private readonly ICurrentDateTime _currentTime;
     private readonly ILogger<EmployerAccountTransactionsOrchestrator> _logger;
     private readonly IEncodingService _encodingService;
+    private readonly IAuthenticationOrchestrator _authenticationOrchestrator;
+    private readonly IUserAccountService _accountService;
     private readonly IAccountApiClient _accountApiClient;
     private readonly IMediator _mediator;
 
@@ -30,19 +34,32 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
         IAccountApiClient accountApiClient,
         IMediator mediator,
         ICurrentDateTime currentTime,
-        ILogger<EmployerAccountTransactionsOrchestrator> logger, IEncodingService encodingService)
+        ILogger<EmployerAccountTransactionsOrchestrator> logger, IEncodingService encodingService, IAuthenticationOrchestrator authenticationOrchestrator, IUserAccountService accountService)
     {
         _accountApiClient = accountApiClient;   
         _mediator = mediator;
         _currentTime = currentTime;
         _logger = logger;       
         _encodingService = encodingService;
+        _authenticationOrchestrator = authenticationOrchestrator;
+        _accountService = accountService;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
+
+        //TODO this storing of user details should be removed from this applications database
+        var userAccountDetails = await _accountService.GetUserAccounts(
+            userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value,
+            userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserEmailClaimTypeIdentifier)?.Value);
+        if (!string.IsNullOrEmpty(userAccountDetails?.FirstName))
+        {
+            await _authenticationOrchestrator.SaveIdentityAttributes(userAccountDetails.EmployerUserId, userAccountDetails.Email, userAccountDetails.FirstName, userAccountDetails.LastName);    
+        }
+        
         var accountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId);
         var accountDetailViewModel = await _accountApiClient.GetAccount(accountId);
+        
         _logger.LogInformation("After GetAccount call");
         var getAccountFinanceOverview = await _mediator.Send(new GetAccountFinanceOverviewQuery
         {

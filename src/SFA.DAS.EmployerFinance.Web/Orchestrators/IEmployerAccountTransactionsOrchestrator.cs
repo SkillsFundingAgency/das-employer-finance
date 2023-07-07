@@ -10,7 +10,7 @@ namespace SFA.DAS.EmployerFinance.Web.Orchestrators;
 /// </summary>
 public interface IEmployerAccountTransactionsOrchestrator
 {
-    Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId);
+    Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity firstOrDefault);
 
     Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(
         string hashedId, long ukprn, DateTime fromDate, DateTime toDate);

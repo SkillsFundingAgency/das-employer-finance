@@ -1,4 +1,5 @@
 using AutoMapper;
+using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -18,7 +19,7 @@ public class WhenIViewFinanceDashboard
     public void Arrange()
     {
         _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
-        _orchestrator.Setup(o => o.Index(ExpectedHashedAccountId))
+        _orchestrator.Setup(o => o.Index(ExpectedHashedAccountId, It.IsAny<ClaimsIdentity>()))
             .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
             {
                 Data = new FinanceDashboardViewModel
@@ -28,12 +29,22 @@ public class WhenIViewFinanceDashboard
                 }
             });
 
-            _controller = new EmployerAccountTransactionsController(
-                _orchestrator.Object,
-                Mock.Of<IMapper>(),
-                Mock.Of<IMediator>(),
-                Mock.Of<IEncodingService>());
-        }
+        var user = new ClaimsPrincipal(new ClaimsIdentity(
+            new []
+            {
+                new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier,Guid.NewGuid().ToString())
+            }
+        ));
+        _controller = new EmployerAccountTransactionsController(
+            _orchestrator.Object,
+            Mock.Of<IMapper>(),
+            Mock.Of<IMediator>(),
+            Mock.Of<IEncodingService>());
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext {User = user}
+        };
+    }
 
     [Test]
     public async Task ThenTheAccountHashedIdIsReturned()
@@ -73,7 +84,7 @@ public class WhenIViewFinanceDashboard
         //Arrange
         const string redirectUrl = "http://example.com";
 
-        _orchestrator.Setup(o => o.Index(It.IsAny<string>()))
+        _orchestrator.Setup(o => o.Index(It.IsAny<string>(),It.IsAny<ClaimsIdentity>()))
             .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
             {
                 RedirectUrl = redirectUrl
