@@ -5,7 +5,6 @@ namespace SFA.DAS.EmployerFinance.Models.UserAccounts;
 public class EmployerUserAccounts
 {
     public bool IsSuspended { get; set; }
-    public string Email { get; set; }
     public string EmployerUserId { get; set; }
     public string LastName { get; set; }
     public string FirstName { get; set; }
@@ -20,7 +19,6 @@ public class EmployerUserAccounts
                 FirstName = source?.FirstName,
                 LastName = source?.LastName,
                 EmployerUserId = source?.EmployerUserId,
-                Email = source?.Email,
                 EmployerAccounts = new List<EmployerUserAccountItem>(),
                 IsSuspended = source?.IsSuspended ?? false
             };
@@ -31,7 +29,6 @@ public class EmployerUserAccounts
             FirstName = source.FirstName,
             LastName = source.LastName,
             EmployerUserId = source.EmployerUserId,
-            Email = source.Email,
             EmployerAccounts = source.UserAccounts.Select(c=>(EmployerUserAccountItem)c).ToList(),
             IsSuspended = source.IsSuspended
         };

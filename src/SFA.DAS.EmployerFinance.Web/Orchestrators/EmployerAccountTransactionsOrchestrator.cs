@@ -49,12 +49,14 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
     {
 
         //TODO this storing of user details should be removed from this applications database
+        var email = userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserEmailClaimTypeIdentifier)?.Value;
+        var userId = userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value;
         var userAccountDetails = await _accountService.GetUserAccounts(
-            userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value,
-            userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserEmailClaimTypeIdentifier)?.Value);
+            userId,
+            email);
         if (!string.IsNullOrEmpty(userAccountDetails?.FirstName))
         {
-            await _authenticationOrchestrator.SaveIdentityAttributes(userAccountDetails.EmployerUserId, userAccountDetails.Email, userAccountDetails.FirstName, userAccountDetails.LastName);    
+            await _authenticationOrchestrator.SaveIdentityAttributes(userAccountDetails.EmployerUserId, email, userAccountDetails.FirstName, userAccountDetails.LastName);    
         }
         
         var accountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId);

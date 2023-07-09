@@ -58,7 +58,6 @@ public class WhenGettingFinanceIndex
         _userAccountService.Setup(x => x.GetUserAccounts(UserId, UserEmail)).ReturnsAsync(new EmployerUserAccounts
         {
             EmployerUserId = UserId,
-            Email = UserEmail,
             FirstName = FirstName,
             LastName = LastName,
         });
