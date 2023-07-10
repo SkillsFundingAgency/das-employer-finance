@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Authentication;
@@ -14,6 +15,7 @@ public class TransfersOrchestrator
     private readonly IEncodingService _encodingService;
     private readonly ITransfersService _transfersService;
     private readonly IAccountApiClient _accountApiClient;
+    private const int minimumTransferFunds = 2000;
 
     public TransfersOrchestrator(
         IEmployerAccountAuthorisationHandler authorizationService,
@@ -25,6 +27,7 @@ public class TransfersOrchestrator
         _encodingService = encodingService;
         _transfersService = transfersService;
         _accountApiClient = accountApiClient;
+
     }
 
     public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId,
@@ -40,17 +43,23 @@ public class TransfersOrchestrator
 
         Enum.TryParse(accountDetail.Result.ApprenticeshipEmployerType, true, out ApprenticeshipEmployerType employerType);
 
+        var estimatedRemainingAllowance = accountDetail.Result.StartingTransferAllowance - indexTask.Result.CurrentYearEstimatedCommittedSpend;
+        var exceedsMinimumTransferFundRequirement = estimatedRemainingAllowance >= minimumTransferFunds;
+        
         return new OrchestratorResponse<IndexViewModel>
-        {
+        {   
             Data = new IndexViewModel
             {
                 IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
                 PledgesCount = indexTask.Result.PledgesCount,
                 ApplicationsCount = indexTask.Result.ApplicationsCount,
-                RenderCreateTransfersPledgeButton = renderCreateTransfersPledgeButton,                    
+                RenderCreateTransfersPledgeButton = renderCreateTransfersPledgeButton,
                 StartingTransferAllowance = accountDetail.Result.StartingTransferAllowance,
-                FinancialYearString = DateTime.UtcNow.ToFinancialYearString(),
-                HashedAccountID = hashedAccountId
+                FinancialYearString = DateTime.UtcNow.Year.ToString(),
+                HashedAccountID = hashedAccountId,
+                CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
+                EstimatedRemainingAllowance = estimatedRemainingAllowance,
+                HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement
             }
         };
     }

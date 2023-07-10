@@ -78,6 +78,36 @@
     }
 }
 
+.app-box {
+    background: #f3f2f1;
+    padding: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 40.0625em) {
+    .app-box {
+        max-width: 50%;
+    }
+}
+
+.app-box--highlight {
+    background: #1d70b8;
+    color: #fff;
+}
+
+.app-box__title {
+    color: inherit;
+    font-weight: 700;
+    margin: 0 0 5px;
+}
+
+.app-box__figure {
+    color: inherit;
+    margin: 0;
+    font-weight: 700;
+}
+
 
 
 
