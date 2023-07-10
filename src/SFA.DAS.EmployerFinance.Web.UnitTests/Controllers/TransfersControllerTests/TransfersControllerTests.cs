@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Authentication;
@@ -40,7 +41,8 @@ public class TransfersControllerTests
         _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
         _accountDetailViewModel = new AccountDetailViewModel();
         _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
-        _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+        
+        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
 
         _controller = new TransfersController(_orchestrator);
     }

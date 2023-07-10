@@ -28,9 +28,9 @@ public class WhenGettingTransfersCounts
         _transfersService = new Mock<ITransfersService>();
         _accountApiClient = new Mock<IAccountApiClient>();
 
-        _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);            
-            
-        _orchestrator = new TransfersOrchestrator(_authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+        _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
+        
+        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
     }
 
     [TestCase(true, true)]
@@ -61,11 +61,45 @@ public class WhenGettingTransfersCounts
         Assert.AreEqual(expected, actual.Data.RenderCreateTransfersPledgeButton);
     }
 
-    private void SetupTheAccountApiClient(bool isLevy = false)
+    [TestCase(10000, 9000, 1000)]
+    public async Task ThenChecksEstimatedRemainingAllowanceCalculation(decimal startingAllowance, decimal currentEstimatedSpend, decimal expected)
+    {
+        GetCountsResponse countResponse = new GetCountsResponse { CurrentYearEstimatedCommittedSpend = currentEstimatedSpend };
+
+        _transfersService.Setup(o => o.GetCounts(AccountId)).ReturnsAsync(countResponse);
+
+        SetupTheAccountApiClient(true, startingAllowance);
+
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(), Authentication.EmployerUserRole.Transactor)).Returns(true);
+
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+
+        Assert.AreEqual(expected, actual.Data.EstimatedRemainingAllowance);
+    }
+
+    [TestCase(10000, 5000, true)]
+    [TestCase(10000, 9000, false)]
+    public async Task ThenChecksIfUserHasMinimumTransferFunds(decimal startingAllowance, decimal currentEstimatedSpend, bool expected)
+    {
+        GetCountsResponse countResponse = new GetCountsResponse {CurrentYearEstimatedCommittedSpend = currentEstimatedSpend };
+
+        _transfersService.Setup(o => o.GetCounts(AccountId)).ReturnsAsync(countResponse);
+
+        SetupTheAccountApiClient(true, startingAllowance);
+
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(), Authentication.EmployerUserRole.Transactor)).Returns(true);
+
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+
+        Assert.AreEqual(expected, actual.Data.HasMinimumTransferFunds);
+    }
+
+    private void SetupTheAccountApiClient(bool isLevy = false, decimal? startingAllowance = null)
     {
         var modelToReturn = new AccountDetailViewModel
         {
-            ApprenticeshipEmployerType = isLevy ? "Levy" : "NonLevy"
+            ApprenticeshipEmployerType = isLevy ? "Levy" : "NonLevy",
+            StartingTransferAllowance = startingAllowance?? 0
         };
            
         _accountApiClient.Setup(o => o.GetAccount(HashedAccountId)).ReturnsAsync(modelToReturn);

@@ -21,7 +21,6 @@
 
         @if (Model.Data.IsLevyEmployer)
         {
-
             <h2 class="govuk-heading-m">Transfer allowance information</h2>
 
             <div class="app-box">
@@ -30,6 +29,7 @@
             </div>
 
             <p>
+
                 This is calculated at 25% of the previous financial year's apprenticeship levy funds and will show in your account after 20 April.
             </p>
 
@@ -48,7 +48,21 @@
             <a href="/accounts/@Model.Data.HashedAccountID/transfers/financial-breakdown" class="govuk-button govuk-button--secondary">View my transfer finances</a>
 
             <h2 class="govuk-heading-m">My pledges</h2>
-            <p>Create a public funding pledge which is shown online so that businesses can apply to you for a transfer of funds.</p>
+            @if (!Model.Data.HasMinimumTransferFunds)
+            {
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">Warning</span>
+                        You need a minimum of £2000 left on your estimated remaining transfer balance to make another pledge.
+                    </strong>
+                </div>
+            }
+            else
+            {
+                <p>Create a public funding pledge which is shown online so that businesses can apply to you for a transfer of funds.</p>
+            }
+
             <div class="govuk-inset-text">
                 You have <strong>@Model.Data.PledgesCount</strong> transfer pledges.
             </div>
@@ -62,7 +76,7 @@
     <div class="govuk-button-group">
         @if (Model.Data.RenderCreateTransfersPledgeButton)
         {
-            <a class="govuk-button" href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton">Create a transfers pledge</a>
+            <a class="govuk-button @(!Model.Data.HasMinimumTransferFunds  ? "govuk-button--disabled" : "")" href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges/create/inform")" id="CreateTransfersPledgeButton">Create a transfers pledge</a>
         }
         <a href="@UrlHelpers.LevyTransfersMatchingAccountAction("pledges")" class="govuk-button govuk-button--secondary">View my transfer pledges and applications</a>
     </div>
@@ -99,4 +113,3 @@
         </ol>
     </div>
     }
-

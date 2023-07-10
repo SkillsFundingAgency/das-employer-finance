@@ -37,7 +37,8 @@ public class WhenGettingTransfersFinancialBreakdown
             AccountId = AccountId
         });
 
-        _orchestrator = new TransfersOrchestrator(Mock.Of<IEmployerAccountAuthorisationHandler>(), _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+
+        _orchestrator = new TransfersOrchestrator( Mock.Of<IEmployerAccountAuthorisationHandler>(), _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
     }
     [Test]
     public async Task CheckFinancialBreakdownViewModel()
