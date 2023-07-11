@@ -86,47 +86,6 @@ public class WhenPopulatingAccountClaims
         actual.FirstOrDefault(c => c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Should().BeNull();
     }
 
-    [Test, MoqAutoData]
-    public async Task Then_The_User_Is_Uperserted_For_Gov(
-        string nameIdentifier,
-        string idamsIdentifier,
-        string emailAddress,
-        EmployerUserAccounts accountData,
-        [Frozen] Mock<IAuthenticationOrchestrator> authenticationOrchestrator,
-        [Frozen] Mock<IUserAccountService> accountService,
-        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> financeConfiguration,
-        EmployerAccountPostAuthenticationClaimsHandler handler)
-    {
-        accountData.IsSuspended = false;
-        financeConfiguration.Object.Value.UseGovSignIn = true;
-        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
-        accountService.Setup(x => x.GetUserAccounts(nameIdentifier, emailAddress)).ReturnsAsync(accountData);
-
-        await handler.GetClaims(tokenValidatedContext);
-
-        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(accountData.EmployerUserId, emailAddress, accountData.FirstName, accountData.LastName));
-    }
-
-    [Test, MoqAutoData]
-    public async Task Then_The_User_Is_Uperserted_For_EmployerUsers_User(
-        string nameIdentifier,
-        string idamsIdentifier,
-        string emailAddress,
-        EmployerUserAccounts accountData,
-        [Frozen] Mock<IAuthenticationOrchestrator> authenticationOrchestrator,
-        [Frozen] Mock<IUserAccountService> accountService,
-        [Frozen] Mock<IOptions<EmployerFinanceWebConfiguration>> financeConfiguration,
-        EmployerAccountPostAuthenticationClaimsHandler handler)
-    {
-        var tokenValidatedContext = ArrangeTokenValidatedContext(nameIdentifier, idamsIdentifier, emailAddress, authenticationOrchestrator);
-        accountService.Setup(x => x.GetUserAccounts(idamsIdentifier, emailAddress)).ReturnsAsync(accountData);
-        financeConfiguration.Object.Value.UseGovSignIn = false;
-
-        await handler.GetClaims(tokenValidatedContext);
-
-        authenticationOrchestrator.Verify(mock => mock.SaveIdentityAttributes(accountData.EmployerUserId, emailAddress, accountData.FirstName, accountData.LastName));
-    }
-
     private static TokenValidatedContext ArrangeTokenValidatedContext(string nameIdentifier, string idamsIdentifier, string emailAddress, Mock<IAuthenticationOrchestrator> authenticationOrchestrator = null)
     {
         var identity = new ClaimsIdentity(new List<Claim>

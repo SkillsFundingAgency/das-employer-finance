@@ -12,8 +12,6 @@ public class GetUserAccountsResponse
     public string FirstName { get; set; }
     [JsonProperty]
     public string LastName { get; set; }
-    [JsonProperty]
-    public string Email { get; set; }
     [JsonProperty("UserAccounts")]
     public List<EmployerIdentifier> UserAccounts { get; set; }
 }
