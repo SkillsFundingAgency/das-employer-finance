@@ -16,7 +16,7 @@ public class LevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransac
     {
         return transactions.Select(transaction => new[]
         {
-            transaction.DateCreated.ToString("G"),
+            transaction.DateCreated.ToString("dd/MM/yyyy"),
             transaction.TransactionType,
             transaction.Description,
             transaction.PayeScheme,
