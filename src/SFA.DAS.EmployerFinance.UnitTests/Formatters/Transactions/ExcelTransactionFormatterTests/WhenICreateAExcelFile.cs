@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 

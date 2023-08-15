@@ -1,14 +1,15 @@
 ﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
-namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+namespace SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 
-public class LevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransactionFormatter
+public class NonLevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransactionFormatter
 {
-    public ApprenticeshipEmployerType ApprenticeshipEmployerType => ApprenticeshipEmployerType.Levy;
+    public ApprenticeshipEmployerType ApprenticeshipEmployerType => ApprenticeshipEmployerType.NonLevy;
 
-    public LevyExcelTransactionFormatter(IExcelService excelService) : base(excelService)
+    public NonLevyExcelTransactionFormatter(IExcelService excelService) : base(excelService)
     {
     }
 
@@ -19,11 +20,6 @@ public class LevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransac
             transaction.DateCreated.ToString("dd/MM/yyyy"),
             transaction.TransactionType,
             transaction.Description,
-            transaction.PayeScheme,
-            "'" + transaction.PeriodEnd,
-            transaction.LevyDeclaredFormatted,
-            transaction.EnglishFractionFormatted,
-            transaction.TenPercentTopUpFormatted,
             transaction.TrainingProvider,
             transaction.Uln,
             transaction.Apprentice,
@@ -39,9 +35,8 @@ public class LevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransac
     protected override string[] GetHeaderRow()
     {
         return new[]{
-            "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month", "Levy declared",
-            "English %", "10% top up", "Training provider", "Unique learner number",
-            "Apprentice", "Apprenticeship training course", "Course level", "Paid from levy", "Your contribution",
+            "Transaction date", "Transaction type", "Description", "Training provider", "Unique learner number",
+            "Apprentice", "Apprenticeship training course", "Course level", "Paid from transfer", "Your contribution",
             "Government contribution", "Total"
         };
     }

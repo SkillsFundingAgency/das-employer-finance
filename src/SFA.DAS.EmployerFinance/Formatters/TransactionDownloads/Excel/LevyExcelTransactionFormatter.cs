@@ -1,14 +1,15 @@
 ﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
-namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+namespace SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 
-public class NonLevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransactionFormatter
+public class LevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransactionFormatter
 {
-    public ApprenticeshipEmployerType ApprenticeshipEmployerType => ApprenticeshipEmployerType.NonLevy;
+    public ApprenticeshipEmployerType ApprenticeshipEmployerType => ApprenticeshipEmployerType.Levy;
 
-    public NonLevyExcelTransactionFormatter(IExcelService excelService) : base(excelService)
+    public LevyExcelTransactionFormatter(IExcelService excelService) : base(excelService)
     {
     }
 
@@ -19,6 +20,11 @@ public class NonLevyExcelTransactionFormatter : ExcelTransactionFormatter, ITran
             transaction.DateCreated.ToString("dd/MM/yyyy"),
             transaction.TransactionType,
             transaction.Description,
+            transaction.PayeScheme,
+            "'" + transaction.PeriodEnd,
+            transaction.LevyDeclaredFormatted,
+            transaction.EnglishFractionFormatted,
+            transaction.TenPercentTopUpFormatted,
             transaction.TrainingProvider,
             transaction.Uln,
             transaction.Apprentice,
@@ -34,8 +40,9 @@ public class NonLevyExcelTransactionFormatter : ExcelTransactionFormatter, ITran
     protected override string[] GetHeaderRow()
     {
         return new[]{
-            "Transaction date", "Transaction type", "Description", "Training provider", "Unique learner number",
-            "Apprentice", "Apprenticeship training course", "Course level", "Paid from transfer", "Your contribution",
+            "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month", "Levy declared",
+            "English %", "10% top up", "Training provider", "Unique learner number",
+            "Apprentice", "Apprenticeship training course", "Course level", "Paid from levy", "Your contribution",
             "Government contribution", "Total"
         };
     }
