@@ -10,8 +10,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
 public class SentTransferConnectionRequestEventNotificationHandler : IHandleMessages<SentTransferConnectionRequestEvent>
 {
-    public const string UrlFormat = "/accounts/{0}/transfers/connections";
-
     private readonly EmployerFinanceConfiguration _config;
     private readonly IOuterApiClient _outerApiClient;
     private readonly ILogger<SentTransferConnectionRequestEventNotificationHandler> _logger;
@@ -63,7 +61,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
                         { "account_name", message.SenderAccountName },
                         {
                             "link_notification_page",
-                            $"{_config.EmployerFinanceBaseUrl}{string.Format(UrlFormat, message.ReceiverAccountHashedId)}"
+                            $"{_config.EmployerFinanceBaseUrl}accounts/{message.ReceiverAccountHashedId}/transfers/connections"
                         }
                     }
                 };
