@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -26,7 +27,7 @@ public class Startup
 {
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _environment;
-   
+
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         _environment = environment;
@@ -40,13 +41,18 @@ public class Startup
 
         services.AddOptions();
 
-        services.AddLogging();
+        services.AddLogging(builder =>
+        {
+            builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
+            builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
+        });
 
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
         services.AddConfigurationOptions(_configuration);
 
-        var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceWebConfiguration>();
+        var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration))
+            .Get<EmployerFinanceWebConfiguration>();
 
         var identityServerConfiguration = _configuration
             .GetSection(nameof(IdentityServerConfiguration))
@@ -60,17 +66,19 @@ public class Startup
 
         if (employerFinanceWebConfiguration.UseGovSignIn)
         {
-            services.AddMaMenuConfiguration(RouteNames.SignOut, _configuration["ResourceEnvironmentName"]);   
+            services.AddMaMenuConfiguration(RouteNames.SignOut, _configuration["ResourceEnvironmentName"]);
         }
         else
         {
-            services.AddMaMenuConfiguration(RouteNames.SignOut, identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);    
+            services.AddMaMenuConfiguration(RouteNames.SignOut, identityServerConfiguration.ClientId,
+                _configuration["ResourceEnvironmentName"]);
         }
-            
+
         //MAC-192
         services.AddApplicationServices(_configuration);
 
-        services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
+        services.AddCachesRegistrations(_configuration["EnvironmentName"]
+            .Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
 
         services.AddEventsApi();
         //services.AddNotifications(_configuration);
@@ -92,24 +100,20 @@ public class Startup
 
         services.Configure<IISServerOptions>(options => { options.AutomaticAuthentication = false; });
 
-        services.Configure<RouteOptions>(options =>
-        {
-
-        }).AddMvc(options =>
+        services.Configure<RouteOptions>(options => { }).AddMvc(options =>
         {
             options.Filters.Add(new AnalyticsFilterAttribute());
             if (!_configuration.IsDev())
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             }
-
         });
 
         services
             .AddEntityFramework(employerFinanceWebConfiguration)
             .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>()
             .AddNServiceBusClientUnitOfWork();
-            
+
         services.AddApplicationInsightsTelemetry();
 
         if (!_environment.IsDevelopment())
@@ -119,7 +123,7 @@ public class Startup
 #if DEBUG
         services.AddControllersWithViews(o => { })
             .AddRazorRuntimeCompilation();
-#endif            
+#endif
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -142,11 +146,12 @@ public class Startup
                 pattern: "{controller=Home}/{action=Index}/{id?}");
         });
     }
-        
+
     public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
     {
         serviceProvider.StartNServiceBus(_configuration, _configuration.IsDevOrLocal());
-        var serviceDescriptor = serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
+        var serviceDescriptor =
+            serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
         serviceProvider.Remove(serviceDescriptor);
         serviceProvider.AddScoped<IClientOutboxStorageV2, ClientOutboxPersisterV2>();
     }
