@@ -30,7 +30,9 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
         _logger.LogInformation("{TypeName} processing started", nameof(SentTransferConnectionRequestEventNotificationHandler));
-
+        
+        ArgumentNullException.ThrowIfNull(message.ReceiverAccountHashedId);
+        
         var users = await _outerApiClient.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
             new GetAccountTeamMembersWhichReceiveNotificationsRequest(message.ReceiverAccountId));
 
