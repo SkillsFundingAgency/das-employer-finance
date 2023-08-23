@@ -50,6 +50,11 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
         {
             try
             {
+                var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{message.ReceiverAccountHashedId}/transfers/connections";
+                
+                _logger.LogInformation("{TypeName} linkNotificationUrl: '{LinkNotificationUrl}'",
+                    nameof(SentTransferConnectionRequestEventNotificationHandler), linkNotificationUrl);
+                
                 var email = new Email
                 {
                     RecipientsAddress = user.Email,
@@ -61,10 +66,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
                     {
                         { "name", user.FirstName },
                         { "account_name", message.SenderAccountName },
-                        {
-                            "link_notification_page",
-                            $"{_config.EmployerFinanceBaseUrl}accounts/{message.ReceiverAccountHashedId}/transfers/connections"
-                        }
+                        { "link_notification_page", linkNotificationUrl }
                     }
                 };
 
