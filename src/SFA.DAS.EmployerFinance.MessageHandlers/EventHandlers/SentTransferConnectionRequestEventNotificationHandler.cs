@@ -1,10 +1,12 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using System.Text.Json.Nodes;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.Notifications.Api.Client;
 using SFA.DAS.Notifications.Api.Types;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
@@ -29,7 +31,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("{TypeName} processing started", nameof(SentTransferConnectionRequestEventNotificationHandler));
+        _logger.LogInformation("{TypeName} processing started for message: {Message}", nameof(SentTransferConnectionRequestEventNotificationHandler), System.Text.Json.JsonSerializer.Serialize(message));
         
         ArgumentNullException.ThrowIfNull(message.ReceiverAccountHashedId);
         
