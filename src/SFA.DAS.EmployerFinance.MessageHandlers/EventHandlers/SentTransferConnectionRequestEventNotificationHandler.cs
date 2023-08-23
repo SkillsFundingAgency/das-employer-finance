@@ -29,7 +29,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
-        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEventNotificationHandler)}.");
+        _logger.LogInformation("{TypeName} processing started", nameof(SentTransferConnectionRequestEventNotificationHandler));
 
         var users = await _outerApiClient.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
             new GetAccountTeamMembersWhichReceiveNotificationsRequest(message.ReceiverAccountId));
@@ -74,6 +74,6 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
             }
         }
 
-        _logger.LogInformation($"Starting {nameof(SentTransferConnectionRequestEventNotificationHandler)}.");
+        _logger.LogInformation("{TypeName} processing completed", nameof(SentTransferConnectionRequestEventNotificationHandler));
     }
 }
