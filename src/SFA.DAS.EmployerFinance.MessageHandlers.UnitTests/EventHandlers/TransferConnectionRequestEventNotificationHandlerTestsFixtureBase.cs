@@ -11,26 +11,25 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
 {
     public class TransferConnectionRequestEventNotificationHandlerTestsFixtureBase
     {
-        public EmployerFinanceConfiguration Configuration { get; set; }
-        public Mock<IOuterApiClient> OuterApiClient { get; set; }
-        public Mock<INotificationsApi> NotificationsApiClient { get; set; }
+        public EmployerFinanceConfiguration Configuration { get; }
+        protected Mock<IOuterApiClient> OuterApiClient { get; }
+        public Mock<INotificationsApi> NotificationsApiClient { get; }
 
-        public GetAccountTeamMembersWhichReceiveNotificationsResponse GetAccountTeamMembersWhichReceiveNotificationsResponse { get; set; }
+        private GetAccountTeamMembersWhichReceiveNotificationsResponse GetAccountTeamMembersWhichReceiveNotificationsResponse { get; }
 
         public Account SenderAccount { get; set; }
         public Account ReceiverAccount { get; set; }
         public User SenderAccountOwner1 { get; set; }
-        public User SenderAccountOwner2 { get; set; }
+        private User SenderAccountOwner2 { get; set; }
         public User ReceiverAccountOwner { get; set; }
 
-        public TransferConnectionRequestEventNotificationHandlerTestsFixtureBase()
+        protected TransferConnectionRequestEventNotificationHandlerTestsFixtureBase()
         {
-            Configuration = new EmployerFinanceConfiguration();
+            Configuration = new EmployerFinanceConfiguration{ EmployerFinanceBaseUrl = "https://www.example.test/"};
             OuterApiClient = new Mock<IOuterApiClient>();
             NotificationsApiClient = new Mock<INotificationsApi>();
 
-            GetAccountTeamMembersWhichReceiveNotificationsResponse = 
-                new GetAccountTeamMembersWhichReceiveNotificationsResponse();
+            GetAccountTeamMembersWhichReceiveNotificationsResponse = new GetAccountTeamMembersWhichReceiveNotificationsResponse();
 
             OuterApiClient
                 .Setup(s => s.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(It.IsAny<GetAccountTeamMembersWhichReceiveNotificationsRequest>()))
@@ -51,7 +50,8 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             ReceiverAccount = new Account
             {
                 Id = 2222222,
-                Name = "ReceiverAccountName"
+                Name = "ReceiverAccountName",
+                HashedId = "ZYXA222"
             };
         }
 
