@@ -14,21 +14,26 @@ public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<Send
     private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
     private readonly IMapper _mapper;
     private readonly IEncodingService _encodingService;
+    private readonly ILogger<SendTransferConnectionInvitationQueryHandler> _logger;
 
     public SendTransferConnectionInvitationQueryHandler(
         IEmployerAccountRepository employerAccountRepository,
         ITransferConnectionInvitationRepository transferConnectionInvitationRepository,
         IMapper mapper,
-        IEncodingService encodingService)
+        IEncodingService encodingService,
+        ILogger<SendTransferConnectionInvitationQueryHandler> logger)
     {
         _employerAccountRepository = employerAccountRepository;
         _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
         _mapper = mapper;
         _encodingService = encodingService;
+        _logger = logger;
     }
 
     public async Task<SendTransferConnectionInvitationResponse> Handle(SendTransferConnectionInvitationQuery message,CancellationToken cancellationToken)
     {
+        _logger.LogInformation("{TypeName} processing started for message: {Message}.", nameof(SendTransferConnectionInvitationQueryHandler), System.Text.Json.JsonSerializer.Serialize(message));
+        
         var result = _encodingService.TryDecode(message.ReceiverAccountPublicHashedId, EncodingType.PublicAccountId, out long decode);
         if (!result)
         {
@@ -53,6 +58,8 @@ public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<Send
         }
 
         var senderAccount = await _employerAccountRepository.Get(message.AccountId);
+        
+        _logger.LogInformation("{TypeName} processing completed.", nameof(SendTransferConnectionInvitationQueryHandler));
 
         return new SendTransferConnectionInvitationResponse
         {

@@ -66,7 +66,8 @@ public class WhenISendTransferConnectionInvitation
             _employerAccountRepository.Object, 
             _transferConnectionInvitationRepository.Object, 
             _mapper,
-            _encodingService.Object);
+            _encodingService.Object,
+            Mock.Of<ILogger<SendTransferConnectionInvitationQueryHandler>>());
 
         _query = new SendTransferConnectionInvitationQuery
         {
