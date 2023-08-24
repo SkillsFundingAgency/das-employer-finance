@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using NServiceBus;
+﻿using NServiceBus;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -12,12 +11,12 @@ using SFA.DAS.NServiceBus.SqlServer.Configuration;
 using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 using Endpoint = NServiceBus.Endpoint;
 
-namespace SFA.DAS.EmployerFinance.ServiceRegistration;
+namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
 public static class NServiceBusServiceRegistrations
 {
-    private const string EndPointName = "SFA.DAS.EmployerFinance";
-
+    private const string EndPointName = "SFA.DAS.EmployerFinance.Web";
+    
     public static void StartNServiceBus(this UpdateableServiceProvider services, IConfiguration configuration, bool isDevOrLocal)
     {
         var employerFinanceConfiguration = configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
@@ -28,14 +27,13 @@ public static class NServiceBusServiceRegistrations
         {
             throw new Exception("DatabaseConnectionString configuration value is empty.");
         }
-
+        
         var endpointConfiguration = new EndpointConfiguration(EndPointName)
             .UseErrorQueue($"{EndPointName}-errors")
             .UseInstallers()
             .UseMessageConventions()
             .UseServicesBuilder(services)
             .UseNewtonsoftJsonSerializer()
-            //.UseNLogFactory()
             .UseOutbox(true)
             .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(databaseConnectionString))
             .UseUnitOfWork();
