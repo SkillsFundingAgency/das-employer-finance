@@ -26,6 +26,8 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         private User SenderAccountOwner2 { get; set; }
         public User ReceiverAccountOwner { get; private set; }
         
+        public readonly string ReceiverHashedId = "ZZZZZSAAA";
+        
         protected TransferConnectionRequestEventNotificationHandlerTestsFixtureBase()
         {
             Configuration = new EmployerFinanceConfiguration { EmployerFinanceBaseUrl = "https://www.example.test/" };
@@ -40,7 +42,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
                     It.IsAny<GetAccountTeamMembersWhichReceiveNotificationsRequest>()))
                 .ReturnsAsync(_getAccountTeamMembersWhichReceiveNotificationsResponse);
 
-            EncodingService.Setup(s => s.Encode(It.Is<long>(x => x == ReceiverAccount.Id), EncodingType.AccountId)).Returns("ZZZZZSAAA");
+            EncodingService.Setup(s => s.Encode(It.Is<long>(x => x == ReceiverAccount.Id), EncodingType.AccountId)).Returns(ReceiverHashedId);
         }
 
         protected void AddSenderAccount()
