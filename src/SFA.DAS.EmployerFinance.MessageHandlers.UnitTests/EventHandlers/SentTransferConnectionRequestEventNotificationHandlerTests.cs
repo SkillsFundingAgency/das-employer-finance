@@ -26,16 +26,6 @@ public class SentTransferConnectionRequestEventNotificationHandlerTests
     }
     
     [Test]
-    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldGetReceiverAccount()
-    {
-        var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
-        
-        await fixture.Handle();
-
-        fixture.AccountApiClient.Verify(api => api.GetAccount(It.Is<long>(x=> x == fixture.ReceiverAccount.Id)), Times.Once);
-    }
-
-    [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
     {
         var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
@@ -48,7 +38,7 @@ public class SentTransferConnectionRequestEventNotificationHandlerTests
                 && !string.IsNullOrWhiteSpace(email.Subject)
                 && email.ReplyToAddress == "noreply@sfa.gov.uk"
                 && email.TemplateId == "TransferConnectionInvitationSent"
-                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{fixture.ReceiverPublicHashedId}/transfers/connections"
+                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{fixture.ReceiverAccount.HashedId}/transfers/connections"
                 && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Once);
     }
@@ -73,8 +63,7 @@ public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture :
             Configuration,
             OuterApiClient.Object,
             Mock.Of<ILogger<SentTransferConnectionRequestEventNotificationHandler>>(),
-            NotificationsApiClient.Object,
-            AccountApiClient.Object);
+            NotificationsApiClient.Object);
     }
 
     public Task Handle() 

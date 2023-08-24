@@ -18,21 +18,17 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         public EmployerFinanceConfiguration Configuration { get; }
         protected Mock<IOuterApiClient> OuterApiClient { get; }
         public Mock<INotificationsApi> NotificationsApiClient { get; }
-        public Mock<IAccountApiClient> AccountApiClient { get; }
         public Account SenderAccount { get; private set; }
         public Account ReceiverAccount { get; private set; }
         public User SenderAccountOwner1 { get; private set; }
         private User SenderAccountOwner2 { get; set; }
         public User ReceiverAccountOwner { get; private set; }
-
-        public string ReceiverPublicHashedId = "ABSASSACC";
-
+        
         protected TransferConnectionRequestEventNotificationHandlerTestsFixtureBase()
         {
             Configuration = new EmployerFinanceConfiguration { EmployerFinanceBaseUrl = "https://www.example.test/" };
             OuterApiClient = new Mock<IOuterApiClient>();
             NotificationsApiClient = new Mock<INotificationsApi>();
-            AccountApiClient = new Mock<IAccountApiClient>();
 
             _getAccountTeamMembersWhichReceiveNotificationsResponse = new GetAccountTeamMembersWhichReceiveNotificationsResponse();
             
@@ -40,10 +36,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
                 .Setup(s => s.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
                     It.IsAny<GetAccountTeamMembersWhichReceiveNotificationsRequest>()))
                 .ReturnsAsync(_getAccountTeamMembersWhichReceiveNotificationsResponse);
-
-            AccountApiClient
-                .Setup(s => s.GetAccount(It.IsAny<long>()))
-                .ReturnsAsync(new AccountDetailViewModel { PublicHashedAccountId = ReceiverPublicHashedId });
         }
 
         protected void AddSenderAccount()
@@ -61,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             {
                 Id = 2222222,
                 Name = "ReceiverAccountName",
-                PublicHashedId = ReceiverPublicHashedId
+                HashedId = "AHVVATS"
             };
         }
 

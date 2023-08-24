@@ -40,6 +40,8 @@ public class SendTransferConnectionInvitationCommandHandler : IRequestHandler<Se
         var senderAccount = await _employerAccountRepository.Get(request.AccountId);
         var receiverAccount = await _employerAccountRepository.Get(receiverAccountId);
         var senderUser = await _userRepository.Get(request.UserRef);
+
+        receiverAccount.HashedId = request.ReceiverAccountPublicHashedId;
         
         _logger.LogInformation("Retrieving transfer allowance for {AccountId}.", request.AccountId);
         
