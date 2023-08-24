@@ -24,6 +24,16 @@ public class SentTransferConnectionRequestEventNotificationHandlerTests
                 && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Exactly(3));
     }
+    
+    [Test]
+    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldGetReceiverAccount()
+    {
+        var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
+
+        fixture.AccountApiClient.Verify(api => api.GetAccount(It.Is<long>(x=> x == fixture.ReceiverAccount.Id)), Times.Once);
+    }
 
     [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
@@ -63,7 +73,8 @@ public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture :
             Configuration,
             OuterApiClient.Object,
             Mock.Of<ILogger<SentTransferConnectionRequestEventNotificationHandler>>(),
-            NotificationsApiClient.Object);
+            NotificationsApiClient.Object,
+            AccountApiClient.Object);
     }
 
     public Task Handle() 

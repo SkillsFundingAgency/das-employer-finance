@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
@@ -6,7 +6,7 @@ using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.Notifications.Api.Client;
 using SFA.DAS.Notifications.Api.Types;
-using JsonSerializer = Newtonsoft.Json.JsonSerializer;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
@@ -16,24 +16,25 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
     private readonly IOuterApiClient _outerApiClient;
     private readonly ILogger<SentTransferConnectionRequestEventNotificationHandler> _logger;
     private readonly INotificationsApi _notificationsApi;
+    private readonly IAccountApiClient _accountApiClient;
 
     public SentTransferConnectionRequestEventNotificationHandler(
         EmployerFinanceConfiguration config,
         IOuterApiClient outerApiClient,
         ILogger<SentTransferConnectionRequestEventNotificationHandler> logger,
-        INotificationsApi notificationsApi)
+        INotificationsApi notificationsApi,
+        IAccountApiClient accountApiClient)
     {
         _config = config;
         _outerApiClient = outerApiClient;
         _logger = logger;
         _notificationsApi = notificationsApi;
+        _accountApiClient = accountApiClient;
     }
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("{TypeName} processing started for message: {Message}", nameof(SentTransferConnectionRequestEventNotificationHandler), System.Text.Json.JsonSerializer.Serialize(message));
-        
-        ArgumentNullException.ThrowIfNull(message.ReceiverAccountHashedId);
+        _logger.LogInformation("{TypeName} processing started for message: {Message}", nameof(SentTransferConnectionRequestEventNotificationHandler), JsonSerializer.Serialize(message));
         
         var users = await _outerApiClient.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
             new GetAccountTeamMembersWhichReceiveNotificationsRequest(message.ReceiverAccountId));
@@ -48,11 +49,13 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
             _logger.LogInformation("There are no users that receive notifications for ReceiverAccountId '{ReceiverAccountId}'", message.ReceiverAccountId);
         }
 
+        var receiver = await _accountApiClient.GetAccount(message.ReceiverAccountId);
+        
         foreach (var user in users)
         {
             try
             {
-                var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{message.ReceiverAccountHashedId}/transfers/connections";
+                var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{receiver.PublicHashedAccountId}/transfers/connections";
                 
                 _logger.LogInformation("{TypeName} linkNotificationUrl: '{LinkNotificationUrl}'",
                     nameof(SentTransferConnectionRequestEventNotificationHandler), linkNotificationUrl);

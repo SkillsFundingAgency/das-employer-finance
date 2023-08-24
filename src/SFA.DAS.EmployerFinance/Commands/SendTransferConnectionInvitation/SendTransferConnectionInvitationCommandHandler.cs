@@ -40,9 +40,6 @@ public class SendTransferConnectionInvitationCommandHandler : IRequestHandler<Se
         var senderAccount = await _employerAccountRepository.Get(request.AccountId);
         var receiverAccount = await _employerAccountRepository.Get(receiverAccountId);
         var senderUser = await _userRepository.Get(request.UserRef);
-
-        // The Accounts table in the finance DB doesn't store the hashed ID's.
-        receiverAccount.PublicHashedId = request.ReceiverAccountPublicHashedId;
         
         _logger.LogInformation("Retrieving transfer allowance for {AccountId}.", request.AccountId);
         

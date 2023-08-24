@@ -1,4 +1,6 @@
 ﻿using Moq;
+using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
@@ -11,31 +13,37 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
 {
     public class TransferConnectionRequestEventNotificationHandlerTestsFixtureBase
     {
+        private readonly GetAccountTeamMembersWhichReceiveNotificationsResponse _getAccountTeamMembersWhichReceiveNotificationsResponse;
+        
         public EmployerFinanceConfiguration Configuration { get; }
         protected Mock<IOuterApiClient> OuterApiClient { get; }
         public Mock<INotificationsApi> NotificationsApiClient { get; }
-
-        private GetAccountTeamMembersWhichReceiveNotificationsResponse GetAccountTeamMembersWhichReceiveNotificationsResponse { get; }
-
-        public Account SenderAccount { get; set; }
-        public Account ReceiverAccount { get; set; }
-        public User SenderAccountOwner1 { get; set; }
+        public Mock<IAccountApiClient> AccountApiClient { get; }
+        public Account SenderAccount { get; private set; }
+        public Account ReceiverAccount { get; private set; }
+        public User SenderAccountOwner1 { get; private set; }
         private User SenderAccountOwner2 { get; set; }
-        public User ReceiverAccountOwner { get; set; }
+        public User ReceiverAccountOwner { get; private set; }
 
         protected TransferConnectionRequestEventNotificationHandlerTestsFixtureBase()
         {
-            Configuration = new EmployerFinanceConfiguration{ EmployerFinanceBaseUrl = "https://www.example.test/"};
+            Configuration = new EmployerFinanceConfiguration { EmployerFinanceBaseUrl = "https://www.example.test/" };
             OuterApiClient = new Mock<IOuterApiClient>();
             NotificationsApiClient = new Mock<INotificationsApi>();
+            AccountApiClient = new Mock<IAccountApiClient>();
 
-            GetAccountTeamMembersWhichReceiveNotificationsResponse = new GetAccountTeamMembersWhichReceiveNotificationsResponse();
-
+            _getAccountTeamMembersWhichReceiveNotificationsResponse = new GetAccountTeamMembersWhichReceiveNotificationsResponse();
+            
             OuterApiClient
-                .Setup(s => s.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(It.IsAny<GetAccountTeamMembersWhichReceiveNotificationsRequest>()))
-                .ReturnsAsync(GetAccountTeamMembersWhichReceiveNotificationsResponse);
+                .Setup(s => s.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
+                    It.IsAny<GetAccountTeamMembersWhichReceiveNotificationsRequest>()))
+                .ReturnsAsync(_getAccountTeamMembersWhichReceiveNotificationsResponse);
+
+            AccountApiClient
+                .Setup(s => s.GetAccount(It.IsAny<long>()))
+                .ReturnsAsync(new AccountDetailViewModel { PublicHashedAccountId = "ABSASSACC" });
         }
-        
+
         protected void AddSenderAccount()
         {
             SenderAccount = new Account
@@ -51,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             {
                 Id = 2222222,
                 Name = "ReceiverAccountName",
-                HashedId = "ZYXA222"
+                PublicHashedId = "ZYXA222"
             };
         }
 
@@ -93,7 +101,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
 
         private void AddTeamMember(User user)
         {
-            GetAccountTeamMembersWhichReceiveNotificationsResponse.Add(new TeamMember
+            _getAccountTeamMembersWhichReceiveNotificationsResponse.Add(new TeamMember
             {
                 UserRef = user.UserRef,
                 FirstName = user.FirstName,

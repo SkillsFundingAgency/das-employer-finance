@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using HMRC.ESFA.Levy.Api.Client;
+using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
@@ -16,6 +17,8 @@ public static class ClientServiceRegistrations
 
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
         services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
+        
+        services.AddScoped<IAccountApiClient, AccountApiClient>();
 
         services.AddTransient<IApprenticeshipLevyApiClient>(serviceProvider =>
         {
