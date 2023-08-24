@@ -6,7 +6,6 @@ using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Client;
 using SFA.DAS.Notifications.Api.Types;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
@@ -34,7 +33,7 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
     {
-        _logger.LogInformation("{TypeName} processing started for message: {Message}", nameof(SentTransferConnectionRequestEventNotificationHandler), JsonSerializer.Serialize(message));
+        _logger.LogInformation("{TypeName} processing started.", nameof(SentTransferConnectionRequestEventNotificationHandler));
         
         var users = await _outerApiClient.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
             new GetAccountTeamMembersWhichReceiveNotificationsRequest(message.ReceiverAccountId));
