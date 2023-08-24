@@ -3,6 +3,7 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Messages.Events;
+using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Client;
 using SFA.DAS.Notifications.Api.Types;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -15,17 +16,20 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
     private readonly IOuterApiClient _outerApiClient;
     private readonly ILogger<SentTransferConnectionRequestEventNotificationHandler> _logger;
     private readonly INotificationsApi _notificationsApi;
+    private readonly IEncodingService _encodingService;
 
     public SentTransferConnectionRequestEventNotificationHandler(
         EmployerFinanceConfiguration config,
         IOuterApiClient outerApiClient,
         ILogger<SentTransferConnectionRequestEventNotificationHandler> logger,
-        INotificationsApi notificationsApi)
+        INotificationsApi notificationsApi,
+        IEncodingService encodingService)
     {
         _config = config;
         _outerApiClient = outerApiClient;
         _logger = logger;
         _notificationsApi = notificationsApi;
+        _encodingService = encodingService;
     }
 
     public async Task Handle(SentTransferConnectionRequestEvent message, IMessageHandlerContext context)
@@ -44,12 +48,14 @@ public class SentTransferConnectionRequestEventNotificationHandler : IHandleMess
         {
             _logger.LogInformation("There are no users that receive notifications for ReceiverAccountId '{ReceiverAccountId}'", message.ReceiverAccountId);
         }
+
+        var receiverHashedId = _encodingService.Encode(message.ReceiverAccountId, EncodingType.AccountId);
         
         foreach (var user in users)
         {
             try
             {
-                var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{message.ReceiverAccountHashedId}/transfers/connections";
+                var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{receiverHashedId}/transfers/connections";
                 
                 _logger.LogInformation("{TypeName} linkNotificationUrl: '{LinkNotificationUrl}'",
                     nameof(SentTransferConnectionRequestEventNotificationHandler), linkNotificationUrl);

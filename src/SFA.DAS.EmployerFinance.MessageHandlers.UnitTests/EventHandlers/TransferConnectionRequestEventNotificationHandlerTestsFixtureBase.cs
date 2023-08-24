@@ -7,6 +7,7 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
+using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Client;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
@@ -16,6 +17,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         private readonly GetAccountTeamMembersWhichReceiveNotificationsResponse _getAccountTeamMembersWhichReceiveNotificationsResponse;
         
         public EmployerFinanceConfiguration Configuration { get; }
+        public Mock<IEncodingService> EncodingService { get; }
         protected Mock<IOuterApiClient> OuterApiClient { get; }
         public Mock<INotificationsApi> NotificationsApiClient { get; }
         public Account SenderAccount { get; private set; }
@@ -29,6 +31,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             Configuration = new EmployerFinanceConfiguration { EmployerFinanceBaseUrl = "https://www.example.test/" };
             OuterApiClient = new Mock<IOuterApiClient>();
             NotificationsApiClient = new Mock<INotificationsApi>();
+            EncodingService = new Mock<IEncodingService>();
 
             _getAccountTeamMembersWhichReceiveNotificationsResponse = new GetAccountTeamMembersWhichReceiveNotificationsResponse();
             
@@ -36,6 +39,8 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
                 .Setup(s => s.Get<GetAccountTeamMembersWhichReceiveNotificationsResponse>(
                     It.IsAny<GetAccountTeamMembersWhichReceiveNotificationsRequest>()))
                 .ReturnsAsync(_getAccountTeamMembersWhichReceiveNotificationsResponse);
+
+            EncodingService.Setup(s => s.Encode(It.Is<long>(x => x == ReceiverAccount.Id), EncodingType.AccountId)).Returns("ZZZZZSAAA");
         }
 
         protected void AddSenderAccount()

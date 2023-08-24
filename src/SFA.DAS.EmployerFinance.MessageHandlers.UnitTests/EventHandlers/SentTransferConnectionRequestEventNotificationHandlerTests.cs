@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
+using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers;
@@ -23,6 +24,16 @@ public class SentTransferConnectionRequestEventNotificationHandlerTests
                 !string.IsNullOrWhiteSpace(email.Tokens["link_notification_page"])
                 && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Exactly(3));
+    }
+    
+    [Test]
+    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeReceiverAccountId()
+    {
+        var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
+        
+        fixture.EncodingService.Verify(encodingService=> encodingService.Encode(It.Is<long>(x=> x == fixture.ReceiverAccount.Id), EncodingType.AccountId), Times.Once);
     }
     
     [Test]
@@ -63,7 +74,8 @@ public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture :
             Configuration,
             OuterApiClient.Object,
             Mock.Of<ILogger<SentTransferConnectionRequestEventNotificationHandler>>(),
-            NotificationsApiClient.Object);
+            NotificationsApiClient.Object,
+            EncodingService.Object);
     }
 
     public Task Handle() 
@@ -76,7 +88,6 @@ public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture :
         Event = new SentTransferConnectionRequestEvent
         {
             ReceiverAccountId = ReceiverAccount.Id,
-            ReceiverAccountHashedId = ReceiverAccount.HashedId,
             SenderAccountId = SenderAccount.Id,
             SenderAccountName = SenderAccount.Name
         };

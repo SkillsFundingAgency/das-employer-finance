@@ -39,10 +39,8 @@ public class TransferConnectionInvitation : Entity
         Publish(() => new SentTransferConnectionRequestEvent
         {
             Created = now,
-            ReceiverAccountHashedId = ReceiverAccount.HashedId,
             ReceiverAccountId = ReceiverAccount.Id,
             ReceiverAccountName = ReceiverAccount.Name,
-            SenderAccountHashedId = SenderAccount.HashedId,
             SenderAccountId = SenderAccount.Id,
             SenderAccountName = SenderAccount.Name,
             SentByUserId = senderUser.Id,

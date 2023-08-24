@@ -23,10 +23,8 @@ public class SentTransferConnectionRequestEventHandler : IHandleMessages<SentTra
         {
             TransferConnectionInvitationId = message.TransferConnectionRequestId,
             SenderAccountId = message.SenderAccountId,
-            SenderAccountHashedId = message.SenderAccountHashedId,
             SenderAccountName = message.SenderAccountName,
             ReceiverAccountId = message.ReceiverAccountId,
-            ReceiverAccountHashedId = message.ReceiverAccountHashedId,
             ReceiverAccountName = message.ReceiverAccountName,
             SentByUserId = message.SentByUserId,
             SentByUserExternalId = message.SentByUserRef,
