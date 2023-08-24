@@ -25,6 +25,8 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         private User SenderAccountOwner2 { get; set; }
         public User ReceiverAccountOwner { get; private set; }
 
+        public string ReceiverPublicHashedId = "ABSASSACC";
+
         protected TransferConnectionRequestEventNotificationHandlerTestsFixtureBase()
         {
             Configuration = new EmployerFinanceConfiguration { EmployerFinanceBaseUrl = "https://www.example.test/" };
@@ -41,7 +43,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
 
             AccountApiClient
                 .Setup(s => s.GetAccount(It.IsAny<long>()))
-                .ReturnsAsync(new AccountDetailViewModel { PublicHashedAccountId = "ABSASSACC" });
+                .ReturnsAsync(new AccountDetailViewModel { PublicHashedAccountId = ReceiverPublicHashedId });
         }
 
         protected void AddSenderAccount()
@@ -59,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
             {
                 Id = 2222222,
                 Name = "ReceiverAccountName",
-                PublicHashedId = "ZYXA222"
+                PublicHashedId = ReceiverPublicHashedId
             };
         }
 

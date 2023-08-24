@@ -48,7 +48,7 @@ public class SentTransferConnectionRequestEventNotificationHandlerTests
                 && !string.IsNullOrWhiteSpace(email.Subject)
                 && email.ReplyToAddress == "noreply@sfa.gov.uk"
                 && email.TemplateId == "TransferConnectionInvitationSent"
-                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{fixture.ReceiverAccount.HashedId}/transfers/connections"
+                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{fixture.ReceiverPublicHashedId}/transfers/connections"
                 && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Once);
     }
