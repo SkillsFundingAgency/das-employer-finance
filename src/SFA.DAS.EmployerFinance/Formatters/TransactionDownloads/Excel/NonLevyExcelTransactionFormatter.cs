@@ -1,8 +1,9 @@
 ﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
-namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+namespace SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 
 public class NonLevyExcelTransactionFormatter : ExcelTransactionFormatter, ITransactionFormatter
 {
@@ -16,7 +17,7 @@ public class NonLevyExcelTransactionFormatter : ExcelTransactionFormatter, ITran
     {
         return transactions.Select(transaction => new[]
         {
-            transaction.DateCreated.ToString("G"),
+            transaction.DateCreated.ToString("dd/MM/yyyy"),
             transaction.TransactionType,
             transaction.Description,
             transaction.TrainingProvider,

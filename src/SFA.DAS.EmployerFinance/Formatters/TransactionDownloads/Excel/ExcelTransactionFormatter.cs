@@ -1,7 +1,8 @@
-﻿using SFA.DAS.EmployerFinance.Interfaces;
+﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
-namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+namespace SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 
 public abstract class ExcelTransactionFormatter
 {

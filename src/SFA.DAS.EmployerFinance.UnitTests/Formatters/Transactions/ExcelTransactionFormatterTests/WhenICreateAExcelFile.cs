@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Excel;
+﻿using SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 
@@ -53,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                 },
                 new[]
                 {
-                    _transactionLine.DateCreated.ToString(), _transactionLine.TransactionType, _transactionLine.Description,
+                    _transactionLine.DateCreated.ToString("dd/MM/yyyy"), _transactionLine.TransactionType, _transactionLine.Description,
                     _transactionLine.PayeScheme, "'" +  _transactionLine.PeriodEnd, _transactionLine.LevyDeclaredFormatted,
                     _transactionLine.EnglishFractionFormatted, _transactionLine.TenPercentTopUpFormatted,
                     _transactionLine.TrainingProvider, _transactionLine.Uln,
