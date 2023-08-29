@@ -18,8 +18,6 @@ public static class ClientServiceRegistrations
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
         services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
         
-        services.AddScoped<IAccountApiClient, AccountApiClient>();
-
         services.AddTransient<IApprenticeshipLevyApiClient>(serviceProvider =>
         {
             var client = new HttpClient { BaseAddress = new Uri(serviceProvider.GetService<IHmrcConfiguration>().BaseUrl) };
