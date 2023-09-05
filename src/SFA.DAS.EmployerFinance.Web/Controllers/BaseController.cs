@@ -1,5 +1,10 @@
-﻿using SFA.DAS.EmployerFinance.Interfaces;
+﻿using SFA.DAS.Authentication;
+using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
+using SFA.DAS.EmployerUsers.WebClientComponents;
+using IAuthenticationService = SFA.DAS.Authentication.IAuthenticationService;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -8,10 +13,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
 
         private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
+        protected IAuthenticationService OwinWrapper;
+        protected IMediator Mediator;
 
-        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage)
+        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage, IAuthenticationService owinWrapper, IMediator mediator)
         {
             _flashMessage = flashMessage;
+            OwinWrapper = owinWrapper;
+            Mediator = mediator;
         }
 
        public BaseController() { }
@@ -30,5 +39,20 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             return flashMessageViewModelFromCookie;
         }
 
+        protected async Task UpsertRegisteredUser()
+        {
+            var userRef = OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName);
+            var email = OwinWrapper.GetClaimValue(ControllerConstants.EmailClaimKeyName);
+            var firstName = OwinWrapper.GetClaimValue(DasClaimTypes.GivenName);
+            var lastName = OwinWrapper.GetClaimValue(DasClaimTypes.FamilyName);
+
+            await Mediator.Send(new UpsertRegisteredUserCommand
+            {
+                EmailAddress = email,
+                UserRef = userRef,
+                LastName = lastName,
+                FirstName = firstName
+            });
+        }
     }
 }
