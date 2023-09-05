@@ -31,6 +31,7 @@ public static class ApplicationServiceRegistrations
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
         services.AddMediatR(typeof(GetTransferRequestsQuery));
         services.AddWebMediatorValidators();
+        services.AddHttpContextAccessor();
 
         services.AddScoped<IProviderService, ProviderServiceCache>();
         services.AddScoped<IProviderService, ProviderServiceFromDb>();

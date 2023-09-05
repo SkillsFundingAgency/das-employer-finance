@@ -1,10 +1,8 @@
-﻿using SFA.DAS.Authentication;
-using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+﻿using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerUsers.WebClientComponents;
-using IAuthenticationService = SFA.DAS.Authentication.IAuthenticationService;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -13,13 +11,13 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
 
         private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
-        protected IAuthenticationService OwinWrapper;
+        protected IHttpContextAccessor HttpContextAccessor;
         protected IMediator Mediator;
 
-        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage, IAuthenticationService owinWrapper, IMediator mediator)
+        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage, IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
             _flashMessage = flashMessage;
-            OwinWrapper = owinWrapper;
+            HttpContextAccessor = httpContextAccessor;
             Mediator = mediator;
         }
 
@@ -41,10 +39,12 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         protected async Task UpsertRegisteredUser()
         {
-            var userRef = OwinWrapper.GetClaimValue(ControllerConstants.UserRefClaimKeyName);
-            var email = OwinWrapper.GetClaimValue(ControllerConstants.EmailClaimKeyName);
-            var firstName = OwinWrapper.GetClaimValue(DasClaimTypes.GivenName);
-            var lastName = OwinWrapper.GetClaimValue(DasClaimTypes.FamilyName);
+            var userIdentity = HttpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+
+            var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.UserRefClaimKeyName)?.Value;
+            var email = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.EmailClaimKeyName)?.Value;
+            var firstName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.GivenName)?.Value;
+            var lastName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.FamilyName)?.Value;
 
             await Mediator.Send(new UpsertRegisteredUserCommand
             {

@@ -1,5 +1,4 @@
 using AutoMapper;
-using SFA.DAS.Authentication;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
 using SFA.DAS.EmployerFinance.Dtos;
@@ -14,7 +13,6 @@ using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
-using IAuthenticationService = SFA.DAS.Authentication.IAuthenticationService;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
@@ -32,8 +30,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             IMediator mediator,
             IEncodingService encodingService,
             ICookieStorageService<FlashMessageViewModel> flashMessage,
-            IAuthenticationService owinWrapper)
-            : base(flashMessage, owinWrapper, mediator)
+            IHttpContextAccessor httpContextAccessor)
+            : base(flashMessage, httpContextAccessor, mediator)
         {
             _logger = logger;
             _mapper = mapper;

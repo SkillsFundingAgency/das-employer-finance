@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using SFA.DAS.Authentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -8,7 +7,6 @@ using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
-using IAuthenticationService = SFA.DAS.Authentication.IAuthenticationService;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionsControllerTests;
 
@@ -39,7 +37,7 @@ public class WhenIViewTheTransferAllowanceComponent
         _mediator = new Mock<IMediator>();
         _mediator.Setup(m => m.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
             
-        _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), Mock.Of<IAuthenticationService>());
+        _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), Mock.Of<IHttpContextAccessor>());
     }
 
     [Test]

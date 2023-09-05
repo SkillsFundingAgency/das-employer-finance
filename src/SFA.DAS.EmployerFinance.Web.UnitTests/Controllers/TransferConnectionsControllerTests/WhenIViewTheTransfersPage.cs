@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Dtos;
@@ -15,7 +16,8 @@ using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.EmployerUsers.WebClientComponents;
 using SFA.DAS.Encoding;
-using IAuthenticationService = SFA.DAS.Authentication.IAuthenticationService;
+using SFA.DAS.Notifications.Api.Types;
+using System.Security.Claims;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionsControllerTests;
 
@@ -24,7 +26,7 @@ public class WhenIViewTheTransfersPage
 {
     private TransferConnectionsController _controller;
     private Mock<IMediator> _mediatorMock;
-    private Mock<IAuthenticationService> _authenticationServiceMock;
+    private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IMapper> _mapper;
     private const long AccountId = 123124124;
 
@@ -34,10 +36,18 @@ public class WhenIViewTheTransfersPage
             
         _mediatorMock = new Mock<IMediator>();
         _mapper = new Mock<IMapper>();
-        _authenticationServiceMock = new Mock<IAuthenticationService>();
+        _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         var encodingService = new Mock<IEncodingService>();
         encodingService.Setup(x => x.Decode("ABC123", EncodingType.AccountId)).Returns(AccountId);
-        _controller = new TransferConnectionsController(null, _mapper.Object, _mediatorMock.Object, encodingService.Object, Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), _authenticationServiceMock.Object);
+
+        var claims = new List<Claim>();
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        var httpContext = new DefaultHttpContext { User = claimsPrincipal };
+
+        _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+        _controller = new TransferConnectionsController(null, _mapper.Object, _mediatorMock.Object, encodingService.Object, Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), _httpContextAccessorMock.Object);
     }
 
     //TODO MAC-192 - Test more
@@ -127,10 +137,19 @@ public class WhenIViewTheTransfersPage
         var firstName = fixture.Create<string>();
         var lastName = fixture.Create<string>();
 
-        _authenticationServiceMock.Setup(x => x.GetClaimValue(ControllerConstants.UserRefClaimKeyName)).Returns(userRef);
-        _authenticationServiceMock.Setup(x => x.GetClaimValue(ControllerConstants.EmailClaimKeyName)).Returns(email);
-        _authenticationServiceMock.Setup(x => x.GetClaimValue(DasClaimTypes.GivenName)).Returns(firstName);
-        _authenticationServiceMock.Setup(x => x.GetClaimValue(DasClaimTypes.FamilyName)).Returns(lastName);
+        var claims = new List<Claim>
+        {
+            new(ControllerConstants.UserRefClaimKeyName, userRef),
+            new(ControllerConstants.EmailClaimKeyName, email),
+            new(DasClaimTypes.GivenName, firstName),
+            new(DasClaimTypes.FamilyName, lastName)
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        var httpContext = new DefaultHttpContext { User = claimsPrincipal };
+
+        _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
 
         //Act
         await _controller.Index("ABC123");
