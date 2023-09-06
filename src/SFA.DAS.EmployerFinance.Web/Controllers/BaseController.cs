@@ -13,12 +13,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
         protected IHttpContextAccessor HttpContextAccessor;
         protected IMediator Mediator;
+        private readonly ILogger<BaseController> _logger;
 
-        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage, IHttpContextAccessor httpContextAccessor, IMediator mediator)
+        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage, IHttpContextAccessor httpContextAccessor, IMediator mediator, ILogger<BaseController> logger)
         {
             _flashMessage = flashMessage;
             HttpContextAccessor = httpContextAccessor;
             Mediator = mediator;
+            _logger = logger;
         }
 
        public BaseController() { }
@@ -40,6 +42,12 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         protected async Task UpsertRegisteredUser()
         {
             var userIdentity = HttpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+
+            _logger.LogInformation("Listing claims for user...");
+            foreach (var claim in userIdentity.Claims)
+            {
+                _logger.LogInformation($"{claim.Type}: {claim.Value}");
+            }
 
             var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.UserRefClaimKeyName)?.Value;
             var email = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.EmailClaimKeyName)?.Value;

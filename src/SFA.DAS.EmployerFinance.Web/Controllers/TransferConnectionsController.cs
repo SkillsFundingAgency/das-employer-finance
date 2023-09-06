@@ -31,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             IEncodingService encodingService,
             ICookieStorageService<FlashMessageViewModel> flashMessage,
             IHttpContextAccessor httpContextAccessor)
-            : base(flashMessage, httpContextAccessor, mediator)
+            : base(flashMessage, httpContextAccessor, mediator, logger)
         {
             _logger = logger;
             _mapper = mapper;
