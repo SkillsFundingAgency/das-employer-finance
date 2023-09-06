@@ -47,7 +47,7 @@ public class WhenIViewTheTransfersPage
 
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
 
-        _controller = new TransferConnectionsController(null, _mapper.Object, _mediatorMock.Object, encodingService.Object, Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), _httpContextAccessorMock.Object);
+        _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper.Object, _mediatorMock.Object, encodingService.Object, Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), _httpContextAccessorMock.Object);
     }
 
     //TODO MAC-192 - Test more
