@@ -43,14 +43,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             var userIdentity = HttpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
 
-            _logger.LogInformation("Listing claims for user...");
-            foreach (var claim in userIdentity.Claims)
-            {
-                _logger.LogInformation($"{claim.Type}: {claim.Value}");
-            }
-
             var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.UserRefClaimKeyName)?.Value;
-            var email = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.EmailClaimKeyName)?.Value;
+            var email = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.Email)?.Value;
             var firstName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.GivenName)?.Value;
             var lastName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.FamilyName)?.Value;
 
