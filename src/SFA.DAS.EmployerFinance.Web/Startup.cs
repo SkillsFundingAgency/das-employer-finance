@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
@@ -110,7 +111,7 @@ public class Startup
             .AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>()
             .AddNServiceBusClientUnitOfWork();
             
-        services.AddApplicationInsightsTelemetry();
+        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions{ConnectionString = _configuration["APPINSIGHTS_INSTRUMENTATIONKEY"] });
 
         if (!_environment.IsDevelopment())
         {
