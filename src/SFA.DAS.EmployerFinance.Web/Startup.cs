@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -112,6 +113,10 @@ public class Startup
             .AddNServiceBusClientUnitOfWork();
             
         services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions{ConnectionString = _configuration["APPINSIGHTS_INSTRUMENTATIONKEY"] });
+        services.AddLogging(builder =>
+        {
+            builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
+        });
 
         if (!_environment.IsDevelopment())
         {
