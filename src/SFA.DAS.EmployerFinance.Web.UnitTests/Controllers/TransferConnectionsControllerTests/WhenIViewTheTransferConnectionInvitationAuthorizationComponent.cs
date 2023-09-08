@@ -21,11 +21,8 @@ public class WhenIViewTheTransferConnectionInvitationAuthorizationComponent
     [SetUp]
     public void Arrange()
     {
-        // var authResult = new AuthorizationResult();
-        // authResult.AddError(new EmployerFeatureAgreementNotSigned());
         _response = new GetTransferConnectionInvitationAuthorizationResponse
         {
-            //AuthorizationResult = authResult, 
             IsValidSender = true,TransferAllowancePercentage = .25m
         };
         _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
@@ -33,7 +30,7 @@ public class WhenIViewTheTransferConnectionInvitationAuthorizationComponent
         _mediator = new Mock<IMediator>();
         _mediator.Setup(m => m.Send(It.Is<GetTransferConnectionInvitationAuthorizationQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
 
-        _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), Mock.Of<IHttpContextAccessor>());
+        _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<IHttpContextAccessor>());
     }
 
     [Test]

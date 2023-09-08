@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Wordprocessing;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
@@ -12,12 +10,9 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Helpers;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.EmployerUsers.WebClientComponents;
 using SFA.DAS.Encoding;
-using SFA.DAS.Notifications.Api.Types;
-using System.Security.Claims;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionsControllerTests;
 
@@ -47,7 +42,7 @@ public class WhenIViewTheTransfersPage
 
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
 
-        _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper.Object, _mediatorMock.Object, encodingService.Object, Mock.Of<ICookieStorageService<FlashMessageViewModel>>(), _httpContextAccessorMock.Object);
+        _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper.Object, _mediatorMock.Object, encodingService.Object, _httpContextAccessorMock.Object);
     }
 
     //TODO MAC-192 - Test more

@@ -1,43 +1,21 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
-using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Web.Helpers;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerUsers.WebClientComponents;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     public class BaseController : Controller
     {
-        private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
-
-        private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
         protected IHttpContextAccessor HttpContextAccessor;
         protected IMediator Mediator;
-        private readonly ILogger<BaseController> _logger;
 
-        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage, IHttpContextAccessor httpContextAccessor, IMediator mediator, ILogger<BaseController> logger)
+        public BaseController(IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
-            _flashMessage = flashMessage;
             HttpContextAccessor = httpContextAccessor;
             Mediator = mediator;
-            _logger = logger;
         }
 
        public BaseController() { }
-
-        public void AddFlashMessageToCookie(FlashMessageViewModel model)
-        {
-            _flashMessage.Delete(FlashMessageCookieName);
-
-            _flashMessage.Create(model, FlashMessageCookieName);
-        }
-
-        public FlashMessageViewModel GetFlashMessageViewModelFromCookie()
-        {
-            var flashMessageViewModelFromCookie = _flashMessage.Get(FlashMessageCookieName);
-            _flashMessage.Delete(FlashMessageCookieName);
-            return flashMessageViewModelFromCookie;
-        }
 
         protected async Task UpsertRegisteredUser()
         {

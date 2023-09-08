@@ -2,7 +2,6 @@ using AutoMapper;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
 using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
@@ -10,7 +9,6 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
 
@@ -29,9 +27,8 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             IMapper mapper,
             IMediator mediator,
             IEncodingService encodingService,
-            ICookieStorageService<FlashMessageViewModel> flashMessage,
             IHttpContextAccessor httpContextAccessor)
-            : base(flashMessage, httpContextAccessor, mediator, logger)
+            : base(httpContextAccessor, mediator)
         {
             _logger = logger;
             _mapper = mapper;
