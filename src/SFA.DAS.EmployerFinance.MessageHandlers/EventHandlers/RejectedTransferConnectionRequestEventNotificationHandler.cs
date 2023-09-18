@@ -3,6 +3,7 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Messages.Events;
+using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Client;
 using SFA.DAS.Notifications.Api.Types;
 
@@ -10,23 +11,24 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
 public class RejectedTransferConnectionRequestEventNotificationHandler : IHandleMessages<RejectedTransferConnectionRequestEvent>
 {
-    public const string UrlFormat = "/accounts/{0}/transfers/connections";
-
     private readonly EmployerFinanceConfiguration _config;
     private readonly IOuterApiClient _outerApiClient;
     private readonly ILogger<RejectedTransferConnectionRequestEventNotificationHandler> _logger;
     private readonly INotificationsApi _notificationsApi;
+    private readonly IEncodingService _encodingService;
 
     public RejectedTransferConnectionRequestEventNotificationHandler(
         EmployerFinanceConfiguration config,
         IOuterApiClient outerApiClient,
         ILogger<RejectedTransferConnectionRequestEventNotificationHandler> logger,
-        INotificationsApi notificationsApi)
+        INotificationsApi notificationsApi,
+        IEncodingService encodingService)
     {
         _config = config;
         _outerApiClient = outerApiClient;
         _logger = logger;
         _notificationsApi = notificationsApi;
+        _encodingService = encodingService;
     }
 
     public async Task Handle(RejectedTransferConnectionRequestEvent message, IMessageHandlerContext context)
@@ -43,11 +45,18 @@ public class RejectedTransferConnectionRequestEventNotificationHandler : IHandle
         {
             _logger.LogInformation("There are no users that receive notifications for SenderAccountId '{SenderAccountId}'", message.SenderAccountId);
         }
+        
+        var senderAccountHashedId = _encodingService.Encode(message.SenderAccountId, EncodingType.AccountId);
 
         foreach (var user in users)
         {
             try
             {
+                var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{senderAccountHashedId}/transfers/connections";
+                
+                _logger.LogInformation("{TypeName} linkNotificationUrl: '{LinkNotificationUrl}'",
+                    nameof(RejectedTransferConnectionRequestEventNotificationHandler), linkNotificationUrl);
+                
                 var email = new Email
                 {
                     RecipientsAddress = user.Email,
@@ -59,10 +68,7 @@ public class RejectedTransferConnectionRequestEventNotificationHandler : IHandle
                     {
                         { "name", user.FirstName },
                         { "account_name", message.ReceiverAccountName },
-                        {
-                            "link_notification_page",
-                            $"{_config.EmployerFinanceBaseUrl}{string.Format(UrlFormat, message.SenderAccountHashedId)}"
-                        }
+                        { "link_notification_page", linkNotificationUrl }
                     }
                 };
 

@@ -49,7 +49,7 @@ public class SentTransferConnectionRequestEventNotificationHandlerTests
                 && !string.IsNullOrWhiteSpace(email.Subject)
                 && email.ReplyToAddress == "noreply@sfa.gov.uk"
                 && email.TemplateId == "TransferConnectionInvitationSent"
-                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{fixture.ReceiverHashedId}/transfers/connections"
+                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.ReceiverHashedId}/transfers/connections"
                 && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Once);
     }
