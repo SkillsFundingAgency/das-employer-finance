@@ -4,79 +4,93 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
+using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Types;
-using SFA.DAS.Testing;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
+namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers;
+
+[TestFixture]
+public class RejectedTransferConnectionRequestEventNotificationHandlerTests
 {
-    [TestFixture]
-    public class RejectedTransferConnectionRequestEventNotificationHandlerTests : FluentTest<RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture>
+    [Test]
+    public async Task Handle_WhenRejectedTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
     {
-        [Test]
-        public Task Handle_WhenRejectedTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
-        {
-            return RunAsync(f => f.Handle(),
-                f => f.NotificationsApiClient.Verify(
-                    r => r.SendEmail(It.Is<Email>(e =>
-                        !string.IsNullOrWhiteSpace(e.Tokens["link_notification_page"])
-                        && e.Tokens["account_name"] == f.ReceiverAccount.Name)),
-                    Times.Exactly(3)));
-        }
-
-        [Test]
-        public Task Handle_WhenRejectedTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
-        {
-            return RunAsync(f => f.Handle(),
-                f => f.NotificationsApiClient.Verify(
-                    r => r.SendEmail(It.Is<Email>(e =>
-                        e.RecipientsAddress == f.SenderAccountOwner1.Email
-                        && !string.IsNullOrWhiteSpace(e.Subject)
-                        && e.ReplyToAddress == "noreply@sfa.gov.uk"
-                        && e.TemplateId == "TransferConnectionRequestRejected"
-                        && !string.IsNullOrWhiteSpace(e.Tokens["link_notification_page"])
-                        && e.Tokens["account_name"] == f.ReceiverAccount.Name)),
-                    Times.Once));
-        }
+        var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
+            fixture.NotificationsApiClient.Verify(
+                r => r.SendEmail(It.Is<Email>(email =>
+                    email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
+                    && email.Tokens["account_name"] == fixture.ReceiverAccount.Name)),
+                Times.Exactly(3));
     }
 
-    public class RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture
-        : TransferConnectionRequestEventNotificationHandlerTestsFixtureBase
+    [Test]
+    public async Task Handle_WhenRejectedTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
     {
-        public RejectedTransferConnectionRequestEventNotificationHandler Handler { get; set; }
+        var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        await fixture.Handle();
 
-        public RejectedTransferConnectionRequestEvent Event { get; set; }
+        fixture.NotificationsApiClient.Verify(
+            r => r.SendEmail(It.Is<Email>(email =>
+                email.RecipientsAddress == fixture.SenderAccountOwner1.Email
+                && !string.IsNullOrWhiteSpace(email.Subject)
+                && email.ReplyToAddress == "noreply@sfa.gov.uk"
+                && email.TemplateId == "TransferConnectionRequestRejected"
+                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
+                && email.Tokens["account_name"] == fixture.ReceiverAccount.Name)),
+            Times.Once);
+    }
+    
+    [Test]
+    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeSenderAccountId()
+    {
+        var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
+        
+        fixture.EncodingService.Verify(encodingService=> encodingService.Encode(It.Is<long>(x=> x == fixture.SenderAccount.Id), EncodingType.AccountId), Times.Once);
+    }
+}
 
-        public RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture()
+public class RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture
+    : TransferConnectionRequestEventNotificationHandlerTestsFixtureBase
+{
+    public RejectedTransferConnectionRequestEventNotificationHandler Handler { get; set; }
+
+    public RejectedTransferConnectionRequestEvent Event { get; set; }
+
+    public RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture()
+    {
+        AddSenderAccount();
+        AddReceiverAccount();
+        SetReceiverAccountOwner();
+        SetSenderAccountOwner1();
+        SetSenderAccountOwner2();
+        SetMessage();
+
+        Handler = new RejectedTransferConnectionRequestEventNotificationHandler(
+            Configuration,
+            OuterApiClient.Object,
+            Mock.Of<ILogger<RejectedTransferConnectionRequestEventNotificationHandler>>(),
+            NotificationsApiClient.Object,
+            EncodingService.Object);
+    }
+
+    public Task Handle()
+    {
+        return Handler.Handle(Event, null);
+    }
+
+    private RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture SetMessage()
+    {
+        Event = new RejectedTransferConnectionRequestEvent
         {
-            AddSenderAccount();
-            AddReceiverAccount();
-            SetReceiverAccountOwner();
-            SetSenderAccountOwner1();
-            SetSenderAccountOwner2();
-            SetMessage();
+            ReceiverAccountId = ReceiverAccount.Id,
+            ReceiverAccountName = ReceiverAccount.Name,
+            SenderAccountId = SenderAccount.Id
+        };
 
-            Handler = new RejectedTransferConnectionRequestEventNotificationHandler(
-                Configuration,
-                OuterApiClient.Object,
-                    Mock.Of<ILogger<RejectedTransferConnectionRequestEventNotificationHandler>>(),
-                NotificationsApiClient.Object);
-        }
-
-        public Task Handle()
-        {
-            return Handler.Handle(Event, null);
-        }
-
-        private RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture SetMessage()
-        {
-            Event = new RejectedTransferConnectionRequestEvent
-            {
-                ReceiverAccountId = ReceiverAccount.Id,
-                ReceiverAccountName = ReceiverAccount.Name,
-                SenderAccountId = SenderAccount.Id
-            };
-
-            return this;
-        }
+        return this;
     }
 }

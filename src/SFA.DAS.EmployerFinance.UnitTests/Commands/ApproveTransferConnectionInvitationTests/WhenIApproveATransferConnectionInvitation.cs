@@ -118,10 +118,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.ApproveTransferConnectionIn
             Assert.That(message.ApprovedByUserId, Is.EqualTo(_receiverUser.Id));
             Assert.That(message.ApprovedByUserName, Is.EqualTo(_receiverUser.FullName));
             Assert.That(message.Created, Is.EqualTo(_transferConnectionInvitation.Changes.Select(c => c.CreatedDate).Cast<DateTime?>().SingleOrDefault()));
-            Assert.That(message.ReceiverAccountHashedId, Is.EqualTo(_receiverAccount.HashedId));
             Assert.That(message.ReceiverAccountId, Is.EqualTo(_receiverAccount.Id));
             Assert.That(message.ReceiverAccountName, Is.EqualTo(_receiverAccount.Name));
-            Assert.That(message.SenderAccountHashedId, Is.EqualTo(_senderAccount.HashedId));
             Assert.That(message.SenderAccountId, Is.EqualTo(_senderAccount.Id));
             Assert.That(message.SenderAccountName, Is.EqualTo(_senderAccount.Name));
             Assert.That(message.TransferConnectionRequestId, Is.EqualTo(_transferConnectionInvitation.Id));

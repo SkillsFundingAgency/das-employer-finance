@@ -19,7 +19,6 @@ public class RejectedTransferConnectionRequestEventHandler : IHandleMessages<Rej
         {
             TransferConnectionInvitationId = message.TransferConnectionRequestId,
             SenderAccountId = message.SenderAccountId,
-            SenderAccountHashedId = message.SenderAccountHashedId,
             SenderAccountName = message.SenderAccountName,
             ReceiverAccountId = message.ReceiverAccountId,
             ReceiverAccountHashedId = message.ReceiverAccountHashedId,

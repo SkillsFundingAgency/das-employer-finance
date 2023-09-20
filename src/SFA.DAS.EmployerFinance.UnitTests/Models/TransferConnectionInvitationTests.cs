@@ -32,10 +32,8 @@ public class TransferConnectionInvitationTests : FluentTest<TransferConnectionIn
     {
         Run(f => f.SendTransferConnectionInvitation(), f => f.GetEvent<SentTransferConnectionRequestEvent>().Should().NotBeNull()
             .And.Match<SentTransferConnectionRequestEvent>(e =>
-                e.ReceiverAccountHashedId == f.ReceiverAccount.HashedId &&
                 e.ReceiverAccountId == f.ReceiverAccount.Id &&
                 e.ReceiverAccountName == f.ReceiverAccount.Name &&
-                e.SenderAccountHashedId == f.SenderAccount.HashedId &&
                 e.SenderAccountId == f.SenderAccount.Id &&
                 e.SenderAccountName == f.SenderAccount.Name &&
                 e.SentByUserRef == f.SenderUser.Ref &&

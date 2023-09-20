@@ -124,7 +124,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RejectTransferConnectionInv
             Assert.That(message.RejectorUserRef, Is.EqualTo(_receiverUser.Ref));
             Assert.That(message.RejectorUserId, Is.EqualTo(_receiverUser.Id));
             Assert.That(message.RejectorUserName, Is.EqualTo(_receiverUser.FullName));
-            Assert.That(message.SenderAccountHashedId, Is.EqualTo(_senderAccount.HashedId));
             Assert.That(message.SenderAccountId, Is.EqualTo(_senderAccount.Id));
             Assert.That(message.SenderAccountName, Is.EqualTo(_senderAccount.Name));
             Assert.That(message.TransferConnectionRequestId, Is.EqualTo(_transferConnectionInvitation.Id));

@@ -53,7 +53,7 @@ public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<Send
         }
 
         var senderAccount = await _employerAccountRepository.Get(message.AccountId);
-
+        
         return new SendTransferConnectionInvitationResponse
         {
             ReceiverAccount = _mapper.Map<AccountDto>(receiverAccount),
@@ -61,7 +61,7 @@ public class SendTransferConnectionInvitationQueryHandler : IRequestHandler<Send
         };
     }
 
-    private void ThrowValidationException(string property, string message)
+    private static void ThrowValidationException(string property, string message)
     {
         var validationResult = new Validation.ValidationResult();
         validationResult.AddError(property,message);

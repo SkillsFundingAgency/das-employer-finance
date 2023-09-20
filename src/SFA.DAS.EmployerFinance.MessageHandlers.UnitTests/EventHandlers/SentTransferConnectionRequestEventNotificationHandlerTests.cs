@@ -4,79 +4,92 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
+using SFA.DAS.Encoding;
 using SFA.DAS.Notifications.Api.Types;
-using SFA.DAS.Testing;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
+namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers;
+
+[TestFixture]
+public class SentTransferConnectionRequestEventNotificationHandlerTests 
 {
-    [TestFixture]
-    public class SentTransferConnectionRequestEventNoticiationHandlerTests : FluentTest<SentTransferConnectionRequestEventNotificationHandlerTestsFixture>
+    [Test]
+    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
     {
-        [Test]
-        public Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
-        {
-            return RunAsync(f => f.Handle(),
-                f => f.NotificationsApiClient.Verify(
-                    r => r.SendEmail(It.Is<Email>(e =>
-                        !string.IsNullOrWhiteSpace(e.Tokens["link_notification_page"])
-                        && e.Tokens["account_name"] == f.SenderAccount.Name)),
-                    Times.Exactly(3)));
-        }
+        var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
 
-        [Test]
-        public Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
-        {
-            return RunAsync(f => f.Handle(),
-                f => f.NotificationsApiClient.Verify(
-                    r => r.SendEmail(It.Is<Email>(e =>
-                        e.RecipientsAddress == f.ReceiverAccountOwner.Email
-                        && !string.IsNullOrWhiteSpace(e.Subject)
-                        && e.ReplyToAddress == "noreply@sfa.gov.uk"
-                        && e.TemplateId == "TransferConnectionInvitationSent"
-                        && !string.IsNullOrWhiteSpace(e.Tokens["link_notification_page"])
-                        && e.Tokens["account_name"] == f.SenderAccount.Name)),
-                    Times.Once));
-        }
+        fixture.NotificationsApiClient.Verify(
+            api => api.SendEmail(It.Is<Email>(email =>
+                !string.IsNullOrWhiteSpace(email.Tokens["link_notification_page"])
+                && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
+            Times.Exactly(3));
+    }
+    
+    [Test]
+    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeReceiverAccountId()
+    {
+        var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
+        
+        fixture.EncodingService.Verify(encodingService=> encodingService.Encode(It.Is<long>(x=> x == fixture.ReceiverAccount.Id), EncodingType.AccountId), Times.Once);
+    }
+    
+    [Test]
+    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
+    {
+        var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
+        
+        await fixture.Handle();
+        
+        fixture.NotificationsApiClient.Verify(
+            api => api.SendEmail(It.Is<Email>(email =>
+                email.RecipientsAddress == fixture.ReceiverAccountOwner.Email
+                && !string.IsNullOrWhiteSpace(email.Subject)
+                && email.ReplyToAddress == "noreply@sfa.gov.uk"
+                && email.TemplateId == "TransferConnectionInvitationSent"
+                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.ReceiverHashedId}/transfers/connections"
+                && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
+            Times.Once);
+    }
+}
+
+public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture : TransferConnectionRequestEventNotificationHandlerTestsFixtureBase
+{
+    private SentTransferConnectionRequestEventNotificationHandler Handler { get; }
+
+    private SentTransferConnectionRequestEvent Event { get; set; }
+
+    public SentTransferConnectionRequestEventNotificationHandlerTestsFixture()
+    {
+        AddSenderAccount();
+        AddReceiverAccount();
+        SetReceiverAccountOwner();
+        SetSenderAccountOwner1();
+        SetSenderAccountOwner2();
+        SetMessage();
+
+        Handler = new SentTransferConnectionRequestEventNotificationHandler(
+            Configuration,
+            OuterApiClient.Object,
+            Mock.Of<ILogger<SentTransferConnectionRequestEventNotificationHandler>>(),
+            NotificationsApiClient.Object,
+            EncodingService.Object);
     }
 
-    public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture
-        : TransferConnectionRequestEventNotificationHandlerTestsFixtureBase
+    public Task Handle() 
     {
-        public SentTransferConnectionRequestEventNotificationHandler Handler { get; set; }
+        return Handler.Handle(Event, null);
+    }
 
-        public SentTransferConnectionRequestEvent Event { get; set; }
-     
-        public SentTransferConnectionRequestEventNotificationHandlerTestsFixture()
+    private void SetMessage()
+    {
+        Event = new SentTransferConnectionRequestEvent
         {
-            AddSenderAccount();
-            AddReceiverAccount();
-            SetReceiverAccountOwner();
-            SetSenderAccountOwner1();
-            SetSenderAccountOwner2();
-            SetMessage();
-
-            Handler = new SentTransferConnectionRequestEventNotificationHandler(
-                Configuration,
-                OuterApiClient.Object,
-                Mock.Of<ILogger<SentTransferConnectionRequestEventNotificationHandler>>(),
-                NotificationsApiClient.Object);
-        }
-        
-        public Task Handle()
-        {
-            return Handler.Handle(Event, null);
-        }
-
-        private SentTransferConnectionRequestEventNotificationHandlerTestsFixture SetMessage()
-        {
-            Event = new SentTransferConnectionRequestEvent
-            {
-                ReceiverAccountId = ReceiverAccount.Id,
-                SenderAccountId = SenderAccount.Id,
-                SenderAccountName = SenderAccount.Name
-            };
-
-            return this;
-        }
+            ReceiverAccountId = ReceiverAccount.Id,
+            SenderAccountId = SenderAccount.Id,
+            SenderAccountName = SenderAccount.Name
+        };
     }
 }
