@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Data;
+﻿using System.Text.Json;
+using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.Encoding;
@@ -9,17 +10,26 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
 {
     private readonly Lazy<EmployerFinanceDbContext> _dbContext;
     private readonly IEncodingService _encodingService;
+    private readonly ILogger<GetTransferTransactionDetailsQueryHandler> _logger;
 
     public GetTransferTransactionDetailsQueryHandler(Lazy<EmployerFinanceDbContext> dbContext,
-        IEncodingService encodingService)
+        IEncodingService encodingService,
+        ILogger<GetTransferTransactionDetailsQueryHandler> logger)
     {
         _dbContext = dbContext;
         _encodingService = encodingService;
+        _logger = logger;
     }
 
     public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("{TypeName} processing started.", nameof(GetTransferTransactionDetailsQueryHandler));
+        
+        _logger.LogInformation("{TypeName} query details: {Query}", nameof(GetTransferTransactionDetailsQueryHandler), JsonSerializer.Serialize(query));
+        
         var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
+        
+        _logger.LogInformation("{TypeName} target accountId : {TargetAccountId}", nameof(GetTransferTransactionDetailsQueryHandler), targetAccountId);
 
         var transfers = await _dbContext.Value.AccountTransfers
             .Where(accountTransfer =>
@@ -62,6 +72,8 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
         var transfersPaymentTotal = transferDetails.Sum(details => details.PaymentTotal);
 
         var isCurrentAccountSender = query.AccountId.GetValueOrDefault() == firstTransfer.SenderAccountId;
+        
+        _logger.LogInformation("{TypeName} processing competed.", nameof(GetTransferTransactionDetailsQueryHandler));
 
         return new GetTransferTransactionDetailsResponse
         {
