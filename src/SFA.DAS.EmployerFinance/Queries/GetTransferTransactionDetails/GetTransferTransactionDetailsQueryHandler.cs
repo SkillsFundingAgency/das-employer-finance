@@ -25,17 +25,13 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
     {
         _logger.LogInformation("{TypeName} processing started.", nameof(GetTransferTransactionDetailsQueryHandler));
         
-        _logger.LogInformation("{TypeName} query details: {Query}", nameof(GetTransferTransactionDetailsQueryHandler), JsonSerializer.Serialize(query));
-        
         var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
         
-        _logger.LogInformation("{TypeName} target accountId : {TargetAccountId}", nameof(GetTransferTransactionDetailsQueryHandler), targetAccountId);
-
         var transfers = await _dbContext.Value.AccountTransfers
             .Where(accountTransfer =>
-                        (accountTransfer.SenderAccountId == query.AccountId.GetValueOrDefault() && accountTransfer.ReceiverAccountId == targetAccountId)
+                        (accountTransfer.SenderAccountId == query.AccountId.GetValueOrDefault() && accountTransfer.ReceiverAccountId == targetAccountId
                         ||
-                        (accountTransfer.SenderAccountId == targetAccountId && accountTransfer.ReceiverAccountId == query.AccountId.GetValueOrDefault())
+                        accountTransfer.SenderAccountId == targetAccountId && accountTransfer.ReceiverAccountId == query.AccountId.GetValueOrDefault())
                         && accountTransfer.PeriodEnd == query.PeriodEnd)
             .ToListAsync(cancellationToken);
 
