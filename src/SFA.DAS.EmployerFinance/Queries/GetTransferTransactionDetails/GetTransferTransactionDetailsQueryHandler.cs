@@ -29,9 +29,9 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
         
         var transfers = await _dbContext.Value.AccountTransfers
             .Where(accountTransfer =>
-                        (accountTransfer.SenderAccountId == query.AccountId.GetValueOrDefault() && accountTransfer.ReceiverAccountId == targetAccountId
+                        ((accountTransfer.SenderAccountId == query.AccountId.GetValueOrDefault() && accountTransfer.ReceiverAccountId == targetAccountId)
                         ||
-                        accountTransfer.SenderAccountId == targetAccountId && accountTransfer.ReceiverAccountId == query.AccountId.GetValueOrDefault())
+                        (accountTransfer.SenderAccountId == targetAccountId && accountTransfer.ReceiverAccountId == query.AccountId.GetValueOrDefault()))
                         && accountTransfer.PeriodEnd == query.PeriodEnd)
             .ToListAsync(cancellationToken);
 
