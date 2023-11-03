@@ -66,7 +66,7 @@ public class Startup
         services.AddRouting();
 
         services.AddMediatorValidators();
-        services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(GetPayeSchemeByRefQuery).Assembly));
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
 

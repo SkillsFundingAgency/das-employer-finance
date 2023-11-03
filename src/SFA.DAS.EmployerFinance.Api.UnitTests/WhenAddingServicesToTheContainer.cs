@@ -54,9 +54,6 @@ public class WhenAddingServicesToTheContainer
     private static void SetupServiceCollection(IServiceCollection services)
     {
         var configuration = GenerateConfiguration();
-        var financeConfiguration = configuration
-            .GetSection("EmployerFinanceConfiguration")
-            .Get<EmployerFinanceConfiguration>();
 
         services.AddSingleton(Mock.Of<IWebHostEnvironment>());
         services.AddSingleton(Mock.Of<IConfiguration>());
@@ -64,16 +61,14 @@ public class WhenAddingServicesToTheContainer
         services.AddDistributedMemoryCache();
         services.AddApplicationServices();
         services.AddRouting();
-        //services.AddAuthenticationServices();
         services.AddDatabaseRegistration();
         services.AddDataRepositories();
         services.AddOrchestrators();
         services.AddLogging();
         services.AddHmrcServices();
-        services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(GetPayeSchemeByRefQuery).Assembly));
         services.AddMediatorValidators();
         services.AddAutoMapper(typeof(Startup), typeof(GetPayeSchemeByRefHandler));
-
     }
     
     private static IConfigurationRoot GenerateConfiguration()
