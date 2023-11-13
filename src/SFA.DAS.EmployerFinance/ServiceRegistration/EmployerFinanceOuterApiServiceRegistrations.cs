@@ -12,8 +12,6 @@ public static class EmployerFinanceOuterApiServiceRegistrations
         {
             var outerApiConfiguration = sp.GetService<EmployerFinanceOuterApiConfiguration>();
             x.BaseAddress = new Uri(outerApiConfiguration.BaseUrl);
-            x.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", outerApiConfiguration.Key);
-            x.DefaultRequestHeaders.Add("X-Version", "1");
         });
 
         return services;
