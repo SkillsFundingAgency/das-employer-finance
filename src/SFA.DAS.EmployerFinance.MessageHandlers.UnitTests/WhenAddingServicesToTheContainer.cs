@@ -121,7 +121,7 @@ public class WhenAddingServicesToTheContainer
         services.AddDataRepositories();
         services.AddApplicationServices();
         services.AddDatabaseRegistration();
-        services.AddMediatR(typeof(RenameAccountCommand));
+        services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(RenameAccountCommand).Assembly));
         services.AddAutoMapper(typeof(TransactionRepository));
         services.AddUnitOfWork();
         services.AddMediatorValidators();

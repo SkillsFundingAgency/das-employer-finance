@@ -38,7 +38,7 @@ public class WhenAddingServicesToTheContainer
         services.AddDataRepositories();
         services.AddDatabaseRegistration();
         services.AddUnitOfWork();
-        services.AddMediatR(typeof(Program));
+        services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(Program).Assembly));
         services.AddLogging(_ => { });
         services.AddApplicationServices();
         services.AddTransient<ExpireFundsJob>();
