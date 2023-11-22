@@ -81,7 +81,7 @@ class WhenAReceiverGetsTransferTransactionDetails
             PeriodEnd = PeriodEnd
         };
 
-        _handler = new GetTransferTransactionDetailsQueryHandler(new Lazy<EmployerFinanceDbContext>(() => _db.Object), _encodingService.Object);
+        _handler = new GetTransferTransactionDetailsQueryHandler(new Lazy<EmployerFinanceDbContext>(() => _db.Object), _encodingService.Object, Mock.Of<ILogger<GetTransferTransactionDetailsQueryHandler>>());
 
         _transfers = new List<AccountTransfer>
         {
