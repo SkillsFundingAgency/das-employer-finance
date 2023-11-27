@@ -10,7 +10,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public class CommitmentsV2ApiClient : ApiClientBase, ICommitmentsV2ApiClient
+public class CommitmentsV2ApiClient :  ICommitmentsV2ApiClient
 {
     private readonly HttpClient _httpClient;
     private readonly CommitmentsApiV2ClientConfiguration _commitmentsApiClientConfig;
@@ -19,7 +19,10 @@ public class CommitmentsV2ApiClient : ApiClientBase, ICommitmentsV2ApiClient
 
     public CommitmentsV2ApiClient(
         HttpClient httpClient,
-        CommitmentsApiV2ClientConfiguration commitmentsApiClientConfig, ILogger<CommitmentsV2ApiClient> logger, IConfiguration configuration) : base(httpClient)
+        CommitmentsApiV2ClientConfiguration commitmentsApiClientConfig,
+        ILogger<CommitmentsV2ApiClient> logger,
+        IConfiguration configuration
+        )
     {
         _httpClient = httpClient;
         _commitmentsApiClientConfig = commitmentsApiClientConfig;
