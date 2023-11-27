@@ -42,7 +42,11 @@ public class Startup
 
         services.AddOptions();
 
-        services.AddLogging();
+        services.AddLogging(builder =>
+        {
+            builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
+            builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
+        });
 
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 

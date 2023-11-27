@@ -107,7 +107,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Send", model);
+                return View(nameof(Send), model);
             }
             switch (model.Choice)
             {
@@ -118,9 +118,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
                         ReceiverAccountPublicHashedId = model.ReceiverAccountPublicHashedId,
                         UserRef = Guid.Parse(User.GetUserId())
                     });
-                    return RedirectToAction("Sent", new { transferConnectionInvitationId = _encodingService.Encode(Convert.ToInt64(transferConnectionInvitationId), EncodingType.TransferRequestId), hashedAccountId });
+                    return RedirectToAction(nameof(Sent), new { transferConnectionInvitationId = _encodingService.Encode(Convert.ToInt64(transferConnectionInvitationId), EncodingType.TransferRequestId), hashedAccountId });
                 case "ReEnterAccountId":
-                    return RedirectToAction("Start", new{hashedAccountId});
+                    return RedirectToAction(nameof(Start), new{hashedAccountId});
                 default:
                     throw new ArgumentOutOfRangeException(nameof(model.Choice));
             }

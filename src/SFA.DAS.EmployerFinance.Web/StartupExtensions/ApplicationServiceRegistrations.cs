@@ -29,7 +29,7 @@ public static class ApplicationServiceRegistrations
         services.AddDateTimeServices(configuration);
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
-        services.AddMediatR(typeof(GetTransferRequestsQuery));
+        services.AddMediatR(x=> x.RegisterServicesFromAssembly(typeof(GetTransferRequestsQuery).Assembly));
         services.AddWebMediatorValidators();
         services.AddHttpContextAccessor();
 

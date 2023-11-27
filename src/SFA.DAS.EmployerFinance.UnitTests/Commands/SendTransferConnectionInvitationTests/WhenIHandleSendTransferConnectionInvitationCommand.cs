@@ -13,33 +13,33 @@ using SFA.DAS.UnitOfWork.Context;
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.SendTransferConnectionInvitationTests;
 
 [TestFixture]
-public class WhenIHandleSendTransferConnectionInvitationCommand : FluentTest<WhenIHandleSendTransferConnectionInvitationCommandTestFixture>
+public class WhenIHandleSendTransferConnectionInvitationCommand
 {
     [Test]
-    public Task Handle_SendTransferConnectionInvitationCommand_ThenShouldAddTransferConnectionInvitationToRepository()
+    public async Task Handle_SendTransferConnectionInvitationCommand_ThenShouldAddTransferConnectionInvitationToRepository()
     {
-        return RunAsync(f => f.Handle(), f => f.TransferConnectionInvitationRepository.Verify(r => r.Add(It.IsAny<TransferConnectionInvitation>()), Times.Once));
+        var fixture = new WhenIHandleSendTransferConnectionInvitationCommandTestFixture();
+
+        await fixture.Handle();
+        
+        fixture.TransferConnectionInvitationRepository.Verify(repository => repository.Add(It.IsAny<TransferConnectionInvitation>()), Times.Once);
     }
 }
 
 public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : FluentTestFixture
 {
-    public SendTransferConnectionInvitationCommandHandler Handler { get; set; }
-    public SendTransferConnectionInvitationCommand Command { get; set; }
-        
-    public Mock<IEmployerAccountRepository> EmployerAccountRepository { get; set; }
-    public Mock<ITransferConnectionInvitationRepository> TransferConnectionInvitationRepository { get; set; }
-    public Mock<ITransferRepository> TransferRepository { get; set; }
-    public Mock<IUserAccountRepository> UserRepository { get; set; }
-    public Mock<IEncodingService> EncodingService { get; set; }
-    public EmployerFinanceConfiguration EmployerFinanceConfiguration { get; set; }
-
-    public Account ReceiverAccount { get; set; }
+    private SendTransferConnectionInvitationCommandHandler Handler { get; }
+    private SendTransferConnectionInvitationCommand Command { get; }
+    private Mock<IEmployerAccountRepository> EmployerAccountRepository { get; }
+    public Mock<ITransferConnectionInvitationRepository> TransferConnectionInvitationRepository { get; }
+    private Mock<ITransferRepository> TransferRepository { get; }
+    private Mock<IUserAccountRepository> UserRepository { get; }
+    private Mock<IEncodingService> EncodingService { get; }
+    private EmployerFinanceConfiguration EmployerFinanceConfiguration { get; }
+    private Account ReceiverAccount { get; set; }
     public long? Result { get; set; }
-    public Account SenderAccount { get; set; }
-    public decimal SenderAccountTransferAllowance { get; set; }
-    public User SenderUser { get; set; }
-    public TransferConnectionInvitation TransferConnectionInvitation { get; set; }
+    private Account SenderAccount { get; set; }
+    private User SenderUser { get; set; }
     public IUnitOfWorkContext UnitOfWorkContext { get; }
 
     public WhenIHandleSendTransferConnectionInvitationCommandTestFixture()
@@ -80,7 +80,7 @@ public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : Flu
         UnitOfWorkContext = new UnitOfWorkContext();
     }
 
-    public WhenIHandleSendTransferConnectionInvitationCommandTestFixture AddAccount(Account account)
+    private WhenIHandleSendTransferConnectionInvitationCommandTestFixture AddAccount(Account account)
     {
         EmployerAccountRepository.Setup(r => r.Get(account.Id)).ReturnsAsync(account);
         EncodingService.Setup(h => h.Decode(account.PublicHashedId, EncodingType.PublicAccountId)).Returns(account.Id);
@@ -104,9 +104,9 @@ public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : Flu
         Result = await Handler.Handle(Command,CancellationToken.None);
     }
 
-    public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetReceiverAccount()
+    private WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetReceiverAccount()
     {
-        var hashedAccountId = "ABC123";
+        const string hashedAccountId = "ABC123";
         ReceiverAccount = new Account
         {
             Id = 222222,
@@ -117,9 +117,9 @@ public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : Flu
         return AddAccount(ReceiverAccount);
     }
 
-    public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetSenderAccount()
+    private WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetSenderAccount()
     {
-        var hashedAccountId = "ABC123";
+        const string hashedAccountId = "ABC123";
         SenderAccount = new Account
         {
             Id = 333333,
@@ -130,16 +130,14 @@ public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : Flu
         return AddAccount(SenderAccount);
     }
 
-    public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetSenderAccountTransferAllowance(decimal remainingTransferAllowance)
+    private void SetSenderAccountTransferAllowance(decimal remainingTransferAllowance)
     {
         var transferAllowance = new TransferAllowance { RemainingTransferAllowance = remainingTransferAllowance };
 
         TransferRepository.Setup(s => s.GetTransferAllowance(SenderAccount.Id, It.IsAny<decimal>())).ReturnsAsync(transferAllowance);
-
-        return this;
     }
 
-    public WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetSenderUser()
+    private WhenIHandleSendTransferConnectionInvitationCommandTestFixture SetSenderUser()
     {
         SenderUser = new User
         {

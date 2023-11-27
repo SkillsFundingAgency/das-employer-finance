@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.OpenApi.Models;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.EmployerFinance.Api.Authentication;
@@ -36,7 +37,11 @@ public class Startup
         var employerFinanceConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
         var isDevelopment = _configuration.IsDevOrLocal();
 
-        services.AddLogging();
+        services.AddLogging(builder =>
+        {
+            builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
+            builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
+        });
 
         services.AddApiAuthentication(_configuration, isDevelopment);
         services.AddApiAuthorization(isDevelopment);
@@ -61,7 +66,7 @@ public class Startup
         services.AddRouting();
 
         services.AddMediatorValidators();
-        services.AddMediatR(typeof(GetPayeSchemeByRefQuery));
+        services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(GetPayeSchemeByRefQuery).Assembly));
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
 

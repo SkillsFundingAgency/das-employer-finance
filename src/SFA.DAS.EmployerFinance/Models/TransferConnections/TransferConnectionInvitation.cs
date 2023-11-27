@@ -39,10 +39,8 @@ public class TransferConnectionInvitation : Entity
         Publish(() => new SentTransferConnectionRequestEvent
         {
             Created = now,
-            ReceiverAccountHashedId = ReceiverAccount.HashedId,
             ReceiverAccountId = ReceiverAccount.Id,
             ReceiverAccountName = ReceiverAccount.Name,
-            SenderAccountHashedId = SenderAccount.HashedId,
             SenderAccountId = SenderAccount.Id,
             SenderAccountName = SenderAccount.Name,
             SentByUserId = senderUser.Id,
@@ -78,10 +76,8 @@ public class TransferConnectionInvitation : Entity
             ApprovedByUserName = approverUser.FullName,
             ApprovedByUserRef = approverUser.Ref,
             Created = now,
-            ReceiverAccountHashedId = ReceiverAccount.HashedId,
             ReceiverAccountId = ReceiverAccount.Id,
             ReceiverAccountName = ReceiverAccount.Name,
-            SenderAccountHashedId = SenderAccount.HashedId,
             SenderAccountId = SenderAccount.Id,
             SenderAccountName = SenderAccount.Name,
             TransferConnectionRequestId = Id
@@ -163,7 +159,6 @@ public class TransferConnectionInvitation : Entity
             RejectorUserId = rejectorUser.Id,
             RejectorUserName = rejectorUser.FullName,
             RejectorUserRef = rejectorUser.Ref,
-            SenderAccountHashedId = SenderAccount.HashedId,
             SenderAccountId = SenderAccount.Id,
             SenderAccountName = SenderAccount.Name,
             TransferConnectionRequestId = Id

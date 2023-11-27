@@ -19,10 +19,8 @@ public class ApprovedTransferConnectionRequestEventHandler : IHandleMessages<App
         {
             TransferConnectionInvitationId = message.TransferConnectionRequestId,
             SenderAccountId = message.SenderAccountId,
-            SenderAccountHashedId = message.SenderAccountHashedId,
             SenderAccountName = message.SenderAccountName,
             ReceiverAccountId = message.ReceiverAccountId,
-            ReceiverAccountHashedId = message.ReceiverAccountHashedId,
             ReceiverAccountName = message.ReceiverAccountName,
             ApprovedByUserId = message.ApprovedByUserId,
             ApprovedByUserExternalId = message.ApprovedByUserRef,
