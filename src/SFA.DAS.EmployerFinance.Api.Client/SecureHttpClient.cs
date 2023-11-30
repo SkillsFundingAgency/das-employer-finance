@@ -25,15 +25,15 @@ public class SecureHttpClient : ISecureHttpClient
     {
         var accessToken = await GetManagedIdentityAuthenticationResult(_configuration.IdentifierUri);
 
-        using (var client = new HttpClient())
-        {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        using var client = new HttpClient();
 
-            var response = await client.GetAsync(url, cancellationToken);
-            response.EnsureSuccessStatusCode();
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            return await response.Content.ReadAsStringAsync(cancellationToken);
-        }
+        using var response = await client.GetAsync(url, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStringAsync(cancellationToken);
     }
 
 
