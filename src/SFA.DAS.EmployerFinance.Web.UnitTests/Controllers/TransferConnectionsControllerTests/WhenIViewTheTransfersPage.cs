@@ -134,7 +134,7 @@ public class WhenIViewTheTransfersPage
 
         var claims = new List<Claim>
         {
-            new(ControllerConstants.UserRefClaimKeyName, userRef),
+            new(ClaimTypes.NameIdentifier, userRef),
             new(DasClaimTypes.Email, email),
             new(DasClaimTypes.GivenName, firstName),
             new(DasClaimTypes.FamilyName, lastName)

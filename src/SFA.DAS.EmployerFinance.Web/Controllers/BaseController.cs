@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
-using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerUsers.WebClientComponents;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
@@ -21,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             var userIdentity = HttpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
 
-            var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ControllerConstants.UserRefClaimKeyName)?.Value;
+            var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var email = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.Email)?.Value;
             var firstName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.GivenName)?.Value;
             var lastName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.FamilyName)?.Value;
