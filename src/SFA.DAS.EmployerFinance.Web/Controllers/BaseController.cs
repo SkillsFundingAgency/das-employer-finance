@@ -1,34 +1,37 @@
-﻿using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
+﻿using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+using SFA.DAS.EmployerUsers.WebClientComponents;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers
 {
     public class BaseController : Controller
     {
-        private const string FlashMessageCookieName = "sfa-das-employerapprenticeshipsservice-flashmessage";
+        protected IHttpContextAccessor HttpContextAccessor;
+        protected IMediator Mediator;
 
-        private readonly ICookieStorageService<FlashMessageViewModel> _flashMessage;
-
-        public BaseController(ICookieStorageService<FlashMessageViewModel> flashMessage)
+        public BaseController(IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
-            _flashMessage = flashMessage;
+            HttpContextAccessor = httpContextAccessor;
+            Mediator = mediator;
         }
 
        public BaseController() { }
 
-        public void AddFlashMessageToCookie(FlashMessageViewModel model)
+        protected async Task UpsertRegisteredUser()
         {
-            _flashMessage.Delete(FlashMessageCookieName);
+            var userIdentity = HttpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
 
-            _flashMessage.Create(model, FlashMessageCookieName);
+            var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var email = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.Email)?.Value;
+            var firstName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.GivenName)?.Value;
+            var lastName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.FamilyName)?.Value;
+
+            await Mediator.Send(new UpsertRegisteredUserCommand
+            {
+                EmailAddress = email,
+                UserRef = userRef,
+                LastName = lastName,
+                FirstName = firstName
+            });
         }
-
-        public FlashMessageViewModel GetFlashMessageViewModelFromCookie()
-        {
-            var flashMessageViewModelFromCookie = _flashMessage.Get(FlashMessageCookieName);
-            _flashMessage.Delete(FlashMessageCookieName);
-            return flashMessageViewModelFromCookie;
-        }
-
     }
 }

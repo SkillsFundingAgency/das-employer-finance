@@ -27,7 +27,7 @@ public class WhenIViewTheTransferConnectionInvitationsComponent
         _mediator = new Mock<IMediator>();
         _mediator.Setup(m => m.Send(It.Is<GetTransferConnectionInvitationsQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
             
-        _controller = new TransferConnectionsController(null, _mapper, _mediator.Object, Mock.Of<IEncodingService>());
+        _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<IHttpContextAccessor>());
     }
 
     [Test]

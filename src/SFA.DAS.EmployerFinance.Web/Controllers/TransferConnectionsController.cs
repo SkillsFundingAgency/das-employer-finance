@@ -9,7 +9,6 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
 
@@ -18,18 +17,21 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
     [SetNavigationSection(NavigationSection.AccountsFinance)]
     [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
     [Route("accounts/{HashedAccountId}/transfers/connections")]
-    public class TransferConnectionsController : Controller
+    public class TransferConnectionsController : BaseController
     {
         private readonly ILogger<TransferConnectionsController> _logger;
         private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
         private readonly IEncodingService _encodingService;
 
-        public TransferConnectionsController(ILogger<TransferConnectionsController> logger, IMapper mapper, IMediator mediator, IEncodingService encodingService)
+        public TransferConnectionsController(ILogger<TransferConnectionsController> logger,
+            IMapper mapper,
+            IMediator mediator,
+            IEncodingService encodingService,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor, mediator)
         {
             _logger = logger;
             _mapper = mapper;
-            _mediator = mediator;
             _encodingService = encodingService;
         }
 
@@ -37,7 +39,9 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         [Route("",Name = RouteNames.TransferConnectionsIndex)]
         public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
         {
-            var response = await _mediator.Send(new GetEmployerAccountDetailByHashedIdQuery
+            await UpsertRegisteredUser();
+
+            var response = await Mediator.Send(new GetEmployerAccountDetailByHashedIdQuery
             {
                 HashedAccountId = hashedAccountId
             });
@@ -65,7 +69,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         
         public async Task<TransferAllowanceViewModel> TransferAllowance(long accountId)
         {
-            var response = await _mediator.Send(new GetTransferAllowanceQuery
+            var response = await Mediator.Send(new GetTransferAllowanceQuery
             {
                 AccountId = accountId
             });
@@ -75,7 +79,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         
         public async Task<TransferConnectionInvitationAuthorizationViewModel> TransferConnectionInvitationAuthorization(long accountId)
         {
-            var response = await _mediator.Send(new GetTransferConnectionInvitationAuthorizationQuery
+            var response = await Mediator.Send(new GetTransferConnectionInvitationAuthorizationQuery
             {
                 AccountId = accountId
             });
@@ -84,7 +88,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
 
         public async Task<TransferConnectionInvitationsViewModel> TransferConnectionInvitations(long accountId)
         {
-            var response = await _mediator.Send(new GetTransferConnectionInvitationsQuery
+            var response = await Mediator.Send(new GetTransferConnectionInvitationsQuery
             {
                 AccountId = accountId
             });
@@ -125,7 +129,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
         {
             try
             {
-                var response = await _mediator.Send(new GetTransferRequestsQuery
+                var response = await Mediator.Send(new GetTransferRequestsQuery
                 {
                     AccountId = accountId
                 });

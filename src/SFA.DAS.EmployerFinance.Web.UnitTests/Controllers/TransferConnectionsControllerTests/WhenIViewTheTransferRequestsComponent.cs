@@ -33,7 +33,7 @@ public class WhenIViewTheTransferRequestsComponent
         _mediator = new Mock<IMediator>();
         _mediator.Setup(m => m.Send(It.Is<GetTransferRequestsQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
             
-        _controller = new TransferConnectionsController(_logger.Object, _mapper, _mediator.Object, Mock.Of<IEncodingService>());
+        _controller = new TransferConnectionsController(_logger.Object, _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<IHttpContextAccessor>());
     }
 
     [Test]
