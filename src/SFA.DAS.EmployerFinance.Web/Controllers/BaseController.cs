@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+﻿using System.Text.Json;
+using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerUsers.WebClientComponents;
 
 namespace SFA.DAS.EmployerFinance.Web.Controllers;
@@ -26,14 +27,16 @@ public class BaseController : Controller
         var firstName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.GivenName)?.Value;
         var lastName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.FamilyName)?.Value;
         
-        _logger.LogInformation("{TypeName}.UpsertRegisteredUser() called with FirstName = '{FirstName}', LastName = '{LastName}'.", nameof(BaseController), firstName, lastName);
-
-        await Mediator.Send(new UpsertRegisteredUserCommand
+        var command = new UpsertRegisteredUserCommand
         {
             EmailAddress = email,
             UserRef = userRef,
             LastName = lastName,
             FirstName = firstName
-        });
+        };
+        
+        _logger.LogInformation("{TypeName}.UpsertRegisteredUser() called: '{Command}'.", nameof(BaseController), JsonSerializer.Serialize(command));
+        
+        await Mediator.Send(command);
     }
 }
