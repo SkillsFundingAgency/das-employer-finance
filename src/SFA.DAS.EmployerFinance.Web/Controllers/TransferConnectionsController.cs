@@ -28,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers
             IMediator mediator,
             IEncodingService encodingService,
             IHttpContextAccessor httpContextAccessor)
-            : base(httpContextAccessor, mediator)
+            : base(httpContextAccessor, mediator, logger)
         {
             _logger = logger;
             _mapper = mapper;
