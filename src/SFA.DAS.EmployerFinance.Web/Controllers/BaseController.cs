@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using DocumentFormat.OpenXml.Bibliography;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerUsers.WebClientComponents;
@@ -24,23 +23,10 @@ public class BaseController : Controller
     {
         var userIdentity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
 
-        var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var email = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.Email)?.Value;
         var firstName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.GivenName)?.Value;
         var lastName = userIdentity.Claims.FirstOrDefault(c => c.Type == DasClaimTypes.FamilyName)?.Value;
-        
-        var userRefFromIdams = userIdentity.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value;
-        
-        _logger.LogInformation("{TypeName} ClaimTypes.NameIdentifier = '{userRef}', EmployerClaims.IdamsUserIdClaimTypeIdentifier = '{userRefFromIdams}''.", 
-            nameof(BaseController), 
-            userRef,
-            userRefFromIdams
-            );
-
-        if (!Guid.TryParse(userRef, out _))
-        {
-            userRef = userRefFromIdams;
-        }
+        var userRef = userIdentity.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value;
         
         var command = new UpsertRegisteredUserCommand
         {
