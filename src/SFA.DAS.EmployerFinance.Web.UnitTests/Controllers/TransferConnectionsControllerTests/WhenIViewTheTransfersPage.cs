@@ -2,6 +2,7 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Dtos;
+using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
@@ -134,7 +135,7 @@ public class WhenIViewTheTransfersPage
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, userRef),
+            new(EmployerClaims.IdamsUserIdClaimTypeIdentifier, userRef),
             new(DasClaimTypes.Email, email),
             new(DasClaimTypes.GivenName, firstName),
             new(DasClaimTypes.FamilyName, lastName)
