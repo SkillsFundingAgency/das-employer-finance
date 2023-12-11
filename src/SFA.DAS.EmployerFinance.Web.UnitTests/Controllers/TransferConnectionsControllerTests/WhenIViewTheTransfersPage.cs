@@ -10,7 +10,6 @@ using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorizati
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.Web.Controllers;
-using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.EmployerUsers.WebClientComponents;
 using SFA.DAS.Encoding;
