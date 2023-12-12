@@ -1,20 +1,6 @@
-using FluentAssertions.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
-using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
-using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
-using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
-using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
-using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
-using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
-using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
-using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
-using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitations;
-using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -97,7 +83,6 @@ public class WhenAddingServicesToTheContainer
             type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountOwnerAuthorizationHandler));
             type.Should().ContainSingle(c => c.GetType() == typeof(AccountActiveAuthorizationHandler));
         });
-        
     }
 
     private static void SetupServiceCollection(IServiceCollection services)
