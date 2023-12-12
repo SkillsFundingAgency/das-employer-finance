@@ -37,6 +37,7 @@ public class WhenAddingServicesToTheContainer
         var type = provider.GetService(toResolve);
         Assert.IsNotNull(type);
     }
+    
     [TestCase(typeof(IEmployerAccountAuthorisationHandler))]
     [TestCase(typeof(ICustomClaims))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Services(Type toResolve)
