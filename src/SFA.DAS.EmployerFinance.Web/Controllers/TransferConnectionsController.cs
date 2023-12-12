@@ -74,6 +74,7 @@ public class TransferConnectionsController : Controller
         return View(model);
     }
         
+    [NonAction]
     public async Task<TransferAllowanceViewModel> TransferAllowance(long accountId)
     {
         var response = await _mediator.Send(new GetTransferAllowanceQuery
@@ -83,6 +84,7 @@ public class TransferConnectionsController : Controller
         return _mapper.Map<TransferAllowanceViewModel>(response);
     }
         
+    [NonAction]
     public async Task<TransferConnectionInvitationAuthorizationViewModel> TransferConnectionInvitationAuthorization(long accountId)
     {
         var response = await _mediator.Send(new GetTransferConnectionInvitationAuthorizationQuery
@@ -92,6 +94,7 @@ public class TransferConnectionsController : Controller
         return _mapper.Map<TransferConnectionInvitationAuthorizationViewModel>(response);
     }
 
+    [NonAction]
     public async Task<TransferConnectionInvitationsViewModel> TransferConnectionInvitations(long accountId)
     {
         var response = await _mediator.Send(new GetTransferConnectionInvitationsQuery
@@ -130,6 +133,7 @@ public class TransferConnectionsController : Controller
         };
     }
 
+    [NonAction]
     public async Task<TransferRequestsViewModel> TransferRequests(long accountId)
     {
         try
