@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AutoMapper;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
@@ -168,6 +169,8 @@ public class TransferConnectionsController : Controller
             LastName = lastName,
             FirstName = firstName
         };
+        
+        _logger.LogInformation("UpsertRegisteredUser() called. Command properties: {Command}", JsonSerializer.Serialize(command));
         
         await _mediator.Send(command);
     }

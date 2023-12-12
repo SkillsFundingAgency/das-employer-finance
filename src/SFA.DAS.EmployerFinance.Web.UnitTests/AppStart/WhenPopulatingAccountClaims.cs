@@ -1,4 +1,3 @@
-using System.Net.Mail;
 using AutoFixture.NUnit3;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -7,13 +6,13 @@ using SFA.DAS.EmployerFinance.Models.UserAccounts;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Handlers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
+using SFA.DAS.EmployerUsers.WebClientComponents;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
 public class WhenPopulatingAccountClaims
 {
-
     [Test, MoqAutoData]
     public async Task Then_The_Claims_Are_Populated_For_Gov_User(
         string nameIdentifier,
@@ -34,11 +33,15 @@ public class WhenPopulatingAccountClaims
         accountService.Verify(x => x.GetUserAccounts(nameIdentifier, emailAddress), Times.Once);
         accountService.Verify(x => x.GetUserAccounts(idamsIdentifier, emailAddress), Times.Never);
         actual.Should().ContainSingle(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
+        
         var actualClaimValue = actual.First(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier)).Value;
         JsonConvert.SerializeObject(accountData.EmployerAccounts.ToDictionary(k => k.AccountId)).Should().Be(actualClaimValue);
+        
         actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserIdClaimTypeIdentifier)).Value.Should().Be(accountData.EmployerUserId);
-        actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Value.Should().Be(accountData.FirstName + " " + accountData.LastName);
         actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserEmailClaimTypeIdentifier)).Value.Should().Be(emailAddress);
+        actual.First(c => c.Type.Equals(DasClaimTypes.GivenName)).Value.Should().Be(accountData.FirstName);
+        actual.First(c => c.Type.Equals(DasClaimTypes.FamilyName)).Value.Should().Be(accountData.LastName);
+        actual.First(c => c.Type.Equals(EmployerClaims.IdamsUserDisplayNameClaimTypeIdentifier)).Value.Should().Be($"{accountData.FirstName} {accountData.LastName}");
         actual.FirstOrDefault(c => c.Type.Equals(ClaimTypes.AuthorizationDecision))?.Value.Should().BeNullOrEmpty();
     }
 
