@@ -28,7 +28,7 @@
     <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.22" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.22" />
-    <PackageReference Include="SFA.DAS.Employer.Shared.UI" Version="17.1.64" />
+    <PackageReference Include="SFA.DAS.Employer.Shared.UI" Version="17.1.80-prerelease-1" />
     <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.52-prerelease-2" />
     <PackageReference Include="SFA.DAS.Logging">
       <Version>1.0.5</Version>
