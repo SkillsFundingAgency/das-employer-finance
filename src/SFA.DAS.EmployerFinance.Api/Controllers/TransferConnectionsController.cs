@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
+using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
 using SFA.DAS.Encoding;
 
@@ -23,7 +24,7 @@ public class TransferConnectionsController : ControllerBase
     [Route("{hashedAccountId}/transfers/connections")]
     public async Task<IActionResult> GetTransferConnections(string hashedAccountId)
     {
-        var accountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId);
+        var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
         var response = await _mediator.Send(new GetTransferConnectionsQuery { AccountId = accountId });
         return Ok(response.TransferConnections);
@@ -31,9 +32,14 @@ public class TransferConnectionsController : ControllerBase
 
     [HttpGet]
     [Route("internal/{accountId}/transfers/connections")]
-    public async Task<IActionResult> GetTransferConnections(long accountId)
+    public async Task<IActionResult> GetTransferConnections(long accountId, TransferConnectionInvitationStatus status = TransferConnectionInvitationStatus.Approved)
     {
-        var response = await _mediator.Send(new GetTransferConnectionsQuery { AccountId = accountId });
+        var response = await _mediator.Send(new GetTransferConnectionsQuery
+        {
+            AccountId = accountId,
+            Status = status
+        });
+
         return Ok(response.TransferConnections);
     }
 }

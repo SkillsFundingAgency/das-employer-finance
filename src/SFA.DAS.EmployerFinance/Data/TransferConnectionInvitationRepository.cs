@@ -26,8 +26,8 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
         return _db.Value.TransferConnectionInvitations
             .Include(i => i.ReceiverAccount)
             .Include(i => i.SenderAccount)
-            .Include(c=>c.Changes)
-            .ThenInclude(x=>x.User)
+            .Include(c => c.Changes)
+            .ThenInclude(x => x.User)
             .Where(i => i.Id == id)
             .SingleOrDefaultAsync();
     }
@@ -35,10 +35,10 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
     public Task<TransferConnectionInvitation> GetBySender(int id, long senderAccountId, TransferConnectionInvitationStatus status)
     {
         var query = _db.Value.TransferConnectionInvitations
-            .Include(c=>c.ReceiverAccount)
-            .Include(c=>c.SenderAccount)
-            .Include(c=>c.Changes)
-            .ThenInclude(x=>x.User)
+            .Include(c => c.ReceiverAccount)
+            .Include(c => c.SenderAccount)
+            .Include(c => c.Changes)
+            .ThenInclude(x => x.User)
             .Where(i =>
                 i.Id == id &&
                 i.SenderAccount.Id == senderAccountId &&
@@ -51,10 +51,10 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
     public Task<TransferConnectionInvitation> GetByReceiver(int id, long receiverAccountId, TransferConnectionInvitationStatus status)
     {
         var query = _db.Value.TransferConnectionInvitations
-            .Include(c=>c.ReceiverAccount)
-            .Include(c=>c.SenderAccount)
-            .Include(c=>c.Changes)
-            .ThenInclude(x=>x.User)
+            .Include(c => c.ReceiverAccount)
+            .Include(c => c.SenderAccount)
+            .Include(c => c.Changes)
+            .ThenInclude(x => x.User)
             .Where(i =>
                 i.Id == id &&
                 i.ReceiverAccount.Id == receiverAccountId &&
@@ -67,13 +67,13 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
     public Task<List<TransferConnectionInvitation>> GetByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
     {
         return _db.Value.TransferConnectionInvitations
-            .Include(c=>c.ReceiverAccount)
-            .Include(c=>c.SenderAccount)
-            .Include(c=>c.Changes)
-            .ThenInclude(x=>x.User)
+            .Include(c => c.ReceiverAccount)
+            .Include(c => c.SenderAccount)
+            .Include(c => c.Changes)
+            .ThenInclude(x => x.User)
             .Where(
                 i => i.ReceiverAccount.Id == receiverAccountId &&
-                     i.Status == TransferConnectionInvitationStatus.Approved)
+                     i.Status == status)
             .OrderBy(i => i.SenderAccount.Name)
             .ToListAsync();
     }
@@ -81,10 +81,10 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
     public Task<TransferConnectionInvitation> GetLatestByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
     {
         return _db.Value.TransferConnectionInvitations
-            .Include(c=>c.ReceiverAccount)
-            .Include(c=>c.SenderAccount)
-            .Include(c=>c.Changes)
-            .ThenInclude(x=>x.User)
+            .Include(c => c.ReceiverAccount)
+            .Include(c => c.SenderAccount)
+            .Include(c => c.Changes)
+            .ThenInclude(x => x.User)
             .Where(
                 i => i.ReceiverAccountId == receiverAccountId &&
                      i.Status == status)
@@ -95,10 +95,10 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
     public Task<TransferConnectionInvitation> GetBySenderOrReceiver(int id, long accountId)
     {
         return _db.Value.TransferConnectionInvitations
-            .Include(c=>c.ReceiverAccount)
-            .Include(c=>c.SenderAccount)
-            .Include(c=>c.Changes)
-            .ThenInclude(c=>c.User)
+            .Include(c => c.ReceiverAccount)
+            .Include(c => c.SenderAccount)
+            .Include(c => c.Changes)
+            .ThenInclude(c => c.User)
             .Where(i =>
                 i.Id == id && (
                     i.SenderAccount.Id == accountId && !i.DeletedBySender ||
@@ -111,8 +111,8 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
         var query = _db.Value.TransferConnectionInvitations
             .Include(i => i.ReceiverAccount)
             .Include(i => i.SenderAccount)
-            .Include(x=>x.Changes)
-            .ThenInclude(x=>x.User)
+            .Include(x => x.Changes)
+            .ThenInclude(x => x.User)
             .Where(
                 i => i.SenderAccount.Id == accountId && !i.DeletedBySender ||
                      i.ReceiverAccount.Id == accountId && !i.DeletedByReceiver)
