@@ -16,11 +16,11 @@ public class GetTransferConnectionsQueryHandler : IRequestHandler<GetTransferCon
         _mapper = mapper;
     }
 
-    public async Task<GetTransferConnectionsResponse> Handle(GetTransferConnectionsQuery message,CancellationToken cancellationToken)
+    public async Task<GetTransferConnectionsResponse> Handle(GetTransferConnectionsQuery message, CancellationToken cancellationToken)
     {
-        var transferConnectionInvitations = 
-            await _transferConnectionInvitationRepository.GetByReceiver(message.AccountId, TransferConnectionInvitationStatus.Approved);
-                
+        var transferConnectionInvitations =
+            await _transferConnectionInvitationRepository.GetByReceiver(message.AccountId, message.Status);
+
         return new GetTransferConnectionsResponse
         {
             TransferConnections = _mapper.Map<List<TransferConnectionInvitation>, List<TransferConnection>>(transferConnectionInvitations)
