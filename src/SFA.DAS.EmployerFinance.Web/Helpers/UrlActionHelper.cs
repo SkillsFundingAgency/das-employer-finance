@@ -15,11 +15,11 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             _actionContextAccessor = actionContextAccessor;
         }
 
-        public string EmployerAccountsAction(string path)
+        public string EmployerAccountsAction(string path, bool withAccountContext = true)
         {
             var baseUrl = _configuration.EmployerAccountsBaseUrl;
 
-            return AccountAction(baseUrl, path);
+            return AccountAction(baseUrl, path, withAccountContext);
         }
 
         public string EmployerCommitmentsV2Action(string path)

@@ -18,7 +18,7 @@ public class WhenISubmitTheTransferConnectionInvitationDeletedPage
     public void Arrange()
     {
         var urlHelper = new Mock<IUrlActionHelper>();
-        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{HashedAccountId}/teams");
+        urlHelper.Setup(x => x.EmployerAccountsAction("teams", true)).Returns($"/accounts/{HashedAccountId}/teams");
         _controller = new TransferConnectionInvitationsController(null, Mock.Of<IMediator>(), urlHelper.Object, Mock.Of<IEncodingService>());
     }
 

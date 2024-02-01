@@ -18,7 +18,7 @@ public class WhenISubmitTheApprovedTransferConnectionInvitationPage
     public void Arrange()
     {
         var urlHelper = new Mock<IUrlActionHelper>();
-        urlHelper.Setup(x => x.EmployerAccountsAction("teams")).Returns($"/accounts/{HashedAccountId}/teams");
+        urlHelper.Setup(x => x.EmployerAccountsAction("teams", true)).Returns($"/accounts/{HashedAccountId}/teams");
         urlHelper.Setup(x => x.EmployerCommitmentsV2Action("")).Returns($"/{HashedAccountId}");
             
         _controller = new TransferConnectionInvitationsController(null, _mediator.Object, urlHelper.Object, Mock.Of<IEncodingService>());

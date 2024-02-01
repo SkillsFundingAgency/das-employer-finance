@@ -1,4 +1,7 @@
-﻿<div class="govuk-grid-row">
+﻿@using SFA.DAS.EmployerFinance.Interfaces 
+@inject IUrlActionHelper UrlHelpers;
+
+<div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">You don't have access to this page</h1>
 
@@ -6,6 +9,6 @@
             The page you requested either does not exist or you don't
          have access to it, from here you can:            
         </p>
-        <a class="govuk-button govuk-button--start" id="go_back_service_home_page" href="/">Go back to the service home page</a>
+        <a class="govuk-button govuk-button--start" id="go_back_service_home_page" href="@UrlHelpers.EmployerAccountsAction("", false)">Go back to the service home page</a>
     </div>
 </div>

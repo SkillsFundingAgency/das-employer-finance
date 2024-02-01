@@ -25,8 +25,8 @@ public class WhenIGetTransferConnections
     [SetUp]
     public void Arrange()
     {
-        _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>(); 
-            
+        _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
+
         var hashedAccountId = "ABC123";
 
         _accountA = new Account
@@ -49,20 +49,37 @@ public class WhenIGetTransferConnections
             Name = "Account C",
             HashedId = hashedAccountId
         };
+    }
 
+    private void SeedDataByStatus(TransferConnectionInvitationStatus status)
+    {
         _approvedTransferConnectionAtoC = new TransferConnectionInvitationBuilder()
-            .WithId(333333)
-            .WithSenderAccount(_accountA)
-            .WithReceiverAccount(_accountC)
-            .WithStatus(TransferConnectionInvitationStatus.Approved)
-            .Build();
+           .WithId(333333)
+           .WithSenderAccount(_accountA)
+           .WithReceiverAccount(_accountC)
+           .WithStatus(status)
+           .Build();
 
         _approvedTransferConnectionBtoC = new TransferConnectionInvitationBuilder()
             .WithId(444444)
             .WithSenderAccount(_accountB)
             .WithReceiverAccount(_accountC)
-            .WithStatus(TransferConnectionInvitationStatus.Approved)
+            .WithStatus(status)
             .Build();
+
+        _transferConnectionInvitationRepository
+            .Setup(s => s.GetByReceiver(_accountC.Id, status))
+            .ReturnsAsync(new List<TransferConnectionInvitation>
+            {
+                _approvedTransferConnectionAtoC,
+                _approvedTransferConnectionBtoC
+            });
+
+        _query = new GetTransferConnectionsQuery
+        {
+            AccountId = _accountC.Id,
+            Status = status
+        };
 
         _transferConnectionInvitationRepository
             .Setup(s => s.GetByReceiver(_accountC.Id, TransferConnectionInvitationStatus.Approved))
@@ -79,16 +96,38 @@ public class WhenIGetTransferConnections
         }));
 
         _handler = new GetTransferConnectionsQueryHandler(_transferConnectionInvitationRepository.Object, _mapper);
-
-        _query = new GetTransferConnectionsQuery
-        {
-            AccountId = _accountC.Id
-        };
     }
 
     [Test]
-    public async Task ThenShouldReturnGetTransferConnectionInvitationsResponse()
+    public async Task ThenShouldReturnGetTransferConnectionInvitationsResponseForApprovedStatus()
     {
+        SeedDataByStatus(TransferConnectionInvitationStatus.Approved);
+
+        _response = await _handler.Handle(_query, CancellationToken.None);
+
+        Assert.That(_response, Is.Not.Null);
+        Assert.That(_response.TransferConnections.Count(), Is.EqualTo(2));
+
+        var transferConnectionInvitation = _response.TransferConnections.ElementAt(0);
+
+        Assert.That(transferConnectionInvitation.FundingEmployerAccountId, Is.EqualTo(_accountA.Id));
+        Assert.That(transferConnectionInvitation.FundingEmployerHashedAccountId, Is.EqualTo(_accountA.HashedId));
+        Assert.That(transferConnectionInvitation.FundingEmployerPublicHashedAccountId, Is.EqualTo(_accountA.PublicHashedId));
+        Assert.That(transferConnectionInvitation.FundingEmployerAccountName, Is.EqualTo(_accountA.Name));
+
+        var transferConnectionInvitation1 = _response.TransferConnections.ElementAt(1);
+
+        Assert.That(transferConnectionInvitation1.FundingEmployerAccountId, Is.EqualTo(_accountB.Id));
+        Assert.That(transferConnectionInvitation1.FundingEmployerHashedAccountId, Is.EqualTo(_accountB.HashedId));
+        Assert.That(transferConnectionInvitation1.FundingEmployerPublicHashedAccountId, Is.EqualTo(_accountB.PublicHashedId));
+        Assert.That(transferConnectionInvitation1.FundingEmployerAccountName, Is.EqualTo(_accountB.Name));
+    }
+
+    [Test]
+    public async Task ThenShouldReturnGetTransferConnectionInvitationsResponseForPendingStatus()
+    {
+        SeedDataByStatus(TransferConnectionInvitationStatus.Pending);
+
         _response = await _handler.Handle(_query, CancellationToken.None);
 
         Assert.That(_response, Is.Not.Null);
