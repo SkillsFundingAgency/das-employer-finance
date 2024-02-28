@@ -8,7 +8,6 @@
 		<WebJobType>Continuous</WebJobType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
 		<PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
