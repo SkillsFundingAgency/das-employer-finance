@@ -63,6 +63,6 @@ public class WhenIViewTheTransferAllowanceComponent
         var result = await _controller.TransferAllowance(AccountId);
 
         //Assert
-        Assert.AreEqual(TransferAllowancePercentage, result.TransferAllowancePercentage);
+        Assert.AreEqual(TransferAllowancePercentage * 100, result.TransferAllowancePercentage);
     }
 }
