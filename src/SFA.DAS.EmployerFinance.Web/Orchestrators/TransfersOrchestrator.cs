@@ -62,7 +62,7 @@ public class TransfersOrchestrator
                 CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
                 EstimatedRemainingAllowance = estimatedRemainingAllowance,
                 HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement,
-                TransferAllowancePercentage = _configuration.TransferAllowancePercentage
+                TransferAllowancePercentage = _configuration.TransferAllowancePercentage * 100
             }
         };
     }
