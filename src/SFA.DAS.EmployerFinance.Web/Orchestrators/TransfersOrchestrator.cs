@@ -15,19 +15,21 @@ public class TransfersOrchestrator
     private readonly IEncodingService _encodingService;
     private readonly ITransfersService _transfersService;
     private readonly IAccountApiClient _accountApiClient;
+    private readonly EmployerFinanceConfiguration _configuration;
     private const int minimumTransferFunds = 2000;
 
     public TransfersOrchestrator(
         IEmployerAccountAuthorisationHandler authorizationService,
         IEncodingService encodingService,
         ITransfersService transfersService,
-        IAccountApiClient accountApiClient)
+        IAccountApiClient accountApiClient,
+        EmployerFinanceConfiguration configuration)
     {
         _authorizationService = authorizationService;
         _encodingService = encodingService;
         _transfersService = transfersService;
         _accountApiClient = accountApiClient;
-
+        _configuration = configuration;
     }
 
     public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId,
@@ -59,7 +61,8 @@ public class TransfersOrchestrator
                 HashedAccountID = hashedAccountId,
                 CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
                 EstimatedRemainingAllowance = estimatedRemainingAllowance,
-                HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement
+                HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement,
+                TransferAllowancePercentage = _configuration.TransferAllowancePercentage
             }
         };
     }
