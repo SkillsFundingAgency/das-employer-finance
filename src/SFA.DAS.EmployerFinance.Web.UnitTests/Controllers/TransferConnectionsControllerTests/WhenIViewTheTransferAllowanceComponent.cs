@@ -19,11 +19,12 @@ public class WhenIViewTheTransferAllowanceComponent
     private TransferAllowance _transferAllowance;
     private EmployerFinanceConfiguration _configuration;
     private const long AccountId = 23442;
+    private const decimal TransferAllowancePercentage = 0.50m;
 
     [SetUp]
     public void Arrange()
     {
-        _configuration = new EmployerFinanceConfiguration { TransferAllowancePercentage = .25m };
+        _configuration = new EmployerFinanceConfiguration { TransferAllowancePercentage = TransferAllowancePercentage };
         _transferAllowance = new TransferAllowance
         {
             RemainingTransferAllowance = 123.456m,
@@ -33,8 +34,8 @@ public class WhenIViewTheTransferAllowanceComponent
         _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
         _mapper = _mapperConfig.CreateMapper();
         _mediator = new Mock<IMediator>();
-        _mediator.Setup(m => m.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
-            
+        _mediator.Setup(m => m.Send(It.Is<GetTransferAllowanceQuery>(c => c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
+
         _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<IHttpContextAccessor>());
     }
 
@@ -43,7 +44,7 @@ public class WhenIViewTheTransferAllowanceComponent
     {
         await _controller.TransferAllowance(AccountId);
 
-        _mediator.Verify(m => m.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetTransferAllowanceQuery>(c => c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
     }
 
     [Test]
@@ -60,8 +61,8 @@ public class WhenIViewTheTransferAllowanceComponent
     {
         //Act
         var result = await _controller.TransferAllowance(AccountId);
-            
+
         //Assert
-        Assert.AreEqual(25m, result.TransferAllowancePercentage);
+        Assert.AreEqual(TransferAllowancePercentage * 100, result.TransferAllowancePercentage);
     }
 }

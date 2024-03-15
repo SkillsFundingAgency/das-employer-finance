@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnectionInvitationAuthorization;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Mappings;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.TransferConnectionsControllerTests;
@@ -17,18 +15,20 @@ public class WhenIViewTheTransferConnectionInvitationAuthorizationComponent
     private IMapper _mapper;
     private Mock<IMediator> _mediator;
     private const long AccountId = 123125;
+    private const decimal TransferAllowancePercentage = 0.50m;
 
     [SetUp]
     public void Arrange()
     {
         _response = new GetTransferConnectionInvitationAuthorizationResponse
         {
-            IsValidSender = true,TransferAllowancePercentage = .25m
+            IsValidSender = true,
+            TransferAllowancePercentage = TransferAllowancePercentage
         };
         _mapperConfig = new MapperConfiguration(c => c.AddProfile<TransferMappings>());
         _mapper = _mapperConfig.CreateMapper();
         _mediator = new Mock<IMediator>();
-        _mediator.Setup(m => m.Send(It.Is<GetTransferConnectionInvitationAuthorizationQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
+        _mediator.Setup(m => m.Send(It.Is<GetTransferConnectionInvitationAuthorizationQuery>(c => c.AccountId.Equals(AccountId)), CancellationToken.None)).ReturnsAsync(_response);
 
         _controller = new TransferConnectionsController(Mock.Of<ILogger<TransferConnectionsController>>(), _mapper, _mediator.Object, Mock.Of<IEncodingService>(), Mock.Of<IHttpContextAccessor>());
     }
@@ -38,14 +38,14 @@ public class WhenIViewTheTransferConnectionInvitationAuthorizationComponent
     {
         await _controller.TransferConnectionInvitationAuthorization(AccountId);
 
-        _mediator.Verify(m => m.Send(It.Is<GetTransferConnectionInvitationAuthorizationQuery>(c=>c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
+        _mediator.Verify(m => m.Send(It.Is<GetTransferConnectionInvitationAuthorizationQuery>(c => c.AccountId.Equals(AccountId)), CancellationToken.None), Times.Once);
     }
 
     [Test]
     public async Task ThenIShouldBeShownTheTransferConnectionInvitationAuthorizationComponent()
     {
         var model = await _controller.TransferConnectionInvitationAuthorization(AccountId);
-            
+
         Assert.That(model, Is.Not.Null);
         Assert.That(model.AuthorizationResult, Is.EqualTo(_response.AuthorizationResult));
         Assert.That(model.IsValidSender, Is.EqualTo(_response.IsValidSender));
@@ -56,9 +56,9 @@ public class WhenIViewTheTransferConnectionInvitationAuthorizationComponent
     {
         //Act
         var model = await _controller.TransferConnectionInvitationAuthorization(AccountId);
-            
+
 
         //Assert
-        Assert.AreEqual(25m, model.TransferAllowancePercentage);
+        Assert.AreEqual(TransferAllowancePercentage * 100, model.TransferAllowancePercentage);
     }
 }

@@ -24,11 +24,12 @@ public class WhenIViewTheTransfersPage
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IMapper> _mapper;
     private const long AccountId = 123124124;
+    private const decimal TransferAllowancePercentage = 0.50m;
 
     [SetUp]
     public void Arrange()
     {
-            
+
         _mediatorMock = new Mock<IMediator>();
         _mapper = new Mock<IMapper>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -52,17 +53,17 @@ public class WhenIViewTheTransfersPage
         // Arrange
         var fixture = new Fixture();
         _mediatorMock
-            .Setup(mock => mock.Send(It.Is<GetTransferAllowanceQuery>(c=>c.AccountId==AccountId), CancellationToken.None))
-            .ReturnsAsync(new GetTransferAllowanceResponse{TransferAllowance =  new TransferAllowance{RemainingTransferAllowance = 0,StartingTransferAllowance = 0}, TransferAllowancePercentage = 0.25m});
+            .Setup(mock => mock.Send(It.Is<GetTransferAllowanceQuery>(c => c.AccountId == AccountId), CancellationToken.None))
+            .ReturnsAsync(new GetTransferAllowanceResponse { TransferAllowance = new TransferAllowance { RemainingTransferAllowance = 0, StartingTransferAllowance = 0 }, TransferAllowancePercentage = TransferAllowancePercentage });
         _mediatorMock
             .Setup(mock => mock.Send(It.IsAny<GetTransferConnectionInvitationAuthorizationQuery>(), CancellationToken.None))
-            .ReturnsAsync(new GetTransferConnectionInvitationAuthorizationResponse{ });
+            .ReturnsAsync(new GetTransferConnectionInvitationAuthorizationResponse { });
         _mediatorMock
             .Setup(mock => mock.Send(It.IsAny<GetTransferConnectionInvitationsQuery>(), CancellationToken.None))
-            .ReturnsAsync(fixture.Create<GetTransferConnectionInvitationsResponse>() );
+            .ReturnsAsync(fixture.Create<GetTransferConnectionInvitationsResponse>());
         _mediatorMock
             .Setup(mock => mock.Send(It.IsAny<GetTransferRequestsQuery>(), CancellationToken.None))
-            .ReturnsAsync(new GetTransferRequestsResponse() );
+            .ReturnsAsync(new GetTransferRequestsResponse());
         _mediatorMock
             .Setup(mock => mock.Send(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>(), CancellationToken.None))
             .ReturnsAsync(new GetEmployerAccountDetailByHashedIdResponse
@@ -71,7 +72,7 @@ public class WhenIViewTheTransfersPage
                 {
                     ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy
                 }
-            } );
+            });
         _mapper.Setup(x => x.Map<TransferAllowanceViewModel>(It.IsAny<GetTransferAllowanceResponse>()))
             .Returns(new TransferAllowanceViewModel());
         _mapper.Setup(x => x.Map<TransferConnectionInvitationAuthorizationViewModel>(It.IsAny<GetTransferConnectionInvitationAuthorizationResponse>()))
@@ -98,7 +99,7 @@ public class WhenIViewTheTransfersPage
         var fixture = new Fixture();
         _mediatorMock
             .Setup(mock => mock.Send(It.Is<GetTransferAllowanceQuery>(c => c.AccountId == AccountId), CancellationToken.None))
-            .ReturnsAsync(new GetTransferAllowanceResponse { TransferAllowance = new TransferAllowance { RemainingTransferAllowance = 0, StartingTransferAllowance = 0 }, TransferAllowancePercentage = 0.25m });
+            .ReturnsAsync(new GetTransferAllowanceResponse { TransferAllowance = new TransferAllowance { RemainingTransferAllowance = 0, StartingTransferAllowance = 0 }, TransferAllowancePercentage = TransferAllowancePercentage });
         _mediatorMock
             .Setup(mock => mock.Send(It.IsAny<GetTransferConnectionInvitationAuthorizationQuery>(), CancellationToken.None))
             .ReturnsAsync(new GetTransferConnectionInvitationAuthorizationResponse { });
@@ -126,7 +127,7 @@ public class WhenIViewTheTransfersPage
             .Returns(new TransferConnectionInvitationsViewModel());
         _mapper.Setup(x => x.Map<TransferRequestsViewModel>(It.IsAny<GetTransferRequestsResponse>()))
             .Returns(new TransferRequestsViewModel());
-       
+
         var userRef = fixture.Create<string>();
         var email = fixture.Create<string>();
         var firstName = fixture.Create<string>();

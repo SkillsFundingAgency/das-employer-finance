@@ -55,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferAllowanceTests
             await RunAsync(
                      f => f.WithTransferAllowance(f.TransferAllowance),
                      f => f.Handle(f.SenderAccountId),
-                     f => Assert.That(f.Response.TransferAllowancePercentage, Is.EqualTo(25m)));
+                     f => Assert.That(f.Response.TransferAllowancePercentage, Is.EqualTo(50m)));
         }
     }
 
@@ -64,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferAllowanceTests
         public long SenderAccountId => 111111;
         public long ReceiverAccountId => 222222;
         public decimal TransferAllowance => 1500.235m;
-        public decimal TransferAllowancePercentage => 25;
+        public decimal TransferAllowancePercentage => 50;
 
         public Mock<ITransferRepository> TransferRepository { get; set; }
         public EmployerFinanceConfiguration EmployerFinanceConfig { get; set; }
