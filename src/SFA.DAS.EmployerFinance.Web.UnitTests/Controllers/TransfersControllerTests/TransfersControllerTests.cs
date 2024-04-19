@@ -21,9 +21,11 @@ public class TransfersControllerTests
     private Mock<IAccountApiClient> _accountApiClient;
     private GetFinancialBreakdownResponse _financialBreakdownResponse;
     private AccountDetailViewModel _accountDetailViewModel;
+    private EmployerFinanceConfiguration _configuration;
 
     private const string HashedAccountId = "123ABC";
     private const long AccountId = 1234;
+    private const decimal TransferAllowancePercentage = 0.50m;
 
     [SetUp]
     public void Arrange()
@@ -35,6 +37,7 @@ public class TransfersControllerTests
         _transfersService = new Mock<ITransfersService>();
         _accountApiClient = new Mock<IAccountApiClient>();
         _financialBreakdownResponse = fixture.Create<GetFinancialBreakdownResponse>();
+        _configuration = new EmployerFinanceConfiguration { TransferAllowancePercentage = TransferAllowancePercentage };
 
         _transfersService.Setup(m => m.GetFinancialBreakdown(AccountId)).ReturnsAsync(_financialBreakdownResponse);
 
@@ -42,7 +45,7 @@ public class TransfersControllerTests
         _accountDetailViewModel = new AccountDetailViewModel();
         _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
         
-        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
 
         _controller = new TransfersController(_orchestrator);
     }
