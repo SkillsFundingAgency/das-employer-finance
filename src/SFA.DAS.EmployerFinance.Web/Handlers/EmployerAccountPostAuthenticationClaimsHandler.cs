@@ -29,7 +29,6 @@ public class EmployerAccountPostAuthenticationClaimsHandler : ICustomClaims
         _logger.LogInformation("Updating finance claims");
         var claims = new List<Claim>();
         
-        
         string userId;
         string email;
             

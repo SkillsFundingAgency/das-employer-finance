@@ -4,6 +4,7 @@ using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Models.UserAccounts;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Authorization;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Web.Authentication;
 
@@ -29,6 +30,15 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
     }
     public async Task<bool> IsEmployerAuthorised(AuthorizationHandlerContext context, bool allowAllUserRoles)
     {
+        var user = _httpContextAccessor.HttpContext?.User;
+        
+        // If the user is redirected to a controller action from another site (very likely) and this is method is executed, the claims will be empty until the middleware has
+        // re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
+        if (user.ClaimsAreEmpty())
+        {
+            return false;
+        }
+        
         if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
         {
             return false;
@@ -55,8 +65,8 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
 
         if (employerAccounts != null)
         {
-            employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl)
-                ? employerAccounts[accountIdFromUrl] : null;
+            employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
+                ? account : null;
         }
 
         if (employerAccounts == null || !employerAccounts.ContainsKey(accountIdFromUrl))

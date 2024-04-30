@@ -27,19 +27,19 @@ public static class EmployerAuthenticationServiceRegistrations
                 PolicyNames.HasEmployerOwnerAccount
                 , policy =>
                 {
+                    policy.RequireAuthenticatedUser();
                     policy.RequireClaim(EmployerClaims.AccountsClaimsTypeIdentifier);
                     policy.Requirements.Add(new EmployerAccountOwnerRequirement());
                     policy.Requirements.Add(new AccountActiveRequirement());
-                    policy.RequireAuthenticatedUser();
                 });
             options.AddPolicy(
                 PolicyNames.HasEmployerViewerTransactorOwnerAccount
                 , policy =>
                 {
+                    policy.RequireAuthenticatedUser();
                     policy.RequireClaim(EmployerClaims.AccountsClaimsTypeIdentifier);
                     policy.Requirements.Add(new EmployerAccountAllRolesRequirement());
                     policy.Requirements.Add(new AccountActiveRequirement());
-                    policy.RequireAuthenticatedUser();
                 });
         });
     }
