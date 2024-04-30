@@ -176,7 +176,6 @@ public class WhenHandlingEmployerAccountAuthorization
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { claim }) });
         var context = new AuthorizationHandlerContext(new[] { ownerRequirement }, claimsPrinciple, null);
-        var responseMock = new FeatureCollection();
         var httpContext = new DefaultHttpContext(new FeatureCollection())
         {
             User = claimsPrinciple
@@ -219,8 +218,7 @@ public class WhenHandlingEmployerAccountAuthorization
         var employerAccountClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal(new[] { new ClaimsIdentity(new[] { employerAccountClaim, userClaim, new Claim(ClaimTypes.Email, email) }) });
         var context = new AuthorizationHandlerContext(new[] { ownerRequirement }, claimsPrinciple, null);
-        var responseMock = new FeatureCollection();
-         var httpContext = new DefaultHttpContext(new FeatureCollection())
+        var httpContext = new DefaultHttpContext(new FeatureCollection())
         {
             User = claimsPrinciple
         };
