@@ -12,4 +12,5 @@ public class IndexViewModel
     public decimal CurrentYearEstimatedSpend { get; set; }
     public decimal EstimatedRemainingAllowance { get; set; } 
     public bool HasMinimumTransferFunds { get; set; }
+    public decimal TransferAllowancePercentage { get; set; }
 }
