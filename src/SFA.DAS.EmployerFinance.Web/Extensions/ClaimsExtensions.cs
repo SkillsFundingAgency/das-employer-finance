@@ -23,4 +23,9 @@ public static class ClaimsExtensions
     {
         return user.FindFirst(EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value;
     }
+    
+    public static bool ClaimsAreEmpty(this ClaimsPrincipal user)
+    {
+        return !user.Claims.Any();
+    }
 }
