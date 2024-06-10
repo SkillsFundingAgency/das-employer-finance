@@ -31,14 +31,14 @@ public class WhenIGetTransferAllowanceByAccountId
     public async Task ThenReturnTheTransferAllowance()
     {
         //Arrange
-        var accountId = 123;
+        long accountId = 123;
 
         var accountBalancesResponse = new GetTransferAllowanceResponse
         {
             TransferAllowance = new Models.Transfers.TransferAllowance { RemainingTransferAllowance = 10 }
         };
 
-        _mediator.Setup(x => x.Send(It.Is<GetTransferAllowanceQuery>(q => q.AccountId == It.IsAny<long>()), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
+        _mediator.Setup(x => x.Send(It.Is<GetTransferAllowanceQuery>(q => q.AccountId == accountId), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
 
         //Act
         var response = await _employerAccountsController.GetTransferAllowanceByAccountId(accountId);
