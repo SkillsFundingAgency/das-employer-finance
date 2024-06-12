@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Projections;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Projections;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
@@ -12,19 +14,22 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     private readonly ICurrentDateTime _currentDateTime;
     private readonly IDasForecastingService _dasForecastingService;
     private readonly IDasLevyService _levyService;
+    private readonly IOuterApiClient _outerApiClient;
     private readonly IValidator<GetAccountFinanceOverviewQuery> _validator;
     private readonly ILogger<GetAccountFinanceOverviewQueryHandler> _logger;
-    
+
     public GetAccountFinanceOverviewQueryHandler(
         ICurrentDateTime currentDateTime,
         IDasForecastingService dasForecastingService,
         IDasLevyService levyService,
+        IOuterApiClient outerApiClient,
         IValidator<GetAccountFinanceOverviewQuery> validator,
         ILogger<GetAccountFinanceOverviewQueryHandler> logger)
     {
         _currentDateTime = currentDateTime;
         _dasForecastingService = dasForecastingService;
         _levyService = levyService;
+        _outerApiClient = outerApiClient;
         _validator = validator;
         _logger = logger;
     }
@@ -36,8 +41,12 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         {
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
-           
+
         var currentBalance = await GetAccountBalance(query.AccountId);
+
+        var accountProjectionSummaryFromFinance = await _outerApiClient.Get<GetAccountProjectionSummaryFromFinanceResponse>(
+            new GetAccountProjectionSummaryFromFinanceRequest(query.AccountId));
+
         var accountProjectionSummary = await _dasForecastingService.GetAccountProjectionSummary(query.AccountId);
         var earliestFundsToExpire = GetExpiringFunds(accountProjectionSummary?.ExpiringAccountFunds);
         var projectedCalculations = accountProjectionSummary?.ProjectionCalulation;
@@ -47,7 +56,7 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         {
             AccountId = query.AccountId,
             CurrentFunds = currentBalance,
-            FundsIn = projectedCalculations?.FundsIn ?? 0,
+            FundsIn = accountProjectionSummaryFromFinance?.FundsIn ?? 0,
             FundsOut = projectedCalculations?.FundsOut ?? 0,
             TotalSpendForLastYear = totalSpendForLastYear
         };
@@ -62,14 +71,14 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     }
 
     private ExpiringFunds GetExpiringFunds(ExpiringAccountFunds expiringFunds)
-    {            
+    {
         var today = _currentDateTime.Now.Date;
         var nextYear = today.AddDays(1 - today.Day).AddMonths(13);
         var earliestFundsToExpire = expiringFunds?.ExpiryAmounts?
             .Where(a => a.PayrollDate < nextYear && a.PayrollDate > today)
             .OrderBy(a => a.PayrollDate)
             .FirstOrDefault();
-            
+
         return earliestFundsToExpire;
     }
 
@@ -78,13 +87,13 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         try
         {
             _logger.LogInformation($"Getting current funds balance for account ID: {accountId}");
-                
+
             return await _levyService.GetAccountBalance(accountId);
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, $"Failed to get account's current balance for account ID: {accountId}");
-                
+
             throw;
         }
     }

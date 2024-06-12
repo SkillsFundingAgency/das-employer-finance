@@ -44,4 +44,20 @@ public class EmployerAccountsController : ControllerBase
 
         return Ok(result);
     }
+
+
+    [HttpGet]
+    [Route("{accountId}/projection-summary")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccountProjectionSummaryFromFinance(long accountId)
+    {
+        var result = await _financeOrchestrator.GetAccountProjectionSummaryFromFinance(accountId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
 }
