@@ -1,8 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Projections;
-using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Projections;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
@@ -14,7 +11,6 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     private readonly ICurrentDateTime _currentDateTime;
     private readonly IDasForecastingService _dasForecastingService;
     private readonly IDasLevyService _levyService;
-    private readonly IOuterApiClient _outerApiClient;
     private readonly IValidator<GetAccountFinanceOverviewQuery> _validator;
     private readonly ILogger<GetAccountFinanceOverviewQueryHandler> _logger;
 
@@ -22,14 +18,12 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         ICurrentDateTime currentDateTime,
         IDasForecastingService dasForecastingService,
         IDasLevyService levyService,
-        IOuterApiClient outerApiClient,
         IValidator<GetAccountFinanceOverviewQuery> validator,
         ILogger<GetAccountFinanceOverviewQueryHandler> logger)
     {
         _currentDateTime = currentDateTime;
         _dasForecastingService = dasForecastingService;
         _levyService = levyService;
-        _outerApiClient = outerApiClient;
         _validator = validator;
         _logger = logger;
     }
@@ -43,10 +37,6 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         }
 
         var currentBalance = await GetAccountBalance(query.AccountId);
-
-        var accountProjectionSummaryFromFinance = await _outerApiClient.Get<GetAccountProjectionSummaryFromFinanceResponse>(
-            new GetAccountProjectionSummaryFromFinanceRequest(query.AccountId));
-
         var accountProjectionSummary = await _dasForecastingService.GetAccountProjectionSummary(query.AccountId);
         var earliestFundsToExpire = GetExpiringFunds(accountProjectionSummary?.ExpiringAccountFunds);
         var projectedCalculations = accountProjectionSummary?.ProjectionCalulation;
@@ -56,7 +46,7 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         {
             AccountId = query.AccountId,
             CurrentFunds = currentBalance,
-            FundsIn = accountProjectionSummaryFromFinance?.FundsIn ?? 0,
+            FundsIn = projectedCalculations?.FundsIn ?? 0,
             FundsOut = projectedCalculations?.FundsOut ?? 0,
             TotalSpendForLastYear = totalSpendForLastYear
         };

@@ -14,7 +14,7 @@ namespace SFA.DAS.EmployerFinance.Api.Mappings
 
             CreateMap<Models.Account.AccountBalance, AccountBalance>();
             CreateMap<Models.Transfers.TransferAllowance, TransferAllowance>();
-            CreateMap<AccountProjectionSummaryFromFinance, AccountProjectionSummaryFromFinanceResult>();
+            CreateMap<AccountProjectionSummaryFromFinanceResult, AccountProjectionSummaryFromFinance>();
         }
     }
 }

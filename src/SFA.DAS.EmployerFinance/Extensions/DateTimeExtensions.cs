@@ -18,5 +18,18 @@
                 return $"{dateTime.Year}/{dateTime.AddYears(1):yy}";
             }
         }
+
+        public static string ToPayrollYearString(this DateTime dateTime)
+        {
+            var financialYearStartDate = new DateTime(dateTime.Year, FinancialYearStartMonth, FinancialYearStartDay);
+            if (dateTime < financialYearStartDate)
+            {
+                return $"{(dateTime.Year - 1) % 100:00}-{dateTime.Year % 100:00}";
+            }
+            else
+            {
+                return $"{dateTime.Year % 100:00}-{(dateTime.Year + 1) % 100:00}";
+            }
+        }
     }
 }

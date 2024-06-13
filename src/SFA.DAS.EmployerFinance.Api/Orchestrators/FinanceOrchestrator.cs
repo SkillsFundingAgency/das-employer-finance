@@ -139,6 +139,7 @@ public class FinanceOrchestrator
 
         return result;
     }
+
      public async Task<AccountProjectionSummaryFromFinance> GetAccountProjectionSummaryFromFinance(long accountId)
     {
         _logger.LogInformation("Requesting GetAccountProjectionSummary for the accountId {accountId}", accountId);
@@ -154,6 +155,4 @@ public class FinanceOrchestrator
 
         return result;
     }
-
-
 }
