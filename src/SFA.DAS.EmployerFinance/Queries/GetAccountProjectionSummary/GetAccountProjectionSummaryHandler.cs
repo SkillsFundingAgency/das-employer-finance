@@ -1,27 +1,31 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
+using SFA.DAS.EmployerFinance.Interfaces;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummaryFromFinance
+namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
 {
-    internal class AccountProjectionSummaryFromFinanceHandler : IRequestHandler<AccountProjectionSummaryFromFinanceQuery,
-    AccountProjectionSummaryFromFinanceResult>
+    public class GetAccountProjectionSummaryHandler : IRequestHandler<GetAccountProjectionSummaryQuery,
+    GetAccountProjectionSummaryResult>
     {
-        private readonly ILogger<AccountProjectionSummaryFromFinanceHandler> _logger;
+        private readonly ILogger<GetAccountProjectionSummaryHandler> _logger;
         private readonly IDasLevyRepository _repository;
+        private readonly ICurrentDateTime _currentDateTime;
 
-        public AccountProjectionSummaryFromFinanceHandler(
+        public GetAccountProjectionSummaryHandler(
             IDasLevyRepository repository,
-            ILogger<AccountProjectionSummaryFromFinanceHandler> logger)
+            ICurrentDateTime currentDateTime,
+            ILogger<GetAccountProjectionSummaryHandler> logger)
         {
             _repository = repository;
+            _currentDateTime = currentDateTime;
             _logger = logger;
         }
 
-        public async Task<AccountProjectionSummaryFromFinanceResult> Handle(AccountProjectionSummaryFromFinanceQuery query, CancellationToken cancellationToken)
+        public async Task<GetAccountProjectionSummaryResult> Handle(GetAccountProjectionSummaryQuery query, CancellationToken cancellationToken)
         {
             var declarations = await _repository.GetAccountLevyDeclarations(query.AccountId);
 
-            var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth();
+            var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth(_currentDateTime.Now);
             var (previousPayrollYear, previousPayrollMonth) = GetNextPreviousPayrollYearAndMonth(currentPayrollYear, currentPayrollMonth);
 
             var currentMonthRecord = declarations
@@ -29,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummaryFromFinance
 
             if (currentMonthRecord != null && currentMonthRecord.TotalAmount > 0)
             {
-                return new AccountProjectionSummaryFromFinanceResult { AccountId = currentMonthRecord.AccountId, FundsIn = currentMonthRecord.TotalAmount };
+                return new GetAccountProjectionSummaryResult { AccountId = currentMonthRecord.AccountId, FundsIn = currentMonthRecord.TotalAmount };
             }
 
             var previousMonthRecord = declarations
@@ -37,19 +41,18 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummaryFromFinance
 
             if (previousMonthRecord != null && previousMonthRecord.TotalAmount > 0)
             {
-                return new AccountProjectionSummaryFromFinanceResult { AccountId = previousMonthRecord.AccountId, FundsIn = previousMonthRecord.TotalAmount };
+                return new GetAccountProjectionSummaryResult { AccountId = previousMonthRecord.AccountId, FundsIn = previousMonthRecord.TotalAmount };
             }
 
-            return new AccountProjectionSummaryFromFinanceResult { AccountId = query.AccountId, FundsIn = 0 };
+            return new GetAccountProjectionSummaryResult { AccountId = query.AccountId, FundsIn = 0 };
         }
 
-        private static (string, int) GetPayrollYearAndMonthForLastMonth()
+        private static (string, int) GetPayrollYearAndMonthForLastMonth(DateTime currentDate)
         {
-            var now = DateTime.UtcNow;
-            var currentMonth = now.Month;
+            var currentMonth = currentDate.Month;
             int payrollMonth = (currentMonth - 3 + 12) % 12 - 1;
 
-            return (now.ToPayrollYearString(), payrollMonth);
+            return (currentDate.ToPayrollYearString(), payrollMonth);
         }
 
         private static (string, int) GetNextPreviousPayrollYearAndMonth(string currentPayrollYear, int currentPayrollMonth)

@@ -49,9 +49,9 @@ public class EmployerAccountsController : ControllerBase
     [HttpGet]
     [Route("{accountId}/projection-summary")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccountProjectionSummaryFromFinance(long accountId)
+    public async Task<IActionResult> GetAccountProjectionSummary(long accountId)
     {
-        var result = await _financeOrchestrator.GetAccountProjectionSummaryFromFinance(accountId);
+        var result = await _financeOrchestrator.GetAccountProjectionSummary(accountId);
 
         if (result == null)
         {
