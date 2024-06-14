@@ -22,6 +22,8 @@
         public static string ToPayrollYearString(this DateTime dateTime)
         {
             var financialYearStartDate = new DateTime(dateTime.Year, FinancialYearStartMonth, FinancialYearStartDay);
+            financialYearStartDate = DateTime.SpecifyKind(financialYearStartDate, DateTimeKind.Utc);
+
             if (dateTime < financialYearStartDate)
             {
                 return $"{(dateTime.Year - 1) % 100:00}-{dateTime.Year % 100:00}";

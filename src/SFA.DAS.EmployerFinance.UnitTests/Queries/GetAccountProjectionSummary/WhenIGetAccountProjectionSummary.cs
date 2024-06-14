@@ -53,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             // Assert
             result.AccountId.Should().Be(currentMonthRecord.AccountId);
-            result.FundsIn.Should().Be(currentMonthRecord.TotalAmount);
+            result.FundsIn.Should().Be(currentMonthRecord.TotalAmount * 12);
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             // Assert
             result.AccountId.Should().Be(previousMonthRecord.AccountId);
-            result.FundsIn.Should().Be(previousMonthRecord.TotalAmount);
+            result.FundsIn.Should().Be(previousMonthRecord.TotalAmount * 12);
         }
 
         [Test]

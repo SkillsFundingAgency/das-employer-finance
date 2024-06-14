@@ -23,25 +23,27 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
 
         public async Task<GetAccountProjectionSummaryResult> Handle(GetAccountProjectionSummaryQuery query, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("GettingAccountProjectionSummary for accountId {Id}", query.AccountId);
+
             var declarations = await _repository.GetAccountLevyDeclarations(query.AccountId);
 
             var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth(_currentDateTime.Now);
             var (previousPayrollYear, previousPayrollMonth) = GetNextPreviousPayrollYearAndMonth(currentPayrollYear, currentPayrollMonth);
 
             var currentMonthRecord = declarations
-            .FirstOrDefault(record => record.PayrollYear == currentPayrollYear && record.PayrollMonth == currentPayrollMonth);
+            .Find(record => record.PayrollYear == currentPayrollYear && record.PayrollMonth == currentPayrollMonth);
 
             if (currentMonthRecord != null && currentMonthRecord.TotalAmount > 0)
             {
-                return new GetAccountProjectionSummaryResult { AccountId = currentMonthRecord.AccountId, FundsIn = currentMonthRecord.TotalAmount };
+                return new GetAccountProjectionSummaryResult { AccountId = currentMonthRecord.AccountId, FundsIn = currentMonthRecord.TotalAmount * 12 };
             }
 
             var previousMonthRecord = declarations
-                .FirstOrDefault(record => record.PayrollYear == previousPayrollYear && record.PayrollMonth == previousPayrollMonth);
+                .Find(record => record.PayrollYear == previousPayrollYear && record.PayrollMonth == previousPayrollMonth);
 
             if (previousMonthRecord != null && previousMonthRecord.TotalAmount > 0)
             {
-                return new GetAccountProjectionSummaryResult { AccountId = previousMonthRecord.AccountId, FundsIn = previousMonthRecord.TotalAmount };
+                return new GetAccountProjectionSummaryResult { AccountId = previousMonthRecord.AccountId, FundsIn = previousMonthRecord.TotalAmount * 12 };
             }
 
             return new GetAccountProjectionSummaryResult { AccountId = query.AccountId, FundsIn = 0 };
