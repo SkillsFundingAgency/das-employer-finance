@@ -28,19 +28,20 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
             var declarations = await _repository.GetAccountLevyDeclarations(query.AccountId);
 
             var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth(_currentDateTime.Now);
-            var (previousPayrollYear, previousPayrollMonth) = GetNextPreviousPayrollYearAndMonth(currentPayrollYear, currentPayrollMonth);
+            var previousPayrollYear = _currentDateTime.Now.AddYears(-1).ToPayrollYearString();
 
-            var forecastDeclaration = declarations.Where(x => 
-                (x.PayrollYear == currentPayrollYear && x.PayrollMonth == currentPayrollMonth)||
-                (x.PayrollYear == previousPayrollYear && x.PayrollMonth == previousPayrollMonth))         
-                .OrderByDescending(x=> x.PayrollYear )
-                    .ThenByDescending(x => x.PayrollMonth )
+            var forecastDeclaration = declarations.Where(x =>
+            (x.PayrollYear == currentPayrollYear && x.PayrollMonth >= currentPayrollMonth - 2)
+            || (x.PayrollYear == previousPayrollYear && x.PayrollMonth > 10))
+            .OrderByDescending(x => x.PayrollYear)
+                .ThenByDescending(x => x.PayrollMonth)
+                .Take(2)
                 .FirstOrDefault();
-          
+
             if (forecastDeclaration != null && forecastDeclaration.TotalAmount > 0)
             {
                 return new GetAccountProjectionSummaryResult { AccountId = forecastDeclaration.AccountId, FundsIn = forecastDeclaration.TotalAmount * 12 };
-            }          
+            }
 
             return new GetAccountProjectionSummaryResult { AccountId = query.AccountId, FundsIn = 0 };
         }
@@ -51,25 +52,6 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
             var payrollMonth = currentMonth >= 4 ? currentMonth - 3 : currentMonth + 9;
 
             return (currentDate.ToPayrollYearString(), payrollMonth);
-        }
-
-        private static (string, int) GetNextPreviousPayrollYearAndMonth(string currentPayrollYear, int currentPayrollMonth)
-        {
-            int previousPayrollMonth = (currentPayrollMonth == 1 ? 12 : currentPayrollMonth - 1);
-
-            string previousPayrollYear;
-            if (previousPayrollMonth == 12)
-            {
-                int startYear = int.Parse(currentPayrollYear.Substring(0, 2));
-                int endYear = int.Parse(currentPayrollYear.Substring(3, 2));
-                previousPayrollYear = $"{startYear - 1}-{endYear - 1}";
-            }
-            else
-            {
-                previousPayrollYear = currentPayrollYear;
-            }
-
-            return (previousPayrollYear, previousPayrollMonth);
         }
     }
 }
