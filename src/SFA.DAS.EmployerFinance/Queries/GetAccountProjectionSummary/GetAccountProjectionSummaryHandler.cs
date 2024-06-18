@@ -30,21 +30,17 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
             var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth(_currentDateTime.Now);
             var (previousPayrollYear, previousPayrollMonth) = GetNextPreviousPayrollYearAndMonth(currentPayrollYear, currentPayrollMonth);
 
-            var currentMonthRecord = declarations
-            .Find(record => record.PayrollYear == currentPayrollYear && record.PayrollMonth == currentPayrollMonth);
-
-            if (currentMonthRecord != null && currentMonthRecord.TotalAmount > 0)
+            var forecastDeclaration = declarations.Where(x => 
+                (x.PayrollYear == currentPayrollYear && x.PayrollMonth == currentPayrollMonth)||
+                (x.PayrollYear == previousPayrollYear && x.PayrollMonth == previousPayrollMonth))         
+                .OrderByDescending(x=> x.PayrollYear )
+                    .ThenByDescending(x => x.PayrollMonth )
+                .FirstOrDefault();
+          
+            if (forecastDeclaration != null && forecastDeclaration.TotalAmount > 0)
             {
-                return new GetAccountProjectionSummaryResult { AccountId = currentMonthRecord.AccountId, FundsIn = currentMonthRecord.TotalAmount * 12 };
-            }
-
-            var previousMonthRecord = declarations
-                .Find(record => record.PayrollYear == previousPayrollYear && record.PayrollMonth == previousPayrollMonth);
-
-            if (previousMonthRecord != null && previousMonthRecord.TotalAmount > 0)
-            {
-                return new GetAccountProjectionSummaryResult { AccountId = previousMonthRecord.AccountId, FundsIn = previousMonthRecord.TotalAmount * 12 };
-            }
+                return new GetAccountProjectionSummaryResult { AccountId = forecastDeclaration.AccountId, FundsIn = forecastDeclaration.TotalAmount * 12 };
+            }          
 
             return new GetAccountProjectionSummaryResult { AccountId = query.AccountId, FundsIn = 0 };
         }
@@ -52,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
         private static (string, int) GetPayrollYearAndMonthForLastMonth(DateTime currentDate)
         {
             var currentMonth = currentDate.Month;
-            int payrollMonth = (currentMonth - 3 + 12) % 12 - 1;
+            var payrollMonth = currentMonth >= 4 ? currentMonth - 3 : currentMonth + 9;
 
             return (currentDate.ToPayrollYearString(), payrollMonth);
         }

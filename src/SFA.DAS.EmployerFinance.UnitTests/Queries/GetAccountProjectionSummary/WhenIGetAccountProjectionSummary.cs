@@ -38,7 +38,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
             var currentMonthRecord = new LevyDeclarationItem
             {
                 PayrollYear = today.ToPayrollYearString(),
-                PayrollMonth = 2,
+                PayrollMonth = 3,
                 TotalAmount = 1000,
                 AccountId = query.AccountId
             };
@@ -69,7 +69,37 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
             var previousMonthRecord = new LevyDeclarationItem
             {
                 PayrollYear = today.ToPayrollYearString(),
-                PayrollMonth = 1,
+                PayrollMonth = 2,
+                TotalAmount = 800,
+                AccountId = query.AccountId
+            };
+            declarations.Add(previousMonthRecord);
+
+            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+                .ReturnsAsync(declarations);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.AccountId.Should().Be(previousMonthRecord.AccountId);
+            result.FundsIn.Should().Be(previousMonthRecord.TotalAmount * 12);
+        }
+          
+        [Test]
+        public async Task Handle_Straddle_PayrollYear_Should_return()
+        {
+            // Arrange
+            var today = new DateTime(2024, 4, 25);
+            _currentDateTime.Setup(x => x.Now).Returns(today);
+
+            var query = _fixture.Create<GetAccountProjectionSummaryQuery>();
+            var declarations = _fixture.CreateMany<LevyDeclarationItem>(5).ToList();
+
+            var previousMonthRecord = new LevyDeclarationItem
+            {
+                PayrollYear = "23-24",
+                PayrollMonth = 12 ,
                 TotalAmount = 800,
                 AccountId = query.AccountId
             };
