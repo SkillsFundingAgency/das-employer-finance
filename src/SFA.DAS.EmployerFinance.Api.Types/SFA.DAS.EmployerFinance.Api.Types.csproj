@@ -8,6 +8,7 @@
     <Copyright>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice/blob/master/LICENSE</Copyright>
     <RepositoryUrl>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice</RepositoryUrl>
     <PackageLicense>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice/tree/master/src/SFA.DAS.EmployerFinance.Api.Types</PackageLicense>
+    <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj" />
