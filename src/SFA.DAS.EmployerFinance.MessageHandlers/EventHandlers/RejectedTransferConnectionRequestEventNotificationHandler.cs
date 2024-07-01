@@ -3,9 +3,8 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Accounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Accounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Messages.Events;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Encoding;
-using SFA.DAS.Notifications.Api.Client;
-using SFA.DAS.Notifications.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 
@@ -14,20 +13,20 @@ public class RejectedTransferConnectionRequestEventNotificationHandler : IHandle
     private readonly EmployerFinanceConfiguration _config;
     private readonly IOuterApiClient _outerApiClient;
     private readonly ILogger<RejectedTransferConnectionRequestEventNotificationHandler> _logger;
-    private readonly INotificationsApi _notificationsApi;
+    private readonly INotificationsService _notificationsService;
     private readonly IEncodingService _encodingService;
 
     public RejectedTransferConnectionRequestEventNotificationHandler(
         EmployerFinanceConfiguration config,
         IOuterApiClient outerApiClient,
         ILogger<RejectedTransferConnectionRequestEventNotificationHandler> logger,
-        INotificationsApi notificationsApi,
+        INotificationsService notificationsService,
         IEncodingService encodingService)
     {
         _config = config;
         _outerApiClient = outerApiClient;
         _logger = logger;
-        _notificationsApi = notificationsApi;
+        _notificationsService = notificationsService;
         _encodingService = encodingService;
     }
 
@@ -45,7 +44,7 @@ public class RejectedTransferConnectionRequestEventNotificationHandler : IHandle
         {
             _logger.LogInformation("There are no users that receive notifications for SenderAccountId '{SenderAccountId}'", message.SenderAccountId);
         }
-        
+
         var senderAccountHashedId = _encodingService.Encode(message.SenderAccountId, EncodingType.AccountId);
 
         foreach (var user in users)
@@ -53,31 +52,29 @@ public class RejectedTransferConnectionRequestEventNotificationHandler : IHandle
             try
             {
                 var linkNotificationUrl = $"{_config.EmployerFinanceBaseUrl}accounts/{senderAccountHashedId}/transfers/connections";
-                
-                _logger.LogInformation("{TypeName} linkNotificationUrl: '{LinkNotificationUrl}'",
-                    nameof(RejectedTransferConnectionRequestEventNotificationHandler), linkNotificationUrl);
-                
-                var email = new Email
-                {
-                    RecipientsAddress = user.Email,
-                    TemplateId = "TransferConnectionRequestRejected",
-                    ReplyToAddress = "noreply@sfa.gov.uk",
-                    Subject = "x",
-                    SystemId = "x",
-                    Tokens = new Dictionary<string, string>
-                    {
-                        { "name", user.FirstName },
-                        { "account_name", message.ReceiverAccountName },
-                        { "link_notification_page", linkNotificationUrl }
-                    }
-                };
 
-                await _notificationsApi.SendEmail(email);
+                _logger.LogInformation("{TypeName} linkNotificationUrl: '{LinkNotificationUrl}'", nameof(RejectedTransferConnectionRequestEventNotificationHandler), linkNotificationUrl);
+
+                await SendNotification(message, user, linkNotificationUrl);
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception, "Unable to send rejected transfer request notification to UserRef '{UserRef}' for SenderAccountId '{SenderAccountId}'", user.UserRef, message.SenderAccountId);
             }
         }
+    }
+
+    private async Task SendNotification(RejectedTransferConnectionRequestEvent message, TeamMember user, string linkNotificationUrl)
+    {
+        const string templateId = "TransferConnectionRequestRejected";
+
+        var tokens = new Dictionary<string, string>
+        {
+            { "name", user.FirstName },
+            { "account_name", message.ReceiverAccountName },
+            { "link_notification_page", linkNotificationUrl }
+        };
+
+        await _notificationsService.SendEmail(templateId, user.Email, tokens);
     }
 }

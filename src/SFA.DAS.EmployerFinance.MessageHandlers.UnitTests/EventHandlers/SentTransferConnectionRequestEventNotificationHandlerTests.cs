@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -10,47 +11,48 @@ using SFA.DAS.Notifications.Api.Types;
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers;
 
 [TestFixture]
-public class SentTransferConnectionRequestEventNotificationHandlerTests 
+public class SentTransferConnectionRequestEventNotificationHandlerTests
 {
     [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
     {
         var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
-        
+
         await fixture.Handle();
 
-        fixture.NotificationsApiClient.Verify(
-            api => api.SendEmail(It.Is<Email>(email =>
-                !string.IsNullOrWhiteSpace(email.Tokens["link_notification_page"])
-                && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
+        fixture.NotificationsService.Verify(
+            api => api.SendEmail(
+                "TransferConnectionInvitationSent",
+                It.IsAny<string>(),
+                It.Is<Dictionary<string, string>>(tokens =>
+                    !string.IsNullOrWhiteSpace(tokens["link_notification_page"])
+                    && tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Exactly(3));
     }
-    
+
     [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeReceiverAccountId()
     {
         var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
-        
+
         await fixture.Handle();
-        
-        fixture.EncodingService.Verify(encodingService=> encodingService.Encode(It.Is<long>(x=> x == fixture.ReceiverAccount.Id), EncodingType.AccountId), Times.Once);
+
+        fixture.EncodingService.Verify(encodingService => encodingService.Encode(It.Is<long>(x => x == fixture.ReceiverAccount.Id), EncodingType.AccountId), Times.Once);
     }
-    
+
     [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
     {
         var fixture = new SentTransferConnectionRequestEventNotificationHandlerTestsFixture();
-        
+
         await fixture.Handle();
-        
-        fixture.NotificationsApiClient.Verify(
-            api => api.SendEmail(It.Is<Email>(email =>
-                email.RecipientsAddress == fixture.ReceiverAccountOwner.Email
-                && !string.IsNullOrWhiteSpace(email.Subject)
-                && email.ReplyToAddress == "noreply@sfa.gov.uk"
-                && email.TemplateId == "TransferConnectionInvitationSent"
-                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.ReceiverHashedId}/transfers/connections"
-                && email.Tokens["account_name"] == fixture.SenderAccount.Name)),
+
+        fixture.NotificationsService.Verify(api => api.SendEmail(
+                "TransferConnectionInvitationSent",
+                fixture.ReceiverAccountOwner.Email,
+                It.Is<Dictionary<string, string>>(tokens =>
+                    tokens["link_notification_page"] == $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.ReceiverHashedId}/transfers/connections"
+                    && tokens["account_name"] == fixture.SenderAccount.Name)),
             Times.Once);
     }
 }
@@ -74,11 +76,11 @@ public class SentTransferConnectionRequestEventNotificationHandlerTestsFixture :
             Configuration,
             OuterApiClient.Object,
             Mock.Of<ILogger<SentTransferConnectionRequestEventNotificationHandler>>(),
-            NotificationsApiClient.Object,
+            NotificationsService.Object,
             EncodingService.Object);
     }
 
-    public Task Handle() 
+    public Task Handle()
     {
         return Handler.Handle(Event, null);
     }

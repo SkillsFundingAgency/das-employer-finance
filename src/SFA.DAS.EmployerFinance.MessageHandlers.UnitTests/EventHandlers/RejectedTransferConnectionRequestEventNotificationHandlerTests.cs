@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -16,13 +17,16 @@ public class RejectedTransferConnectionRequestEventNotificationHandlerTests
     public async Task Handle_WhenRejectedTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
     {
         var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
-        
+
         await fixture.Handle();
-            fixture.NotificationsApiClient.Verify(
-                r => r.SendEmail(It.Is<Email>(email =>
-                    email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
-                    && email.Tokens["account_name"] == fixture.ReceiverAccount.Name)),
-                Times.Exactly(3));
+
+        fixture.NotificationsService.Verify(r => r.SendEmail(
+                "TransferConnectionRequestRejected",
+                It.IsAny<string>(),
+                It.Is<Dictionary<string, string>>(tokens =>
+                    tokens["link_notification_page"] == $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
+                    && tokens["account_name"] == fixture.ReceiverAccount.Name)),
+            Times.Exactly(3));
     }
 
     [Test]
@@ -31,25 +35,23 @@ public class RejectedTransferConnectionRequestEventNotificationHandlerTests
         var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
         await fixture.Handle();
 
-        fixture.NotificationsApiClient.Verify(
-            r => r.SendEmail(It.Is<Email>(email =>
-                email.RecipientsAddress == fixture.SenderAccountOwner1.Email
-                && !string.IsNullOrWhiteSpace(email.Subject)
-                && email.ReplyToAddress == "noreply@sfa.gov.uk"
-                && email.TemplateId == "TransferConnectionRequestRejected"
-                && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
-                && email.Tokens["account_name"] == fixture.ReceiverAccount.Name)),
+        fixture.NotificationsService.Verify(r => r.SendEmail(
+                "TransferConnectionRequestRejected",
+                fixture.SenderAccountOwner1.Email,
+                It.Is<Dictionary<string, string>>(tokens =>
+                    tokens["link_notification_page"] == $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
+                    && tokens["account_name"] == fixture.ReceiverAccount.Name)),
             Times.Once);
     }
-    
+
     [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeSenderAccountId()
     {
         var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
-        
+
         await fixture.Handle();
-        
-        fixture.EncodingService.Verify(encodingService=> encodingService.Encode(It.Is<long>(x=> x == fixture.SenderAccount.Id), EncodingType.AccountId), Times.Once);
+
+        fixture.EncodingService.Verify(encodingService => encodingService.Encode(It.Is<long>(x => x == fixture.SenderAccount.Id), EncodingType.AccountId), Times.Once);
     }
 }
 
@@ -73,7 +75,7 @@ public class RejectedTransferConnectionRequestEventNotificationHandlerTestsFixtu
             Configuration,
             OuterApiClient.Object,
             Mock.Of<ILogger<RejectedTransferConnectionRequestEventNotificationHandler>>(),
-            NotificationsApiClient.Object,
+            NotificationsService.Object,
             EncodingService.Object);
     }
 

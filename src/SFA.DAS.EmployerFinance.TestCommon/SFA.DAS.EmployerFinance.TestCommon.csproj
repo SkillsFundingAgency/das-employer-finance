@@ -4,6 +4,7 @@
         <OutputType>Library</OutputType>
         <RuntimeIdentifier>win</RuntimeIdentifier>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <LangVersion>latestmajor</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
