@@ -126,15 +126,23 @@ public class FinanceOrchestrator
     public async Task<TransferAllowance> GetTransferAllowance(string hashedAccountId)
     {
         _logger.LogInformation("Requesting GetTransferAllowance for the hashedAccountId {HashedAccountId}", hashedAccountId);
+        var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+
+        return await GetTransferAllowanceByAccountId(accountId);
+    }
+
+    public async Task<TransferAllowance> GetTransferAllowanceByAccountId(long accountId)
+    {
+        _logger.LogInformation("Requesting GetTransferAllowance for the accountId {accountId}", accountId);
 
         var response = await _mediator.Send(new GetTransferAllowanceQuery
         {
-            AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId)
+            AccountId = accountId
         });
 
         var result = _mapper.Map<TransferAllowance>(response.TransferAllowance);
 
-        _logger.LogInformation("Received response - GetTransferAllowance for the hashedAccountId {HashedAccountId}", hashedAccountId);
+        _logger.LogInformation("Received response - GetTransferAllowance for the accountId {accountId}", accountId);
 
         return result;
     }
