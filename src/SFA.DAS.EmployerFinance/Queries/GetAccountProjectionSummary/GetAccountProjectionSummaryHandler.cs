@@ -1,57 +1,69 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Models.Levy;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary
+namespace SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary;
+
+public class GetAccountProjectionSummaryHandler(
+    IDasLevyRepository repository,
+    ICurrentDateTime currentDateTime,
+    ILogger<GetAccountProjectionSummaryHandler> logger)
+    : IRequestHandler<GetAccountProjectionSummaryQuery, GetAccountProjectionSummaryResult>
 {
-    public class GetAccountProjectionSummaryHandler : IRequestHandler<GetAccountProjectionSummaryQuery,
-    GetAccountProjectionSummaryResult>
+    public async Task<GetAccountProjectionSummaryResult> Handle(GetAccountProjectionSummaryQuery query, CancellationToken cancellationToken)
     {
-        private readonly ILogger<GetAccountProjectionSummaryHandler> _logger;
-        private readonly IDasLevyRepository _repository;
-        private readonly ICurrentDateTime _currentDateTime;
+        logger.LogInformation("GettingAccountProjectionSummary for accountId {Id}", query.AccountId);
 
-        public GetAccountProjectionSummaryHandler(
-            IDasLevyRepository repository,
-            ICurrentDateTime currentDateTime,
-            ILogger<GetAccountProjectionSummaryHandler> logger)
+        var declarations = await repository.GetAccountLevyDeclarations(query.AccountId);
+        var forecastDeclarations = GetForecastDeclarations(declarations);
+
+        var fundsIn = forecastDeclarations.Sum(fd => fd.TotalAmount) * 12;
+
+        return new GetAccountProjectionSummaryResult
         {
-            _repository = repository;
-            _currentDateTime = currentDateTime;
-            _logger = logger;
-        }
+            AccountId = query.AccountId,
+            FundsIn = fundsIn
+        };
+    }
 
-        public async Task<GetAccountProjectionSummaryResult> Handle(GetAccountProjectionSummaryQuery query, CancellationToken cancellationToken)
+    private List<LevyDeclarationItem> GetForecastDeclarations(IEnumerable<LevyDeclarationItem> declarations)
+    {
+        var groupedDeclarations = declarations.GroupBy(x => x.EmpRef).ToList();
+        var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth(currentDateTime.Now);
+        var previousPayrollYear = currentDateTime.Now.AddYears(-1).ToPayrollYearString();
+
+        var forecastDeclarations = new List<LevyDeclarationItem>();
+
+        foreach (var group in groupedDeclarations)
         {
-            _logger.LogInformation("GettingAccountProjectionSummary for accountId {Id}", query.AccountId);
-
-            var declarations = await _repository.GetAccountLevyDeclarations(query.AccountId);
-
-            var (currentPayrollYear, currentPayrollMonth) = GetPayrollYearAndMonthForLastMonth(_currentDateTime.Now);
-            var previousPayrollYear = _currentDateTime.Now.AddYears(-1).ToPayrollYearString();
-
-            var forecastDeclaration = declarations.Where(x =>
-            (x.PayrollYear == currentPayrollYear && x.PayrollMonth >= currentPayrollMonth - 2)
-            || (x.PayrollYear == previousPayrollYear && x.PayrollMonth > 10))
-            .OrderByDescending(x => x.PayrollYear)
+            var forecastDeclaration = group
+                .Where(x => IsRecentDeclaration(x, currentPayrollYear, currentPayrollMonth, previousPayrollYear))
+                .OrderByDescending(x => x.PayrollYear)
                 .ThenByDescending(x => x.PayrollMonth)
                 .Take(2)
                 .FirstOrDefault();
 
-            if (forecastDeclaration != null && forecastDeclaration.TotalAmount > 0)
+            if (forecastDeclaration != null)
             {
-                return new GetAccountProjectionSummaryResult { AccountId = forecastDeclaration.AccountId, FundsIn = forecastDeclaration.TotalAmount * 12 };
+                forecastDeclarations.Add(forecastDeclaration);
             }
-
-            return new GetAccountProjectionSummaryResult { AccountId = query.AccountId, FundsIn = 0 };
         }
 
-        private static (string, int) GetPayrollYearAndMonthForLastMonth(DateTime currentDate)
-        {
-            var currentMonth = currentDate.Month;
-            var payrollMonth = currentMonth >= 4 ? currentMonth - 3 : currentMonth + 9;
+        return forecastDeclarations;
+    }
 
-            return (currentDate.ToPayrollYearString(), payrollMonth);
-        }
+    private static bool IsRecentDeclaration(LevyDeclarationItem declaration, string currentPayrollYear, int currentPayrollMonth, string previousPayrollYear)
+    {
+        return (declaration.PayrollYear == currentPayrollYear && declaration.PayrollMonth >= currentPayrollMonth - 2)
+               || (declaration.PayrollYear == previousPayrollYear && declaration.PayrollMonth > 10);
+    }
+
+    private static (string, int) GetPayrollYearAndMonthForLastMonth(DateTime currentDate)
+    {
+        var currentMonth = currentDate.Month;
+        var payrollMonth = currentMonth >= 4 ? currentMonth - 3 : currentMonth + 9;
+
+        return (currentDate.ToPayrollYearString(), payrollMonth);
     }
 }

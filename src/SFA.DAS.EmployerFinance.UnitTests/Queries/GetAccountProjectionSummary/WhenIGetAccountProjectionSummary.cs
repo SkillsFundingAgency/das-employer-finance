@@ -30,17 +30,23 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
         {
             // Arrange
             var today = new DateTime(2024, 6, 25);
+            var payeScheme = "PA12/YE";
             _currentDateTime.Setup(x => x.Now).Returns(today);
 
             var query = _fixture.Create<GetAccountProjectionSummaryQuery>();
-            var declarations = _fixture.CreateMany<LevyDeclarationItem>(5).ToList();
+            var declarations = _fixture
+                .Build<LevyDeclarationItem>()
+                .With(x=> x.EmpRef, payeScheme)
+                .CreateMany(5)
+                .ToList();
 
             var currentMonthRecord = new LevyDeclarationItem
             {
                 PayrollYear = today.ToPayrollYearString(),
                 PayrollMonth = 3,
                 TotalAmount = 1000,
-                AccountId = query.AccountId
+                AccountId = query.AccountId,
+                EmpRef = payeScheme
             };
 
             declarations.Add(currentMonthRecord);
@@ -53,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             // Assert
             result.AccountId.Should().Be(currentMonthRecord.AccountId);
-            result.FundsIn.Should().Be(currentMonthRecord.TotalAmount * 12);
+            result.FundsIn.Should().Be(12000);
         }
 
         [Test]
@@ -61,17 +67,23 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
         {
             // Arrange
             var today = new DateTime(2024, 6, 25);
+            var payeScheme = "PA12/YE";
             _currentDateTime.Setup(x => x.Now).Returns(today);
 
             var query = _fixture.Create<GetAccountProjectionSummaryQuery>();
-            var declarations = _fixture.CreateMany<LevyDeclarationItem>(5).ToList();
+            var declarations = _fixture
+                .Build<LevyDeclarationItem>()
+                .With(x=> x.EmpRef, payeScheme)
+                .CreateMany(5)
+                .ToList();
 
             var previousMonthRecord = new LevyDeclarationItem
             {
                 PayrollYear = today.ToPayrollYearString(),
                 PayrollMonth = 2,
                 TotalAmount = 800,
-                AccountId = query.AccountId
+                AccountId = query.AccountId,
+                EmpRef = payeScheme
             };
             declarations.Add(previousMonthRecord);
 
@@ -83,7 +95,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             // Assert
             result.AccountId.Should().Be(previousMonthRecord.AccountId);
-            result.FundsIn.Should().Be(previousMonthRecord.TotalAmount * 12);
+            result.FundsIn.Should().Be(9600);
         }
           
         [Test]
@@ -91,17 +103,23 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
         {
             // Arrange
             var today = new DateTime(2024, 4, 25);
+            var payeScheme = "PA12/YE";
             _currentDateTime.Setup(x => x.Now).Returns(today);
 
             var query = _fixture.Create<GetAccountProjectionSummaryQuery>();
-            var declarations = _fixture.CreateMany<LevyDeclarationItem>(5).ToList();
+            var declarations = _fixture
+                .Build<LevyDeclarationItem>()
+                .With(x=> x.EmpRef, payeScheme)
+                .CreateMany(5)
+                .ToList();
 
             var previousMonthRecord = new LevyDeclarationItem
             {
                 PayrollYear = "23-24",
                 PayrollMonth = 12 ,
                 TotalAmount = 800,
-                AccountId = query.AccountId
+                AccountId = query.AccountId,
+                EmpRef = payeScheme
             };
             declarations.Add(previousMonthRecord);
 
@@ -113,7 +131,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             // Assert
             result.AccountId.Should().Be(previousMonthRecord.AccountId);
-            result.FundsIn.Should().Be(previousMonthRecord.TotalAmount * 12);
+            result.FundsIn.Should().Be(9600);
         }
 
         [Test]
@@ -134,6 +152,66 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
             // Assert
             result.AccountId.Should().Be(query.AccountId);
             result.FundsIn.Should().Be(0);
+        }
+        
+        [Test]
+        public async Task Handle_ShouldReturnCurrentMonthRecordForEachPaye_WhenCMultiplePayesExist()
+        {
+            // Arrange
+            var today = new DateTime(2024, 6, 25);
+            var payeScheme1 = "PA12/YE";
+            var payeScheme2 = "IAM1/ANUVA";
+            _currentDateTime.Setup(x => x.Now).Returns(today);
+
+            var query = _fixture.Create<GetAccountProjectionSummaryQuery>();
+
+            var declarations = new List<LevyDeclarationItem>
+            {
+                new()
+                {
+                    PayrollYear = today.ToPayrollYearString(),
+                    PayrollMonth = 3,
+                    TotalAmount = 111,
+                    AccountId = query.AccountId,
+                    EmpRef = payeScheme1
+                },
+                new()
+                {
+                    PayrollYear = today.ToPayrollYearString(),
+                    PayrollMonth = 2,
+                    TotalAmount = 222,
+                    AccountId = query.AccountId,
+                    EmpRef = payeScheme1
+                },
+                new()
+                {
+                    PayrollYear = today.ToPayrollYearString(),
+                    PayrollMonth = 3,
+                    TotalAmount = 900,
+                    AccountId = query.AccountId,
+                    EmpRef = payeScheme2
+                },
+                new()
+                {
+                    PayrollYear = today.ToPayrollYearString(),
+                    PayrollMonth = 2,
+                    TotalAmount = 101,
+                    AccountId = query.AccountId,
+                    EmpRef = payeScheme2
+                },
+
+            };
+
+            _repositoryMock
+                .Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+                .ReturnsAsync(declarations);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.AccountId.Should().Be(query.AccountId);
+            result.FundsIn.Should().Be(12132);
         }
     }
 }
