@@ -99,15 +99,17 @@ public class PaymentService : IPaymentService
         var maxConcurrentThreads = 50;
         var resultProviders = new ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>();
 
-        await ukprnList
-            .ParallelForEachAsync(async ukprn =>
+        await Parallel.ForEachAsync(
+            ukprnList, 
+            new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
+            async (ukprn, _) =>
             {
                 if (!resultProviders.ContainsKey(ukprn))
                 {
                     var provider = await _providerService.Get(ukprn);
                     resultProviders.TryAdd(ukprn, provider);
                 }
-            }, maxDegreeOfParallelism: maxConcurrentThreads);
+            });
 
         return resultProviders;
     }
@@ -117,15 +119,17 @@ public class PaymentService : IPaymentService
         var resultApprenticeships = new ConcurrentDictionary<long, GetApprenticeshipResponse>();
 
         var maxConcurrentThreads = 50;
-        await apprenticeshipIdList
-            .ParallelForEachAsync(async apprenticeshipId =>
+        await Parallel.ForEachAsync(
+            apprenticeshipIdList, 
+            new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
+            async (apprenticeshipId, _) =>
+        {
+            var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId);
+            if (apprenticeship != null)
             {
-                var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId);
-                if (apprenticeship != null)
-                {
-                    resultApprenticeships.TryAdd(apprenticeship.Id, apprenticeship);
-                }
-            }, maxDegreeOfParallelism: maxConcurrentThreads);
+                resultApprenticeships.TryAdd(apprenticeship.Id, apprenticeship);
+            }
+        });
 
         return resultApprenticeships;
     }
