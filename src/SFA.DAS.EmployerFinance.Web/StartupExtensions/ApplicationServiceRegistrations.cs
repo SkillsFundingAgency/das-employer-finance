@@ -37,7 +37,7 @@ public static class ApplicationServiceRegistrations
         services.AddScoped<IProviderService, ProviderServiceFromDb>();
 
         services.AddHttpClient<IOuterApiClient, OuterApiClient>();
-        services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
+        services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
         services.AddTransient<IContentApiClient, ContentApiClient>();
         services.AddTransient<IContentApiClient, ContentApiClientWithCaching>();
 
