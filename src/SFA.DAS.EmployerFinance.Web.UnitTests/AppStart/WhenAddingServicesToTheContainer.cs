@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -21,11 +22,12 @@ public class WhenAddingServicesToTheContainer
         var provider = serviceCollection.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
     
     [TestCase(typeof(IEmployerAccountAuthorisationHandler))]
     [TestCase(typeof(ICustomClaims))]
+    [TestCase(typeof(ICommitmentsV2ApiClient))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Services(Type toResolve)
     {
         var serviceCollection = new ServiceCollection();
@@ -33,7 +35,7 @@ public class WhenAddingServicesToTheContainer
         var provider = serviceCollection.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
     
     [TestCaseSource(nameof(GetRequestHandlerTypes))]
@@ -44,7 +46,7 @@ public class WhenAddingServicesToTheContainer
         var provider = serviceCollection.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
     
     private static IEnumerable<Type> GetRequestHandlerTypes()
@@ -76,7 +78,7 @@ public class WhenAddingServicesToTheContainer
             
         Assert.Multiple(() =>
         {
-            Assert.IsNotNull(type);
+            type.Should().NotBeNull();
             type.Count.Should().Be(4);
         
             type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountAllRolesAuthorizationHandler));
