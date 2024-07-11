@@ -116,7 +116,7 @@ public class PaymentService : IPaymentService
     {
         var resultApprenticeships = new ConcurrentDictionary<long, GetApprenticeshipResponse>();
 
-        var maxConcurrentThreads = 50;
+        var maxConcurrentThreads = 5;
         await apprenticeshipIdList
             .ParallelForEachAsync(async apprenticeshipId =>
             {
