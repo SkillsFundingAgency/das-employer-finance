@@ -69,8 +69,6 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
 
         _logger.LogInformation($"GetAccountPaymentIds for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
-        var failingPayment = payments.Where(p => p.ApprenticeshipId == 743445).ToList();
-
         var existingPaymentIds = await _dasLevyRepository.GetAccountPaymentIds(request.AccountId);
         var newPayments = payments.Where(p => !existingPaymentIds.Contains(p.Id)).ToArray();
 
