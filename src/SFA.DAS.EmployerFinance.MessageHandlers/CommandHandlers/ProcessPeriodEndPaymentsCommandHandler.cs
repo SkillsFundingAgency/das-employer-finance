@@ -32,7 +32,7 @@ public class ProcessPeriodEndPaymentsCommandHandler : IHandleMessages<ProcessPer
                 _logger.LogInformation($"Creating payment queue message for account ID: '{account.Id}' period end ref: '{message.PeriodEndRef}'");
 
                 var sendOptions = new SendOptions();
-
+                
                 sendOptions.RouteToThisEndpoint();
                 sendOptions.RequireImmediateDispatch(); // Circumvent sender outbox
                 sendOptions.SetMessageId($"{nameof(ImportAccountPaymentsCommand)}-{message.PeriodEndRef}-{account.Id}"); // Allow receiver outbox to de-dupe
