@@ -55,8 +55,9 @@ public class GetAccountProjectionSummaryHandler(
 
     private static bool IsRecentDeclaration(LevyDeclarationItem declaration, string currentPayrollYear, int currentPayrollMonth, string previousPayrollYear)
     {
-        return (declaration.PayrollYear == currentPayrollYear && declaration.PayrollMonth >= currentPayrollMonth - 2)
-               || (declaration.PayrollYear == previousPayrollYear && declaration.PayrollMonth > 10);
+        return ((declaration.PayrollYear == currentPayrollYear && declaration.PayrollMonth >= currentPayrollMonth - 3)
+               || (declaration.PayrollYear == previousPayrollYear && declaration.PayrollMonth > 9))
+               && declaration.TotalAmount > 0;
     }
 
     private static (string, int) GetPayrollYearAndMonthForLastMonth(DateTime currentDate)
