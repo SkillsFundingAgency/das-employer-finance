@@ -30,13 +30,15 @@ public static class ServiceCollectionExtensions
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
                     .UseErrorQueue($"{EndpointName}-errors")
                     .UseInstallers()
-                    .UseOutbox()    
+                    .UseOutbox()   
                     .UseMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
                     .UseServicesBuilder(new UpdateableServiceProvider(services))
                     .UseUnitOfWork();
+
+                endpointConfiguration.LimitMessageProcessingConcurrencyTo(4);
                 
                 if (!string.IsNullOrEmpty(employerFinanceConfiguration.NServiceBusLicense))
                 {
