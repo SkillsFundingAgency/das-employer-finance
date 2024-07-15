@@ -19,8 +19,8 @@ public class ImportAccountPaymentsCommandHandler : IHandleMessages<ImportAccount
     public async Task Handle(ImportAccountPaymentsCommand message, IMessageHandlerContext context)
     {
         var correlationId = Guid.NewGuid();
-        _logger.LogInformation($"Processing refresh payment command for Account ID: {message.AccountId} PeriodEnd: {message.PeriodEndRef} CorrelationId: {correlationId}");
-
+        _logger.LogInformation($"Processing refresh payment command for Account ID: {message.AccountId} PeriodEnd: {message.PeriodEndRef} CorrelationId: {correlationId}, MessageId: {context.MessageId}");
+        
         await _mediator.Send(new RefreshPaymentDataCommand
         {
             AccountId = message.AccountId,
