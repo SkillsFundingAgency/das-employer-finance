@@ -1,4 +1,5 @@
-﻿using NServiceBus.ObjectBuilder.MSDependencyInjection;
+﻿using Azure.Messaging.ServiceBus;
+using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.NServiceBus.Configuration;
@@ -50,6 +51,11 @@ public static class ServiceCollectionExtensions
                 return endpoint;
             })
             .AddSingleton<IMessageSession>(s => s.GetService<IEndpointInstance>())
+            .AddScoped(x =>
+            {
+                var config = x.GetService<EmployerFinanceJobsConfiguration>();
+                return new ServiceBusClient(config.ServiceBusConnectionString);
+            })
             .AddHostedService<NServiceBusHostedService>();
     }
 }
