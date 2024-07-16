@@ -1,10 +1,8 @@
 ﻿using System.Threading;
 using Azure.Messaging.ServiceBus;
-using Dasync.Collections;
 using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
@@ -12,23 +10,25 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
 public class ImportAccountPaymentsCommandHandler(
     IMediator mediator,
     ILogger<ImportAccountPaymentsCommandHandler> logger,
-    EmployerFinanceConfiguration employerFinanceConfiguration)
+    ServiceBusClient serviceBusClient)
     : IHandleMessages<ImportAccountPaymentsCommand>
 {
-    private readonly ServiceBusClient _serviceBusClient = new(employerFinanceConfiguration.ServiceBusConnectionString);
     private readonly TimeSpan _renewalInterval = TimeSpan.FromSeconds(30);
     
-    public async Task Handle(ImportAccountPaymentsCommand message, IMessageHandlerContext context)
+   public async Task Handle(ImportAccountPaymentsCommand message, IMessageHandlerContext context)
     {
-        var messageReceiver = _serviceBusClient.CreateReceiver("SFA.DAS.EmployerFinance.MessageHandlers");
+        var messageReceiver = serviceBusClient.CreateReceiver("SFA.DAS.EmployerFinance.MessageHandlers");
 
         using var cts = new CancellationTokenSource();
 
-        var lockRenewalTask = RenewLockAsync(messageReceiver, cts.Token);
+        // Receive the message first
+        var receivedMessage = await messageReceiver.ReceiveMessageAsync();
+        var lockRenewalTask = RenewLockAsync(messageReceiver, receivedMessage, cts.Token);
 
         try
         {
             await ProcessMessageAsync(message, context.MessageId);
+            await messageReceiver.CompleteMessageAsync(receivedMessage);
         }
         finally
         {
@@ -37,14 +37,10 @@ public class ImportAccountPaymentsCommandHandler(
         }
     }
     
-    private async Task RenewLockAsync(ServiceBusReceiver messageReceiver, CancellationToken cancellationToken)
+    private async Task RenewLockAsync(ServiceBusReceiver messageReceiver, ServiceBusReceivedMessage receivedMessage, CancellationToken cancellationToken)
     {
         try
         {
-            var receivedMessage = await messageReceiver
-                .ReceiveMessagesAsync(cancellationToken)
-                .FirstAsync(token: cancellationToken);
-            
             while (!cancellationToken.IsCancellationRequested)
             {
                 await Task.Delay(_renewalInterval, cancellationToken);
