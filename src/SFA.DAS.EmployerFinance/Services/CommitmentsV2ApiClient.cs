@@ -24,7 +24,7 @@ public class CommitmentsV2ApiClient(
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
         await AddAuthenticationHeader(requestMessage);
       
-        using var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+        var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         logger.LogInformation("EmployerFinance Services received response for GetApprenticeship {Url}", url);
@@ -40,7 +40,7 @@ public class CommitmentsV2ApiClient(
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
         await AddAuthenticationHeader(requestMessage);
 
-        using var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+        var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
