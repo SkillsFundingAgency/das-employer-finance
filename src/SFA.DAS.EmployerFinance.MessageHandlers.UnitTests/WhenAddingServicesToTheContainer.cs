@@ -168,6 +168,7 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
+                new("EmployerFinanceJobsConfiguration:ServiceBusConnectionString", "Endpoint=sb://endpoint.servicebus.windows.net/;SharedAccessKeyName=<access-key-name>;SharedAccessKey=<access-key>"),
                 new("EmployerFinanceJobsConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("PaymentsEventsApi:ApiBaseUrl", "test"),
                 new("PaymentsEventsApi:IdentifierUri", "test"),
