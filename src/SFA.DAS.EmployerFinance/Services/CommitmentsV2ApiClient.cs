@@ -25,6 +25,7 @@ public class CommitmentsV2ApiClient(
         await AddAuthenticationHeader(requestMessage);
       
         var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         logger.LogInformation("EmployerFinance Services received response for GetApprenticeship {Url}", url);
