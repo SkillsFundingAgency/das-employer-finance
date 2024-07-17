@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
                     .UseServicesBuilder(new UpdateableServiceProvider(services))
                     .UseUnitOfWork();
 
-                endpointConfiguration.LimitMessageProcessingConcurrencyTo(1);
+                endpointConfiguration.LimitMessageProcessingConcurrencyTo(5);
                 
                 if (!string.IsNullOrEmpty(employerFinanceConfiguration.NServiceBusLicense))
                 {

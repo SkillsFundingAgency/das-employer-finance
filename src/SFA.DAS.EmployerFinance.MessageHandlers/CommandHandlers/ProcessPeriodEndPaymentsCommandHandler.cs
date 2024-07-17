@@ -32,7 +32,7 @@ public class ProcessPeriodEndPaymentsCommandHandler(
                         new ImportAccountPaymentsCommand
                             { PeriodEndRef = message.PeriodEndRef, AccountId = account.Id }, sendOptions)
                     .ConfigureAwait(false);
-            });
+            }).ConfigureAwait(false);
 
         logger.LogInformation($"Completed payment message queuing for period end ref: '{message.PeriodEndRef}'");
     }
