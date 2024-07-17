@@ -125,7 +125,7 @@ public class PaymentService : IPaymentService
     
     private async Task<ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>> GetProviderDetailsDict(IEnumerable<long> ukprnList)
     {
-        var maxConcurrentThreads = 50;
+        var maxConcurrentThreads = 10;
         var resultProviders = new ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>();
 
         await Parallel.ForEachAsync(
@@ -147,7 +147,7 @@ public class PaymentService : IPaymentService
     {
         var resultApprenticeships = new ConcurrentDictionary<long, GetApprenticeshipResponse>();
 
-        var maxConcurrentThreads = 50;
+        var maxConcurrentThreads = 10;
         await Parallel.ForEachAsync(
             apprenticeshipIdList, 
             new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
