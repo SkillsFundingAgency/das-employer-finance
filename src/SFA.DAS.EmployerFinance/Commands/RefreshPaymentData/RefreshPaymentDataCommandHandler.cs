@@ -51,7 +51,7 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
         {
             _logger.LogInformation($"GetAccountPayments for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
-            payments = await _paymentService.GetAccountPayments(request.PeriodEnd, request.AccountId, request.CorrelationId);
+            payments = await _paymentService.GetAccountPayments(request.PeriodEnd, request.AccountId, request.CorrelationId).ConfigureAwait(false);
         }
         catch (WebException ex)
         {
@@ -62,35 +62,35 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
         {
             _logger.LogInformation($"GetAccountPayments did not find any payments for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
-            await PublishRefreshPaymentDataCompletedEvent(request, false);
+            await PublishRefreshPaymentDataCompletedEvent(request, false).ConfigureAwait(false);
 
             return Unit.Value;
         }
 
         _logger.LogInformation($"GetAccountPaymentIds for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
-        var existingPaymentIds = await _dasLevyRepository.GetAccountPaymentIds(request.AccountId);
+        var existingPaymentIds = await _dasLevyRepository.GetAccountPaymentIds(request.AccountId).ConfigureAwait(false);
         var newPayments = payments.Where(p => !existingPaymentIds.Contains(p.Id)).ToArray();
 
         if (!newPayments.Any())
         {
             _logger.LogInformation($"No new payments for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}'");
 
-            await PublishRefreshPaymentDataCompletedEvent(request, false);
+            await PublishRefreshPaymentDataCompletedEvent(request, false).ConfigureAwait(false);
 
             return Unit.Value;
         }
 
-        _paymentService.AddPaymentDetailsMetadata(request.PeriodEnd, request.AccountId, request.CorrelationId, payments);
+        await _paymentService.AddPaymentDetailsMetadata(request.PeriodEnd, request.AccountId, request.CorrelationId, payments).ConfigureAwait(false);
         
         _logger.LogInformation($"CreatePayments for new payments AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
         var newNonFullyFundedPayments = newPayments.Where(p => p.FundingSource != FundingSource.FullyFundedSfa);
 
-        await _dasLevyRepository.CreatePayments(newNonFullyFundedPayments);
+        await _dasLevyRepository.CreatePayments(newNonFullyFundedPayments).ConfigureAwait(false);
         await _mediator.Publish(new ProcessPaymentEvent { AccountId = request.AccountId }, cancellationToken);
 
-        await PublishRefreshPaymentDataCompletedEvent(request, true);
+        await PublishRefreshPaymentDataCompletedEvent(request, true).ConfigureAwait(false);
 
         _logger.LogInformation($"Finished publishing ProcessPaymentEvent and PaymentCreatedMessage messages for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 

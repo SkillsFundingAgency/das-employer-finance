@@ -21,7 +21,7 @@ public class ImportAccountPaymentsCommandHandler(
             AccountId = message.AccountId,
             PeriodEnd = message.PeriodEndRef,
             CorrelationId = correlationId
-        });
+        }).ConfigureAwait(false);
 
         logger.LogInformation($"Processing refresh account transfers command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}, CorrelationId: {correlationId}");
 
@@ -30,7 +30,7 @@ public class ImportAccountPaymentsCommandHandler(
             ReceiverAccountId = message.AccountId,
             PeriodEnd = message.PeriodEndRef,
             CorrelationId = correlationId
-        });
+        }).ConfigureAwait(false);
 
         logger.LogInformation($"Processing create account transfer transactions command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}");
 
@@ -39,6 +39,6 @@ public class ImportAccountPaymentsCommandHandler(
             ReceiverAccountId = message.AccountId,
             PeriodEnd = message.PeriodEndRef,
             CorrelationId = correlationId
-        });
+        }).ConfigureAwait(false);
     }
 }

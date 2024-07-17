@@ -45,7 +45,7 @@ public class PaymentService : IPaymentService
 
         for (var index = 1; index <= totalPages; index++)
         {
-            var payments = await GetPaymentsPage(employerAccountId, periodEnd, index);
+            var payments = await GetPaymentsPage(employerAccountId, periodEnd, index).ConfigureAwait(false);
 
             if (payments == null) continue;
 
@@ -135,7 +135,7 @@ public class PaymentService : IPaymentService
             {
                 if (!resultProviders.ContainsKey(ukprn))
                 {
-                    var provider = await _providerService.Get(ukprn);
+                    var provider = await _providerService.Get(ukprn).ConfigureAwait(false);
                     resultProviders.TryAdd(ukprn, provider);
                 }
             });
@@ -153,7 +153,7 @@ public class PaymentService : IPaymentService
             new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
             async (apprenticeshipId, _) =>
             {
-                var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId);
+                var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId).ConfigureAwait(false);
                 if (apprenticeship != null)
                 {
                     resultApprenticeships.TryAdd(apprenticeship.Id, apprenticeship);
