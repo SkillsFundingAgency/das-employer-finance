@@ -16,6 +16,8 @@ public class CommitmentsV2ApiClient(
     IConfiguration configuration)
     : ICommitmentsV2ApiClient
 {
+    private readonly AzureServiceTokenProvider _azureServiceTokenProvider = new();
+
     public async Task<GetApprenticeshipResponse> GetApprenticeship(long apprenticeshipId)
     {
         var url = $"{BaseUrl()}api/apprenticeships/{apprenticeshipId}";
@@ -23,7 +25,7 @@ public class CommitmentsV2ApiClient(
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
         await AddAuthenticationHeader(requestMessage);
-      
+
         var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -37,7 +39,7 @@ public class CommitmentsV2ApiClient(
     {
         var url = $"{BaseUrl()}api/accounts/{accountId}/transfers";
         logger.LogInformation("Getting GetTransferRequests {Url}", url);
-        
+
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
         await AddAuthenticationHeader(requestMessage);
 
@@ -45,7 +47,7 @@ public class CommitmentsV2ApiClient(
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        
+
         return JsonConvert.DeserializeObject<GetTransferRequestSummaryResponse>(json);
     }
 
@@ -63,8 +65,7 @@ public class CommitmentsV2ApiClient(
     {
         if (configuration["EnvironmentName"].ToUpper() != "LOCAL")
         {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(commitmentsApiClientConfig.IdentifierUri);
+            var accessToken = await _azureServiceTokenProvider.GetAccessTokenAsync(commitmentsApiClientConfig.IdentifierUri);
             httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
     }
