@@ -21,7 +21,6 @@ public class CommitmentsV2ApiClient(
     public async Task<GetApprenticeshipResponse> GetApprenticeship(long apprenticeshipId)
     {
         var url = $"{BaseUrl()}api/apprenticeships/{apprenticeshipId}";
-        logger.LogInformation("EmployerFinance Services Getting GetApprenticeship {Url}", url);
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
         await AddAuthenticationHeader(requestMessage);
@@ -29,8 +28,6 @@ public class CommitmentsV2ApiClient(
         var response = await httpClient.SendAsync(requestMessage).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-        logger.LogInformation("EmployerFinance Services received response for GetApprenticeship {Url}", url);
 
         return JsonConvert.DeserializeObject<GetApprenticeshipResponse>(json);
     }
