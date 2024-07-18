@@ -23,7 +23,7 @@ public class ProcessPeriodEndPaymentsCommandHandler(
                 var sendOptions = new SendOptions();
 
                 sendOptions.RouteToThisEndpoint();
-                sendOptions.RequireImmediateDispatch(); // Circumvent sender outbox
+                // sendOptions.RequireImmediateDispatch(); // Circumvent sender outbox
                 sendOptions.SetMessageId(
                     $"{nameof(ImportAccountPaymentsCommand)}-{message.PeriodEndRef}-{account.Id}"); // Allow receiver outbox to de-dupe
 
