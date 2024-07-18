@@ -8,32 +8,54 @@ public class ProcessPeriodEndPaymentsCommandHandler(
     ILogger<ProcessPeriodEndPaymentsCommandHandler> logger)
     : IHandleMessages<ProcessPeriodEndPaymentsCommand>
 {
+    private const int BatchSize = 10000;
+
     public async Task Handle(ProcessPeriodEndPaymentsCommand message, IMessageHandlerContext context)
     {
-        logger.LogInformation($"Creating payment queue message for all accounts for period end ref: '{message.PeriodEndRef}'");
-        
+        logger.LogInformation($"Processing payment queue messages for period end ref: '{message.PeriodEndRef}', batch: {message.BatchNumber}");
+
         var response = await mediator.Send(new GetAllEmployerAccountsRequest());
-        
-        await Parallel.ForEachAsync(response.Accounts, new ParallelOptions { MaxDegreeOfParallelism = 100 },
-            async (account, _) =>
+
+        var accounts = response.Accounts
+            .OrderBy(a => a.Id)
+            .Skip(message.BatchNumber * BatchSize).Take(BatchSize)
+            .ToList();
+
+        if (accounts.Any())
+        {
+            await Parallel.ForEachAsync(accounts,
+                async (account, _) =>
+                {
+                    logger.LogInformation(
+                        $"Creating payment queue message for account ID: '{account.Id}' period end ref: '{message.PeriodEndRef}'");
+
+                    var sendOptions = new SendOptions();
+                    sendOptions.RouteToThisEndpoint();
+                    sendOptions.SetMessageId(
+                        $"{nameof(ImportAccountPaymentsCommand)}-{message.PeriodEndRef}-{account.Id}");
+
+                    await context
+                        .Send(
+                            new ImportAccountPaymentsCommand
+                                { PeriodEndRef = message.PeriodEndRef, AccountId = account.Id }, sendOptions)
+                        .ConfigureAwait(false);
+                }).ConfigureAwait(false);
+
+            logger.LogInformation($"Completed payment message queuing for batch: {message.BatchNumber} period end ref: '{message.PeriodEndRef}'");
+
+            var nextBatchCommand = new ProcessPeriodEndPaymentsCommand
             {
-                logger.LogInformation(
-                    $"Creating payment queue message for account ID: '{account.Id}' period end ref: '{message.PeriodEndRef}'");
+                PeriodEndRef = message.PeriodEndRef,
+                BatchNumber = message.BatchNumber + 1
+            };
 
-                var sendOptions = new SendOptions();
-
-                sendOptions.RouteToThisEndpoint();
-                // sendOptions.RequireImmediateDispatch(); // Circumvent sender outbox
-                sendOptions.SetMessageId(
-                    $"{nameof(ImportAccountPaymentsCommand)}-{message.PeriodEndRef}-{account.Id}"); // Allow receiver outbox to de-dupe
-
-                await context
-                    .Send(
-                        new ImportAccountPaymentsCommand
-                            { PeriodEndRef = message.PeriodEndRef, AccountId = account.Id }, sendOptions)
-                    .ConfigureAwait(false);
-            }).ConfigureAwait(false);
-
-        logger.LogInformation($"Completed payment message queuing for period end ref: '{message.PeriodEndRef}'");
+            var nextBatchSendOptions = new SendOptions();
+            nextBatchSendOptions.RouteToThisEndpoint();
+            await context.Send(nextBatchCommand, nextBatchSendOptions).ConfigureAwait(false);
+        }
+        else
+        {
+            logger.LogInformation($"No more accounts to process for period end ref: '{message.PeriodEndRef}'.");
+        }
     }
 }
