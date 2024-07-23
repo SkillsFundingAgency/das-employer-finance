@@ -16,7 +16,6 @@ public static class ClientServiceRegistrations
         services.AddTransient<IPaymentsEventsApiClient>(provider => provider.GetService<IPaymentsEventsApiClientFactory>().CreateClient());
 
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
-        services.AddTransient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
         
         services.AddTransient<IApprenticeshipLevyApiClient>(serviceProvider =>
         {

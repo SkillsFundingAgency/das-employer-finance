@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using AutoMapper;
-using Dasync.Collections;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -45,46 +44,13 @@ public class PaymentService : IPaymentService
 
         for (var index = 1; index <= totalPages; index++)
         {
-            var payments = await GetPaymentsPage(employerAccountId, periodEnd, index);
+            var payments = await GetPaymentsPage(employerAccountId, periodEnd, index).ConfigureAwait(false);
 
             if (payments == null) continue;
 
             totalPages = payments.TotalNumberOfPages;
 
-            var paymentDetails = payments.Items.Select(x => _mapper.Map<PaymentDetails>(x)).ToArray();
-
-            _logger.LogInformation($"Fetching provider and apprenticeship for AccountId = {employerAccountId}, periodEnd={periodEnd}, correlationId = {correlationId}");
-
-            var ukprnList = paymentDetails.Select(pd => pd.Ukprn).Distinct();
-            var apprenticeshipIdList = paymentDetails.Select(pd => pd.ApprenticeshipId).Distinct();
-
-            var getProviderDetailsTask = GetProviderDetailsDict(ukprnList);
-            var getApprenticeDetailsTask = GetApprenticeshipDetailsDict(employerAccountId, apprenticeshipIdList);
-
-            await Task.WhenAll(getProviderDetailsTask, getApprenticeDetailsTask);
-
-            var apprenticeshipDetails = getApprenticeDetailsTask.Result;
-            var providerDetails = getProviderDetailsTask.Result;
-
-            _logger.LogInformation($"Fetched provider and apprenticeship for AccountId = {employerAccountId}, periodEnd={periodEnd}, correlationId = {correlationId} - with {providerDetails.Count} providers and {apprenticeshipDetails.Count} apprenticeship details");
-
-            foreach (var details in paymentDetails)
-            {
-                details.PeriodEnd = periodEnd;
-                var getCourseDetailsTask = GetCourseDetails(details);
-
-                providerDetails.TryGetValue(details.Ukprn, out var provider);
-                details.ProviderName = provider?.Name;
-                details.IsHistoricProviderName = provider?.IsHistoricProviderName ?? false;
-
-                if (apprenticeshipDetails.TryGetValue(details.ApprenticeshipId, out var apprenticeship))
-                {
-                    details.ApprenticeName = $"{apprenticeship.FirstName} {apprenticeship.LastName}";
-                    details.CourseStartDate = apprenticeship.StartDate;
-                }
-
-                await getCourseDetailsTask;
-            }
+            var paymentDetails = payments.Items.Select(x => _mapper.Map<PaymentDetails>(x));
 
             populatedPayments.AddRange(paymentDetails);
 
@@ -94,46 +60,46 @@ public class PaymentService : IPaymentService
         return populatedPayments;
     }
 
-    private async Task<ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>> GetProviderDetailsDict(IEnumerable<long> ukprnList)
+    public async Task<ICollection<PaymentDetails>> AddPaymentDetailsMetadata(string periodEnd, long employerAccountId, Guid correlationId, ICollection<PaymentDetails> paymentDetails)
     {
-        var maxConcurrentThreads = 50;
-        var resultProviders = new ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>();
+        _logger.LogInformation("Fetching provider and apprenticeship for {PaymentDetailsCount} payments for AccountId = {EmployerAccountId}, periodEnd={PeriodEnd}, correlationId = {CorrelationId}", paymentDetails.Count, employerAccountId, periodEnd, correlationId);
 
-        await ukprnList
-            .ParallelForEachAsync(async ukprn =>
+        var ukprnList = paymentDetails.Select(pd => pd.Ukprn).Distinct();
+        var apprenticeshipIdList = paymentDetails.Select(pd => pd.ApprenticeshipId).Distinct();
+
+        var getProviderDetailsTask = GetProviderDetailsDict(ukprnList);
+        var getApprenticeDetailsTask = GetApprenticeshipDetailsDict(employerAccountId, apprenticeshipIdList, correlationId);
+
+        await Task.WhenAll(getProviderDetailsTask, getApprenticeDetailsTask);
+
+        var apprenticeshipDetails = getApprenticeDetailsTask.Result;
+        var providerDetails = getProviderDetailsTask.Result;
+
+        _logger.LogInformation("Fetched provider and apprenticeship for AccountId = {EmployerAccountId}, periodEnd={PeriodEnd}, correlationId = {CorrelationId} - with {ProviderDetailsCount} providers and {ApprenticeshipDetailsCount} apprenticeship details", employerAccountId, periodEnd, correlationId, providerDetails.Count, apprenticeshipDetails.Count);
+
+        await Parallel.ForEachAsync(paymentDetails, async (details, _) =>
+        {
+            details.PeriodEnd = periodEnd;
+
+            providerDetails.TryGetValue(details.Ukprn, out var provider);
+            details.ProviderName = provider?.Name;
+            details.IsHistoricProviderName = provider?.IsHistoricProviderName ?? false;
+
+            if (apprenticeshipDetails.TryGetValue(details.ApprenticeshipId, out var apprenticeship))
             {
-                if (!resultProviders.ContainsKey(ukprn))
-                {
-                    var provider = await _providerService.Get(ukprn);
-                    resultProviders.TryAdd(ukprn, provider);
-                }
-            }, maxDegreeOfParallelism: maxConcurrentThreads);
+                details.ApprenticeName = $"{apprenticeship.FirstName} {apprenticeship.LastName}";
+                details.CourseStartDate = apprenticeship.StartDate;
+            }
 
-        return resultProviders;
-    }
+            await GetCourseDetails(details);
+        });
 
-    private async Task<ConcurrentDictionary<long, GetApprenticeshipResponse>> GetApprenticeshipDetailsDict(long employerAccountId, IEnumerable<long> apprenticeshipIdList)
-    {
-        var resultApprenticeships = new ConcurrentDictionary<long, GetApprenticeshipResponse>();
-
-        var maxConcurrentThreads = 5;
-        await apprenticeshipIdList
-            .ParallelForEachAsync(async apprenticeshipId =>
-            {
-                var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId);
-                if (apprenticeship != null)
-                {
-                    resultApprenticeships.TryAdd(apprenticeship.Id, apprenticeship);
-                }
-            }, maxDegreeOfParallelism: maxConcurrentThreads);
-
-        return resultApprenticeships;
+        return paymentDetails;
     }
 
     public async Task<IEnumerable<AccountTransfer>> GetAccountTransfers(string periodEnd, long receiverAccountId, Guid correlationId)
     {
-        var pageOfTransfers =
-            await _paymentsEventsApiClient.GetTransfers(periodEnd, receiverAccountId: receiverAccountId);
+        var pageOfTransfers = await _paymentsEventsApiClient.GetTransfers(periodEnd, receiverAccountId: receiverAccountId);
 
         var transfers = new List<AccountTransfer>();
 
@@ -154,11 +120,56 @@ public class PaymentService : IPaymentService
         return transfers;
     }
 
+    private async Task<ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>> GetProviderDetailsDict(IEnumerable<long> ukprnList)
+    {
+        var maxConcurrentThreads = 10;
+        var resultProviders = new ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>();
+
+        await Parallel.ForEachAsync(
+            ukprnList,
+            new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
+            async (ukprn, _) =>
+            {
+                if (!resultProviders.ContainsKey(ukprn))
+                {
+                    var provider = await _providerService.Get(ukprn).ConfigureAwait(false);
+                    resultProviders.TryAdd(ukprn, provider);
+                }
+            });
+
+        return resultProviders;
+    }
+
+    private async Task<ConcurrentDictionary<long, GetApprenticeshipResponse>> GetApprenticeshipDetailsDict(long employerAccountId, IEnumerable<long> apprenticeshipIdList, Guid correlationId)
+    {
+        var resultApprenticeships = new ConcurrentDictionary<long, GetApprenticeshipResponse>();
+        var maxConcurrentThreads = 10;
+        var counter = 0;
+        var total = apprenticeshipIdList.Count();
+
+        await Parallel.ForEachAsync(
+            apprenticeshipIdList,
+            new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
+            async (apprenticeshipId, _) =>
+            {
+                var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId).ConfigureAwait(false);
+                if (apprenticeship != null)
+                {
+                    resultApprenticeships.TryAdd(apprenticeship.Id, apprenticeship);
+                }
+
+                var currentCount = Interlocked.Increment(ref counter);
+                _logger.LogInformation("Fetched {CurrentCount}/{Total} apprenticeships for EmployerAccountId = {EmployerAccountId}, correlationId = {CorrelationId}", currentCount, total, employerAccountId, correlationId);
+            });
+
+        return resultApprenticeships;
+    }
+
     private async Task GetCourseDetails(PaymentDetails payment)
     {
         payment.CourseName = string.Empty;
 
-        if (payment.StandardCode.HasValue && payment.StandardCode > 0)
+        if (payment.StandardCode is > 0)
         {
             var standard = await GetStandard(payment.StandardCode.Value);
 
@@ -205,8 +216,7 @@ public class PaymentService : IPaymentService
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, $"Unable to get Apprenticeship with Employer Account ID {employerAccountId} and " +
-                            $"apprenticeship ID {apprenticeshipId} from commitments API.");
+            _logger.LogWarning(exception, $"Unable to get Apprenticeship with Employer Account ID {employerAccountId} and apprenticeship ID {apprenticeshipId} from commitments API.");
         }
 
         return null;

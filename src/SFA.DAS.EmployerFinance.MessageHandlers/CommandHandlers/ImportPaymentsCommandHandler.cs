@@ -39,7 +39,7 @@ public class ImportPaymentsCommandHandler : IHandleMessages<ImportPaymentsComman
         var periodEnds = await _paymentsEventsApiClient.GetPeriodEnds();
 
         var result = await _mediator.Send(new GetPeriodEndsRequest());
-        var periodsToProcess = periodEnds.Where(pe => !result.CurrentPeriodEnds.Any(existing => existing.PeriodEndId == pe.Id));
+        var periodsToProcess = periodEnds.Where(pe => result.CurrentPeriodEnds.All(existing => existing.PeriodEndId != pe.Id));
 
         if (!periodsToProcess.Any())
         {
