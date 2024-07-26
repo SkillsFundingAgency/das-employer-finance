@@ -6,7 +6,7 @@ using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Types.Models;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Levy;
 
 public class ExpireAccountFundsCommandHandler : IHandleMessages<ExpireAccountFundsCommand>
 {
