@@ -25,6 +25,7 @@ public class Payment
     public int? ProgrammeType { get; set; }
     public int? PathwayCode { get; set; }
     public string PathwayName { get; set; }
+    public long PaymentMetaDataId { get; set; }
 
     public override bool Equals(object obj)
     {

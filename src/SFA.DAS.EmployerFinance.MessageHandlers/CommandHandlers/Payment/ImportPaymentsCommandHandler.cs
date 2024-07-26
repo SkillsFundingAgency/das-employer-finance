@@ -5,7 +5,7 @@ using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.Provider.Events.Api.Client;
 using SFA.DAS.Provider.Events.Api.Types;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 
 public class ImportPaymentsCommandHandler : IHandleMessages<ImportPaymentsCommand>
 {

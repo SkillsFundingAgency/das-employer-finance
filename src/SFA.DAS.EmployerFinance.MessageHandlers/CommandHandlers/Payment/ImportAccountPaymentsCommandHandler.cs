@@ -3,7 +3,7 @@ using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 
 public class ImportAccountPaymentsCommandHandler(
     IMediator mediator,
@@ -16,7 +16,7 @@ public class ImportAccountPaymentsCommandHandler(
 
         logger.LogInformation($"Processing refresh payment command for Account ID: {message.AccountId} PeriodEnd: {message.PeriodEndRef} CorrelationId: {correlationId}, MessageId: {context.MessageId}");
         
-        await mediator.Send(new RefreshPaymentDataCommand
+        var paymentsResponse = await mediator.Send(new RefreshPaymentDataCommand
         {
             AccountId = message.AccountId,
             PeriodEnd = message.PeriodEndRef,
@@ -32,7 +32,7 @@ public class ImportAccountPaymentsCommandHandler(
             CorrelationId = correlationId
         }).ConfigureAwait(false);
 
-        logger.LogInformation($"Processing create account transfer transactions command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}");
+        logger.LogInformation($"Processing create account transfer transactions command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}, CorrelationId: {correlationId}");
 
         await mediator.Send(new CreateTransferTransactionsCommand
         {
@@ -40,5 +40,28 @@ public class ImportAccountPaymentsCommandHandler(
             PeriodEnd = message.PeriodEndRef,
             CorrelationId = correlationId
         }).ConfigureAwait(false);
+        
+        await Parallel.ForEachAsync(paymentsResponse.PaymentDetails,
+            async (payment, _) =>
+            {
+                logger.LogInformation(
+                    "Creating {MessageType} message for {AccountId} - {PaymentId}", 
+                    nameof(ImportAccountPaymentMetadataCommand),
+                    message.AccountId,
+                    payment.Id);
+
+                var sendOptions = new SendOptions();
+                sendOptions.RouteToThisEndpoint();
+                sendOptions.SetMessageId(
+                    $"{nameof(ImportAccountPaymentsCommand)}-{message.PeriodEndRef}-{message.AccountId}-{payment.Id}");
+
+                await context
+                    .Send(new ImportAccountPaymentMetadataCommand
+                    {
+                        AccountId = message.AccountId,
+                        PaymentId = payment.Id
+                    }, sendOptions)
+                    .ConfigureAwait(false);
+            }).ConfigureAwait(false);
     }
 }

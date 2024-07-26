@@ -10,5 +10,7 @@ public interface IPaymentService
     Task<ICollection<PaymentDetails>> AddPaymentDetailsMetadata(
         string periodEnd, long employerAccountId, Guid correlationId, ICollection<PaymentDetails> paymentDetails);
     
+    Task<PaymentDetails> AddSinglePaymentDetailsMetadata(string periodEnd, long employerAccountId, PaymentDetails payment);
+    
     Task<IEnumerable<AccountTransfer>> GetAccountTransfers(string periodEnd, long receiverAccountId, Guid correlationId);
 }

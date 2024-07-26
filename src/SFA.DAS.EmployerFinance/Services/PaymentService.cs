@@ -57,6 +57,12 @@ public class PaymentService : IPaymentService
             _logger.LogInformation($"Populated payments page {index} of {totalPages} for AccountId = {employerAccountId}, periodEnd={periodEnd}, correlationId = {correlationId}");
         }
 
+        await Parallel.ForEachAsync(populatedPayments, (details, _) => 
+        {
+            details.PeriodEnd = periodEnd;
+            return ValueTask.CompletedTask;
+        });
+        
         return populatedPayments;
     }
 
@@ -79,8 +85,6 @@ public class PaymentService : IPaymentService
 
         await Parallel.ForEachAsync(paymentDetails, async (details, _) =>
         {
-            details.PeriodEnd = periodEnd;
-
             providerDetails.TryGetValue(details.Ukprn, out var provider);
             details.ProviderName = provider?.Name;
             details.IsHistoricProviderName = provider?.IsHistoricProviderName ?? false;
@@ -93,6 +97,29 @@ public class PaymentService : IPaymentService
 
             await GetCourseDetails(details);
         });
+
+        return paymentDetails;
+    }
+
+    public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(string periodEnd, long employerAccountId, PaymentDetails paymentDetails)
+    {
+        var apprenticeshipTask = GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
+        var providerTask = GetProviderDetails(paymentDetails);
+
+        await Task.WhenAll(apprenticeshipTask, providerTask).ConfigureAwait(false);
+
+        var apprenticeship = await apprenticeshipTask;
+
+        if (apprenticeship != null)
+        {
+            paymentDetails.ApprenticeName = $"{apprenticeship.FirstName} {apprenticeship.LastName}";
+            paymentDetails.CourseStartDate = apprenticeship.StartDate;
+        }
+        else
+        {
+            _logger.LogInformation("Apprentice not found for {PaymentId} - {ApprenticeshipId}", paymentDetails.Id, paymentDetails.ApprenticeshipId);
+        }
+        await GetCourseDetails(paymentDetails);
 
         return paymentDetails;
     }

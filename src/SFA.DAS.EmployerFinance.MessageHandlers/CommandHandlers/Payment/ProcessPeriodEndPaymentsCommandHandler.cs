@@ -1,7 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 
 public class ProcessPeriodEndPaymentsCommandHandler(
     IMediator mediator,

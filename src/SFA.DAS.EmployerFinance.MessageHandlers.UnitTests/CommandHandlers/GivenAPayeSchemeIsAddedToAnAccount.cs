@@ -4,7 +4,7 @@ using Moq;
 using NServiceBus;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Paye;
 

@@ -26,6 +26,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<TransactionLineEntity> Transactions { get; set; }
     public virtual DbSet<TransferConnectionInvitation> TransferConnectionInvitations { get; set; }
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<PaymentMetaData> PaymentMetaData{ get; set; }
 
     public EmployerFinanceDbContext() { }   
 

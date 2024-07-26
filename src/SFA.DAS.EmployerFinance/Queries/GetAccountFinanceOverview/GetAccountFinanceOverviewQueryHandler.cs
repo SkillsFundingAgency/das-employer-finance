@@ -3,7 +3,6 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 

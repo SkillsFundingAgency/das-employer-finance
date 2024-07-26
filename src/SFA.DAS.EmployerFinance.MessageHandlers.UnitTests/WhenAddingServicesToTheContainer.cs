@@ -26,6 +26,7 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Messages.Commands;
@@ -61,7 +62,7 @@ public class WhenAddingServicesToTheContainer
     [TestCase(typeof(IRequestHandler<GetHMRCLevyDeclarationQuery, GetHMRCLevyDeclarationResponse>))]
     [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand, Unit>))]
     [TestCase(typeof(IRequestHandler<CreateEnglishFractionCalculationDateCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, RefreshPaymentDataResponse>))]
     [TestCase(typeof(IRequestHandler<RefreshAccountTransfersCommand, Unit>))]
     [TestCase(typeof(IRequestHandler<CreateTransferTransactionsCommand, Unit>))]
     [TestCase(typeof(IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>))]
