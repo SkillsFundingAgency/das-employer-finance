@@ -31,6 +31,7 @@ public class ProcessPeriodEndPaymentsCommandHandler(
 
                     var sendOptions = new SendOptions();
                     sendOptions.RouteToThisEndpoint();
+                    sendOptions.RequireImmediateDispatch();
                     sendOptions.SetMessageId(
                         $"{nameof(ImportAccountPaymentsCommand)}-{message.PeriodEndRef}-{account.Id}");
 
