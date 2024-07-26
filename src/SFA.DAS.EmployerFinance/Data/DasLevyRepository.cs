@@ -98,6 +98,7 @@ public class DasLevyRepository : IDasLevyRepository
             await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreatePayments]",
                 param: parameters,
+                commandTimeout: 300,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
         }
