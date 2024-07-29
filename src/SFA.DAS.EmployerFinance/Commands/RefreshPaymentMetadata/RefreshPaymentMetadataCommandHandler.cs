@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -15,14 +16,18 @@ public class RefreshPaymentMetadataCommandHandler(
 {
     public async Task<Unit> Handle(RefreshPaymentMetadataCommand request, CancellationToken cancellationToken)
     {
+        logger.LogInformation("{HandlerName} started.", nameof(RefreshPaymentMetadataCommandHandler));
+
         var validationResult = validator.Validate(request);
 
         if (!validationResult.IsValid())
         {
-            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
+            var exception = new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
+            logger.LogError(exception, "{HandlerName}: request is not valid. Request: {Request}", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(request));
+            throw exception;
         }
 
-        ICollection<PaymentDetails> payments = null;
+        logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
 
         var currentPayment = await financeDbContext.Value.Payments
             .Where(p => p.Id == request.PaymentId)
@@ -33,16 +38,25 @@ public class RefreshPaymentMetadataCommandHandler(
                 Ukprn = p.Ukprn,
                 PaymentMetaDataId = p.PaymentMetaDataId
             })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (currentPayment == null)
+        {
+            logger.LogWarning("No payment found with Id {PaymentId}.", request.PaymentId);
+        }
+        else
+        {
+            logger.LogInformation("Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Saving to DB.", currentPayment.Id, currentPayment.ApprenticeshipId);
+            await paymentService.AddSinglePaymentDetailsMetadata(request.PeriodEndRef, request.AccountId, currentPayment).ConfigureAwait(false);
+        }
         
-        logger.LogInformation("Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}", currentPayment.Id, currentPayment.ApprenticeshipId);
         
-        await paymentService.AddSinglePaymentDetailsMetadata(request.PeriodEndRef, request.AccountId, currentPayment).ConfigureAwait(false);
-        
-        var paymentMetaData = await financeDbContext.Value.PaymentMetaData
-            .Where(pmd => pmd.Id == currentPayment.PaymentMetaDataId)
-            .SingleOrDefaultAsync()
-            .ConfigureAwait(false);
+        // var paymentMetaData = await financeDbContext.Value.PaymentMetaData
+        //     .Where(pmd => pmd.Id == currentPayment.PaymentMetaDataId)
+        //     .SingleOrDefaultAsync(cancellationToken)
+        //     .ConfigureAwait(false);
+
+        logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));
         
         return Unit.Value;
     }
