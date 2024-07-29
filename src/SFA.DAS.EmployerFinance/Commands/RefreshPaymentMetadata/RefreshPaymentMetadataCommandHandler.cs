@@ -12,9 +12,9 @@ public class RefreshPaymentMetadataCommandHandler(
     IPaymentService paymentService,
     Lazy<EmployerFinanceDbContext> financeDbContext,
     ILogger<RefreshPaymentMetadataCommandHandler> logger)
-    : IRequestHandler<RefreshPaymentMetadataCommand, Unit>
+    : IRequestHandler<RefreshPaymentMetadataCommand>
 {
-    public async Task<Unit> Handle(RefreshPaymentMetadataCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RefreshPaymentMetadataCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("{HandlerName} started.", nameof(RefreshPaymentMetadataCommandHandler));
 
@@ -42,22 +42,19 @@ public class RefreshPaymentMetadataCommandHandler(
 
         if (currentPayment == null)
         {
-            logger.LogWarning("No payment found with Id {PaymentId}.", request.PaymentId);
+            logger.LogWarning("{HandlerName}: No payment found with Id {PaymentId}.", nameof(RefreshPaymentMetadataCommandHandler), request.PaymentId);
         }
         else
         {
-            logger.LogInformation("Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Saving to DB.", currentPayment.Id, currentPayment.ApprenticeshipId);
+            logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Saving to DB.", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
             await paymentService.AddSinglePaymentDetailsMetadata(request.PeriodEndRef, request.AccountId, currentPayment).ConfigureAwait(false);
         }
-        
-        
+
         // var paymentMetaData = await financeDbContext.Value.PaymentMetaData
         //     .Where(pmd => pmd.Id == currentPayment.PaymentMetaDataId)
         //     .SingleOrDefaultAsync(cancellationToken)
         //     .ConfigureAwait(false);
 
         logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));
-        
-        return Unit.Value;
     }
 }
