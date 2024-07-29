@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccount;
 
-public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,Unit>
+public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ILogger<CreateAccountCommandHandler> _logger;
@@ -13,7 +13,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -26,7 +26,5 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
             _logger.LogError(ex, "Could not create account");
             throw;
         }
-
-        return Unit.Value;
     }        
 }

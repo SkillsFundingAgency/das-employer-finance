@@ -4,14 +4,14 @@ using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
 
-public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandler<CreateEnglishFractionCalculationDateCommand,Unit>
+public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandler<CreateEnglishFractionCalculationDateCommand>
 {
     private readonly IValidator<CreateEnglishFractionCalculationDateCommand> _validator;
     private readonly IEnglishFractionRepository _englishFractionRepository;
     private readonly ILogger<CreateEnglishFractionCalculationDateCommandHandler> _logger;
 
     public CreateEnglishFractionCalculationDateCommandHandler(
-        IValidator<CreateEnglishFractionCalculationDateCommand> validator, 
+        IValidator<CreateEnglishFractionCalculationDateCommand> validator,
         IEnglishFractionRepository englishFractionRepository,
         ILogger<CreateEnglishFractionCalculationDateCommandHandler> logger)
     {
@@ -20,7 +20,7 @@ public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandle
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(CreateEnglishFractionCalculationDateCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateEnglishFractionCalculationDateCommand request, CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -32,7 +32,5 @@ public class CreateEnglishFractionCalculationDateCommandHandler : IRequestHandle
         await _englishFractionRepository.SetLastUpdateDate(request.DateCalculated);
 
         _logger.LogInformation("English Fraction CalculationDate updated to {DateCalculated}.", request.DateCalculated.ToString("dd MMM yyyy"));
-
-        return Unit.Value;
     }
 }

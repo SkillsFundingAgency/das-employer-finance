@@ -22,7 +22,7 @@
     <PackageReference Include="Dapper" Version="2.1.28" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Client" Version="2.0.4" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Types" Version="2.0.4" />
-    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="MediatR" Version="12.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.27" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="7.0.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
