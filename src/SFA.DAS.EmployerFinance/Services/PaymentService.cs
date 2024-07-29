@@ -57,12 +57,12 @@ public class PaymentService : IPaymentService
             _logger.LogInformation($"Populated payments page {index} of {totalPages} for AccountId = {employerAccountId}, periodEnd={periodEnd}, correlationId = {correlationId}");
         }
 
-        await Parallel.ForEachAsync(populatedPayments, (details, _) => 
+        await Parallel.ForEachAsync(populatedPayments, (details, _) =>
         {
             details.PeriodEnd = periodEnd;
             return ValueTask.CompletedTask;
         });
-        
+
         return populatedPayments;
     }
 
@@ -103,12 +103,7 @@ public class PaymentService : IPaymentService
 
     public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(string periodEnd, long employerAccountId, PaymentDetails paymentDetails)
     {
-        var apprenticeshipTask = GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
-        var providerTask = GetProviderDetails(paymentDetails);
-
-        await Task.WhenAll(apprenticeshipTask, providerTask).ConfigureAwait(false);
-
-        var apprenticeship = await apprenticeshipTask;
+        var apprenticeship = await GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
 
         if (apprenticeship != null)
         {
@@ -119,6 +114,7 @@ public class PaymentService : IPaymentService
         {
             _logger.LogInformation("Apprentice not found for {PaymentId} - {ApprenticeshipId}", paymentDetails.Id, paymentDetails.ApprenticeshipId);
         }
+
         await GetCourseDetails(paymentDetails);
 
         return paymentDetails;
