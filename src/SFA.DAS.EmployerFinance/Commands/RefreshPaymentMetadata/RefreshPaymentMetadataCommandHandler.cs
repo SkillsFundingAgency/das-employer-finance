@@ -46,15 +46,10 @@ public class RefreshPaymentMetadataCommandHandler(
         }
         else
         {
-            logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Saving to DB.", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
+            logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
             await paymentService.AddSinglePaymentDetailsMetadata(request.PeriodEndRef, request.AccountId, currentPayment).ConfigureAwait(false);
         }
-
-        // var paymentMetaData = await financeDbContext.Value.PaymentMetaData
-        //     .Where(pmd => pmd.Id == currentPayment.PaymentMetaDataId)
-        //     .SingleOrDefaultAsync(cancellationToken)
-        //     .ConfigureAwait(false);
-
+        
         logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));
     }
 }
