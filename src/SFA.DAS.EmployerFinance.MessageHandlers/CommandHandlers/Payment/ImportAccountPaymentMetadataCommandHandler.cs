@@ -10,17 +10,16 @@ public class ImportAccountPaymentMetadataCommandHandler(
 {
     public async Task Handle(ImportAccountPaymentMetadataCommand message, IMessageHandlerContext context)
     {
-        logger.LogInformation("{HandlerName} started", nameof(ImportAccountPaymentMetadataCommandHandler));
+        logger.LogInformation("{HandlerName} message handler started", nameof(ImportAccountPaymentMetadataCommandHandler));
 
         logger.LogInformation("Processing refresh payment metadata for {AccountId} PeriodEndRef: {PeriodEnd} with PaymentId: {PaymentId}", message.AccountId,message.PeriodEndRef,  message.PaymentId);
 
         await mediator.Send(new RefreshPaymentMetadataCommand
         {
             AccountId = message.AccountId,
-            PeriodEndRef = message.PeriodEndRef,
             PaymentId = message.PaymentId
         }).ConfigureAwait(false);
 
-        logger.LogInformation("{HandlerName} completed", nameof(ImportAccountPaymentMetadataCommandHandler));
+        logger.LogInformation("{HandlerName} message handler completed", nameof(ImportAccountPaymentMetadataCommandHandler));
     }
 }

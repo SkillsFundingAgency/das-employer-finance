@@ -47,7 +47,7 @@ public class RefreshPaymentMetadataCommandHandler(
         else
         {
             logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
-            await paymentService.AddSinglePaymentDetailsMetadata(request.PeriodEndRef, request.AccountId, currentPayment).ConfigureAwait(false);
+            await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment).ConfigureAwait(false);
         }
         
         logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));

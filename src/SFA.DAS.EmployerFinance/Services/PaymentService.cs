@@ -101,7 +101,7 @@ public class PaymentService : IPaymentService
         return paymentDetails;
     }
 
-    public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(string periodEnd, long employerAccountId, PaymentDetails paymentDetails)
+    public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(long employerAccountId, PaymentDetails paymentDetails)
     {
         var apprenticeship = await GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
 
