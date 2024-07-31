@@ -5,7 +5,7 @@ using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 
-public class UpsertRegisteredUserCommandHandler : IRequestHandler<UpsertRegisteredUserCommand, Unit>
+public class UpsertRegisteredUserCommandHandler : IRequestHandler<UpsertRegisteredUserCommand>
 {
     private readonly IValidator<UpsertRegisteredUserCommand> _validator;
     private readonly ILogger<UpsertRegisteredUserCommandHandler> _logger;
@@ -21,7 +21,7 @@ public class UpsertRegisteredUserCommandHandler : IRequestHandler<UpsertRegister
         _userRepository = userRepository;
     }
 
-    public async Task<Unit> Handle(UpsertRegisteredUserCommand request,CancellationToken cancellationToken)
+    public async Task Handle(UpsertRegisteredUserCommand request,CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -40,7 +40,5 @@ public class UpsertRegisteredUserCommandHandler : IRequestHandler<UpsertRegister
         });
 
         _logger.LogInformation("Upserted user with email={EmailAddress}, userRef={UserRef}, lastName={LastName}, firstName={FirstName}", request.EmailAddress, request.UserRef,request.FirstName, request.LastName);
-
-        return Unit.Value;
     }
 }

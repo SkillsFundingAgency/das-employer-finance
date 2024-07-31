@@ -4,7 +4,7 @@ using SFA.DAS.EmployerFinance.Models.Levy;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 
-public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglishFractionsCommand, Unit>
+public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglishFractionsCommand>
 {
     private readonly IHmrcService _hmrcService;
     private readonly IEnglishFractionRepository _englishFractionRepository;
@@ -19,7 +19,7 @@ public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglis
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(UpdateEnglishFractionsCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateEnglishFractionsCommand request, CancellationToken cancellationToken)
     {
         var existingFractions = (await _englishFractionRepository.GetAllEmployerFractions(request.EmployerReference)).ToList();
 
@@ -40,7 +40,7 @@ public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglis
 
         if (fractionCalculations?.FractionCalculations == null)
         {
-            return Unit.Value;
+            return;
         }
 
         var hmrcFractions = fractionCalculations.FractionCalculations.SelectMany(calculations =>
@@ -75,8 +75,6 @@ public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglis
         {
             await _englishFractionRepository.CreateEmployerFraction(englishFraction, englishFraction.EmpRef);
         }
-
-        return Unit.Value;
     }
 
     private static bool TheFractionIsOlderOrEqualToTheUpdateDate(UpdateEnglishFractionsCommand message, List<DasEnglishFraction> existingFractions)

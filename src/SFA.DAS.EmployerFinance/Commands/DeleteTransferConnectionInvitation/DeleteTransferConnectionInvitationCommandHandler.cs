@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
 
-public class DeleteTransferConnectionInvitationCommandHandler : IRequestHandler<DeleteTransferConnectionInvitationCommand,Unit>
+public class DeleteTransferConnectionInvitationCommandHandler : IRequestHandler<DeleteTransferConnectionInvitationCommand>
 {
     private readonly IEmployerAccountRepository _employerAccountRepository;
     private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -18,14 +18,12 @@ public class DeleteTransferConnectionInvitationCommandHandler : IRequestHandler<
         _userRepository = userRepository;
     }
 
-    public async Task<Unit> Handle(DeleteTransferConnectionInvitationCommand request,CancellationToken cancellationToken)
+    public async Task Handle(DeleteTransferConnectionInvitationCommand request,CancellationToken cancellationToken)
     {
         var deleterAccount = await _employerAccountRepository.Get(request.AccountId);
         var deleterUser = await _userRepository.Get(request.UserRef);
         var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(Convert.ToInt32(request.TransferConnectionInvitationId.Value));
 
         transferConnectionInvitation.Delete(deleterAccount, deleterUser);
-
-        return Unit.Value;
     }
 }

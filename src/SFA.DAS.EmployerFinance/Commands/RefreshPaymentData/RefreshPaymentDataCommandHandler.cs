@@ -10,7 +10,7 @@ using SFA.DAS.Provider.Events.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 
-public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDataCommand, Unit>
+public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDataCommand, RefreshPaymentDataResponse>
 {
     private readonly IEventPublisher _eventPublisher;
     private readonly IValidator<RefreshPaymentDataCommand> _validator;
@@ -36,7 +36,7 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(RefreshPaymentDataCommand request, CancellationToken cancellationToken)
+    public async Task<RefreshPaymentDataResponse> Handle(RefreshPaymentDataCommand request, CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -64,7 +64,7 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
 
             await PublishRefreshPaymentDataCompletedEvent(request, false).ConfigureAwait(false);
 
-            return Unit.Value;
+            return new RefreshPaymentDataResponse();
         }
 
         _logger.LogInformation($"GetAccountPaymentIds for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
@@ -78,10 +78,10 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
 
             await PublishRefreshPaymentDataCompletedEvent(request, false).ConfigureAwait(false);
 
-            return Unit.Value;
+            return new RefreshPaymentDataResponse();
         }
 
-        await _paymentService.AddPaymentDetailsMetadata(request.PeriodEnd, request.AccountId, request.CorrelationId, payments).ConfigureAwait(false);
+        // await _paymentService.AddPaymentDetailsMetadata(request.PeriodEnd, request.AccountId, request.CorrelationId, payments).ConfigureAwait(false);
         
         _logger.LogInformation($"CreatePayments for new payments AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
@@ -94,7 +94,10 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
 
         _logger.LogInformation($"Finished publishing ProcessPaymentEvent and PaymentCreatedMessage messages for AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");
 
-        return Unit.Value;
+        return new RefreshPaymentDataResponse
+        {
+            PaymentDetails = payments
+        };
     }
 
     private Task PublishRefreshPaymentDataCompletedEvent(RefreshPaymentDataCommand message, bool hasPayments)

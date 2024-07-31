@@ -4,6 +4,7 @@ using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
+using SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
@@ -46,6 +47,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<RefreshEmployerLevyDataCommand>, RefreshEmployerLevyDataCommandValidator>();
         services.AddTransient<IValidator<RefreshPaymentDataCommand>, RefreshPaymentDataCommandValidator>();
         services.AddTransient<IValidator<UpdatePayeInformationCommand>, UpdatePayeInformationValidator>();
+        services.AddTransient<IValidator<RefreshPaymentMetadataCommand>, RefreshPaymentMetadataCommandValidator>();
     }
 
     public static void AddWebMediatorValidators(this IServiceCollection services)

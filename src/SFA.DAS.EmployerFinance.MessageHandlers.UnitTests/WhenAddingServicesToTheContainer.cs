@@ -26,6 +26,7 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Messages.Commands;
@@ -57,17 +58,17 @@ public class WhenAddingServicesToTheContainer
         type.Should().NotBeNull();
     }
 
-    [TestCase(typeof(IRequestHandler<RefreshEmployerLevyDataCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RefreshEmployerLevyDataCommand>))]
     [TestCase(typeof(IRequestHandler<GetHMRCLevyDeclarationQuery, GetHMRCLevyDeclarationResponse>))]
-    [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<CreateEnglishFractionCalculationDateCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RefreshAccountTransfersCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<CreateTransferTransactionsCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand>))]
+    [TestCase(typeof(IRequestHandler<CreateEnglishFractionCalculationDateCommand>))]
+    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, RefreshPaymentDataResponse>))]
+    [TestCase(typeof(IRequestHandler<RefreshAccountTransfersCommand>))]
+    [TestCase(typeof(IRequestHandler<CreateTransferTransactionsCommand>))]
     [TestCase(typeof(IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>))]
-    [TestCase(typeof(IRequestHandler<CreateNewPeriodEndCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateNewPeriodEndCommand>))]
     [TestCase(typeof(IRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>))]
-    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Command_MediatorHandlers(Type toResolve)
     {
         var services = new ServiceCollection();
@@ -106,12 +107,12 @@ public class WhenAddingServicesToTheContainer
         type.Should().NotBeNull();
     }
 
-    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RenameAccountCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<CreateAccountCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RemoveAccountPayeCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RemoveAccountLegalEntityCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<LegalEntitySignAgreementCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand>))]
+    [TestCase(typeof(IRequestHandler<RenameAccountCommand>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountCommand>))]
+    [TestCase(typeof(IRequestHandler<RemoveAccountPayeCommand>))]
+    [TestCase(typeof(IRequestHandler<RemoveAccountLegalEntityCommand>))]
+    [TestCase(typeof(IRequestHandler<LegalEntitySignAgreementCommand>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Event_MediatorHandlers(Type toResolve)
     {
         var services = new ServiceCollection();

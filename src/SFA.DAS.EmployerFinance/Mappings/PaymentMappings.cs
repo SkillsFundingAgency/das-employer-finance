@@ -18,6 +18,7 @@ public class PaymentMappings : Profile
             .ForMember(dest =>dest.IsHistoricProviderName, opt => opt.Ignore())
             .ForMember(dest =>dest.ApprenticeName, opt => opt.Ignore())
             .ForMember(dest =>dest.ApprenticeNINumber, opt => opt.Ignore())
-            .ForMember(dest =>dest.PathwayName, opt => opt.Ignore());
+            .ForMember(dest =>dest.PathwayName, opt => opt.Ignore())
+            .ForMember(dest =>dest.PaymentMetaDataId, opt => opt.Ignore());
     }
 }

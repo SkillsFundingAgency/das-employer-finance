@@ -27,7 +27,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
     {
         public Mock<EmployerFinanceDbContext> Db { get; set; }
         public RunHealthCheckCommand RunHealthCheckCommand { get; set; }
-        public IRequestHandler<RunHealthCheckCommand, Unit> Handler { get; set; }
+        public IRequestHandler<RunHealthCheckCommand> Handler { get; set; }
         public Mock<IEmployerFinanceApiClient> EmployerFinanceApiClient { get; set; }
         public UnitOfWorkContext UnitOfWorkContext { get; set; }
 

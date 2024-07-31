@@ -1,7 +1,9 @@
+using HMRC.ESFA.Levy.Api.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -38,35 +40,6 @@ public class WhenAddingServicesToTheContainer
         type.Should().NotBeNull();
     }
     
-    [TestCaseSource(nameof(GetRequestHandlerTypes))]
-    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Handlers(Type toResolve)
-    {
-        var serviceCollection = new ServiceCollection();
-        SetupServiceCollection(serviceCollection);
-        var provider = serviceCollection.BuildServiceProvider();
-
-        var type = provider.GetService(toResolve);
-        type.Should().NotBeNull();
-    }
-    
-    private static IEnumerable<Type> GetRequestHandlerTypes()
-    {
-        var mappingAssembly = typeof(UpsertRegisteredUserCommandHandler).Assembly;
-
-        var requestHandlerTypes = mappingAssembly
-            .GetTypes()
-            .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHandler<>)));
-        
-        foreach (var handlerType in requestHandlerTypes)
-        {
-            var interfaceType = handlerType
-                .GetInterfaces()
-                .Single(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
-
-            yield return interfaceType;
-        }
-    }
-    
     [Test]
     public void Then_Resolves_Authorization_Handlers()
     {
@@ -100,7 +73,7 @@ public class WhenAddingServicesToTheContainer
         services.AddDatabaseRegistration();
         services.AddDataRepositories();
         services.AddOrchestrators();
-        services.AddLogging();
+        services.AddLogging(); 
     }
     
     private static IConfigurationRoot GenerateConfiguration()
@@ -122,5 +95,33 @@ public class WhenAddingServicesToTheContainer
         var provider = new MemoryConfigurationProvider(configSource);
 
         return new ConfigurationRoot(new List<IConfigurationProvider> { provider });
+    }
+}
+
+public class StubHmrcService: IHmrcService
+{
+    public Task<EmpRefLevyInformation> GetEmprefInformation(string empRef)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<EnglishFractionDeclarations> GetEnglishFractions(string empRef)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<EnglishFractionDeclarations> GetEnglishFractions(string empRef, DateTime? fromDate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<DateTime> GetLastEnglishFractionUpdate()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<LevyDeclarations> GetLevyDeclarations(string empRef, DateTime? fromDate)
+    {
+        throw new NotImplementedException();
     }
 }

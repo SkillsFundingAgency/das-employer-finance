@@ -11,7 +11,7 @@ using SFA.DAS.NServiceBus.Services;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 
-public class RefreshEmployerLevyDataCommandHandler : IRequestHandler<RefreshEmployerLevyDataCommand, Unit>
+public class RefreshEmployerLevyDataCommandHandler : IRequestHandler<RefreshEmployerLevyDataCommand>
 {
     private readonly IValidator<RefreshEmployerLevyDataCommand> _validator;
     private readonly IDasLevyRepository _dasLevyRepository;
@@ -45,7 +45,7 @@ public class RefreshEmployerLevyDataCommandHandler : IRequestHandler<RefreshEmpl
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(RefreshEmployerLevyDataCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RefreshEmployerLevyDataCommand request, CancellationToken cancellationToken)
     {
         var result = _validator.Validate(request);
 
@@ -80,8 +80,6 @@ public class RefreshEmployerLevyDataCommandHandler : IRequestHandler<RefreshEmpl
 
         await PublishRefreshEmployerLevyDataCompletedEvent(hasDecalarations, levyTotalTransactionValue, request.AccountId);
         await PublishAccountLevyStatusEvent(levyTotalTransactionValue, request.AccountId);
-
-        return Unit.Value;
     }
 
     private Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)

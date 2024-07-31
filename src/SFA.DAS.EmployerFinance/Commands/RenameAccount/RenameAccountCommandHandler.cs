@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.RenameAccount;
 
-public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,Unit>
+public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ILogger<RenameAccountCommandHandler> _logger;
@@ -13,7 +13,7 @@ public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(RenameAccountCommand request,CancellationToken cancellationToken)
+    public async Task Handle(RenameAccountCommand request,CancellationToken cancellationToken)
     {
         try
         {
@@ -26,7 +26,5 @@ public class RenameAccountCommandHandler : IRequestHandler<RenameAccountCommand,
             _logger.LogError(ex, "Could not rename account");
             throw;
         }
-
-        return Unit.Value;
     }
 }

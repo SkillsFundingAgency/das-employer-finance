@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity;
 
-public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAccountLegalEntityCommand,Unit>
+public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAccountLegalEntityCommand>
 {
     private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
     private readonly ILogger<CreateAccountLegalEntityCommandHandler> _logger;
@@ -13,7 +13,7 @@ public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAcco
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(CreateAccountLegalEntityCommand request,CancellationToken cancellationToken)
+    public async Task Handle(CreateAccountLegalEntityCommand request,CancellationToken cancellationToken)
     {
         try
         {
@@ -32,6 +32,5 @@ public class CreateAccountLegalEntityCommandHandler : IRequestHandler<CreateAcco
             _logger.LogError(exception, "Could not create Account Legal Entity");
             throw;
         }
-        return Unit.Value;
     }
 }

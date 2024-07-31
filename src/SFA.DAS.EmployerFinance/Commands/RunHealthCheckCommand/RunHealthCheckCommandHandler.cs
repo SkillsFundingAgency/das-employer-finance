@@ -4,7 +4,7 @@ using SFA.DAS.EmployerFinance.Models;
 
 namespace SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 
-public class RunHealthCheckCommandHandler : IRequestHandler<RunHealthCheckCommand,Unit>
+public class RunHealthCheckCommandHandler : IRequestHandler<RunHealthCheckCommand>
 {
     private readonly Lazy<EmployerFinanceDbContext> _db;
     private readonly IEmployerFinanceApiClient _employerFinanceApiClient;        
@@ -15,14 +15,12 @@ public class RunHealthCheckCommandHandler : IRequestHandler<RunHealthCheckComman
         _employerFinanceApiClient = employerFinanceApiClient;
     }
 
-    public async Task<Unit> Handle(RunHealthCheckCommand request,CancellationToken cancellationToken)
+    public async Task Handle(RunHealthCheckCommand request,CancellationToken cancellationToken)
     {
         var healthCheck = new HealthCheck(request.UserRef.Value);
 
         await healthCheck.Run(_employerFinanceApiClient.HealthCheck);
 
         _db.Value.HealthChecks.Add(healthCheck);
-
-        return Unit.Value;
     }
 }

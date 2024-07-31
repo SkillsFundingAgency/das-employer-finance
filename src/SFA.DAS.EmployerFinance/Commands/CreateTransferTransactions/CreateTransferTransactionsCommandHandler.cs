@@ -5,7 +5,7 @@ using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 
-public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTransferTransactionsCommand,Unit>
+public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTransferTransactionsCommand>
 {
     private readonly IValidator<CreateTransferTransactionsCommand> _validator;
     private readonly ITransferRepository _transferRepository;
@@ -25,7 +25,7 @@ public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTr
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(CreateTransferTransactionsCommand request,CancellationToken cancellationToken)
+    public async Task Handle(CreateTransferTransactionsCommand request,CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -53,8 +53,6 @@ public class CreateTransferTransactionsCommandHandler : IRequestHandler<CreateTr
             _logger.LogError(ex, "Failed to create transfer transaction for accountId {ReceiverAccountId} and period end {PeriodEnd}", request.ReceiverAccountId, request.PeriodEnd);
             throw;
         }
-
-        return Unit.Value;
     }
 
     private static IEnumerable<TransferTransactionLine> CreateTransactions(IGrouping<long, AccountTransfer> senderTransferGroup)
