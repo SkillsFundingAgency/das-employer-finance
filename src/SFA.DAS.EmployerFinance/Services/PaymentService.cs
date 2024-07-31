@@ -104,8 +104,14 @@ public class PaymentService : IPaymentService
     public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(long employerAccountId, PaymentDetails paymentDetails)
     {
         _logger.LogInformation("{MethodName}: Starting processing for for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
-        
-        var apprenticeship = await GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
+
+        var providerDetailsTask = _providerService.Get(paymentDetails.Ukprn);
+        var apprenticeshipTask = GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
+
+        await Task.WhenAll(providerDetailsTask, apprenticeshipTask);
+
+        var apprenticeship = apprenticeshipTask.Result;
+        var providerDetails = providerDetailsTask.Result;
 
         if (apprenticeship != null)
         {
@@ -117,8 +123,11 @@ public class PaymentService : IPaymentService
             _logger.LogInformation("{MethodName}: Apprentice not found for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
         }
 
+        paymentDetails.ProviderName = providerDetails?.Name;
+        paymentDetails.IsHistoricProviderName = providerDetails?.IsHistoricProviderName ?? false;
+
         await GetCourseDetails(paymentDetails);
-        
+
         _logger.LogInformation("{MethodName}: Completed processing for for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
 
         return paymentDetails;
@@ -146,7 +155,7 @@ public class PaymentService : IPaymentService
 
         return transfers;
     }
-
+    
     private async Task<ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>> GetProviderDetailsDict(IEnumerable<long> ukprnList)
     {
         var maxConcurrentThreads = 10;
@@ -238,7 +247,7 @@ public class PaymentService : IPaymentService
     private async Task<GetApprenticeshipResponse> GetApprenticeship(long employerAccountId, long apprenticeshipId)
     {
         _logger.LogInformation("Getting apprenticeship details for EmployerAccountId: {EmployerId} and ApprenticeshipId: {ApprenticeshipId}", employerAccountId, apprenticeshipId);
-        
+
         try
         {
             return await _commitmentsV2ApiClient.GetApprenticeship(apprenticeshipId);
