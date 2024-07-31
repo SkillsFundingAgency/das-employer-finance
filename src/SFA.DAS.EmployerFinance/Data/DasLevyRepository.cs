@@ -104,6 +104,39 @@ public class DasLevyRepository : IDasLevyRepository
         }
     }
 
+    public async Task UpdatePaymentMetadata(PaymentDetails details)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@ProviderName", details.ProviderName, DbType.String);
+        parameters.Add("@ApprenticeName", details.ApprenticeName, DbType.String);
+        parameters.Add("@IsHistoricProviderName", details.IsHistoricProviderName, DbType.Binary);
+        parameters.Add("@CourseName", details.CourseName, DbType.String);
+        parameters.Add("@CourseLevel", details.CourseLevel, DbType.Int32);
+        parameters.Add("@CourseStartDate", details.CourseStartDate, DbType.DateTime);
+        parameters.Add("@PathwayName", details.PathwayName, DbType.String);
+        parameters.Add("@PaymentID", details.PaymentMetaDataId, DbType.Int64);
+
+        const string sql = """
+                           UPDATE [employer_financial].[PaymentMetaData]
+                           SET
+                           	    ProviderName = @ProviderName
+                           	    ,ApprenticeName = @ApprenticeName
+                           	    ,IsHistoricProviderName = @IsHistoricProviderName
+                           	    ,ApprenticeshipCourseName = @CourseName
+                           	    ,ApprenticeshipCourseLevel = @CourseLevel
+                           	    ,ApprenticeshipCourseStartDate = @CourseStartDate
+                           	    ,PathwayName = @PathwayName
+                           WHERE [Id] = @PaymentID
+                           """;
+
+        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+            sql: sql,
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.Text);
+    }
+
     public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
     {
         var parameters = new DynamicParameters();
@@ -146,7 +179,7 @@ public class DasLevyRepository : IDasLevyRepository
 
         return result.SingleOrDefault();
     }
-    
+
     public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
     {
         return _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(

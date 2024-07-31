@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
@@ -11,7 +12,8 @@ public class RefreshPaymentMetadataCommandHandler(
     IValidator<RefreshPaymentMetadataCommand> validator,
     IPaymentService paymentService,
     Lazy<EmployerFinanceDbContext> financeDbContext,
-    ILogger<RefreshPaymentMetadataCommandHandler> logger)
+    ILogger<RefreshPaymentMetadataCommandHandler> logger,
+    IDasLevyRepository levyRepository)
     : IRequestHandler<RefreshPaymentMetadataCommand>
 {
     public async Task Handle(RefreshPaymentMetadataCommand request, CancellationToken cancellationToken)
@@ -36,7 +38,9 @@ public class RefreshPaymentMetadataCommandHandler(
                 Id = p.Id,
                 ApprenticeshipId = p.ApprenticeshipId,
                 Ukprn = p.Ukprn,
-                PaymentMetaDataId = p.PaymentMetaDataId
+                PaymentMetaDataId = p.PaymentMetaDataId,
+                StandardCode = p.StandardCode,
+                FrameworkCode = p.FrameworkCode,
             })
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -47,12 +51,12 @@ public class RefreshPaymentMetadataCommandHandler(
         else
         {
             logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
-            await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment).ConfigureAwait(false);
+
+            await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment);
 
             logger.LogInformation("{HandlerName}: Saving PaymentDetails: {PaymentDetails}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(currentPayment));
 
-            // Shouldn't need to do this here, should be handled by UoW.
-            await financeDbContext.Value.SaveChangesAsync(cancellationToken);
+            await levyRepository.UpdatePaymentMetadata(currentPayment);
         }
 
         logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));
