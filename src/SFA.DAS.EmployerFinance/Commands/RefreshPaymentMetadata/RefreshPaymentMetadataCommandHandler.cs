@@ -48,11 +48,6 @@ public class RefreshPaymentMetadataCommandHandler(
         {
             logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
             await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment).ConfigureAwait(false);
-
-            logger.LogInformation("{HandlerName}: Saving PaymentDetails: {PaymentDetails}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(currentPayment));
-
-            // Shouldn't need to do this here, should be handled by UoW.
-            await financeDbContext.Value.SaveChangesAsync(cancellationToken);
         }
 
         logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));
