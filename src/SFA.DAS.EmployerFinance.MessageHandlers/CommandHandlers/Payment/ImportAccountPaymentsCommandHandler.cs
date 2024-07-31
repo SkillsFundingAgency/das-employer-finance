@@ -59,7 +59,8 @@ public class ImportAccountPaymentsCommandHandler(
                     .Send(new ImportAccountPaymentMetadataCommand
                     {
                         AccountId = message.AccountId,
-                        PaymentId = payment.Id
+                        PaymentId = payment.Id,
+                        PeriodEndRef = payment.PeriodEnd
                     }, sendOptions)
                     .ConfigureAwait(false);
             }).ConfigureAwait(false);

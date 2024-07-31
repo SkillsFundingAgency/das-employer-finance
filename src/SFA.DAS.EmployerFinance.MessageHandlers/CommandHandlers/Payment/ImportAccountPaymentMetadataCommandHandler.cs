@@ -17,7 +17,9 @@ public class ImportAccountPaymentMetadataCommandHandler(
         await mediator.Send(new RefreshPaymentMetadataCommand
         {
             AccountId = message.AccountId,
-            PaymentId = message.PaymentId
+            PaymentId = message.PaymentId,
+            PeriodEndRef = message.PeriodEndRef,
+            
         }).ConfigureAwait(false);
 
         logger.LogInformation("{HandlerName} message handler completed", nameof(ImportAccountPaymentMetadataCommandHandler));
