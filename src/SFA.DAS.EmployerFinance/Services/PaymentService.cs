@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using AutoMapper;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
@@ -103,15 +104,18 @@ public class PaymentService : IPaymentService
 
     public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(long employerAccountId, PaymentDetails paymentDetails)
     {
-        _logger.LogInformation("{MethodName}: Starting processing for for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
+        _logger.LogInformation("{MethodName}: Starting processing for {PaymentId} - {ApprenticeshipId} - {PeriodEnd}.", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId, paymentDetails.PeriodEnd);
 
         var providerDetailsTask = _providerService.Get(paymentDetails.Ukprn);
         var apprenticeshipTask = GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
-
+        
         await Task.WhenAll(providerDetailsTask, apprenticeshipTask);
 
         var apprenticeship = apprenticeshipTask.Result;
         var providerDetails = providerDetailsTask.Result;
+        
+        _logger.LogInformation("{MethodName}: Provider {Provider}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(providerDetails));
+        _logger.LogInformation("{MethodName}: Apprenticeship {Apprenticeship}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(apprenticeship));
 
         if (apprenticeship != null)
         {
@@ -128,7 +132,7 @@ public class PaymentService : IPaymentService
 
         await GetCourseDetails(paymentDetails);
 
-        _logger.LogInformation("{MethodName}: Completed processing for for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
+        _logger.LogInformation("{MethodName}: Completed processing for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
 
         return paymentDetails;
     }
