@@ -103,6 +103,8 @@ public class PaymentService : IPaymentService
 
     public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(long employerAccountId, PaymentDetails paymentDetails)
     {
+        _logger.LogInformation("{MethodName}: Starting processing for for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
+        
         var apprenticeship = await GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
 
         if (apprenticeship != null)
@@ -112,10 +114,12 @@ public class PaymentService : IPaymentService
         }
         else
         {
-            _logger.LogInformation("Apprentice not found for {PaymentId} - {ApprenticeshipId}", paymentDetails.Id, paymentDetails.ApprenticeshipId);
+            _logger.LogInformation("{MethodName}: Apprentice not found for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
         }
 
         await GetCourseDetails(paymentDetails);
+        
+        _logger.LogInformation("{MethodName}: Completed processing for for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
 
         return paymentDetails;
     }
@@ -233,6 +237,8 @@ public class PaymentService : IPaymentService
 
     private async Task<GetApprenticeshipResponse> GetApprenticeship(long employerAccountId, long apprenticeshipId)
     {
+        _logger.LogInformation("Getting apprenticeship details for EmployerAccountId: {EmployerId} and ApprenticeshipId: {ApprenticeshipId}", employerAccountId, apprenticeshipId);
+        
         try
         {
             return await _commitmentsV2ApiClient.GetApprenticeship(apprenticeshipId);
