@@ -31,7 +31,7 @@ public class WhenIAddSinglePaymentDetailsMetadata
         actual.ProviderName.Should().Be(provider.Name);
         actual.IsHistoricProviderName.Should().Be(provider.IsHistoricProviderName);
     }
-
+    
     [Test, MoqAutoData]
     public async Task ThenIGetApprenticeship(
         long accountId,
@@ -45,27 +45,12 @@ public class WhenIAddSinglePaymentDetailsMetadata
             .ReturnsAsync(apprenticeshipResponse)
             .Verifiable(Times.Once);
 
-        await service.AddSinglePaymentDetailsMetadata(accountId, paymentDetails);
-
-        commitmentsClient.Verify();
-    }
-
-    [Test, MoqAutoData]
-    public async Task WhenApprenticeshipIsNotNullThenApprenticeDetailsArePopulated(
-        long accountId,
-        GetApprenticeshipResponse apprenticeshipResponse,
-        [Frozen] Mock<ICommitmentsV2ApiClient> commitmentsClient,
-        PaymentDetails paymentDetails,
-        PaymentService service
-    )
-    {
-        commitmentsClient.Setup(x => x.GetApprenticeship(paymentDetails.ApprenticeshipId))
-            .ReturnsAsync(apprenticeshipResponse);
-
         var actual = await service.AddSinglePaymentDetailsMetadata(accountId, paymentDetails);
 
         actual.ApprenticeName.Should().Be($"{apprenticeshipResponse.FirstName} {apprenticeshipResponse.LastName}");
         actual.CourseStartDate.Should().Be(apprenticeshipResponse.StartDate);
+        
+        commitmentsClient.Verify();
     }
 
     [Test, MoqAutoData]
