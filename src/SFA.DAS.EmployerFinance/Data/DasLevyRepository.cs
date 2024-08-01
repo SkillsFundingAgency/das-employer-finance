@@ -126,7 +126,7 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@ProviderName", details.ProviderName, DbType.String);
         parameters.Add("@ApprenticeName", details.ApprenticeName, DbType.String);
-        parameters.Add("@IsHistoricProviderName", details.IsHistoricProviderName, DbType.Binary);
+        parameters.Add("@IsHistoricProviderName", details.IsHistoricProviderName, DbType.Boolean);
         parameters.Add("@CourseName", details.CourseName, DbType.String);
         parameters.Add("@CourseLevel", details.CourseLevel, DbType.Int32);
         parameters.Add("@CourseStartDate", details.CourseStartDate, DbType.DateTime);
