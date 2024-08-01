@@ -31,25 +31,24 @@ public class RefreshPaymentMetadataCommandHandler(
 
         logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
 
-        var currentPayment = await financeDbContext.Value.Payments
-            .Where(p => p.Id == request.PaymentId)
-            .Select(p => new PaymentDetails
-            {
-                Id = p.Id,
-                ApprenticeshipId = p.ApprenticeshipId,
-                Ukprn = p.Ukprn,
-                PaymentMetaDataId = p.PaymentMetaDataId,
-                StandardCode = p.StandardCode,
-                FrameworkCode = p.FrameworkCode,
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+        var payment = await financeDbContext.Value.Payments.FirstOrDefaultAsync(p => p.Id == request.PaymentId, cancellationToken);
 
-        if (currentPayment == null)
+        if (payment == null)
         {
             logger.LogWarning("{HandlerName}: No payment found with Id {PaymentId}.", nameof(RefreshPaymentMetadataCommandHandler), request.PaymentId);
         }
         else
         {
+            var currentPayment = new PaymentDetails
+            {
+                Id = payment.Id,
+                ApprenticeshipId = payment.ApprenticeshipId,
+                Ukprn = payment.Ukprn,
+                PaymentMetaDataId = payment.PaymentMetaDataId,
+                StandardCode = payment.StandardCode,
+                FrameworkCode = payment.FrameworkCode
+            };
+            
             logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
 
             await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment);
