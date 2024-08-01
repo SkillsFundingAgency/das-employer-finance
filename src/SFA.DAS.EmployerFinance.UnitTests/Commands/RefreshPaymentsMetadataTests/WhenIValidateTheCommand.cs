@@ -1,5 +1,4 @@
-﻿using AutoFixture.NUnit3;
-using SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
+﻿using SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentsMetadataTests;
