@@ -81,6 +81,7 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
             return new RefreshPaymentDataResponse();
         }
 
+        // TODO: Remove this code once the use of AddSinglePaymentDetailsMetadata() has been confirmed
         // await _paymentService.AddPaymentDetailsMetadata(request.PeriodEnd, request.AccountId, request.CorrelationId, payments).ConfigureAwait(false);
         
         _logger.LogInformation($"CreatePayments for new payments AccountId = '{request.AccountId}' and PeriodEnd = '{request.PeriodEnd}' CorrelationId: {request.CorrelationId}");

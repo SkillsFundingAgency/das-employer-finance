@@ -67,6 +67,7 @@ public class PaymentService : IPaymentService
         return populatedPayments;
     }
 
+    // TODO: Remove this code once the use of AddSinglePaymentDetailsMetadata() has been confirmed
     public async Task<ICollection<PaymentDetails>> AddPaymentDetailsMetadata(string periodEnd, long employerAccountId, Guid correlationId, ICollection<PaymentDetails> paymentDetails)
     {
         _logger.LogInformation("Fetching provider and apprenticeship for {PaymentDetailsCount} payments for AccountId = {EmployerAccountId}, periodEnd={PeriodEnd}, correlationId = {CorrelationId}", paymentDetails.Count, employerAccountId, periodEnd, correlationId);
