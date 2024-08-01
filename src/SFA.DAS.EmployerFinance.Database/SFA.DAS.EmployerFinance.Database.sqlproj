@@ -191,6 +191,7 @@
     <Build Include="StoredProcedures\GetPayeForAccount_ByRef.sql" />
     <Build Include="StoredProcedures\RemoveAccountPaye.sql" />
     <Build Include="StoredProcedures\CreateAccountLegalEntity.sql" />
+    <Build Include="StoredProcedures\GetPaymentForPaymentDetails.sql" />
     <Build Include="StoredProcedures\SignAccountLegalEntityAgreement.sql" />
     <Build Include="StoredProcedures\RemoveAccountLegalEntity.sql" />
     <Build Include="Tables\TransactionLine_EOF.sql" />
@@ -224,8 +225,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\PreDeployment\AML-2395-DropDeprecatedView.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <Build Include="StoredProcedures\GetPaymentForPaymentDetails.sql" />
   </ItemGroup>
 </Project>
