@@ -46,7 +46,9 @@ public class RefreshPaymentMetadataCommandHandler(
                 Ukprn = payment.Ukprn,
                 PaymentMetaDataId = payment.PaymentMetaDataId,
                 StandardCode = payment.StandardCode,
-                FrameworkCode = payment.FrameworkCode
+                FrameworkCode = payment.FrameworkCode,
+                PathwayCode = payment.PathwayCode,
+                ProgrammeType = payment.ProgrammeType
             };
             
             logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);

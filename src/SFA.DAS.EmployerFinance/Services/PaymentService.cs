@@ -241,13 +241,6 @@ public class PaymentService : IPaymentService
         }
     }
 
-    private async Task GetProviderDetails(PaymentDetails payment)
-    {
-        var provider = await _providerService.Get(payment.Ukprn);
-        payment.ProviderName = provider?.Name;
-        payment.IsHistoricProviderName = provider?.IsHistoricProviderName ?? false;
-    }
-
     private async Task<GetApprenticeshipResponse> GetApprenticeship(long employerAccountId, long apprenticeshipId)
     {
         _logger.LogInformation("Getting apprenticeship details for EmployerAccountId: {EmployerId} and ApprenticeshipId: {ApprenticeshipId}", employerAccountId, apprenticeshipId);
