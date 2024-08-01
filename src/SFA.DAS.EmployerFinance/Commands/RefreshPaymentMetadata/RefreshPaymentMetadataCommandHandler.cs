@@ -41,7 +41,7 @@ public class RefreshPaymentMetadataCommandHandler(
         }
         else
         {
-            logger.LogInformation("{HandlerName}: Payment from DB: {PaymentDetails}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(payment));
+            logger.LogInformation("{HandlerName}: Payment from DB: {Payment}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(payment));
             
             var currentPayment = new PaymentDetails
             {
