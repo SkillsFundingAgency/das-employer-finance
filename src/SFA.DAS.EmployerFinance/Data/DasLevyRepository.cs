@@ -87,6 +87,9 @@ public class DasLevyRepository : IDasLevyRepository
 
     public async Task CreatePayments(IEnumerable<PaymentDetails> payments)
     {
+        // This could be a candidate for refactoring to use SqlBulkCopy
+        // https://timdeschryver.dev/blog/faster-sql-bulk-inserts-with-csharp#table-valued-parameter
+        
         var batches = payments.Batch(1000).Select(b => b.ToPaymentsDataTable());
 
         foreach (var batch in batches)
