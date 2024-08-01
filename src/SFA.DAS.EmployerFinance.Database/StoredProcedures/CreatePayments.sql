@@ -8,31 +8,31 @@ AS
 	ON 0 = 1
 	WHEN NOT MATCHED THEN
 		INSERT (
-			--ProviderName,
+			ProviderName,
 			StandardCode,
 			FrameworkCode,		
 			ProgrammeType,
 			PathwayCode,
-			--PathwayName,
-			--ApprenticeshipCourseName,
-			--ApprenticeName,
-			ApprenticeNINumber
-			--ApprenticeshipCourseLevel,
-			--ApprenticeshipCourseStartDate,
-			--IsHistoricProviderName
+			PathwayName,
+			ApprenticeshipCourseName,
+			ApprenticeName,
+			ApprenticeNINumber,
+			ApprenticeshipCourseLevel,
+			ApprenticeshipCourseStartDate,
+			IsHistoricProviderName
 		) VALUES (
-			--p.ProviderName,
+			p.ProviderName,
 			p.StandardCode,
 			p.FrameworkCode,		
 			p.ProgrammeType,
 			p.PathwayCode,
-			--p.PathwayName,
-			--p.ApprenticeshipCourseName,
-			--p.ApprenticeName,
-			p.ApprenticeNINumber
-			--p.ApprenticeshipCourseLevel,
-			--p.ApprenticeshipCourseStartDate,
-			--p.IsHistoricProviderName
+			p.PathwayName,
+			p.ApprenticeshipCourseName,
+			p.ApprenticeName,
+			p.ApprenticeNINumber,
+			p.ApprenticeshipCourseLevel,
+			p.ApprenticeshipCourseStartDate,
+			p.IsHistoricProviderName
 		)
 		OUTPUT p.PaymentId, INSERTED.Id INTO @paymentMetaDataIds;		
 

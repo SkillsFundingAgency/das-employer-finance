@@ -117,24 +117,11 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@PathwayName", details.PathwayName, DbType.String);
         parameters.Add("@PaymentID", details.PaymentMetaDataId, DbType.Int64);
 
-        const string sql = """
-                           UPDATE [employer_financial].[PaymentMetaData]
-                           SET
-                           	    ProviderName = @ProviderName
-                           	    ,ApprenticeName = @ApprenticeName
-                           	    ,IsHistoricProviderName = @IsHistoricProviderName
-                           	    ,ApprenticeshipCourseName = @CourseName
-                           	    ,ApprenticeshipCourseLevel = @CourseLevel
-                           	    ,ApprenticeshipCourseStartDate = @CourseStartDate
-                           	    ,PathwayName = @PathwayName
-                           WHERE [Id] = @PaymentID
-                           """;
-
         await _db.Value.Database.GetDbConnection().ExecuteAsync(
-            sql: sql,
+            sql: "[employer_financial].[UpdatePaymentMetadata]",
             param: parameters,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.Text);
+            commandType: CommandType.StoredProcedure);
     }
 
     public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
