@@ -20,4 +20,4 @@ SET
     ,ApprenticeshipCourseLevel = @CourseLevel
     ,ApprenticeshipCourseStartDate = @CourseStartDate
     ,PathwayName = @PathwayName
-WHERE [Id] = @PaymentID
+WHERE [Id] = @PaymentId
