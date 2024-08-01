@@ -22,6 +22,19 @@ public class DasLevyRepository : IDasLevyRepository
         _currentDateTime = currentDateTime;
     }
 
+    public async Task<Payment> GetPaymentForPaymentDetails(Guid paymentId, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@paymentId", paymentId, DbType.String);
+
+        return await _db.Value.Database.GetDbConnection().QuerySingleAsync<Payment>(
+            sql: "[employer_financial].[GetPaymentForPaymentDetails]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
+
     public async Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId)
     {
         foreach (var dasDeclaration in declarations)

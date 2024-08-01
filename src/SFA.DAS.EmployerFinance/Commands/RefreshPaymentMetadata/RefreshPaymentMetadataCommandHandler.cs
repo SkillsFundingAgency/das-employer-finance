@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
-using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -11,7 +10,6 @@ namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 public class RefreshPaymentMetadataCommandHandler(
     IValidator<RefreshPaymentMetadataCommand> validator,
     IPaymentService paymentService,
-    Lazy<EmployerFinanceDbContext> financeDbContext,
     ILogger<RefreshPaymentMetadataCommandHandler> logger,
     IDasLevyRepository levyRepository)
     : IRequestHandler<RefreshPaymentMetadataCommand>
@@ -30,10 +28,8 @@ public class RefreshPaymentMetadataCommandHandler(
         }
 
         logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
-
-        var payment = await financeDbContext.Value.Payments
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == request.PaymentId, cancellationToken);
+        
+        var payment = await levyRepository.GetPaymentForPaymentDetails(request.PaymentId, cancellationToken);
 
         if (payment == null)
         {

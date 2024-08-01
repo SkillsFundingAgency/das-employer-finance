@@ -24,4 +24,5 @@ public interface IDasLevyRepository
     Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds);
     Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef);
     Task UpdatePaymentMetadata(PaymentDetails details);
+    Task<Payment> GetPaymentForPaymentDetails(Guid paymentId, CancellationToken cancellationToken);
 }
