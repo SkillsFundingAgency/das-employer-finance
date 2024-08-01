@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [employer_financial].[GetPaymentForPaymentDetails]
 (
-    @PaymentId VARCHAR(200)    
+    @PaymentId uniqueidentifier    
 )
 AS
 SELECT
