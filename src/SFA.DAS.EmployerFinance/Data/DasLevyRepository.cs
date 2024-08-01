@@ -26,7 +26,7 @@ public class DasLevyRepository : IDasLevyRepository
     {
         var parameters = new DynamicParameters();
 
-        parameters.Add("@paymentId", paymentId, DbType.String);
+        parameters.Add("@paymentId", paymentId, DbType.Guid);
 
         return await _db.Value.Database.GetDbConnection().QuerySingleAsync<Payment>(
             sql: "[employer_financial].[GetPaymentForPaymentDetails]",
