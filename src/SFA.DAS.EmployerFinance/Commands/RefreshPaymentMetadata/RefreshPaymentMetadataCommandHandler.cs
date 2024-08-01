@@ -16,19 +16,22 @@ public class RefreshPaymentMetadataCommandHandler(
 {
     public async Task Handle(RefreshPaymentMetadataCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("{HandlerName} started.", nameof(RefreshPaymentMetadataCommandHandler));
+        logger.LogInformation("{HandlerName} started for AccountId: {AccountId} and PaymentId: {PaymentId} PeriodEndRef: {PeriodEndRef}.", 
+            nameof(RefreshPaymentMetadataCommandHandler),
+            request.AccountId,
+            request.PaymentId,
+            request.PeriodEndRef);
 
         var validationResult = validator.Validate(request);
 
         if (!validationResult.IsValid())
         {
-            var exception = new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
-            logger.LogError(exception, "{HandlerName}: request is not valid. Request: {Request}", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(request));
-            throw exception;
+            logger.LogWarning("{HandlerName}: request is not valid.", nameof(RefreshPaymentMetadataCommandHandler));
+            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
         logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
-        
+
         var payment = await levyRepository.GetPaymentForPaymentDetails(request.PaymentId, cancellationToken);
 
         if (payment == null)
@@ -38,7 +41,7 @@ public class RefreshPaymentMetadataCommandHandler(
         else
         {
             logger.LogInformation("{HandlerName}: Payment from DB: {Payment}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(payment));
-            
+
             var currentPayment = new PaymentDetails
             {
                 Id = payment.Id,
@@ -50,7 +53,7 @@ public class RefreshPaymentMetadataCommandHandler(
                 PathwayCode = payment.PathwayCode,
                 ProgrammeType = payment.ProgrammeType
             };
-            
+
             logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
 
             await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment);
