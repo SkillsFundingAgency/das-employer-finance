@@ -31,7 +31,9 @@ public class RefreshPaymentMetadataCommandHandler(
 
         logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
 
-        var payment = await financeDbContext.Value.Payments.FirstOrDefaultAsync(p => p.Id == request.PaymentId, cancellationToken);
+        var payment = await financeDbContext.Value.Payments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == request.PaymentId, cancellationToken);
 
         if (payment == null)
         {
