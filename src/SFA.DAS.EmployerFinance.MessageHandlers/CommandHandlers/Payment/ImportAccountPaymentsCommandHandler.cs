@@ -15,7 +15,7 @@ public class ImportAccountPaymentsCommandHandler(
         var correlationId = Guid.NewGuid();
 
         logger.LogInformation($"Processing refresh payment command for Account ID: {message.AccountId} PeriodEnd: {message.PeriodEndRef} CorrelationId: {correlationId}, MessageId: {context.MessageId}");
-        
+
         var paymentsResponse = await mediator.Send(new RefreshPaymentDataCommand
         {
             AccountId = message.AccountId,
@@ -40,12 +40,12 @@ public class ImportAccountPaymentsCommandHandler(
             PeriodEnd = message.PeriodEndRef,
             CorrelationId = correlationId
         }).ConfigureAwait(false);
-        
+
         await Parallel.ForEachAsync(paymentsResponse.PaymentDetails,
             async (payment, _) =>
             {
                 logger.LogInformation(
-                    "Creating {MessageType} message for {AccountId} - {PaymentId}", 
+                    "Creating {MessageType} message for {AccountId} - {PaymentId}",
                     nameof(ImportAccountPaymentMetadataCommand),
                     message.AccountId,
                     payment.Id);
@@ -59,7 +59,8 @@ public class ImportAccountPaymentsCommandHandler(
                     .Send(new ImportAccountPaymentMetadataCommand
                     {
                         AccountId = message.AccountId,
-                        PaymentId = payment.Id
+                        PaymentId = payment.Id,
+                        PeriodEndRef = payment.PeriodEnd
                     }, sendOptions)
                     .ConfigureAwait(false);
             }).ConfigureAwait(false);

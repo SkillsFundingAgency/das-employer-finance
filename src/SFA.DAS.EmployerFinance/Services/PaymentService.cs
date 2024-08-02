@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using AutoMapper;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
@@ -66,6 +67,7 @@ public class PaymentService : IPaymentService
         return populatedPayments;
     }
 
+    // TODO: Remove this code once the use of AddSinglePaymentDetailsMetadata() has been confirmed
     public async Task<ICollection<PaymentDetails>> AddPaymentDetailsMetadata(string periodEnd, long employerAccountId, Guid correlationId, ICollection<PaymentDetails> paymentDetails)
     {
         _logger.LogInformation("Fetching provider and apprenticeship for {PaymentDetailsCount} payments for AccountId = {EmployerAccountId}, periodEnd={PeriodEnd}, correlationId = {CorrelationId}", paymentDetails.Count, employerAccountId, periodEnd, correlationId);
@@ -103,7 +105,18 @@ public class PaymentService : IPaymentService
 
     public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(long employerAccountId, PaymentDetails paymentDetails)
     {
-        var apprenticeship = await GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
+        _logger.LogInformation("{MethodName}: Starting processing for {PaymentId} - {ApprenticeshipId} - {PeriodEnd}.", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId, paymentDetails.PeriodEnd);
+
+        var providerDetailsTask = _providerService.Get(paymentDetails.Ukprn);
+        var apprenticeshipTask = GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
+        
+        await Task.WhenAll(providerDetailsTask, apprenticeshipTask);
+
+        var apprenticeship = apprenticeshipTask.Result;
+        var providerDetails = providerDetailsTask.Result;
+        
+        _logger.LogInformation("{MethodName}: Provider {Provider}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(providerDetails));
+        _logger.LogInformation("{MethodName}: Apprenticeship {Apprenticeship}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(apprenticeship));
 
         if (apprenticeship != null)
         {
@@ -112,10 +125,15 @@ public class PaymentService : IPaymentService
         }
         else
         {
-            _logger.LogInformation("Apprentice not found for {PaymentId} - {ApprenticeshipId}", paymentDetails.Id, paymentDetails.ApprenticeshipId);
+            _logger.LogInformation("{MethodName}: Apprentice not found for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
         }
 
+        paymentDetails.ProviderName = providerDetails?.Name;
+        paymentDetails.IsHistoricProviderName = providerDetails?.IsHistoricProviderName ?? false;
+
         await GetCourseDetails(paymentDetails);
+
+        _logger.LogInformation("{MethodName}: Completed processing for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
 
         return paymentDetails;
     }
@@ -142,7 +160,7 @@ public class PaymentService : IPaymentService
 
         return transfers;
     }
-
+    
     private async Task<ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>> GetProviderDetailsDict(IEnumerable<long> ukprnList)
     {
         var maxConcurrentThreads = 10;
@@ -224,15 +242,10 @@ public class PaymentService : IPaymentService
         }
     }
 
-    private async Task GetProviderDetails(PaymentDetails payment)
-    {
-        var provider = await _providerService.Get(payment.Ukprn);
-        payment.ProviderName = provider?.Name;
-        payment.IsHistoricProviderName = provider?.IsHistoricProviderName ?? false;
-    }
-
     private async Task<GetApprenticeshipResponse> GetApprenticeship(long employerAccountId, long apprenticeshipId)
     {
+        _logger.LogInformation("Getting apprenticeship details for EmployerAccountId: {EmployerId} and ApprenticeshipId: {ApprenticeshipId}", employerAccountId, apprenticeshipId);
+
         try
         {
             return await _commitmentsV2ApiClient.GetApprenticeship(apprenticeshipId);
