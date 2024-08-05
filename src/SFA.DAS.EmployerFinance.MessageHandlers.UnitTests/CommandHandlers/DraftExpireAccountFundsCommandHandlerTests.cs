@@ -10,7 +10,7 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Expiry;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 using SFA.DAS.EmployerFinance.Models.Levy;

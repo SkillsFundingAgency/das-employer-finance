@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 
-public class CreateNewPeriodEndCommand : IRequest<Unit>
+public class CreateNewPeriodEndCommand : IRequest
 {
     public PeriodEnd NewPeriodEnd { get; set; }
 }

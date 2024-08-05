@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Commands.DeleteTransferConnectionInvitation;
 
-public class DeleteTransferConnectionInvitationCommand : IRequest<Unit>
+public class DeleteTransferConnectionInvitationCommand : IRequest
 {
     public long AccountId { get; set; }
 

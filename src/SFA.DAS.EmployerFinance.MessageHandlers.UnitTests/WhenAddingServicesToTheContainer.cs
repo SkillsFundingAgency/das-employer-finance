@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
@@ -23,7 +24,9 @@ using SFA.DAS.EmployerFinance.Commands.RenameAccount;
 using SFA.DAS.EmployerFinance.Commands.UpdateEnglishFractions;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Messages.Commands;
@@ -37,7 +40,6 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests;
 
 public class WhenAddingServicesToTheContainer
 {
-
     [TestCase(typeof(IHandleMessages<CreateAccountPayeCommand>))]
     [TestCase(typeof(IHandleMessages<DraftExpireAccountFundsCommand>))]
     [TestCase(typeof(IHandleMessages<DraftExpireFundsCommand>))]
@@ -53,20 +55,20 @@ public class WhenAddingServicesToTheContainer
         var provider = services.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
 
-    [TestCase(typeof(IRequestHandler<RefreshEmployerLevyDataCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<RefreshEmployerLevyDataCommand>))]
     [TestCase(typeof(IRequestHandler<GetHMRCLevyDeclarationQuery, GetHMRCLevyDeclarationResponse>))]
-    [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<CreateEnglishFractionCalculationDateCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RefreshAccountTransfersCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<CreateTransferTransactionsCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<UpdateEnglishFractionsCommand>))]
+    [TestCase(typeof(IRequestHandler<CreateEnglishFractionCalculationDateCommand>))]
+    [TestCase(typeof(IRequestHandler<RefreshPaymentDataCommand, RefreshPaymentDataResponse>))]
+    [TestCase(typeof(IRequestHandler<RefreshAccountTransfersCommand>))]
+    [TestCase(typeof(IRequestHandler<CreateTransferTransactionsCommand>))]
     [TestCase(typeof(IRequestHandler<GetPeriodEndsRequest, GetPeriodEndsResponse>))]
-    [TestCase(typeof(IRequestHandler<CreateNewPeriodEndCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateNewPeriodEndCommand>))]
     [TestCase(typeof(IRequestHandler<GetAllEmployerAccountsRequest, GetAllEmployerAccountsResponse>))]
-    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Command_MediatorHandlers(Type toResolve)
     {
         var services = new ServiceCollection();
@@ -74,7 +76,7 @@ public class WhenAddingServicesToTheContainer
         var provider = services.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
 
     [TestCase(typeof(IHandleMessages<AddedLegalEntityEvent>))]
@@ -91,15 +93,26 @@ public class WhenAddingServicesToTheContainer
         var provider = services.BuildServiceProvider();
         
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
+    }
+    
+    [TestCase(typeof(ICommitmentsV2ApiClient))]
+    public void Then_The_Dependencies_Are_Correctly_Resolved_For_Clients(Type toResolve)
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+        var provider = services.BuildServiceProvider();
+        
+        var type = provider.GetService(toResolve);
+        type.Should().NotBeNull();
     }
 
-    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RenameAccountCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<CreateAccountCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RemoveAccountPayeCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<RemoveAccountLegalEntityCommand, Unit>))]
-    [TestCase(typeof(IRequestHandler<LegalEntitySignAgreementCommand, Unit>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountLegalEntityCommand>))]
+    [TestCase(typeof(IRequestHandler<RenameAccountCommand>))]
+    [TestCase(typeof(IRequestHandler<CreateAccountCommand>))]
+    [TestCase(typeof(IRequestHandler<RemoveAccountPayeCommand>))]
+    [TestCase(typeof(IRequestHandler<RemoveAccountLegalEntityCommand>))]
+    [TestCase(typeof(IRequestHandler<LegalEntitySignAgreementCommand>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Event_MediatorHandlers(Type toResolve)
     {
         var services = new ServiceCollection();
@@ -107,7 +120,7 @@ public class WhenAddingServicesToTheContainer
         var provider = services.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
 
     private static void SetupServiceCollection(IServiceCollection services)
@@ -156,6 +169,7 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
+                new("EmployerFinanceJobsConfiguration:ServiceBusConnectionString", "Endpoint=sb://endpoint.servicebus.windows.net/;SharedAccessKeyName=<access-key-name>;SharedAccessKey=<access-key>"),
                 new("EmployerFinanceJobsConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("PaymentsEventsApi:ApiBaseUrl", "test"),
                 new("PaymentsEventsApi:IdentifierUri", "test"),

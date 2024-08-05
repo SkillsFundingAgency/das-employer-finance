@@ -11,7 +11,7 @@ using NServiceBus.Testing;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;

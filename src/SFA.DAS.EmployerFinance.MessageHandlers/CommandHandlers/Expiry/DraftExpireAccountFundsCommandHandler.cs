@@ -5,7 +5,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Types.Models;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Expiry;
 
 public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpireAccountFundsCommand>
 {

@@ -177,7 +177,7 @@ public class RefreshPaymentDataCommandHandlerTestsFixture : FluentTestFixture
         return this;
     }
 
-    public Task<Unit> Handle()
+    public Task<RefreshPaymentDataResponse> Handle()
     {
         return _handler.Handle(new RefreshPaymentDataCommand
         {

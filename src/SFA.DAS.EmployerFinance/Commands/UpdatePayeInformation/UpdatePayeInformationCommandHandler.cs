@@ -5,7 +5,7 @@ using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 
-public class UpdatePayeInformationCommandHandler : IRequestHandler<UpdatePayeInformationCommand, Unit>
+public class UpdatePayeInformationCommandHandler : IRequestHandler<UpdatePayeInformationCommand>
 {
     private readonly IValidator<UpdatePayeInformationCommand> _validator;
     private readonly IPayeRepository _payeRepository;
@@ -18,7 +18,7 @@ public class UpdatePayeInformationCommandHandler : IRequestHandler<UpdatePayeInf
         _hmrcService = hmrcService;
     }
 
-    public async Task<Unit> Handle(UpdatePayeInformationCommand request,CancellationToken cancellationToken)
+    public async Task Handle(UpdatePayeInformationCommand request,CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -31,18 +31,16 @@ public class UpdatePayeInformationCommandHandler : IRequestHandler<UpdatePayeInf
 
         if (!string.IsNullOrEmpty(scheme?.Name))
         {
-            return Unit.Value;
+            return;
         }
 
         var result = await _hmrcService.GetEmprefInformation(scheme?.EmpRef);
 
         if (string.IsNullOrEmpty(result?.Employer?.Name?.EmprefAssociatedName))
         {
-            return Unit.Value;
+            return;
         }
 
         await _payeRepository.UpdatePayeSchemeName(request.PayeRef, result.Employer.Name.EmprefAssociatedName);
-
-        return Unit.Value;
     }
 }

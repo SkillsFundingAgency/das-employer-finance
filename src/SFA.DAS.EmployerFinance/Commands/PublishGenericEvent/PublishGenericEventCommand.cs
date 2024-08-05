@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.PublishGenericEvent;
 
-public class PublishGenericEventCommand : IRequest<Unit>
+public class PublishGenericEventCommand : IRequest
 {
     public GenericEvent Event { get; set; }
 }
