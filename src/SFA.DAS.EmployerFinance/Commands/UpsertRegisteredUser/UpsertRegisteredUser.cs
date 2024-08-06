@@ -1,7 +1,7 @@
 ﻿
 namespace SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 
-public class UpsertRegisteredUserCommand : IRequest<Unit>
+public class UpsertRegisteredUserCommand : IRequest
 {
     public string UserRef { get; set; }
     public string FirstName { get; set; }

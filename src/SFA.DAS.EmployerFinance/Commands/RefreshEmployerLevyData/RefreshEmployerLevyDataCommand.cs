@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 
-public class RefreshEmployerLevyDataCommand : IRequest<Unit>
+public class RefreshEmployerLevyDataCommand : IRequest
 {
     public long AccountId { get; set; }
     public ICollection<EmployerLevyData> EmployerLevyData { get; set; }

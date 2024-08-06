@@ -3,7 +3,7 @@ using AutoMapper.Configuration.Annotations;
 
 namespace SFA.DAS.EmployerFinance.Commands.RunHealthCheckCommand;
 
-public class RunHealthCheckCommand : IRequest<Unit>
+public class RunHealthCheckCommand : IRequest
 {
     [Ignore]
     [Required]

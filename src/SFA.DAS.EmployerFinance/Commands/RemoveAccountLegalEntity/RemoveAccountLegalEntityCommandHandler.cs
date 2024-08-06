@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountLegalEntity;
 
-public class RemoveAccountLegalEntityCommandHandler : IRequestHandler<RemoveAccountLegalEntityCommand,Unit>
+public class RemoveAccountLegalEntityCommandHandler : IRequestHandler<RemoveAccountLegalEntityCommand>
 {
     private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
     private readonly ILogger<RemoveAccountLegalEntityCommandHandler> _logger;
@@ -13,7 +13,7 @@ public class RemoveAccountLegalEntityCommandHandler : IRequestHandler<RemoveAcco
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(RemoveAccountLegalEntityCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RemoveAccountLegalEntityCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -25,7 +25,5 @@ public class RemoveAccountLegalEntityCommandHandler : IRequestHandler<RemoveAcco
             _logger.LogError(exception, "Could not remove Account Legal Entity");
             throw;
         }
-
-        return Unit.Value;
     }
 }

@@ -8,7 +8,7 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionsUpdateRequired;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Levy;
 
 public class ImportAccountLevyDeclarationsCommandHandler : IHandleMessages<ImportAccountLevyDeclarationsCommand>
 {

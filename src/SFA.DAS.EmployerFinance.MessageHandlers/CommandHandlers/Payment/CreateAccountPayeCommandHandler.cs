@@ -2,7 +2,7 @@
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Paye;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 
 public class CreateAccountPayeCommandHandler : IHandleMessages<CreateAccountPayeCommand>
 {

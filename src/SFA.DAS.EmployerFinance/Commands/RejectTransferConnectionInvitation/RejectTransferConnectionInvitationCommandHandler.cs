@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
 
-public class RejectTransferConnectionInvitationCommandHandler : IRequestHandler<RejectTransferConnectionInvitationCommand, Unit>
+public class RejectTransferConnectionInvitationCommandHandler : IRequestHandler<RejectTransferConnectionInvitationCommand>
 {
     private readonly IEmployerAccountRepository _employerAccountRepository;
     private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
@@ -18,14 +18,12 @@ public class RejectTransferConnectionInvitationCommandHandler : IRequestHandler<
         _userRepository = userRepository;
     }
 
-    public async Task<Unit> Handle(RejectTransferConnectionInvitationCommand request,CancellationToken cancellationToken)
+    public async Task Handle(RejectTransferConnectionInvitationCommand request,CancellationToken cancellationToken)
     {
         var rejectorAccount = await _employerAccountRepository.Get(request.AccountId);
         var rejectorUser = await _userRepository.Get(request.UserRef);
         var transferConnectionInvitation = await _transferConnectionInvitationRepository.Get(request.TransferConnectionInvitationId.Value);
 
         transferConnectionInvitation.Reject(rejectorAccount, rejectorUser);
-
-        return Unit.Value;
     }
 }

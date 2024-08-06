@@ -1,7 +1,7 @@
 ﻿
 namespace SFA.DAS.EmployerFinance.Commands.CreateAccountLegalEntity;
 
-public class CreateAccountLegalEntityCommand : IRequest<Unit>
+public class CreateAccountLegalEntityCommand : IRequest
 { 
     public CreateAccountLegalEntityCommand(long id, long? pendingAgreementId, long? signedAgreementId, int? signedAgreementVersion, long accountId, long legalEntityId)
     {

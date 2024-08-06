@@ -1,7 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 
-namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers;
+namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Expiry;
 
 public class DraftExpireFundsCommandHandler : IHandleMessages<DraftExpireFundsCommand>
 {

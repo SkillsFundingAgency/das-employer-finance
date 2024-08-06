@@ -6,7 +6,7 @@ using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 
-public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAccountTransfersCommand, Unit>
+public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAccountTransfersCommand>
 {
     private readonly IValidator<RefreshAccountTransfersCommand> _validator;
     private readonly IPaymentService _paymentService;
@@ -25,7 +25,7 @@ public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAcco
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(RefreshAccountTransfersCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RefreshAccountTransfersCommand request, CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -76,7 +76,5 @@ public class RefreshAccountTransfersCommandHandler : IRequestHandler<RefreshAcco
 
         _logger.LogInformation("Refresh account transfers handler complete for AccountId = '{ReceiverAccountId}' and PeriodEnd = '{PeriodEnd}' CorrelationId: {CorrelationId}",
             request.ReceiverAccountId, request.PeriodEnd, request.CorrelationId);
-
-        return Unit.Value;
     }
 }

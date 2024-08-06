@@ -1,7 +1,7 @@
 ﻿
 namespace SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
 
-public class RefreshAccountTransfersCommand : IRequest<Unit>
+public class RefreshAccountTransfersCommand : IRequest
 {
     public long ReceiverAccountId { get; set; }
     public string PeriodEnd { get; set; }

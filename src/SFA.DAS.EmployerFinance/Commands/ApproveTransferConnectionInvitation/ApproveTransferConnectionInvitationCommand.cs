@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Commands.ApproveTransferConnectionInvitation;
 
-public class ApproveTransferConnectionInvitationCommand : IRequest<Unit>
+public class ApproveTransferConnectionInvitationCommand : IRequest
 {
     
     public long AccountId { get; set; }

@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.LegalEntitySignAgreement;
 
-public class LegalEntitySignAgreementCommand : IRequest<Unit>
+public class LegalEntitySignAgreementCommand : IRequest
 {
     public LegalEntitySignAgreementCommand(long signedAgreementId, int signedAgreementVersion, long accountId, long legalEntityId)
     {
@@ -18,7 +18,7 @@ public class LegalEntitySignAgreementCommand : IRequest<Unit>
     public long LegalEntityId { get; set; }
 }
 
-public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand, Unit>
+public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntitySignAgreementCommand>
 {
     private readonly IAccountLegalEntityRepository _accountLegalEntityRepository;
     private readonly ILogger<LegalEntitySignAgreementCommandHandler> _logger;
@@ -29,7 +29,7 @@ public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntit
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(LegalEntitySignAgreementCommand message, CancellationToken cancellationToken)
+    public async Task Handle(LegalEntitySignAgreementCommand message, CancellationToken cancellationToken)
     {
         try
         {
@@ -42,7 +42,5 @@ public class LegalEntitySignAgreementCommandHandler : IRequestHandler<LegalEntit
             _logger.LogError(exception, "Could not sign agreement on legal entity.");
             throw;
         }
-
-        return Unit.Value;
     }
 }

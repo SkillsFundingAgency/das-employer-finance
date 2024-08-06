@@ -22,6 +22,21 @@ public class DasLevyRepository : IDasLevyRepository
         _currentDateTime = currentDateTime;
     }
 
+    public async Task<Payment> GetPaymentForPaymentDetails(Guid paymentId, CancellationToken cancellationToken)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@paymentId", paymentId, DbType.Guid);
+
+        return await _db.Value.Database
+            .GetDbConnection()
+            .QuerySingleOrDefaultAsync<Payment>(
+                sql: "[employer_financial].[GetPaymentForPaymentDetails]",
+                param: parameters,
+                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                commandType: CommandType.StoredProcedure);
+    }
+
     public async Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId)
     {
         foreach (var dasDeclaration in declarations)
@@ -87,6 +102,9 @@ public class DasLevyRepository : IDasLevyRepository
 
     public async Task CreatePayments(IEnumerable<PaymentDetails> payments)
     {
+        // This could be a candidate for refactoring to use SqlBulkCopy
+        // https://timdeschryver.dev/blog/faster-sql-bulk-inserts-with-csharp#table-valued-parameter
+
         var batches = payments.Batch(1000).Select(b => b.ToPaymentsDataTable());
 
         foreach (var batch in batches)
@@ -98,9 +116,30 @@ public class DasLevyRepository : IDasLevyRepository
             await _db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreatePayments]",
                 param: parameters,
+                commandTimeout: 300,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
         }
+    }
+
+    public async Task UpdatePaymentMetadata(PaymentDetails details)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@ProviderName", details.ProviderName, DbType.String);
+        parameters.Add("@ApprenticeName", details.ApprenticeName, DbType.String);
+        parameters.Add("@IsHistoricProviderName", details.IsHistoricProviderName, DbType.Boolean);
+        parameters.Add("@CourseName", details.CourseName, DbType.String);
+        parameters.Add("@CourseLevel", details.CourseLevel, DbType.Int32);
+        parameters.Add("@CourseStartDate", details.CourseStartDate, DbType.DateTime);
+        parameters.Add("@PathwayName", details.PathwayName, DbType.String);
+        parameters.Add("@PaymentID", details.PaymentMetaDataId, DbType.Int64);
+
+        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+            sql: "[employer_financial].[UpdatePaymentMetadata]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
     }
 
     public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
@@ -145,7 +184,7 @@ public class DasLevyRepository : IDasLevyRepository
 
         return result.SingleOrDefault();
     }
-    
+
     public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
     {
         return _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(

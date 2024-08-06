@@ -1,7 +1,7 @@
 ﻿
 namespace SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 
-public class UpdatePayeInformationCommand : IRequest<Unit>
+public class UpdatePayeInformationCommand : IRequest
 {
     public string PayeRef { get; set; }
 }

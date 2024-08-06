@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
 
-public class RemoveAccountPayeCommandHandler : IRequestHandler<RemoveAccountPayeCommand,Unit>
+public class RemoveAccountPayeCommandHandler : IRequestHandler<RemoveAccountPayeCommand>
 {
     private readonly IPayeRepository _payeRepository;
     private readonly ILogger<RemoveAccountPayeCommandHandler> _logger;
@@ -13,7 +13,7 @@ public class RemoveAccountPayeCommandHandler : IRequestHandler<RemoveAccountPaye
         _logger = logger;
     }
 
-    public async Task<Unit> Handle(RemoveAccountPayeCommand request,CancellationToken cancellationToken)
+    public async Task Handle(RemoveAccountPayeCommand request,CancellationToken cancellationToken)
     {
         try
         {
@@ -26,7 +26,5 @@ public class RemoveAccountPayeCommandHandler : IRequestHandler<RemoveAccountPaye
             _logger.LogError(ex, "Could not remove account paye scheme");
             throw;
         }
-
-        return Unit.Value;
     }
 }

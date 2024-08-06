@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Commands.RejectTransferConnectionInvitation;
 
-public class RejectTransferConnectionInvitationCommand :IRequest<Unit>
+public class RejectTransferConnectionInvitationCommand :IRequest
 {
     public long AccountId { get; set; }
 
