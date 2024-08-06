@@ -33,5 +33,20 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Extensions
             var result = dateTime.AddYears(2).ToFinancialYearString();
             Assert.AreEqual(expected, result);
         }
+
+        [TestCase(2023, 12, 31, "23-24")]
+        [TestCase(2024, 3, 31, "23-24")]
+        [TestCase(2024, 4, 21, "24-25")]
+        public void ToPayrollYearStart_ReturnsCorrectString(int year, int month, int day, string expected)
+        {
+            // Arrange
+            var date = new DateTime(year, month, day);
+
+            // Act
+            var result = date.ToPayrollYearString();
+
+            // Assert
+            result.Should().Be(expected);
+        }
     }
 }
