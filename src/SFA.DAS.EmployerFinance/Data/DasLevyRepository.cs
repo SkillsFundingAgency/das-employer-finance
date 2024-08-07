@@ -22,7 +22,7 @@ public class DasLevyRepository : IDasLevyRepository
         _currentDateTime = currentDateTime;
     }
 
-    public async Task<Payment> GetPaymentForPaymentDetails(Guid paymentId, CancellationToken cancellationToken)
+    public async Task<Payment> GetPaymentForPaymentDetails(Guid paymentId)
     {
         var parameters = new DynamicParameters();
 
@@ -33,6 +33,16 @@ public class DasLevyRepository : IDasLevyRepository
             .QuerySingleOrDefaultAsync<Payment>(
                 sql: "[employer_financial].[GetPaymentForPaymentDetails]",
                 param: parameters,
+                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata()
+    {
+        return await _db.Value.Database
+            .GetDbConnection()
+            .QueryAsync<PaymentDetails>(
+                sql: "[employer_financial].[GetPaymentsWithMissingMetadata]",
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
     }

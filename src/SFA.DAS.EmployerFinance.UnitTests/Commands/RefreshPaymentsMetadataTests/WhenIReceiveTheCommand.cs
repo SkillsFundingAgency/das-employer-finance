@@ -29,7 +29,7 @@ public class WhenIReceiveTheCommand
             .Verifiable(Times.Once);
 
         levyRepository.Setup(x =>
-                x.GetPaymentForPaymentDetails(It.Is<Guid>(p => p.Equals(command.PaymentId)), It.IsAny<CancellationToken>()))
+                x.GetPaymentForPaymentDetails(It.Is<Guid>(p => p.Equals(command.PaymentId))))
             .ReturnsAsync(payment);
 
         await handler.Handle(command, CancellationToken.None);
@@ -72,7 +72,7 @@ public class WhenIReceiveTheCommand
             .Returns(new ValidationResult());
 
         levyRepository.Setup(x =>
-                x.GetPaymentForPaymentDetails(command.PaymentId, It.IsAny<CancellationToken>()))
+                x.GetPaymentForPaymentDetails(command.PaymentId))
             .ReturnsAsync(payment)
             .Verifiable(Times.Once);
 
@@ -97,7 +97,7 @@ public class WhenIReceiveTheCommand
             .Returns(new ValidationResult());
 
         levyRepository.Setup(x =>
-                x.GetPaymentForPaymentDetails(command.PaymentId, It.IsAny<CancellationToken>()))
+                x.GetPaymentForPaymentDetails(command.PaymentId))
             .ReturnsAsync(() => null);
 
         await handler.Handle(command, CancellationToken.None);
@@ -121,7 +121,7 @@ public class WhenIReceiveTheCommand
             .Returns(new ValidationResult());
 
         levyRepository.Setup(x =>
-                x.GetPaymentForPaymentDetails(command.PaymentId, It.IsAny<CancellationToken>()))
+                x.GetPaymentForPaymentDetails(command.PaymentId))
             .ReturnsAsync(() => null);
 
         await handler.Handle(command, CancellationToken.None);
@@ -146,7 +146,7 @@ public class WhenIReceiveTheCommand
             .Returns(new ValidationResult());
 
         levyRepository.Setup(x =>
-                x.GetPaymentForPaymentDetails(command.PaymentId, It.IsAny<CancellationToken>()))
+                x.GetPaymentForPaymentDetails(command.PaymentId))
             .ReturnsAsync(payment);
 
         await handler.Handle(command, CancellationToken.None);
@@ -178,7 +178,7 @@ public class WhenIReceiveTheCommand
             .Returns(new ValidationResult());
 
         levyRepository.Setup(x =>
-                x.GetPaymentForPaymentDetails(command.PaymentId, It.IsAny<CancellationToken>()))
+                x.GetPaymentForPaymentDetails(command.PaymentId))
             .ReturnsAsync(payment);
 
         await handler.Handle(command, CancellationToken.None);

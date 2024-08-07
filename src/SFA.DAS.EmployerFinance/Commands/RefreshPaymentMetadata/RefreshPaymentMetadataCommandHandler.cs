@@ -32,7 +32,7 @@ public class RefreshPaymentMetadataCommandHandler(
 
         logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
 
-        var payment = await levyRepository.GetPaymentForPaymentDetails(request.PaymentId, cancellationToken);
+        var payment = await levyRepository.GetPaymentForPaymentDetails(request.PaymentId);
 
         if (payment == null)
         {
