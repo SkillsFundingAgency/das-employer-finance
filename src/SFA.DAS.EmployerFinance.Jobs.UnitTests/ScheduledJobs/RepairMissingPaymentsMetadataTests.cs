@@ -17,6 +17,25 @@ namespace SFA.DAS.EmployerFinance.Jobs.UnitTests.ScheduledJobs;
 public class RepairMissingPaymentsMetadataTests
 {
     [Test, MoqAutoData]
+    public async Task WhenPaymentsWithMissingMetadataIsNullThenNoMessagesAreSent(
+        Mock<ILogger> logger,
+        [Frozen] Mock<IMessageSession> messageSession,
+        [Frozen] Mock<IDasLevyRepository> levyRepository,
+        RepairMissingPaymentsMetadata sut)
+    {
+        levyRepository
+            .Setup(x => x.GetPaymentsWithMissingMetadata())
+            .ReturnsAsync(() => null)
+            .Verifiable();
+
+        await sut.Run(null, logger.Object);
+
+        levyRepository.Verify();
+        
+        messageSession.Verify(x => x.Send(It.IsAny<ImportAccountPaymentMetadataCommand>(), It.IsAny<SendOptions>()), Times.Never);
+    }
+    
+    [Test, MoqAutoData]
     public async Task WhenThereAreNoPaymentsWithMissingMetadataThenNoMessagesAreSent(
         Mock<ILogger> logger,
         [Frozen] Mock<IMessageSession> messageSession,
@@ -36,7 +55,7 @@ public class RepairMissingPaymentsMetadataTests
     }
 
     [Test, MoqAutoData]
-    public async Task WhenThereArePaymentsWithMissingMetadataThenMessagesAreSent(
+    public async Task WhenThereArePaymentsWithMissingMetadataThenMessagesAreSentForEachPayment(
         Mock<ILogger> logger,
         List<PaymentDetails> paymentDetailsList,
         [Frozen] Mock<IMessageSession> messageSession,

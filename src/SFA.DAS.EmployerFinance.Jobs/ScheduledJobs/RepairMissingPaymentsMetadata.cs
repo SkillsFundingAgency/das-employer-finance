@@ -12,9 +12,9 @@ public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasL
     {
         logger.LogInformation("{TypeName}: Starting processing.", nameof(RepairMissingPaymentsMetadata));
 
-        var payments = (await levyRepository.GetPaymentsWithMissingMetadata()).ToList();
+        var payments = (await levyRepository.GetPaymentsWithMissingMetadata())?.ToList();
 
-        if (payments.Count == 0)
+        if (payments == null || payments.Count == 0)
         {
             logger.LogInformation("{TypeName}: No payments found with missing metadata. Exiting.", nameof(RepairMissingPaymentsMetadata));
             return;
