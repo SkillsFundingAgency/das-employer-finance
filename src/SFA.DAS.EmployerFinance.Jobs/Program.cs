@@ -6,10 +6,8 @@ public class Program
 {
     public static async Task Main()
     {
-        using (var host = CreateHost())
-        {
-            await host.RunAsync();
-        }
+        using var host = CreateHost();
+        await host.RunAsync();
     }
 
     private static IHost CreateHost()
