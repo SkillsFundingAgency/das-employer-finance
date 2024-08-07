@@ -11,29 +11,30 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
-using SFA.DAS.Testing;
 
 namespace SFA.DAS.EmployerFinance.Jobs.UnitTests.ScheduledJobs;
 
 [TestFixture]
 [Parallelizable]
-public class ExpireFundsJobTests : FluentTest<ExpireFundsJobTestsFixture>
+public class ExpireFundsJobTests : ExpireFundsJobTestsFixture
 {
     [Test]
     [TestCase(0, Description = "No accounts")]
     [TestCase(1, Description = "Single account")]
     [TestCase(99, Description = "Multiple accounts")]
-    public Task Run_WhenRunningJob_ThenShouldSendCommand(int numberOfAccounts)
+    public async Task Run_WhenRunningJob_ThenShouldSendCommand(int numberOfAccounts)
     {
-        return RunAsync(
-            fixture => fixture.SetupAccounts(numberOfAccounts),
-            fixture => fixture.Run(),
-            fixture => fixture.MessageSession.Verify(s =>
+        var fixture = new ExpireFundsJobTestsFixture();
+        fixture.SetupAccounts(numberOfAccounts);
+        
+        await fixture.Run();
+        
+        fixture.MessageSession.Verify(s =>
                 s.Send(
                     It.IsAny<ExpireAccountFundsCommand>(),
                     It.IsAny<SendOptions>()),
-                           Times.Exactly(numberOfAccounts)
-                ));
+            Times.Exactly(numberOfAccounts)
+        );
     }
 }
 

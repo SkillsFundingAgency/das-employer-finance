@@ -79,6 +79,7 @@
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown\ByAccount" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="StoredProcedures\GetPaymentsWithMissingMetadata.sql" />
     <Build Include="StoredProcedures\UpdatePaymentMetadata.sql" />
     <Build Include="Tables\EnglishFraction.sql" />
     <Build Include="Tables\LevyDeclaration.sql" />
