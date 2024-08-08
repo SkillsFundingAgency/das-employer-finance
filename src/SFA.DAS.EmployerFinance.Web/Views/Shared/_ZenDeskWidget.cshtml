@@ -1,6 +1,10 @@
-﻿@{
-    var snippetUrl = $"https://static.zdassets.com/ekr/snippet.js?key={Configuration["ZenDeskConfiguration:ZenDeskSectionId"]}";
-    var cobrowsingSnippetUrl = $"https://embed-euw1.rcrsv.io/{Configuration["ZenDeskConfiguration:ZenDeskSnippetKey"]}?zwwi=1";
+﻿@using SFA.DAS.EmployerFinance.Configuration
+@using WebEssentials.AspNetCore.CdnTagHelpers
+@inject ZenDeskConfiguration ZenDeskConfiguration
+
+@{
+    var snippetUrl = $"https://static.zdassets.com/ekr/snippet.js?key={ZenDeskConfiguration.ZenDeskSnippetKey}";
+    var cobrowsingSnippetUrl = $"https://embed-euw1.rcrsv.io/{ZenDeskConfiguration.ZenDeskCobrowsingSnippetKey}?zwwi=1";
 }
 
 <script type="text/javascript">
@@ -16,7 +20,7 @@
             },
             helpCenter: {
                 filter: {
-                    section: @Configuration["ZenDeskConfiguration:ZenDeskSectionId"]
+                    section: @ZenDeskConfiguration.ZenDeskSectionId
                 }
             }
         }

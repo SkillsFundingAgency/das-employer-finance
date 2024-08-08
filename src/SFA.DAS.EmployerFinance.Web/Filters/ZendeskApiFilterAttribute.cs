@@ -15,8 +15,8 @@ public class ZendeskApiFilterAttribute : ActionFilterAttribute
 
             controller.ViewBag.ZendeskApiData = new ZendeskApiData
             {
-                Name = controller.User.GetDisplayName(),
-                Email = controller.User.GetEmailAddress(),
+                Name = "",
+                Email = "",
                 Organization = accountIdFromUrl
             };
         }
