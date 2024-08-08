@@ -13,6 +13,12 @@ public static class RoutingExtensions
             typeof(ImportLevyDeclarationsCommand).Namespace,
             "SFA.DAS.EmployerFinance.MessageHandlers"
         );
+        
+        routing.RouteToEndpoint(
+            typeof(ImportAccountPaymentMetadataCommand).Assembly,
+            typeof(ImportAccountPaymentMetadataCommand).Namespace,
+            "SFA.DAS.EmployerFinance.MessageHandlers"
+        );
 
         routing.RouteToEndpoint(
             typeof(SendEmailCommand).Assembly,
