@@ -8,7 +8,8 @@ namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 
 public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasLevyRepository levyRepository)
 {
-    public async Task Run([TimerTrigger("0 0 4 * * *")] TimerInfo timer, ILogger logger)
+    //public async Task Run([TimerTrigger("0 0 4 * * *")] TimerInfo timer, ILogger logger)
+    public async Task Run([TimerTrigger("0 30 10 * * *")] TimerInfo timer, ILogger logger)
     {
         logger.LogInformation("{TypeName}: Starting processing.", nameof(RepairMissingPaymentsMetadata));
 
