@@ -8,8 +8,7 @@ namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 
 public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasLevyRepository levyRepository)
 {
-   // public async Task Run([TimerTrigger("0 0 4 * * *")] TimerInfo timer, ILogger logger)
-    public async Task Run([TimerTrigger("0 30 10 * * *")] TimerInfo timer, ILogger logger)
+    public async Task Run([TimerTrigger("0 0 4 * * *")] TimerInfo timer, ILogger logger)
     {
         logger.LogInformation("{TypeName}: Starting processing.", nameof(RepairMissingPaymentsMetadata));
 
@@ -24,10 +23,7 @@ public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasL
         logger.LogInformation("{TypeName}: Found {Count} payments with missing metadata.", nameof(RepairMissingPaymentsMetadata), payments.Count);
 
         await Parallel.ForEachAsync(payments,
-            async (payment, _) =>
-            {
-                await SendImportAccountPaymentMetadataCommand(logger, payment);
-            });
+            async (payment, _) => { await SendImportAccountPaymentMetadataCommand(logger, payment); });
 
         logger.LogInformation("{TypeName}: Completed processing.", nameof(RepairMissingPaymentsMetadata));
     }
