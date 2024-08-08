@@ -22,7 +22,7 @@ public class DasLevyRepository : IDasLevyRepository
         _currentDateTime = currentDateTime;
     }
 
-    public async Task<Payment> GetPaymentForPaymentDetails(Guid paymentId)
+    public async Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId)
     {
         var parameters = new DynamicParameters();
 
@@ -30,7 +30,7 @@ public class DasLevyRepository : IDasLevyRepository
 
         return await _db.Value.Database
             .GetDbConnection()
-            .QuerySingleOrDefaultAsync<Payment>(
+            .QuerySingleOrDefaultAsync<PaymentDetails>(
                 sql: "[employer_financial].[GetPaymentForPaymentDetails]",
                 param: parameters,
                 transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
