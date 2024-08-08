@@ -37,7 +37,7 @@ public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasL
             payment.Id);
 
         var sendOptions = new SendOptions();
-        sendOptions.SetMessageId($"{nameof(ImportAccountPaymentsCommand)}-{payment.PeriodEnd}-{payment.EmployerAccountId}-{payment.Id}");
+        sendOptions.SetMessageId($"{nameof(ImportAccountPaymentMetadataCommand)}-{payment.PeriodEnd}-{payment.EmployerAccountId}-{payment.Id}");
 
         await messageSession
             .Send(new ImportAccountPaymentMetadataCommand
