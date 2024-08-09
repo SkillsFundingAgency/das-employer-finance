@@ -12,6 +12,8 @@ SELECT
     ,pmd.FrameworkCode
     ,pmd.PathwayCode
     ,pmd.ProgrammeType
+    ,pmd.ApprenticeName
+    ,pmd.ProviderName
 FROM [employer_financial].[Payment] p
 JOIN [employer_financial].[PaymentMetaData] pmd ON p.PaymentMetadataId = pmd.Id
 WHERE p.PaymentId = @paymentId    

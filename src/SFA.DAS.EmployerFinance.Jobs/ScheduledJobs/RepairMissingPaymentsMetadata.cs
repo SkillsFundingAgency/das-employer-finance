@@ -23,10 +23,7 @@ public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasL
         logger.LogInformation("{TypeName}: Found {Count} payments with missing metadata.", nameof(RepairMissingPaymentsMetadata), payments.Count);
 
         await Parallel.ForEachAsync(payments,
-            async (payment, _) =>
-            {
-                await SendImportAccountPaymentMetadataCommand(logger, payment);
-            });
+            async (payment, _) => { await SendImportAccountPaymentMetadataCommand(logger, payment); });
 
         logger.LogInformation("{TypeName}: Completed processing.", nameof(RepairMissingPaymentsMetadata));
     }
@@ -40,8 +37,7 @@ public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasL
             payment.Id);
 
         var sendOptions = new SendOptions();
-        sendOptions.RouteToThisEndpoint();
-        sendOptions.SetMessageId($"{nameof(ImportAccountPaymentsCommand)}-{payment.PeriodEnd}-{payment.EmployerAccountId}-{payment.Id}");
+        sendOptions.SetMessageId($"{nameof(ImportAccountPaymentMetadataCommand)}-{payment.PeriodEnd}-{payment.EmployerAccountId}-{payment.Id}");
 
         await messageSession
             .Send(new ImportAccountPaymentMetadataCommand
