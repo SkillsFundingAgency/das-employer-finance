@@ -19,7 +19,6 @@ public class RefreshPaymentDataCommandHandler : IRequestHandler<RefreshPaymentDa
     private readonly IMediator _mediator;
     private readonly ILogger<RefreshPaymentDataCommandHandler> _logger;
 
-
     public RefreshPaymentDataCommandHandler(
         IEventPublisher eventPublisher,
         IValidator<RefreshPaymentDataCommand> validator,

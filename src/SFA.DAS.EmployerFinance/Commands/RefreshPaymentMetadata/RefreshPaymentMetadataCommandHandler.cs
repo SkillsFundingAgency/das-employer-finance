@@ -16,7 +16,7 @@ public class RefreshPaymentMetadataCommandHandler(
 {
     public async Task Handle(RefreshPaymentMetadataCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("{HandlerName} started for AccountId: {AccountId} and PaymentId: {PaymentId} PeriodEndRef: {PeriodEndRef}.", 
+        logger.LogInformation("{HandlerName} started for AccountId: {AccountId} and PaymentId: {PaymentId} PeriodEndRef: {PeriodEndRef}.",
             nameof(RefreshPaymentMetadataCommandHandler),
             request.AccountId,
             request.PaymentId,
@@ -32,35 +32,29 @@ public class RefreshPaymentMetadataCommandHandler(
 
         logger.LogInformation("{HandlerName}: request is valid.", nameof(RefreshPaymentMetadataCommandHandler));
 
-        var payment = await levyRepository.GetPaymentForPaymentDetails(request.PaymentId, cancellationToken);
+        var payment = await levyRepository.GetPaymentForPaymentDetails(request.PaymentId);
 
         if (payment == null)
         {
             logger.LogWarning("{HandlerName}: No payment found with Id {PaymentId}.", nameof(RefreshPaymentMetadataCommandHandler), request.PaymentId);
         }
+        else if (!string.IsNullOrEmpty(payment.ProviderName) && !string.IsNullOrEmpty(payment.ApprenticeName))
+        {
+            logger.LogInformation("{HandlerName}: Payment with Id {PaymentId} already has ProviderName and ApprenticeName populated.", 
+                nameof(RefreshPaymentMetadataCommandHandler), request.PaymentId);
+        }
         else
         {
-            logger.LogInformation("{HandlerName}: Payment from DB: {Payment}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(payment));
+            logger.LogInformation("{HandlerName}: Found payment from DB, executing AddSinglePaymentDetailsMetadata(): {Payment}.",
+                nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(payment));
+            
+            await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, payment);
 
-            var currentPayment = new PaymentDetails
-            {
-                Id = payment.Id,
-                ApprenticeshipId = payment.ApprenticeshipId,
-                Ukprn = payment.Ukprn,
-                PaymentMetaDataId = payment.PaymentMetaDataId,
-                StandardCode = payment.StandardCode,
-                FrameworkCode = payment.FrameworkCode,
-                PathwayCode = payment.PathwayCode,
-                ProgrammeType = payment.ProgrammeType
-            };
+            logger.LogInformation("{HandlerName}: Saving PaymentDetails: {PaymentDetails}.",
+                nameof(RefreshPaymentMetadataCommandHandler), 
+                JsonSerializer.Serialize(payment));
 
-            logger.LogInformation("{HandlerName}: Found payment {PaymentId} with ApprenticeshipId = {ApprenticeshipId}. Executing AddSinglePaymentDetailsMetadata().", nameof(RefreshPaymentMetadataCommandHandler), currentPayment.Id, currentPayment.ApprenticeshipId);
-
-            await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, currentPayment);
-
-            logger.LogInformation("{HandlerName}: Saving PaymentDetails: {PaymentDetails}.", nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(currentPayment));
-
-            await levyRepository.UpdatePaymentMetadata(currentPayment);
+            await levyRepository.UpdatePaymentMetadata(payment);
         }
 
         logger.LogInformation("{HandlerName} completed.", nameof(RefreshPaymentMetadataCommandHandler));
