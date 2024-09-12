@@ -44,7 +44,7 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
                 at.SenderAccountName,
                 at.ReceiverAccountId,
                 at.ReceiverAccountName,
-                at.Amount,
+                p.Amount,
                 at.ApprenticeshipId,
                 CourseName = pmd.ApprenticeshipCourseName,
                 CourseLevel = pmd.ApprenticeshipCourseLevel

@@ -85,7 +85,7 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         _transfers = new List<AccountTransfer>
         {
-            new AccountTransfer
+            new()
             {
                 SenderAccountId = SenderAccountId,
                 SenderAccountName = SenderAccountName,
@@ -97,7 +97,7 @@ class WhenAReceiverGetsTransferTransactionDetails
                 PeriodEnd = PeriodEnd
 
             },
-            new AccountTransfer
+            new()
             {
                 SenderAccountId = SenderAccountId,
                 SenderAccountName = SenderAccountName,
@@ -108,7 +108,7 @@ class WhenAReceiverGetsTransferTransactionDetails
                 Amount = 346.789M,
                 PeriodEnd = PeriodEnd
             },
-            new AccountTransfer
+            new()
             {
                 SenderAccountId = SenderAccountId,
                 SenderAccountName = SenderAccountName,
@@ -129,7 +129,18 @@ class WhenAReceiverGetsTransferTransactionDetails
                 ApprenticeshipId = 1,
                 EmployerAccountId = ReceiverAccountId,
                 CollectionPeriodId = PeriodEnd,
-                PaymentMetaDataId = 222
+                PaymentMetaDataId = 222,
+                Amount = 123.4567M
+            },
+            // multiple payments making up the transfer payment
+            new()
+            {
+                Id = Guid.NewGuid(),
+                ApprenticeshipId = 2,
+                EmployerAccountId = ReceiverAccountId,
+                CollectionPeriodId = PeriodEnd,
+                PaymentMetaDataId = 333,
+                Amount = 556.789M
             },
             new()
             {
@@ -137,7 +148,8 @@ class WhenAReceiverGetsTransferTransactionDetails
                 ApprenticeshipId = 2,
                 EmployerAccountId = ReceiverAccountId,
                 CollectionPeriodId = PeriodEnd,
-                PaymentMetaDataId = 333
+                PaymentMetaDataId = 333,
+                Amount = -210M
             },
             new()
             {
@@ -145,7 +157,8 @@ class WhenAReceiverGetsTransferTransactionDetails
                 ApprenticeshipId = 3,
                 EmployerAccountId = ReceiverAccountId,
                 CollectionPeriodId = PeriodEnd,
-                PaymentMetaDataId = 444
+                PaymentMetaDataId = 444,
+                Amount = 234.56M
             }
         };
 
