@@ -21,3 +21,13 @@ SET
     ,ApprenticeshipCourseStartDate = @CourseStartDate
     ,PathwayName = @PathwayName
 WHERE [Id] = @PaymentId
+
+UPDATE at
+SET at.ApprenticeshipCourseName = @CourseName,
+    at.ApprenticeshipCourseLevel = @CourseLevel
+    FROM employer_financial.AccountTransfers at
+    INNER JOIN employer_financial.Payment p
+ON at.ApprenticeshipId = p.ApprenticeshipId
+    AND at.PeriodEnd = p.PeriodEnd
+    AND at.ReceiverAccountId = p.AccountId
+WHERE p.Id = @PaymentId;
