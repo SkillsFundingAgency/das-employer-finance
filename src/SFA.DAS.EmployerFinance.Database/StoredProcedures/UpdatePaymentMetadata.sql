@@ -23,8 +23,8 @@ SET
 WHERE [Id] = @PaymentId
 
 UPDATE at
-SET at.ApprenticeshipCourseName = @CourseName,
-    at.ApprenticeshipCourseLevel = @CourseLevel
+SET at.CourseName = @CourseName,
+    at.CourseLevel = @CourseLevel
     FROM employer_financial.AccountTransfers at
     INNER JOIN employer_financial.Payment p
 ON at.ApprenticeshipId = p.ApprenticeshipId
