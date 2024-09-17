@@ -7,7 +7,7 @@
     @CourseLevel INT,
     @CourseStartDate DATETIME,
     @PathwayName VARCHAR(MAX),
-    @PaymentId BIGINT
+    @PaymentMetaDataId BIGINT
 )
 AS
 
@@ -20,7 +20,7 @@ SET
     ,ApprenticeshipCourseLevel = @CourseLevel
     ,ApprenticeshipCourseStartDate = @CourseStartDate
     ,PathwayName = @PathwayName
-WHERE [Id] = @PaymentId
+WHERE [Id] = @PaymentMetadataId
 
 UPDATE at
 SET at.CourseName = @CourseName,
@@ -30,4 +30,4 @@ SET at.CourseName = @CourseName,
 ON at.ApprenticeshipId = p.ApprenticeshipId
     AND at.PeriodEnd = p.PeriodEnd
     AND at.ReceiverAccountId = p.AccountId
-WHERE p.Id = @PaymentId;
+WHERE p.PaymentMetaDataId = @PaymentMetaDataId;
