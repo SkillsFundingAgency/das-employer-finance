@@ -52,11 +52,10 @@ public class WhenAddingServicesToTheContainer
         Assert.Multiple(() =>
         {
             type.Should().NotBeNull();
-            type.Count.Should().Be(4);
+            type.Count.Should().Be(3);
         
             type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountAllRolesAuthorizationHandler));
             type.Should().ContainSingle(c => c.GetType() == typeof(EmployerAccountOwnerAuthorizationHandler));
-            type.Should().ContainSingle(c => c.GetType() == typeof(AccountActiveAuthorizationHandler));
         });
     }
 
