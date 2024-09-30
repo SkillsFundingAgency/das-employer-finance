@@ -22,7 +22,6 @@ public class EmployerFinanceWebConfiguration : EmployerFinanceConfiguration
 {
     public string ApplicationId { get; set; }
     public string ReservationsBaseUrl { get; set; }
-    public bool UseGovSignIn { get; set; }
     public string DataProtectionKeysDatabase { get; set; }
     public string EmployerAccountsBaseUrl { get; set; }
     public string EmployerCommitmentsV2BaseUrl { get; set; }
@@ -38,11 +37,4 @@ public class ZenDeskConfiguration
     public string ZenDeskSnippetKey { get; set; }
     public string ZenDeskSectionId { get; set; }
     public string ZenDeskCobrowsingSnippetKey { get; set; }
-}
-
-public class IdentityServerConfiguration
-{
-    public string ClientId { get; set; }
-    public string ClientSecret { get; set; }
-    public string BaseAddress { get; set; }
 }
