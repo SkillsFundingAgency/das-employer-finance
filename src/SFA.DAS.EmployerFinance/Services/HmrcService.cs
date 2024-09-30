@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Policies.Hmrc;
 using SFA.DAS.TokenService.Api.Client;
+using static Microsoft.Azure.Amqp.CbsConstants;
 using ExecutionPolicy = SFA.DAS.EmployerFinance.Policies.Hmrc.ExecutionPolicy;
 using IHttpClientWrapper = SFA.DAS.EmployerFinance.Interfaces.Hmrc.IHttpClientWrapper;
 
@@ -56,25 +57,6 @@ public class HmrcService : IHmrcService
         return $"{_configuration.BaseUrl}oauth/authorize?response_type=code&client_id={_configuration.ClientId}&scope={_configuration.Scope}&redirect_uri={urlFriendlyRedirectUrl}";
     }
 
-    public Task<HmrcTokenResponse> GetAuthenticationToken(string redirectUrl, string accessCode)
-    {
-        return _executionPolicy.ExecuteAsync(async () =>
-        {
-            var requestParams = new
-            {
-                client_secret = _configuration.ClientSecret,
-                client_id = _configuration.ClientId,
-                grant_type = "authorization_code",
-                redirect_uri = redirectUrl,
-                code = accessCode
-            };
-
-            var response = await _httpClientWrapper.SendMessage(requestParams, "oauth/token");
-
-            return JsonConvert.DeserializeObject<HmrcTokenResponse>(response);
-        });
-    }
-
     public Task<EmpRefLevyInformation> GetEmprefInformation(string authToken, string empRef)
     {
         return _executionPolicy.ExecuteAsync(async () => await _apprenticeshipLevyApiClient.GetEmployerDetails(authToken, empRef));
@@ -114,7 +96,11 @@ public class HmrcService : IHmrcService
             var earliestDate = new DateTime(2017, 04, 01);
             if (!fromDate.HasValue || fromDate.Value < earliestDate) fromDate = earliestDate;
 
-            var levyDeclartions = await _apprenticeshipLevyApiClient.GetEmployerLevyDeclarations(accessToken, empRef, fromDate);
+            var levyDeclartions = await _executionPolicy.ExecuteAsync(async () =>
+            {
+                var response = await _apprenticeshipLevyApiClient.GetEmployerLevyDeclarations(accessToken, empRef, fromDate);
+                return response;
+            });
 
             _log.LogDebug($"Received {levyDeclartions?.Declarations?.Count} levy declarations empRef:{empRef} fromDate:{fromDate}");
             return levyDeclartions;
