@@ -1,20 +1,10 @@
-﻿using SFA.DAS.NServiceBus;
+﻿
+namespace SFA.DAS.EmployerFinance.Messages.Commands;
 
-namespace SFA.DAS.EmployerFinance.Messages.Commands
+public class CreateAccountPayeCommand(long accountId, string empRef, string name, string aorn) : Message
 {
-    public class CreateAccountPayeCommand : Command
-    {
-        public CreateAccountPayeCommand(long accountId, string empRef, string name, string aorn)
-        {
-            AccountId = accountId;
-            EmpRef = empRef;
-            Name = name;
-            Aorn = aorn;
-        }
-
-        public long AccountId { get; }
-        public string EmpRef { get; }
-        public string Name { get; }
-        public string Aorn { get; }
-    }
+    public long AccountId { get; } = accountId;
+    public string EmpRef { get; } = empRef;
+    public string Name { get; } = name;
+    public string Aorn { get; } = aorn;
 }
