@@ -8,7 +8,6 @@ using Moq;
 using NServiceBus;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
@@ -25,12 +24,14 @@ public class ImportLevyDeclarationsJobTests : FluentTest<ImportLevyDeclarationsJ
     [TestCase(0, Description = "No accounts")]
     [TestCase(1, Description = "Single account")]
     [TestCase(99, Description = "Multiple accounts")]
-    public Task Only_Processes_PAYE_Schemes_Added_Using_GovernmentGateway(int numberOfAccounts)
+    public async Task Only_Processes_PAYE_Schemes_Added_Using_GovernmentGateway(int numberOfAccounts)
     {
-        return RunAsync(
-            f => f.SetupAccounts(numberOfAccounts),
-            f => f.Run(),
-            f => f.VerifyGovGatewayCalls(numberOfAccounts));
+        var fixture = new ImportLevyDeclarationsJobTestsFixture();
+        fixture.SetupAccounts(numberOfAccounts);
+
+        await fixture.Run();
+
+        fixture.VerifyGovGatewayCalls(numberOfAccounts);
     }
 
     [Test]
@@ -39,16 +40,15 @@ public class ImportLevyDeclarationsJobTests : FluentTest<ImportLevyDeclarationsJ
     [TestCase(99, 1, 99, Description = "Multiple accounts, single PAYE")]
     [TestCase(1, 5, 5, Description = "Single account, multiple PAYE")]
     [TestCase(99, 2, 198, Description = "Multiple accounts, multiple PAYE")]
-    public Task Run_WhenRunningJob_ThenShouldSendCommand_PerAccounPaye(int numberOfAccounts, int numberOfPayeSchemes, int expectedNumberOfMessages)
+    public async Task Run_WhenRunningJob_ThenShouldSendCommand_PerAccounPaye(int numberOfAccounts, int numberOfPayeSchemes, int expectedNumberOfMessages)
     {
-        return RunAsync(
-            f =>
-            {
-                f.SetupAccounts(numberOfAccounts);
-                f.SetupPaye(numberOfPayeSchemes);
-            },
-            f => f.Run(),
-            f => f.VerifyMessagesSent(expectedNumberOfMessages));
+        var fixture = new ImportLevyDeclarationsJobTestsFixture();
+        fixture.SetupAccounts(numberOfAccounts);
+        fixture.SetupPaye(numberOfPayeSchemes);
+        
+        await fixture.Run();
+        
+        fixture.VerifyMessagesSent(expectedNumberOfMessages);
     }
 }
 

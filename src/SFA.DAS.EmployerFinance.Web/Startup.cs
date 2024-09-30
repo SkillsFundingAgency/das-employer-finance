@@ -53,24 +53,13 @@ public class Startup
 
         var employerFinanceWebConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceWebConfiguration>();
 
-        var identityServerConfiguration = _configuration
-            .GetSection(nameof(IdentityServerConfiguration))
-            .Get<IdentityServerConfiguration>();
-
         services.AddOrchestrators();
 
         services.AddDatabaseRegistration();
         services.AddDataRepositories();
         services.AddHmrcServices();
 
-        if (employerFinanceWebConfiguration.UseGovSignIn)
-        {
-            services.AddMaMenuConfiguration(RouteNames.SignOut, _configuration["ResourceEnvironmentName"]);   
-        }
-        else
-        {
-            services.AddMaMenuConfiguration(RouteNames.SignOut, identityServerConfiguration.ClientId, _configuration["ResourceEnvironmentName"]);    
-        }
+        services.AddMaMenuConfiguration(RouteNames.SignOut, _configuration["ResourceEnvironmentName"]);   
             
         //MAC-192
         services.AddApplicationServices(_configuration);
@@ -83,17 +72,10 @@ public class Startup
 
         services.AddAuthenticationServices();
 
-        if (_configuration.UseGovUkSignIn())
-        {
-            services.AddAndConfigureGovUkAuthentication(_configuration,
+        services.AddAndConfigureGovUkAuthentication(_configuration,
                 typeof(EmployerAccountPostAuthenticationClaimsHandler),
                 "",
                 "/service/SignIn-Stub");
-        }
-        else
-        {
-            services.AddAndConfigureEmployerAuthentication(identityServerConfiguration);
-        }
 
         services.Configure<IISServerOptions>(options => { options.AutomaticAuthentication = false; });
 

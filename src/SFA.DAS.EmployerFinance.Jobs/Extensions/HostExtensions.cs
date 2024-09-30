@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.Azure.WebJobs.Logging.ApplicationInsights;
 using NLog.Extensions.Logging;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -30,6 +31,9 @@ public static class HostExtensions
             {
                 loggingBuilder.AddNLog(context.HostingEnvironment.IsDevelopment() ? "nlog.development.config" : "nlog.config");
                 loggingBuilder.AddApplicationInsightsWebJobs(o => o.ConnectionString = connectionString);
+                
+                loggingBuilder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
+                loggingBuilder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
             }
 
             loggingBuilder.AddConsole();
