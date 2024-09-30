@@ -88,8 +88,8 @@ public class Startup
             if (!_configuration.IsDev())
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                options.Filters.Add(new ZendeskApiFilterAttribute());
             }
-
         });
 
         services
