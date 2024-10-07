@@ -4,7 +4,7 @@ using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 
-public class CreateNewPeriodEndCommandHandler : IRequestHandler<CreateNewPeriodEndCommand,Unit>
+public class CreateNewPeriodEndCommandHandler : IRequestHandler<CreateNewPeriodEndCommand>
 {
     private readonly IValidator<CreateNewPeriodEndCommand> _validator;
     private readonly IDasLevyRepository _dasLevyRepository;
@@ -15,7 +15,7 @@ public class CreateNewPeriodEndCommandHandler : IRequestHandler<CreateNewPeriodE
         _dasLevyRepository = dasLevyRepository;
     }
 
-    public async Task<Unit> Handle(CreateNewPeriodEndCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CreateNewPeriodEndCommand request, CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -24,8 +24,6 @@ public class CreateNewPeriodEndCommandHandler : IRequestHandler<CreateNewPeriodE
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        await _dasLevyRepository.CreateNewPeriodEnd(request.NewPeriodEnd);
-            
-        return Unit.Value;
+        await _dasLevyRepository.CreateNewPeriodEnd(request.NewPeriodEnd); ;
     }
 }

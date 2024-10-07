@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
 using SFA.DAS.Encoding;
 
@@ -16,6 +17,7 @@ public class WhenIGetTransferConnections
     private const string HashedAccountId = "GF3XWP";
     private const string PublicHashedAccountId = "DJ7JL";
     private const int AccountId = 123;
+    private readonly TransferConnectionInvitationStatus PendingStatus = TransferConnectionInvitationStatus.Pending;
 
     [SetUp]
     public void Arrange()
@@ -29,11 +31,16 @@ public class WhenIGetTransferConnections
         _response = new GetTransferConnectionsResponse { TransferConnections = _transferConnections };
 
         _encodingService = new Mock<IEncodingService>();
-        _encodingService.Setup(x => x.Decode(HashedAccountId,EncodingType.AccountId)).Returns(AccountId);
+        _encodingService.Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
 
         _mediator.Setup(
                 m => m.Send(
-                    It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId)),It.IsAny<CancellationToken>()))
+                    It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId)), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_response);
+
+        _mediator.Setup(
+                m => m.Send(
+                    It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId) && q.Status == PendingStatus), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_response);
 
         _controller = new TransferConnectionsController(_mediator.Object, _encodingService.Object);
@@ -45,7 +52,7 @@ public class WhenIGetTransferConnections
         await _controller.GetTransferConnections(HashedAccountId);
 
         _mediator.Verify(
-            m => m.Send(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId)),It.IsAny<CancellationToken>()),
+            m => m.Send(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId)), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -53,6 +60,16 @@ public class WhenIGetTransferConnections
     public async Task ThenGetTransferConnectionsQueryShouldBeSentWithAccountId()
     {
         await _controller.GetTransferConnections(AccountId);
+
+        _mediator.Verify(
+            m => m.Send(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId)), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task ThenGetTransferConnectionsQueryShouldBeSentWithAccountId_AndStatusPopulated()
+    {
+        await _controller.GetTransferConnections(AccountId, PendingStatus);
 
         _mediator.Verify(
             m => m.Send(It.Is<GetTransferConnectionsQuery>(q => q.AccountId.Equals(AccountId)), It.IsAny<CancellationToken>()),
@@ -73,6 +90,15 @@ public class WhenIGetTransferConnections
     public async Task ThenShouldReturnTransferConnectionsForAccountId()
     {
         var result = await _controller.GetTransferConnections(AccountId) as OkObjectResult;
+
+        Assert.That(result.Value, Is.Not.Null);
+        Assert.That(result.Value, Is.SameAs(_transferConnections));
+    }
+
+    [Test]
+    public async Task ThenShouldReturnTransferConnectionsForAccountId_AndStatusPopulated()
+    {
+        var result = await _controller.GetTransferConnections(AccountId, PendingStatus) as OkObjectResult;
 
         Assert.That(result.Value, Is.Not.Null);
         Assert.That(result.Value, Is.SameAs(_transferConnections));

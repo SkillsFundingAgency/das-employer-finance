@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Commands.CreateAccount;
 
-public class CreateAccountCommand :  IRequest<Unit>
+public class CreateAccountCommand :  IRequest
 {
     public CreateAccountCommand(long id, string name)
     {

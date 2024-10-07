@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Notifications.Api.Client.Configuration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
@@ -60,8 +61,7 @@ public static class HostExtensions
                     options.ConfigurationKeys = new[]
                     {
                         ConfigurationKeys.EmployerFinanceJobs,
-                        ConfigurationKeys.EncodingConfig,
-                        $"{ConfigurationKeys.FinanceNotifications}:{nameof(NotificationsApiClientConfiguration)}"
+                        ConfigurationKeys.EncodingConfig
                     };
                     options.PreFixConfigurationKeys = false;
                     options.ConfigurationKeysRawJsonResult = new[] { ConfigurationKeys.EncodingConfig };
@@ -75,7 +75,7 @@ public static class HostExtensions
     {
         hostBuilder.ConfigureServices((context, services) =>
         {
-            services.AddNotifications(context.Configuration);
+            services.AddTransient<INotificationsService, NotificationsService>();
             services.AddConfigurationSections(context.Configuration);
             services.AddClientRegistrations();
             services.AddNServiceBus();

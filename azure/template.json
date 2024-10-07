@@ -147,7 +147,20 @@
         "websiteRunFromPackage": {
             "type": "int",
             "defaultValue": 0
+        },
+        "workerAppServicePlanInstances": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "workerAppServicePlanSize": {
+            "type": "string",
+            "defaultValue": "1"
+        },
+        "workerAppServicePlanTier": {
+            "type": "string",
+            "defaultValue": "Standard"
         }
+
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -550,13 +563,13 @@
                         "value": "[variables('workerAppServicePlanName')]"
                     },
                     "aspSize": {
-                        "value": "1"
+                        "value": "[parameters('workerAppServicePlanSize')]"
                     },
                     "aspInstances": {
-                        "value": 1
+                        "value": "[parameters('workerAppServicePlanInstances')]"
                     },
                     "nonASETier": {
-                        "value": "Standard"
+                        "value": "[parameters('workerAppServicePlanTier')]"
                     }
                 }
             },

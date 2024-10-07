@@ -3,7 +3,6 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
@@ -14,7 +13,7 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     private readonly IDasLevyService _levyService;
     private readonly IValidator<GetAccountFinanceOverviewQuery> _validator;
     private readonly ILogger<GetAccountFinanceOverviewQueryHandler> _logger;
-    
+
     public GetAccountFinanceOverviewQueryHandler(
         ICurrentDateTime currentDateTime,
         IDasForecastingService dasForecastingService,
@@ -36,7 +35,7 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         {
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
-           
+
         var currentBalance = await GetAccountBalance(query.AccountId);
         var accountProjectionSummary = await _dasForecastingService.GetAccountProjectionSummary(query.AccountId);
         var earliestFundsToExpire = GetExpiringFunds(accountProjectionSummary?.ExpiringAccountFunds);
@@ -62,14 +61,14 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
     }
 
     private ExpiringFunds GetExpiringFunds(ExpiringAccountFunds expiringFunds)
-    {            
+    {
         var today = _currentDateTime.Now.Date;
         var nextYear = today.AddDays(1 - today.Day).AddMonths(13);
         var earliestFundsToExpire = expiringFunds?.ExpiryAmounts?
             .Where(a => a.PayrollDate < nextYear && a.PayrollDate > today)
             .OrderBy(a => a.PayrollDate)
             .FirstOrDefault();
-            
+
         return earliestFundsToExpire;
     }
 
@@ -78,13 +77,13 @@ public class GetAccountFinanceOverviewQueryHandler : IRequestHandler<GetAccountF
         try
         {
             _logger.LogInformation($"Getting current funds balance for account ID: {accountId}");
-                
+
             return await _levyService.GetAccountBalance(accountId);
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, $"Failed to get account's current balance for account ID: {accountId}");
-                
+
             throw;
         }
     }

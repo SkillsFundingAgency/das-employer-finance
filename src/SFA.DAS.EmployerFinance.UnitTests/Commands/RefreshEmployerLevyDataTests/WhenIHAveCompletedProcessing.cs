@@ -14,32 +14,42 @@ using SFA.DAS.Testing;
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTests;
 
 [TestFixture]
-public class RefreshEmployerLevyDataCommandHandlerTests : FluentTest<RefreshEmployerLevyDataCommandHandlerTestsFixture>
+public class RefreshEmployerLevyDataCommandHandlerTests
 {
     [Test]
-    public Task WhenIHaveCompletedProcessing_AndHaveNewLevy()
+    public async Task WhenIHaveCompletedProcessing_AndHaveNewLevy()
     {
         const long accountId = 999;
         const string empRef = "ABC/12345";
 
-        return RunAsync(f => f
-                .SetAccountId(accountId)
-                .SetIsSubmissionForFuturePeriod(false)
-                .SetLastSubmissionForScheme(empRef, new DasDeclaration { LevyDueYtd = 1000m, LevyAllowanceForFullYear = 1200m })
-                .SetEmployerLevyData(new List<EmployerLevyData>{new EmployerLevyData
+        var fixture = new RefreshEmployerLevyDataCommandHandlerTestsFixture();
+
+        fixture.SetAccountId(accountId);
+        fixture.SetIsSubmissionForFuturePeriod(false);
+        fixture.SetLastSubmissionForScheme(empRef, new DasDeclaration { LevyDueYtd = 1000m, LevyAllowanceForFullYear = 1200m });
+        fixture.SetEmployerLevyData(new List<EmployerLevyData>
+        {
+            new()
+            {
+                EmpRef = empRef,
+                Declarations = new DasDeclarations
                 {
-                    EmpRef = empRef,
-                    Declarations = new DasDeclarations{
-                        Declarations = new List<DasDeclaration>{
-                            new DasDeclaration{
-                                LevyDueYtd = 2000,
-                                PayrollYear = "2018",
-                                PayrollMonth = 6
-                            }
+                    Declarations = new List<DasDeclaration>
+                    {
+                        new()
+                        {
+                            LevyDueYtd = 2000,
+                            PayrollYear = "2018",
+                            PayrollMonth = 6
                         }
                     }
-                }})
-            , f => f.Handle(), (f, r) => { f.VerifyRefreshEmployerLevyDataCompletedEventIsPublished(true); });
+                }
+            }
+        });
+
+        await fixture.Handle();
+
+        fixture.VerifyRefreshEmployerLevyDataCompletedEventIsPublished(true);
     }
 }
 
@@ -103,7 +113,8 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture : FluentTestFixtu
 
         return this;
     }
-    public Task<Unit> Handle()
+
+    public Task Handle()
     {
         return _handler.Handle(new RefreshEmployerLevyDataCommand()
         {

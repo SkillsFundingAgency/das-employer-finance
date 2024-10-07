@@ -1,28 +1,32 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.Encoding;
-using SFA.DAS.Notifications.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers;
 
 [TestFixture]
-public class
-    ApprovedTransferConnectionRequestEventNotificationHandlerTests
+public class ApprovedTransferConnectionRequestEventNotificationHandlerTests
 {
     [Test]
     public async Task Handle_WhenApprovedTransferConnectionRequestEventIsHandled_ThenShouldNotifyAccountOwnersRequiringNotification()
     {
         var fixture = new ApprovedTransferConnectionRequestEventNotificationHandlerTestFixture();
+
         await fixture.Handle();
 
-        fixture.NotificationsApiClient.Verify(
-            r => r.SendEmail(It.Is<Email>(email =>
-                email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
-                && email.Tokens["account_name"] == fixture.ReceiverAccount.Name)),
+        fixture.NotificationsService.Verify(r => r.SendEmail(
+                "TransferConnectionRequestApproved",
+                It.IsAny<string>(),
+                It.Is<Dictionary<string, string>>(tokens =>
+                    tokens["link_notification_page"] == $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
+                    && tokens["account_name"] == fixture.ReceiverAccount.Name
+                    && tokens["name"] != string.Empty
+                )),
             Times.Exactly(3));
     }
 
@@ -30,27 +34,28 @@ public class
     public async Task Handle_WhenApprovedTransferConnectionRequestEventIsHandled_ThenShouldSentNotificationWithCorrectProperties()
     {
         var fixture = new ApprovedTransferConnectionRequestEventNotificationHandlerTestFixture();
+
         await fixture.Handle();
-        
-        fixture.NotificationsApiClient.Verify(
-                r => r.SendEmail(It.Is<Email>(email =>
-                    email.RecipientsAddress == fixture.SenderAccountOwner1.Email
-                    && !string.IsNullOrWhiteSpace(email.Subject)
-                    && email.ReplyToAddress == "noreply@sfa.gov.uk"
-                    && email.TemplateId == "TransferConnectionRequestApproved"
-                    && email.Tokens["link_notification_page"] ==  $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
-                    && email.Tokens["account_name"] == fixture.ReceiverAccount.Name)),
-                Times.Once);
+
+        fixture.NotificationsService.Verify(r => r.SendEmail(
+                "TransferConnectionRequestApproved",
+                fixture.SenderAccountOwner1.Email,
+                It.Is<Dictionary<string, string>>(tokens =>
+                    tokens["link_notification_page"] == $"{fixture.Configuration.EmployerFinanceBaseUrl}accounts/{TransferConnectionRequestEventNotificationHandlerTestsFixtureBase.SenderHashedId}/transfers/connections"
+                    && tokens["account_name"] == fixture.ReceiverAccount.Name
+                    && tokens["name"] != string.Empty
+                )),
+            Times.Once);
     }
-    
+
     [Test]
     public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeSenderAccountId()
     {
         var fixture = new ApprovedTransferConnectionRequestEventNotificationHandlerTestFixture();
-        
+
         await fixture.Handle();
-        
-        fixture.EncodingService.Verify(encodingService=> encodingService.Encode(It.Is<long>(x=> x == fixture.SenderAccount.Id), EncodingType.AccountId), Times.Once);
+
+        fixture.EncodingService.Verify(encodingService => encodingService.Encode(It.Is<long>(x => x == fixture.SenderAccount.Id), EncodingType.AccountId), Times.Once);
     }
 }
 
@@ -74,7 +79,7 @@ public class ApprovedTransferConnectionRequestEventNotificationHandlerTestFixtur
             Configuration,
             OuterApiClient.Object,
             Mock.Of<ILogger<ApprovedTransferConnectionRequestEventNotificationHandler>>(),
-            NotificationsApiClient.Object,
+            NotificationsService.Object,
             EncodingService.Object);
     }
 

@@ -1,7 +1,7 @@
 ﻿
 namespace SFA.DAS.EmployerFinance.Commands.RenameAccount;
 
-public class RenameAccountCommand : IRequest<Unit>
+public class RenameAccountCommand : IRequest
 {
     public RenameAccountCommand(long id, string name)
     {

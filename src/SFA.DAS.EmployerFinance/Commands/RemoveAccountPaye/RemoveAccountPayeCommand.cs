@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Commands.RemoveAccountPaye;
 
-public class RemoveAccountPayeCommand : IRequest<Unit>
+public class RemoveAccountPayeCommand : IRequest
 {
     public long AccountId { get; }
     public string PayeRef { get; }

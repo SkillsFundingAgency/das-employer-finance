@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Transfers;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Authentication;
@@ -16,10 +17,12 @@ public class WhenGettingTransfersCounts
     private Mock<IEncodingService> _encodingService;
     private Mock<ITransfersService> _transfersService;
     private Mock<IAccountApiClient> _accountApiClient;
+    private EmployerFinanceConfiguration _configuration;
 
     private const string HashedAccountId = "123ABC";
     private const long AccountId = 1234;
-        
+    private const decimal TransferAllowancePercentage = 0.50m;
+
     [SetUp]
     public void Setup()
     {
@@ -27,10 +30,11 @@ public class WhenGettingTransfersCounts
         _encodingService = new Mock<IEncodingService>();
         _transfersService = new Mock<ITransfersService>();
         _accountApiClient = new Mock<IAccountApiClient>();
+        _configuration = new EmployerFinanceConfiguration { TransferAllowancePercentage = TransferAllowancePercentage };
 
         _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
         
-        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object);
+        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
     }
 
     [TestCase(true, true)]
