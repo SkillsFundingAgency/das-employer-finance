@@ -5,7 +5,8 @@ using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 
-public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTransferTransactionDetailsQuery, GetTransferTransactionDetailsResponse>
+public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTransferTransactionDetailsQuery,
+    GetTransferTransactionDetailsResponse>
 {
     private readonly Lazy<EmployerFinanceDbContext> _dbContext;
     private readonly IEncodingService _encodingService;
@@ -20,40 +21,58 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
         _logger = logger;
     }
 
-    public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query, CancellationToken cancellationToken)
+    public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query,
+        CancellationToken cancellationToken)
     {
         _logger.LogInformation("{TypeName} processing started.", nameof(GetTransferTransactionDetailsQueryHandler));
-        
+
         var targetAccountId = _encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
-        
-        var transfers = await _dbContext.Value.AccountTransfers
-            .Where(accountTransfer =>
-                        ((accountTransfer.SenderAccountId == query.AccountId.GetValueOrDefault() && accountTransfer.ReceiverAccountId == targetAccountId)
-                        ||
-                        (accountTransfer.SenderAccountId == targetAccountId && accountTransfer.ReceiverAccountId == query.AccountId.GetValueOrDefault()))
-                        && accountTransfer.PeriodEnd == query.PeriodEnd)
-            .ToListAsync(cancellationToken);
+
+        var transfers = await (from at in _dbContext.Value.AccountTransfers
+            join p in _dbContext.Value.Payments on 
+                new { AccountId = at.ReceiverAccountId, at.PeriodEnd, at.ApprenticeshipId } equals 
+                new { AccountId = p.EmployerAccountId, PeriodEnd = p.CollectionPeriodId, p.ApprenticeshipId }
+            join pmd in _dbContext.Value.PaymentMetaData on p.PaymentMetaDataId equals pmd.Id
+            where ((at.SenderAccountId == query.AccountId.GetValueOrDefault() &&
+                    at.ReceiverAccountId == targetAccountId)
+                   || (at.SenderAccountId == targetAccountId &&
+                       at.ReceiverAccountId == query.AccountId.GetValueOrDefault()))
+                  && at.PeriodEnd == query.PeriodEnd
+            select new
+            {
+                at.SenderAccountId,
+                at.SenderAccountName,
+                at.ReceiverAccountId,
+                at.ReceiverAccountName,
+                p.Amount,
+                at.ApprenticeshipId,
+                CourseName = pmd.ApprenticeshipCourseName,
+                CourseLevel = pmd.ApprenticeshipCourseLevel
+            }).ToListAsync(cancellationToken);
 
         var firstTransfer = transfers.First();
 
         var senderAccountName = firstTransfer.SenderAccountName;
-        var senderPublicHashedAccountId = _encodingService.Encode(firstTransfer.SenderAccountId, EncodingType.PublicAccountId);
+        var senderPublicHashedAccountId =
+            _encodingService.Encode(firstTransfer.SenderAccountId, EncodingType.PublicAccountId);
 
         var receiverAccountName = firstTransfer.ReceiverAccountName;
-        var receiverPublicHashedAccountId = _encodingService.Encode(firstTransfer.ReceiverAccountId, EncodingType.PublicAccountId);
+        var receiverPublicHashedAccountId =
+            _encodingService.Encode(firstTransfer.ReceiverAccountId, EncodingType.PublicAccountId);
 
-        var courseTransfers = transfers.GroupBy(accountTransfer => new { accountTransfer.CourseName, accountTransfer.CourseLevel });
+        // Grouping by CourseName and CourseLevel (from PaymentMetadata)
+        var courseTransfers = transfers.GroupBy(accountTransfer =>
+            new { accountTransfer.CourseName, accountTransfer.CourseLevel });
 
         var transferDetails = courseTransfers.Select(courseTransfer => new AccountTransferDetails
         {
-            CourseName = courseTransfer.First().CourseName,
-            CourseLevel = courseTransfer.First().CourseLevel,
+            CourseName = courseTransfer.Key.CourseName,
+            CourseLevel = courseTransfer.Key.CourseLevel,
             PaymentTotal = courseTransfer.Sum(t => t.Amount),
             ApprenticeCount = (uint)courseTransfer.DistinctBy(t => t.ApprenticeshipId).Count()
         }).ToArray();
 
-        //NOTE: We should only get one transfer transaction per sender per period end
-        // as this is how transfers are grouped together when creating transfer transactions
+        // Ensure single transfer transaction is retrieved
         var transferTransaction = _dbContext.Value.Transactions.Single(transaction =>
             transaction.AccountId == query.AccountId &&
             transaction.TransactionType == TransactionItemType.Transfer &&
@@ -67,7 +86,7 @@ public class GetTransferTransactionDetailsQueryHandler : IRequestHandler<GetTran
         var transfersPaymentTotal = transferDetails.Sum(details => details.PaymentTotal);
 
         var isCurrentAccountSender = query.AccountId.GetValueOrDefault() == firstTransfer.SenderAccountId;
-        
+
         _logger.LogInformation("{TypeName} processing competed.", nameof(GetTransferTransactionDetailsQueryHandler));
 
         return new GetTransferTransactionDetailsResponse

@@ -85,19 +85,19 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         _transfers = new List<AccountTransfer>
         {
-            new AccountTransfer
+            new()
             {
                 SenderAccountId = SenderAccountId,
                 SenderAccountName = SenderAccountName,
                 ReceiverAccountId = ReceiverAccountId,
                 ReceiverAccountName = ReceiverAccountName,
                 ApprenticeshipId = 1,
-                CourseName = FirstCourseName,
+                CourseName = "Unknown Course",
                 Amount = 123.4567M,
                 PeriodEnd = PeriodEnd
 
             },
-            new AccountTransfer
+            new()
             {
                 SenderAccountId = SenderAccountId,
                 SenderAccountName = SenderAccountName,
@@ -108,7 +108,7 @@ class WhenAReceiverGetsTransferTransactionDetails
                 Amount = 346.789M,
                 PeriodEnd = PeriodEnd
             },
-            new AccountTransfer
+            new()
             {
                 SenderAccountId = SenderAccountId,
                 SenderAccountName = SenderAccountName,
@@ -120,6 +120,73 @@ class WhenAReceiverGetsTransferTransactionDetails
                 PeriodEnd = PeriodEnd
             }
         };
+
+        var payments = new List<Payment>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                ApprenticeshipId = 1,
+                EmployerAccountId = ReceiverAccountId,
+                CollectionPeriodId = PeriodEnd,
+                PaymentMetaDataId = 222,
+                Amount = 123.4567M
+            },
+            // multiple payments making up the transfer payment
+            new()
+            {
+                Id = Guid.NewGuid(),
+                ApprenticeshipId = 2,
+                EmployerAccountId = ReceiverAccountId,
+                CollectionPeriodId = PeriodEnd,
+                PaymentMetaDataId = 333,
+                Amount = 556.789M
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                ApprenticeshipId = 2,
+                EmployerAccountId = ReceiverAccountId,
+                CollectionPeriodId = PeriodEnd,
+                PaymentMetaDataId = 333,
+                Amount = -210M
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                ApprenticeshipId = 3,
+                EmployerAccountId = ReceiverAccountId,
+                CollectionPeriodId = PeriodEnd,
+                PaymentMetaDataId = 444,
+                Amount = 234.56M
+            }
+        };
+
+        var paymentMetadata = new List<PaymentMetaData>
+        {
+            new()
+            {
+                Id = 222,
+                ApprenticeshipCourseName = FirstCourseName,
+                ApprenticeshipCourseLevel = 6
+            },
+            new()
+            {
+                Id = 333,
+                ApprenticeshipCourseName = SecondCourseName,
+                ApprenticeshipCourseLevel = 7
+            },
+            new()
+            {
+                Id = 444,
+                ApprenticeshipCourseName = SecondCourseName,
+                ApprenticeshipCourseLevel = 7
+            }
+        };
+
+        _db.Setup(x => x.PaymentMetaData).ReturnsDbSet(paymentMetadata);
+
+        _db.Setup(x => x.Payments).ReturnsDbSet(payments);
 
         _db.Setup(x => x.AccountTransfers).ReturnsDbSet(_transfers);
 
@@ -171,9 +238,9 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(2, result.TransferDetails.Count());
-        Assert.IsTrue(result.TransferDetails.Any(t => t.CourseName.Equals(FirstCourseName)));
-        Assert.IsTrue(result.TransferDetails.Any(t => t.CourseName.Equals(SecondCourseName)));
+        result.TransferDetails.Should().HaveCount(2);
+        result.TransferDetails.ToList()[0].CourseName.Should().Be(FirstCourseName);
+        result.TransferDetails.ToList()[1].CourseName.Should().Be(SecondCourseName);
     }
 
     [Test]
@@ -188,14 +255,8 @@ class WhenAReceiverGetsTransferTransactionDetails
         var firstCourseTotal = result.TransferDetails.Single(t => t.CourseName.Equals(FirstCourseName)).PaymentTotal;
         var secondCourseTotal = result.TransferDetails.Single(t => t.CourseName.Equals(SecondCourseName)).PaymentTotal;
 
-        var expectedFirstCourseTotal =
-            _transfers.Where(t => t.CourseName.Equals(FirstCourseName)).Sum(x => x.Amount);
-
-        var expectedSecondCourseTotal =
-            _transfers.Where(t => t.CourseName.Equals(SecondCourseName)).Sum(x => x.Amount);
-
-        Assert.AreEqual(expectedFirstCourseTotal, firstCourseTotal);
-        Assert.AreEqual(expectedSecondCourseTotal, secondCourseTotal);
+        firstCourseTotal.Should().Be(123.4567M);
+        secondCourseTotal.Should().Be(581.349M);
     }
 
     [Test]
@@ -211,15 +272,12 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         var secondCourseApprenticeCount = result.TransferDetails.Single(t => t.CourseName.Equals(SecondCourseName))
             .ApprenticeCount;
-
-        var expectedFirstCourseApprenticeCount =
-            _transfers.Count(t => t.CourseName.Equals(FirstCourseName));
-
+        
         var expectedSecondCourseApprenticeCount =
             _transfers.Count(t => t.CourseName.Equals(SecondCourseName));
 
-        Assert.AreEqual(expectedFirstCourseApprenticeCount, firstCourseApprenticeCount);
-        Assert.AreEqual(expectedSecondCourseApprenticeCount, secondCourseApprenticeCount);
+        Assert.AreEqual(1, firstCourseApprenticeCount);
+        Assert.AreEqual(2, secondCourseApprenticeCount);
     }
 
     [Test]
