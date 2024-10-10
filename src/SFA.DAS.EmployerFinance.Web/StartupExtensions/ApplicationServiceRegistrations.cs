@@ -1,7 +1,6 @@
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Formatters;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
@@ -60,8 +59,7 @@ public static class ApplicationServiceRegistrations
 
         services.AddTransient<HmrcExecutionPolicy>();
         services.AddTransient<IHmrcDateService, HmrcDateService>();
-
-        services.AddTransient<IGenericEventFactory, GenericEventFactory>();
+        
         services.AddTransient<IPaymentService, PaymentService>();
         services.AddTransient<ITransfersService, TransfersService>();
 
