@@ -5,14 +5,14 @@ BEGIN TRANSACTION
 	INTO #TempNewRecords
 	from [employer_financial].EnglishFraction ef
 		GROUP BY EmpRef, DateCalculated, Amount 
-		HAVING COUNT(*) > 2
+		HAVING COUNT(*) >= 2
 
 	--SELECT SUM(NumOfRepeats)
 	--FROM
 	--(SELECT EmpRef, DateCalculated, Amount, COUNT(*) AS NumOfRepeats
 	--from [employer_financial].EnglishFraction ef
 	--	GROUP BY EmpRef, DateCalculated, Amount 
-	--	HAVING COUNT(*) > 2) AS Matching
+	--	HAVING COUNT(*) >= 2) AS Matching
 
 	SELECT Id, EmpRef, DateCalculated, Amount 
 	INTO #TempExistingRecords
@@ -22,7 +22,7 @@ BEGIN TRANSACTION
 	SELECT EmpRef, DateCalculated, Amount, COUNT(*) AS NumOfRepeats
 		from [employer_financial].EnglishFraction ef
 		GROUP BY EmpRef, DateCalculated, Amount 
-		HAVING COUNT(*) > 2) AS SubQ)
+		HAVING COUNT(*) >= 2) AS SubQ)
 
 	--PRINT 'Expected Rows deleted should be '  
 	--SELECT COUNT(*) FROM #TempExistingRecords
