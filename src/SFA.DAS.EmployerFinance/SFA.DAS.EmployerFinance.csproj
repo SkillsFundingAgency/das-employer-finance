@@ -37,7 +37,6 @@
     <PackageReference Include="SFA.DAS.CommitmentsV2.Api.Types" Version="8.2.0" />
     <PackageReference Include="SFA.DAS.Common.Domain" Version="1.4.283" />
     <PackageReference Include="SFA.DAS.Encoding" Version="1.1.76" />
-    <PackageReference Include="SFA.DAS.Events.Api.Client" Version="1.20.0.26497" />
     <PackageReference Include="SFA.DAS.Notifications.Api.Client" Version="2.2.37" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
     <PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="16.0.21" />
@@ -47,7 +46,6 @@
     <PackageReference Include="SFA.DAS.UnitOfWork.NServiceBus" Version="9.0.28" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
-    <PackageReference Include="SFA.DAS.Events.Api.Types" Version="2.1.31" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="7.0.3" />
     <PackageReference Include="System.Text.Encodings.Web" Version="7.0.0" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
