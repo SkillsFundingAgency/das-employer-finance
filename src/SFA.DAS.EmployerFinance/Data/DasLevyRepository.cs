@@ -143,7 +143,7 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@CourseLevel", details.CourseLevel, DbType.Int32);
         parameters.Add("@CourseStartDate", details.CourseStartDate, DbType.DateTime);
         parameters.Add("@PathwayName", details.PathwayName, DbType.String);
-        parameters.Add("@PaymentID", details.PaymentMetaDataId, DbType.Int64);
+        parameters.Add("@PaymentMetaDataId", details.PaymentMetaDataId, DbType.Int64);
 
         await _db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[UpdatePaymentMetadata]",
