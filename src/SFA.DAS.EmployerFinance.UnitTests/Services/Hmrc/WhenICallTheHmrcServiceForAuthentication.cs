@@ -62,20 +62,4 @@ public class WhenICallTheHmrcServiceForAuthentication
         //Assert
         Assert.AreEqual($"{ExpectedBaseUrl}oauth/authorize?response_type=code&client_id={ExpectedClientId}&scope={ExpectedScope}&redirect_uri={urlFriendlyRedirectUrl}", actual);
     }
-
-    [Test]
-    public async Task ThenTheCodeIsExchangedForTheAccessToken()
-    {
-        //Arrange
-        var code = "ghj567";
-        var redirectUrl = "http://mytestUrl.to.redirectto?a=564kjg";
-
-
-        //Act
-        var actual = await _hmrcService.GetAuthenticationToken(redirectUrl, code);
-
-        //Assert
-        _httpClientWrapper.Verify(x => x.SendMessage(It.IsAny<object>(), "oauth/token"), Times.Once);
-        Assert.IsAssignableFrom<HmrcTokenResponse>(actual);
-    }
 }

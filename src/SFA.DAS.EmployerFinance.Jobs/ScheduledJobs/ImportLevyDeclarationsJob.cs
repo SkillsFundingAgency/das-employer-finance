@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Irony.Ast;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Messages.Commands;
@@ -51,7 +52,7 @@ public class ImportLevyDeclarationsJob
 
             if (sendCounter % 1000 == 0)
             {
-                await Task.WhenAll(messageTasks);
+                await ProcessAll(messageTasks);
                 logger.LogInformation($"Queued {sendCounter} of {employerAccounts.Count} accounts.");
                 messageTasks.Clear();
                 await Task.Delay(1000);
@@ -59,8 +60,17 @@ public class ImportLevyDeclarationsJob
         }
 
         // await final tasks not % 1000
-        await Task.WhenAll(messageTasks);
+        await ProcessAll(messageTasks);
 
         logger.LogInformation($"{nameof(ImportLevyDeclarationsJob)} completed.");
+    }
+
+    private Task ProcessAll(List<Task> messageTasks)
+    {
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 4 };
+        return Parallel.ForEachAsync(messageTasks, parallelOptions, async (task, cancellationToken) =>
+        {
+            await task;
+        });
     }
 }
