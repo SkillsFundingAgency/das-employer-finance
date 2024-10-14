@@ -65,9 +65,7 @@ public class Startup
         services.AddApplicationServices(_configuration);
 
         services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-
-        services.AddEventsApi();
-        //services.AddNotifications(_configuration);
+        
         services.AddEmployerFinanceApi();
 
         services.AddAuthenticationServices();
