@@ -52,3 +52,5 @@ BEGIN
 	EXEC('DROP SCHEMA DataGen')
 END
 GO
+
+:r .\APPMAN-1206-CorrectDuplicate.sql
