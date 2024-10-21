@@ -25,7 +25,7 @@ public class UpdateEnglishFractionsCommandHandler : IRequestHandler<UpdateEnglis
 
         if (existingFractions.Any() && !request.EnglishFractionUpdateResponse.UpdateRequired && TheFractionIsOlderOrEqualToTheUpdateDate(request, existingFractions))
         {
-            //return Unit.Value;   
+            return;   
         }
 
         DateTime? dateFrom = null;
