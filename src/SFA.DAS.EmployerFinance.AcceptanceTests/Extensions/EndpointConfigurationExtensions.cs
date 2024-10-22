@@ -6,17 +6,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Messages.Commands;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
 {
     public static class EndpointConfigurationExtensions
     {
-        private static readonly ILog _log = new NLogLogger(typeof(EndpointConfigurationExtensions));
+        //private static readonly ILog _log = new NLogLogger(typeof(EndpointConfigurationExtensions));
 
         public static EndpointConfiguration UseAzureServiceBusTransport(this EndpointConfiguration config)
         {
-            _log.Info("Setting NService bus to end point config");
+            //_log.Info("Setting NService bus to end point config");
             // It is important that we use the LearningTransport here to avoid clashes with the real message handler web job (which will be running in the AT env).
             config.UseAzureServiceBusTransport(null, r =>
                 {
@@ -53,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
             if (TryGetStorageFolder(out var storageFolder))
             {
                 storageFolder = Path.Combine(storageFolder, $".learningtransport.{Guid.NewGuid()}");
-                _log.Debug($"Using folder {storageFolder} for learning transport storage folder");
+                //_log.Debug($"Using folder {storageFolder} for learning transport storage folder");
                 settings.StorageDirectory(storageFolder);
             }
         }
@@ -65,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
             if (TryToInterpretConfigValueAsEnvVariable(storageFolder, out string envVariableName))
             {
                 storageFolder = System.Environment.GetEnvironmentVariable(envVariableName);
-                _log.Debug($"Environment variable '{envVariableName}' resolved to folder name '{storageFolder}'");
+                //_log.Debug($"Environment variable '{envVariableName}' resolved to folder name '{storageFolder}'");
 
                 if (string.IsNullOrWhiteSpace(storageFolder))
                 {
@@ -73,7 +72,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
                 }
             }
 
-            _log.Debug($"Resolved folder {storageFolder} for learning transport storage folder");
+            //_log.Debug($"Resolved folder {storageFolder} for learning transport storage folder");
 
             return !string.IsNullOrWhiteSpace(storageFolder);
         }
@@ -97,7 +96,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
 
                     envVariableName = envVariable.Value.ConvertVSTSVariableToEnvName();
 
-                    _log.Debug($"Converted config value '{configVariableName}' to '{envVariableName}'");
+                    //_log.Debug($"Converted config value '{configVariableName}' to '{envVariableName}'");
                 }
             }
 
@@ -117,7 +116,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
                 sb.AppendLine(env.Value.ToString());
             }
 
-            _log.Debug(sb.ToString());
+            //_log.Debug(sb.ToString());
         }
     }
 }

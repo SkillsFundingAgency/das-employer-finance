@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
-using SFA.DAS.NLog.Logger;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
 {
     public static class TransactionRepositoryExtensions
     {
-        private static readonly ILog _log = new NLogLogger(typeof(TransactionRepository));
+        //private static readonly ILog _log = new NLogLogger(typeof(TransactionRepository));
 
         /// <summary>
         ///     Returns a task that polls the transaction table for the specified account's transactions.
@@ -68,8 +67,8 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
                     // Note that when IsResultStable returns true we have already read the same result twice so the first true result means we have a sequence of 2, not 1.
                     actualStableReadCount = isSteady ? (actualStableReadCount == 0 ? 2 : actualStableReadCount + 1) : 0;
 
-                    _log.Debug(
-                        $"stability-check:{thisStabilityCheck} isSteady:{isSteady} count:{result} current-steady-count:{actualStableReadCount} ");
+                    //_log.Debug(
+                    //    $"stability-check:{thisStabilityCheck} isSteady:{isSteady} count:{result} current-steady-count:{actualStableReadCount} ");
                 }
             }
             catch (TaskCanceledException)
@@ -78,7 +77,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Error occurred waiting for a levy declaration stable state");
+                //_log.Error(ex, "Error occurred waiting for a levy declaration stable state");
                 throw;
             }
 

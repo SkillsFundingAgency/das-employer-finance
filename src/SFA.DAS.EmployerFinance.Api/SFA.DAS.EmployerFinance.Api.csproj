@@ -17,8 +17,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="6.0.27" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.27" />
-		<PackageReference Include="NLog.Web.AspNetCore" Version="5.2.1" />
-		<PackageReference Include="NLog" Version="5.2.8" />
 		<PackageReference Include="SFA.DAS.Api.Common" Version="1.0.28" />
 		<PackageReference Include="SFA.DAS.Common.Domain" Version="1.4.283" />
 		<PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
@@ -26,8 +24,6 @@
 		<PackageReference Include="SFA.DAS.Logging">
 			<Version>1.0.5</Version>
 		</PackageReference>
-		<PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
-		<PackageReference Include="SFA.DAS.NLog.Targets.Redis" Version="1.2.1" />
 		<PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
 		<PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="16.0.21" />
 		<PackageReference Include="SFA.DAS.UnitOfWork" Version="9.0.28" />
@@ -39,7 +35,6 @@
 		<PackageReference Include="SFA.DAS.Validation.WebApi">
 			<Version>5.1.167</Version>
 		</PackageReference>
-		<PackageReference Include="StructureMap" Version="4.7.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
 		<PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />

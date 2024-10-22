@@ -9,7 +9,6 @@ using SFA.DAS.EmployerFinance.AcceptanceTests.Steps;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.Encoding;
-using SFA.DAS.NLog.Logger;
 using TechTalk.SpecFlow;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
@@ -22,12 +21,12 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
             {
                 var encodingService = objectContainer.Resolve<IEncodingService>();
 
-                objectContainer.Resolve<ILog>().Info("Getting maximum account id.");
+                //objectContainer.Resolve<ILog>().Info("Getting maximum account id.");
 
                 var accountId = await objectContainer.Resolve<ITestTransactionRepository>()
                                     .GetMaxAccountId() + 1;
 
-                objectContainer.Resolve<ILog>().Info($"Max account id is {accountId}.");
+                //objectContainer.Resolve<ILog>().Info($"Max account id is {accountId}.");
 
                 var account = new Account
                 {
@@ -45,13 +44,13 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
 
                 account.SetupAuthorizedUser(objectContainer);
 
-                objectContainer.Resolve<ILog>().Info("Account succesfully initialized.");
+                //objectContainer.Resolve<ILog>().Info("Account succesfully initialized.");
 
                 return account;
             }
             catch (Exception e)
             {
-                objectContainer.Resolve<ILog>().Error(e, "Error occurred in Acceptance Test creating account.");
+                //objectContainer.Resolve<ILog>().Error(e, "Error occurred in Acceptance Test creating account.");
                 throw;
             }
         }

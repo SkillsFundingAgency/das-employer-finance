@@ -15,7 +15,6 @@ using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Events.Api.Client;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.UnitOfWork.Managers;
 using StructureMap;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -31,7 +30,6 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
             objectContainer.RegisterInstance<EmployerFinanceConfiguration>(container);
             objectContainer.RegisterInstance<IContainer>(container);
             objectContainer.RegisterInstance<IEncodingService>(container);
-            objectContainer.RegisterInstance<ILog>(container);
             objectContainer.RegisterInstance<IMediator>(container);
             objectContainer.RegisterInstance<IMessageSession>(container);
             objectContainer.RegisterInstance<ITestTransactionRepository>(container);
@@ -66,7 +64,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
                 }
                 catch (Exception ex)
                 {
-                    nestedContainer.GetInstance<ILog>().Error(ex, "An error occurred in ScopeAsync");
+                    //nestedContainer.GetInstance<ILog>().Error(ex, "An error occurred in ScopeAsync");
 
                     await unitOfWorkManager.EndAsync(ex).ConfigureAwait(false);
                     throw;

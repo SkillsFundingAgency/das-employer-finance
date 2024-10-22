@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using BoDi;
 using Moq;
 using NServiceBus;
-using SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution;
 using SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.NLog.Logger;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.SqlServer.Configuration;
@@ -26,27 +24,30 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
     {
         private static IContainer _container;
         private static IEndpointInstance _endpoint;
-        private readonly IObjectContainer _objectContainer;
+        private static IObjectContainer _objectContainer;
 
-        public Hooks(IObjectContainer objectContainer)
-        {
-            _objectContainer = objectContainer;
-        }
+
+        //public Hooks(IObjectContainer objectContainer)
+        //{
+        //    _objectContainer = objectContainer;
+        //}
 
         [BeforeTestRun]
         public static async Task BeforeTestRun()
         {
+            _container = new Container();
+            _objectContainer = new ObjectContainer();
+            //_objectContainer.RegisterMocks();
+
             AzureStorageEmulatorManager.StartStorageEmulator();
 
-            ;
-
-            await StartNServiceBusEndpoint();
+                //await StartNServiceBusEndpoint();
         }
 
         [BeforeScenario]
         public void BeforeScenario()
         {
-            _container.GetInstance<ILog>().Info("Starting Scenario.");
+            //_container.GetInstance<ILog>().Info("Starting Scenario.");
 
             ResetCurrentDateTime(_container);
             ResetFundsExpiryPeriod(_container);
@@ -86,7 +87,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
         {
             try
             {
-                _container.GetInstance<ILog>().Info("Starting endpoint.");
+                //_container.GetInstance<ILog>().Info("Starting endpoint.");
 
                 var endpointConfiguration = new EndpointConfiguration("SFA.DAS.EmployerFinance.AcceptanceTests")
                     .UseAzureServiceBusTransport()
@@ -107,11 +108,11 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
 
                 _container.Configure(c => c.For<IMessageSession>().Use(_endpoint));
 
-                _container.GetInstance<ILog>().Info("Endpoint Started.");
+                //_container.GetInstance<ILog>().Info("Endpoint Started.");
             }
             catch (Exception e)
             {
-                _container.GetInstance<ILog>().Error(e, "Error starting endpoint.");
+                //_container.GetInstance<ILog>().Error(e, "Error starting endpoint.");
                 throw;
             }
         }

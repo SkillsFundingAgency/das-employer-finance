@@ -12,7 +12,6 @@ using SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
-using SFA.DAS.NLog.Logger;
 using TechTalk.SpecFlow;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -67,13 +66,13 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
 
             var account = _objectContext.Get<Account>();
 
-            _objectContainer.Resolve<ILog>().Info("About to start levy run task.");
+            //_objectContainer.Resolve<ILog>().Info("About to start levy run task.");
 
             return _objectContainer.RunStepsInIsolation(cancellationTokenSource.Token,
                     // step 1: send request to get levy declarations to start that process running...
                     c =>
                     {
-                        _objectContainer.Resolve<ILog>().Info("About to start levy run.");
+                        //_objectContainer.Resolve<ILog>().Info("About to start levy run.");
 
                         var empref = _objectContext.GetEmpRef();
 
@@ -87,7 +86,7 @@ namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
                     // step 2: wait for the levy declaration process to finish writing the transactions...
                     async c => 
                     {
-                        _objectContainer.Resolve<ILog>().Info("About to start polling for levy decalaration.");
+                        //_objectContainer.Resolve<ILog>().Info("About to start polling for levy decalaration.");
 
                         var allLevyDeclarationsLoaded = await c.Resolve<ITransactionRepository>()
                             .WaitForAllTransactionLinesInDatabase(account, cancellationTokenSource.Token);
