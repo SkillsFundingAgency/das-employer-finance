@@ -53,18 +53,16 @@ public static class HostExtensions
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
-
-            var configuration = builder.Build();
-
+            
             builder.AddAzureTableStorage(options =>
                 {
-                    options.ConfigurationKeys = new[]
-                    {
+                    options.ConfigurationKeys =
+                    [
                         ConfigurationKeys.EmployerFinanceJobs,
                         ConfigurationKeys.EncodingConfig
-                    };
+                    ];
                     options.PreFixConfigurationKeys = false;
-                    options.ConfigurationKeysRawJsonResult = new[] { ConfigurationKeys.EncodingConfig };
+                    options.ConfigurationKeysRawJsonResult = [ConfigurationKeys.EncodingConfig];
                 }
             );
             builder.Build();
@@ -88,7 +86,6 @@ public static class HostExtensions
             services.AddMediatorValidators();
             services.AddHmrcServices();
             services.AddProviderServices();
-            services.AddEventsApi();
             services.AddCachesRegistrations(context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
             services.AddEmployerFinanceOuterApi();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
