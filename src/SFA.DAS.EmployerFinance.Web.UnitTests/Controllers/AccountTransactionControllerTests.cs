@@ -46,7 +46,7 @@ public class AccountTransactionControllerTests
         _orchestrator.Verify(
             x => x.GetAccountTransactions(It.Is<string>(s => s == "TEST"), It.IsAny<int>(), It.IsAny<int>()),
             Times.Once);
-        Assert.IsNotNull(result as ViewResult);
+        (result as ViewResult).Should().NotBeNull();
     }
 
     [Test]
@@ -59,7 +59,7 @@ public class AccountTransactionControllerTests
         var viewModel = viewResult?.Model as Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>;
 
         //Assert
-        Assert.IsNotNull(viewModel);
-        Assert.IsTrue(viewModel.Data.AccountHasPreviousTransactions);
+        (viewModel).Should().NotBeNull();
+        viewModel.Data.AccountHasPreviousTransactions.Should().BeTrue();
     }
 }
