@@ -122,14 +122,14 @@ public class WhenIReceiveTheCommand
         //Assert
         _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Once);
 
-        Assert.IsTrue(_eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
+        (_eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId)
-            && e.Amount.Equals(decimal.One)));
+            && e.Amount.Equals(decimal.One))).Should().BeTrue();
 
-        Assert.IsTrue(_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
+        (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId) &&
             e.LevyImported.Equals(true) &&
-            e.LevyTransactionValue.Equals(decimal.One)));
+            e.LevyTransactionValue.Equals(decimal.One))).Should().BeTrue();
     }
 
     [Test]
@@ -145,14 +145,14 @@ public class WhenIReceiveTheCommand
         //Assert
         _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Never);
 
-        Assert.IsFalse(_eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
+        _eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId)
-            && e.Amount.Equals(decimal.One)));
+            && e.Amount.Equals(decimal.One)).Should().BeFalse();
 
-        Assert.IsTrue(_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
+        _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId) &&
             e.LevyImported.Equals(false) &&
-            e.LevyTransactionValue.Equals(decimal.Zero)));
+            e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
     }
 
     //[Test]
@@ -220,8 +220,8 @@ public class WhenIReceiveTheCommand
         await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(data.EmployerLevyData.Sum(eld => eld.Declarations.Declarations.Count), savedDeclarations.Count, "Incorrect number of declarations saved");
-        Assert.IsTrue(savedDeclarations.Any(ld => ld.EndOfYearAdjustment && ld.EndOfYearAdjustmentAmount == endOfYearAdjustmentAmount), "Year end adjustment not saved with expected end of year adjustment value");
+        savedDeclarations.Count.Should().Be(data.EmployerLevyData.Sum(eld => eld.Declarations.Declarations.Count), "Incorrect number of declarations saved");
+        savedDeclarations.Any(ld => ld.EndOfYearAdjustment && ld.EndOfYearAdjustmentAmount == endOfYearAdjustmentAmount).Should().BeTrue("Year end adjustment not saved with expected end of year adjustment value");
     }
 
     [Test]
@@ -338,7 +338,7 @@ public class WhenIReceiveTheCommand
 
 
         //Assert
-        Assert.IsTrue(_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId)));
+        _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
+            e.AccountId.Equals(ExpectedAccountId)).Should().BeTrue();
     }
 }

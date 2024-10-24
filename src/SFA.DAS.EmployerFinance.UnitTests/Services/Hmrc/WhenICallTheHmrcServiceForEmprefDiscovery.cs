@@ -68,6 +68,6 @@ public class WhenICallTheHmrcServiceForEmprefDiscovery
         var actual = await _hmrcService.DiscoverEmpref(authToken);
 
         //Assert
-        Assert.AreEqual(ExpectedEmpref, actual);
+        actual.Should().Be(ExpectedEmpref);
     }
 }

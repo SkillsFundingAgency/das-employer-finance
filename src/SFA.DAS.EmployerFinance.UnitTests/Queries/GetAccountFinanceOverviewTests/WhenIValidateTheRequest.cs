@@ -23,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
                 });
 
             //Assert
-            Assert.IsTrue(actual.IsValid());
+            (actual.IsValid()).Should().BeTrue();
         }
 
     }

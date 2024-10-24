@@ -1,3 +1,4 @@
+using Azure;
 using HMRC.ESFA.Levy.Api.Client;
 using HMRC.ESFA.Levy.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -60,7 +61,7 @@ public class WhenICallTheHmrcServiceForEmpref
 
         //Act
         var actual = await _hmrcService.GetEmprefInformation(authToken, empRef);
-        Assert.IsAssignableFrom<EmpRefLevyInformation>(actual);
-        Assert.AreEqual(ExpectedName, actual.Employer.Name.EmprefAssociatedName);
+        actual.Should().BeAssignableTo<EmpRefLevyInformation>();
+        actual.Employer.Name.EmprefAssociatedName.Should().Be(ExpectedName);
     }
 }

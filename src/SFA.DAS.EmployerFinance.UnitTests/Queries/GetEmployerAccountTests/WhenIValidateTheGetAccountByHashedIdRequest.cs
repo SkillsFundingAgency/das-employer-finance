@@ -22,8 +22,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
             var result = await _validator.ValidateAsync(new GetEmployerAccountHashedQuery { HashedAccountId = ExpectedHashedId, UserId = ExpectedUserId });
 
             //Assert
-            Assert.IsTrue(result.IsValid());
-            Assert.IsFalse(result.IsUnauthorized);
+            result.IsValid().Should().BeTrue();
+            result.IsUnauthorized.Should().BeFalse();
         }
 
 
@@ -34,9 +34,9 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
             var result = await _validator.ValidateAsync(new GetEmployerAccountHashedQuery());
 
             //Assert
-            Assert.IsFalse(result.IsValid());
-            Assert.Contains(new KeyValuePair<string, string>("UserId", "UserId has not been supplied"), result.ValidationDictionary);
-            Assert.Contains(new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied"), result.ValidationDictionary);
+            result.IsValid().Should().BeFalse();
+            result.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("UserId", "UserId has not been supplied")));
+            result.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied")));
         }
 
     }
