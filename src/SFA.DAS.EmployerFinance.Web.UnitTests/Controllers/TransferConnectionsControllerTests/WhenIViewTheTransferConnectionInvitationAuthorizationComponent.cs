@@ -59,6 +59,6 @@ public class WhenIViewTheTransferConnectionInvitationAuthorizationComponent
 
 
         //Assert
-        Assert.AreEqual(TransferAllowancePercentage * 100, model.TransferAllowancePercentage);
+        model.TransferAllowancePercentage.Should().Be(TransferAllowancePercentage * 100);
     }
 }

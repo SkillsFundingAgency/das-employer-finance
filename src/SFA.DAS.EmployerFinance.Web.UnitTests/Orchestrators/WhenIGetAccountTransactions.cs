@@ -91,8 +91,8 @@ public class WhenIGetAccountTransactions
         var result = await _orchestrator.GetAccountTransactions(HashedAccountId, year, month);
 
         //Assert
-        Assert.AreEqual(year, result.Data.Year);
-        Assert.AreEqual(month, result.Data.Month);
+        result.Data.Year.Should().Be(year);
+        result.Data.Month.Should().Be(month);
     }
 
     [Test]
@@ -108,8 +108,8 @@ public class WhenIGetAccountTransactions
         var resultHistoricalMonth = await _orchestrator.GetAccountTransactions(HashedAccountId, 2016, 1);
 
         //Assert
-        Assert.AreEqual(true, resultLatestMonth.Data.IsLatestMonth);
-        Assert.AreEqual(false, resultHistoricalMonth.Data.IsLatestMonth);
+        resultLatestMonth.Data.IsLatestMonth.Should().Be(true);
+        resultHistoricalMonth.Data.IsLatestMonth.Should().Be(false);
     }
 
     [Test]
@@ -119,7 +119,7 @@ public class WhenIGetAccountTransactions
         var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 8);
 
         //Assert
-        Assert.IsTrue(result.Data.AccountHasPreviousTransactions);
+        result.Data.AccountHasPreviousTransactions.Should().BeTrue();
     }
 
     [Test]
@@ -149,7 +149,7 @@ public class WhenIGetAccountTransactions
             actualTransactions?.SingleOrDefault(t => t.TransactionType == TransactionItemType.Declaration);
 
         //Assert
-        Assert.IsNotNull(levyDeclaration);
+        (levyDeclaration).Should().NotBeNull();
     }
 
     [Test]
@@ -179,8 +179,8 @@ public class WhenIGetAccountTransactions
             actualTransactions?.SingleOrDefault(t => t.TransactionType == TransactionItemType.Payment);
 
         //Assert
-        Assert.IsNotNull(paymenTransaction);
-        Assert.AreEqual(2, actualTransactions.Length);
+        (paymenTransaction).Should().NotBeNull();
+        actualTransactions.Length.Should().Be(2);
     }
 
     [Test]
@@ -210,7 +210,7 @@ public class WhenIGetAccountTransactions
             actualTransactions?.SingleOrDefault(t => t.TransactionType == TransactionItemType.Declaration);
 
         //Assert
-        Assert.AreEqual(levyTransactions.First().Description, levyDeclaration?.Description);
+        levyDeclaration?.Description.Should().Be(levyTransactions.First().Description);
     }
 
     [Test]
@@ -237,8 +237,8 @@ public class WhenIGetAccountTransactions
         var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 
         //Assert
-        Assert.IsNotNull(actualTransactions);
-        Assert.AreEqual(levyTransactions.Sum(t => t.Amount), actualTransactions.Single(t => t.TransactionType == TransactionItemType.Declaration).Amount);
+        (actualTransactions).Should().NotBeNull();
+        actualTransactions.Single(t => t.TransactionType == TransactionItemType.Declaration).Amount.Should().Be(levyTransactions.Sum(t => t.Amount));
     }
 
     private void SetupGetTransactionsResponse(int year, int month)

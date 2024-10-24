@@ -44,8 +44,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Factories.TransactionFormatterFactor
         public void ThenIShouldGetLevyCsvFormatter()
         {
             var formatter = _paymentFormatterFactory.GetTransactionsFormatterByType(DownloadFormatType.CSV, ApprenticeshipEmployerType.Levy);
-
-            Assert.AreEqual(_levyCsvFormatter.Object, formatter);
+            
+            formatter.Should().Be(_levyCsvFormatter.Object);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Factories.TransactionFormatterFactor
         {
             var formatter = _paymentFormatterFactory.GetTransactionsFormatterByType(DownloadFormatType.Excel, ApprenticeshipEmployerType.Levy);
 
-            Assert.AreEqual(_levyExcelFormatter.Object, formatter);
+            formatter.Should().Be(_levyExcelFormatter.Object);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Factories.TransactionFormatterFactor
         {
             var formatter = _paymentFormatterFactory.GetTransactionsFormatterByType(DownloadFormatType.CSV, ApprenticeshipEmployerType.NonLevy);
 
-            Assert.AreEqual(_nonLevyCsvFormatter.Object, formatter);
+            formatter.Should().Be(_nonLevyCsvFormatter.Object);
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Factories.TransactionFormatterFactor
         {
             var formatter = _paymentFormatterFactory.GetTransactionsFormatterByType(DownloadFormatType.Excel, ApprenticeshipEmployerType.NonLevy);
 
-            Assert.AreEqual(_nonLevyExcelFormatter.Object, formatter);
+            formatter.Should().Be(_nonLevyExcelFormatter.Object);
         }
     }
 }

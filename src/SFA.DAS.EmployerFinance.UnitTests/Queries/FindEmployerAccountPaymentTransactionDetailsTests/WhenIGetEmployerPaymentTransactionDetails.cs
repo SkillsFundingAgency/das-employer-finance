@@ -77,8 +77,8 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
         //Assert
-        Assert.IsNotNull(actual);
-        Assert.IsNotEmpty(actual.Transactions);
+        actual.Should().NotBeNull();
+        actual.Transactions.Should().NotBeEmpty();
     }
 
     [Test]
@@ -99,7 +99,7 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(ProviderName, actual.ProviderName);
+        actual.ProviderName.Should().Be(ProviderName);
     }
 
     [Test]
@@ -118,7 +118,7 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(transactionDate, actual.TransactionDate);
+        actual.TransactionDate.Should().Be(transactionDate);
     }
 
     [Test]
@@ -133,6 +133,6 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
             
         //Assert
-        Assert.IsNull(actual);
+        actual.Should().BeNull();
     }
 }

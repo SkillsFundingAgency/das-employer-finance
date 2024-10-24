@@ -59,26 +59,26 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Mappings
             var result = _mapper.Map<PaymentDetails>(payment);
 
             //Assert
-            Assert.AreEqual(Guid.Parse(payment.Id), result.Id);
-            Assert.AreEqual(payment.Ukprn, result.Ukprn);
-            Assert.AreEqual(payment.Amount, result.Amount);
-            Assert.AreEqual(payment.ApprenticeshipId, result.ApprenticeshipId);
-            Assert.AreEqual(payment.DeliveryPeriod.Month, result.DeliveryPeriodMonth);
-            Assert.AreEqual(payment.DeliveryPeriod.Year, result.DeliveryPeriodYear);
-            Assert.AreEqual(payment.CollectionPeriod.Id, result.CollectionPeriodId);
-            Assert.AreEqual(payment.CollectionPeriod.Month, result.CollectionPeriodMonth);
-            Assert.AreEqual(payment.CollectionPeriod.Year, result.CollectionPeriodYear);
-            Assert.AreEqual(payment.TransactionType, result.TransactionType);
-            Assert.AreEqual(payment.ApprenticeshipVersion, result.ApprenticeshipVersion);
-            Assert.AreEqual(payment.EmployerAccountVersion, result.EmployerAccountVersion);
-            Assert.AreEqual(payment.EmployerAccountId, result.EmployerAccountId.ToString());
-            Assert.AreEqual(payment.FrameworkCode, result.FrameworkCode);
-            Assert.AreEqual(payment.EvidenceSubmittedOn, result.EvidenceSubmittedOn);
-            Assert.AreEqual(payment.FundingSource, result.FundingSource);
-            Assert.AreEqual(payment.PathwayCode, result.PathwayCode);
-            Assert.AreEqual(payment.ProgrammeType, result.ProgrammeType);
-            Assert.AreEqual(payment.StandardCode, result.StandardCode);
-            Assert.AreEqual(payment.Uln, result.Uln);
+            result.Id.Should().Be(Guid.Parse(payment.Id));
+            payment.Ukprn.Should().Be(payment.Ukprn);
+            payment.Amount.Should().Be(payment.Amount);
+            payment.ApprenticeshipId.Should().Be(payment.ApprenticeshipId);
+            result.DeliveryPeriodMonth.Should().Be(payment.DeliveryPeriod.Month);
+            result.DeliveryPeriodYear.Should().Be(payment.DeliveryPeriod.Year);
+            result.CollectionPeriodId.Should().Be(payment.CollectionPeriod.Id);
+            result.CollectionPeriodMonth.Should().Be(payment.CollectionPeriod.Month);
+            result.CollectionPeriodYear.Should().Be(payment.CollectionPeriod.Year);
+            result.TransactionType.Should().Be(payment.TransactionType);
+            result.ApprenticeshipVersion.Should().Be(payment.ApprenticeshipVersion);
+            result.EmployerAccountVersion.Should().Be(payment.EmployerAccountVersion);
+            result.EmployerAccountId.ToString().Should().Be(payment.EmployerAccountId);
+            result.FrameworkCode.Should().Be(payment.FrameworkCode);
+            result.EvidenceSubmittedOn.Should().Be(payment.EvidenceSubmittedOn);
+            result.FundingSource.Should().Be(payment.FundingSource);
+            result.PathwayCode.Should().Be(payment.PathwayCode);
+            result.ProgrammeType.Should().Be(payment.ProgrammeType);
+            result.StandardCode.Should().Be(payment.StandardCode);
+            result.Uln.Should().Be(payment.Uln);
         }
     }
 }

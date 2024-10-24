@@ -35,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
             var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
-            Assert.IsAssignableFrom<TResponse>(actual);
+            actual.Should().BeAssignableTo<TResponse>();
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries
             await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
-            Assert.AreEqual(1, _validationCallCount);
+            _validationCallCount.Should().Be(1);
         }
 
         [Test]

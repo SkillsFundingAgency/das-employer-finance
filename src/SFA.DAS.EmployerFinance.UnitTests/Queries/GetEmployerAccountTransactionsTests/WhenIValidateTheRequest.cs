@@ -19,7 +19,7 @@ public class WhenIValidateTheRequest
         var result = await _validator.ValidateAsync(new GetEmployerAccountTransactionsQuery { HashedAccountId = "AD1" });
 
         //Assert
-        Assert.IsTrue(result.IsValid());
+        result.IsValid().Should().BeTrue();
     }        
 
 
@@ -30,7 +30,7 @@ public class WhenIValidateTheRequest
         var result = await _validator.ValidateAsync(new GetEmployerAccountTransactionsQuery());
 
         //Assert
-        Assert.IsFalse(result.IsValid());
-        Assert.Contains(new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied"), result.ValidationDictionary);
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied")));
     }
 }

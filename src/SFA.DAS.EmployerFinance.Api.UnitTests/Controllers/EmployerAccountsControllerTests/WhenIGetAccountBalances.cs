@@ -43,6 +43,6 @@ public class WhenIGetAccountBalances
         var response = await _employerAccountsController.GetAccountBalances(hashedAccountIds);
 
         //Assert
-        Assert.IsNotNull(response);
+        response.Should().NotBeNull();
     }
 }

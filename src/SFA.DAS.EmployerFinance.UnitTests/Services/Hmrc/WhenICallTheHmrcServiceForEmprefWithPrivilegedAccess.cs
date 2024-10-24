@@ -63,7 +63,7 @@ public class WhenICallTheHmrcServiceForEmprefWithPrivilegedAccess
         var actual = await _hmrcService.GetEmprefInformation(empRef);
 
         //Assert
-        Assert.IsAssignableFrom<EmpRefLevyInformation>(actual);
-        Assert.AreEqual(ExpectedName, actual.Employer.Name.EmprefAssociatedName);
+        actual.Should().BeAssignableTo<EmpRefLevyInformation>();
+        actual.Employer.Name.EmprefAssociatedName.Should().Be(ExpectedName);
     }
 }

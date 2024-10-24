@@ -115,9 +115,9 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         var response = await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(_request.HashedAccountId, response.Data.HashedAccountId);
-        Assert.AreEqual(1, response.Data.AccountId);
-        Assert.AreEqual(1, response.Data.TransactionLines.Length);
+        response.Data.HashedAccountId.Should().Be(_request.HashedAccountId);
+        response.Data.AccountId.Should().Be(1);
+        response.Data.TransactionLines.Length.Should().Be(1);
     }
 
 
@@ -128,9 +128,9 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         var response = await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(_request.HashedAccountId, response.Data.HashedAccountId);
-        Assert.AreEqual(1, response.Data.AccountId);
-        Assert.IsEmpty(response.Data.TransactionLines);
+        response.Data.HashedAccountId.Should().Be(_request.HashedAccountId);
+        response.Data.AccountId.Should().Be(1);
+        response.Data.TransactionLines.Should().BeEmpty();
     }
 
     [Test]
@@ -185,7 +185,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         var actual = await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual("Training provider - name not recognised", actual.Data.TransactionLines.First().Description);
+        actual.Data.TransactionLines.First().Description.Should().Be("Training provider - name not recognised");
         _logger.Verify(x => x.Log(LogLevel.Information,0,
             It.Is<It.IsAnyType>((message, type) => message.ToString().StartsWith("Provider not found for UkPrn:1254545")),
             It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
@@ -217,7 +217,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         var actual = await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual("Training provider - name not recognised", actual.Data.TransactionLines.First().Description);
+        actual.Data.TransactionLines.First().Description.Should().Be("Training provider - name not recognised");
     }
 
     [Test]
@@ -274,8 +274,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual("Levy", actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be("Levy");
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
 
@@ -301,8 +301,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual("Levy adjustment", actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be("Levy adjustment");
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
     [Test]
@@ -332,8 +332,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual(provider.Name, actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be(provider.Name);
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
     [Test]
@@ -363,8 +363,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual($"Co-investment - {provider.Name}", actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be($"Co-investment - {provider.Name}");
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
     [Test]
@@ -395,8 +395,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual($"Co-investment - {provider.Name}", actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be($"Co-investment - {provider.Name}");
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
     [Test]
@@ -423,7 +423,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         var result = await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        Assert.IsTrue(result.AccountHasPreviousTransactions);
+        result.AccountHasPreviousTransactions.Should().BeTrue();
     }
 
     [Test]
@@ -453,7 +453,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         var result = await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        Assert.IsFalse(result.AccountHasPreviousTransactions);
+        result.AccountHasPreviousTransactions.Should().BeFalse();
     }
 
     [Test]
@@ -482,8 +482,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual(expectedDescription, actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be(expectedDescription);
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
     [Test]
@@ -516,7 +516,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First() as TransferTransactionLine;
 
-        Assert.AreEqual(expectedPublicHashedId, actualTransaction?.ReceiverAccountPublicHashedId);
+        actualTransaction?.ReceiverAccountPublicHashedId.Should().Be(expectedPublicHashedId);
     }
 
     [Test]
@@ -544,7 +544,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        Assert.AreEqual(expectedDescription, actualTransaction.Description);
-        Assert.AreEqual(transaction.Amount, actualTransaction.Amount);
+        actualTransaction.Description.Should().Be(expectedDescription);
+        actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 }

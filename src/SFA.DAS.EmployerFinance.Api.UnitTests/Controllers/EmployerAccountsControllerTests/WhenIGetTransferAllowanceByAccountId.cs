@@ -44,6 +44,6 @@ public class WhenIGetTransferAllowanceByAccountId
         var response = await _employerAccountsController.GetTransferAllowanceByAccountId(accountId);
 
         //Assert
-        Assert.IsNotNull(response);
+        response.Should().NotBeNull();
     }
 }

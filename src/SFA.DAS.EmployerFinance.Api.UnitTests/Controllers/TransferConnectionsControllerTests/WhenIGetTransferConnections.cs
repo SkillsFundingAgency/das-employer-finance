@@ -81,7 +81,7 @@ public class WhenIGetTransferConnections
     {
         var result = await _controller.GetTransferConnections(HashedAccountId) as OkObjectResult;
 
-        Assert.IsNotNull(result);
+        result.Should().NotBeNull();
 
         Assert.That(result.Value, Is.SameAs(_transferConnections));
     }

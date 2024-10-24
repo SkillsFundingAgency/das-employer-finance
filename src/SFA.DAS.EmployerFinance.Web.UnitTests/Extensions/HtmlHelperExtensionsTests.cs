@@ -15,7 +15,7 @@ public class HtmlHelperExtensionsTests
         var actual = ZenDeskLabelExtensions.SetZenDeskLabels(null, labels).ToString();
 
         // Assert
-        Assert.AreEqual(expected, actual);
+        actual.Should().Be(expected);
     }
 
     private static readonly object[] LabelCases =

@@ -216,8 +216,8 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(SenderAccountName, result.SenderAccountName);
-        Assert.AreEqual(SenderPublicHashedId, result.SenderAccountPublicHashedId);
+        result.SenderAccountName.Should().Be(SenderAccountName);
+        result.SenderAccountPublicHashedId.Should().Be(SenderPublicHashedId);
     }
 
     [Test]
@@ -227,8 +227,8 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(ReceiverAccountName, result.ReceiverAccountName);
-        Assert.AreEqual(ReceiverPublicHashedId, result.ReceiverAccountPublicHashedId);
+        result.ReceiverAccountName.Should().Be(ReceiverAccountName);
+        result.ReceiverAccountPublicHashedId.Should().Be(ReceiverPublicHashedId);
     }
 
     [Test]
@@ -250,7 +250,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(2, result.TransferDetails.Count());
+        result.TransferDetails.Count().Should().Be(2);
 
         var firstCourseTotal = result.TransferDetails.Single(t => t.CourseName.Equals(FirstCourseName)).PaymentTotal;
         var secondCourseTotal = result.TransferDetails.Single(t => t.CourseName.Equals(SecondCourseName)).PaymentTotal;
@@ -276,8 +276,8 @@ class WhenAReceiverGetsTransferTransactionDetails
         var expectedSecondCourseApprenticeCount =
             _transfers.Count(t => t.CourseName.Equals(SecondCourseName));
 
-        Assert.AreEqual(1, firstCourseApprenticeCount);
-        Assert.AreEqual(2, secondCourseApprenticeCount);
+        firstCourseApprenticeCount.Should().Be(1);
+        secondCourseApprenticeCount.Should().Be(2);
     }
 
     [Test]
@@ -289,7 +289,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         //Assert
         var expectedPaymentTotal = _transfers.Sum(t => t.Amount);
 
-        Assert.AreEqual(expectedPaymentTotal, result.TransferPaymentTotal);
+        result.TransferPaymentTotal.Should().Be(expectedPaymentTotal);
     }
 
     [Test]
@@ -307,7 +307,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(_senderTranferTransaction.DateCreated, result.DateCreated);
+        result.DateCreated.Should().Be(_senderTranferTransaction.DateCreated);
     }
 
     [Test]
@@ -317,7 +317,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(_recieverTranferTransaction.DateCreated, result.DateCreated);
+        result.DateCreated.Should().Be(_recieverTranferTransaction.DateCreated);
     }
 
     [Test]
@@ -327,7 +327,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        Assert.IsFalse(result.IsCurrentAccountSender);
+        result.IsCurrentAccountSender.Should().BeFalse();
     }
 
     [Test]
@@ -345,6 +345,6 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(query, CancellationToken.None);
 
         //Assert
-        Assert.IsTrue(result.IsCurrentAccountSender);
+        result.IsCurrentAccountSender.Should().BeTrue();
     }
 }

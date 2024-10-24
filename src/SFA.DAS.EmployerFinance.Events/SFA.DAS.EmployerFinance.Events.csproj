@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>.net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Authors>DAS</Authors>
     <Description>Events raised by SFA.DAS.EmployerFinance</Description>
     <PackageLicense>https://github.com/SkillsFundingAgency/das-employerapprenticeshipsservice/blob/master/LICENSE</PackageLicense>

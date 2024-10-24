@@ -40,7 +40,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ProviderServiceTests.Provid
             var result = await _sut.Get(ukPrn);
 
             // assert
-            Assert.AreEqual(_testProvider, result);
+            result.Should().Be(_testProvider);
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ProviderServiceTests.Provid
             var result = await _sut.Get(ukPrn);
 
             // assert
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
     }
 }

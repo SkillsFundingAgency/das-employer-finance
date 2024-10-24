@@ -93,9 +93,9 @@ public class WhenIDownloadTransactionsByDate
         var result = await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as FileContentResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.AreEqual(ExpectedMimeType, result.ContentType);
-        Assert.AreEqual(ExpectedFileData, result.FileContents);
-        Assert.IsTrue(result.FileDownloadName.EndsWith(ExpectedFileExtension));
+        result.ContentType.Should().Be(ExpectedMimeType);
+        result.FileContents.Should().BeEquivalentTo(ExpectedFileData);
+        result.FileDownloadName.EndsWith(ExpectedFileExtension).Should().BeTrue();
     }
 
     [Test]
@@ -106,6 +106,6 @@ public class WhenIDownloadTransactionsByDate
 
         var result = await _controller.TransactionsDownload(HashedAccountId, _transactionDownloadViewModel) as ViewResult;
 
-        Assert.IsNotNull(result);
+        (result).Should().NotBeNull();
     }
 }

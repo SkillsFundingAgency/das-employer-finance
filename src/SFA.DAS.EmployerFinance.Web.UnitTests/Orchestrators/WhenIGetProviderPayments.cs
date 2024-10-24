@@ -103,7 +103,7 @@ internal class WhenIGetProviderPayments
             _toDate);
 
         //Assert
-        Assert.AreEqual(expectedTotal, result.Data.CoursePayments.First().SFACoInvestmentAmount);
+        result.Data.CoursePayments.First().SFACoInvestmentAmount.Should().Be(expectedTotal);
     }
 
     [Test]
@@ -138,7 +138,7 @@ internal class WhenIGetProviderPayments
             _toDate);
 
         //Assert
-        Assert.AreEqual(expectedTotal, result.Data.CoursePayments.First().EmployerCoInvestmentAmount);
+        result.Data.CoursePayments.First().EmployerCoInvestmentAmount.Should().Be(expectedTotal);
     }
 
 
@@ -171,7 +171,7 @@ internal class WhenIGetProviderPayments
             _toDate);
 
         //Assert
-        Assert.AreEqual(expectedTotal, result.Data.CoursePayments.First().TotalAmount);
+        result.Data.CoursePayments.First().TotalAmount.Should().Be(expectedTotal);
     }
 
 
@@ -222,9 +222,9 @@ internal class WhenIGetProviderPayments
             _toDate);
 
         //Assert
-        Assert.AreEqual(expectedLevyPaymentsTotal, result.Data.LevyPaymentsTotal);
-        Assert.AreEqual(expectedSFACoInvestmentTotal, result.Data.SFACoInvestmentsTotal);
-        Assert.AreEqual(expectedEmployerCoInvestmentTotal, result.Data.EmployerCoInvestmentsTotal);
-        Assert.AreEqual(expectedPaymentsTotal, result.Data.PaymentsTotal);
+        result.Data.LevyPaymentsTotal.Should().Be(expectedLevyPaymentsTotal);
+        result.Data.SFACoInvestmentsTotal.Should().Be(expectedSFACoInvestmentTotal);
+        result.Data.EmployerCoInvestmentsTotal.Should().Be(expectedEmployerCoInvestmentTotal);
+        result.Data.PaymentsTotal.Should().Be(expectedPaymentsTotal);
     }
 }

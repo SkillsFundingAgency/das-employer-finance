@@ -19,8 +19,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             var actual = _validator.Validate(new UpdatePayeInformationCommand {PayeRef = "1234rf"});
 
             //Assert
-            Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.IsValid());
+            actual.Should().NotBeNull();
+            actual.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -30,8 +30,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePayeInformationTests
             var actual = _validator.Validate(new UpdatePayeInformationCommand());
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string,string>("PayeRef","PayeRef has not been supplied"),actual.ValidationDictionary );
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("PayeRef", "PayeRef has not been supplied")));
         }
     }
 }
