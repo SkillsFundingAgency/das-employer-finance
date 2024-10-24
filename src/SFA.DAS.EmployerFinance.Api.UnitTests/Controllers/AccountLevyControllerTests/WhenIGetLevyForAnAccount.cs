@@ -18,13 +18,13 @@ public class WhenIGetLevyForAnAccount : AccountLevyControllerTests
         var response = await Controller.Index(hashedAccountId);
 
         //Assert
-        Assert.IsNotNull(response);
-        Assert.IsInstanceOf<OkObjectResult>(response);
+        response.Should().NotBeNull(); 
+        response.Should().BeOfType<OkObjectResult>();
         var model = ((OkObjectResult)response).Value as List<LevyDeclaration>;
 
         model?.Should().NotBeNull();
-        Assert.IsTrue(model?.TrueForAll(x => x.HashedAccountId == hashedAccountId));
+        model?.TrueForAll(x => x.HashedAccountId == hashedAccountId).Should().BeTrue();
         levyResponse.Declarations?.Should().BeEquivalentTo(model, options => options.Excluding(x => x.HashedAccountId).Excluding(x => x.PayeSchemeReference));
-        Assert.IsTrue(model? [0].PayeSchemeReference == levyResponse.Declarations[0].EmpRef);
+        (model?[0].PayeSchemeReference == levyResponse.Declarations[0].EmpRef).Should().BeTrue();
     }
 }

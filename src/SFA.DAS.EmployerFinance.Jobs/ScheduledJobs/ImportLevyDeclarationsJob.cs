@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Irony.Ast;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Messages.Commands;
