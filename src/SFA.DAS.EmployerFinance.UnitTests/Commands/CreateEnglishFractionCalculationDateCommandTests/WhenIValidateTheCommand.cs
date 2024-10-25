@@ -33,7 +33,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
 
             //Assert
             actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("DateCalculated", "DateCalculated has not been supplied")));
+             actual.ValidationDictionary
+                .Should()
+                .ContainKey("DateCalculated")
+                .WhichValue
+                .Should()
+                .Be("DateCalculated has not been supplied");
         }
     }
 }
