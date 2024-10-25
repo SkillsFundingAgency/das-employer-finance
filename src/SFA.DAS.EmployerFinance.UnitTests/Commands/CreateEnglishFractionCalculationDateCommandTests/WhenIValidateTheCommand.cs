@@ -22,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
             });
 
             //Assert
-            (actual.IsValid()).Should().BeTrue();
+            actual.IsValid().Should().BeTrue();
         }
 
         [Test]
