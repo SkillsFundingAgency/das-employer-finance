@@ -58,7 +58,7 @@ public class TransfersControllerTests
         var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
            
         (viewModel).Should().NotBeNull();
-        (viewModel.Data).Should().NotBeNull();
+        viewModel.Data.Should().NotBeNull();
         viewModel.Data.AcceptedPledgeApplications.Should().NotBe(0);
         viewModel.Data.ApprovedPledgeApplications.Should().NotBe(0);
         viewModel.Data.Commitments.Should().NotBe(0);

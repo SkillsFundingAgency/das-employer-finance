@@ -149,7 +149,7 @@ public class WhenIGetAccountTransactions
             actualTransactions?.SingleOrDefault(t => t.TransactionType == TransactionItemType.Declaration);
 
         //Assert
-        (levyDeclaration).Should().NotBeNull();
+        levyDeclaration.Should().NotBeNull();
     }
 
     [Test]
