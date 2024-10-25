@@ -1,4 +1,3 @@
-using Azure;
 using HMRC.ESFA.Levy.Api.Client;
 using HMRC.ESFA.Levy.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;

@@ -21,7 +21,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
 
             //Assert
             actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("NewPeriodEnd", "NewPeriodEnd has not been supplied")));
+            actual.ValidationDictionary.Should()
+                .ContainKey("NewPeriodEnd")
+                .WhichValue
+                .Should()
+                .Be("ReceiverAccountId has not been supplied");
         }
 
         [Test]

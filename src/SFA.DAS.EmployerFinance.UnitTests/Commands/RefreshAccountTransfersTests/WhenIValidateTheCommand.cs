@@ -34,8 +34,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
 
             //Assert
             actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("ReceiverAccountId", "ReceiverAccountId has not been supplied")));
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("PeriodEnd", "PeriodEnd has not been supplied")));
+            actual.ValidationDictionary.Should()
+                .ContainKey("ReceiverAccountId")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
+            actual.ValidationDictionary.Should()
+                .ContainKey("PeriodEnd")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
         }
 
         [Test]
@@ -50,7 +56,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
 
             //Assert
             actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("PeriodEnd", "PeriodEnd has not been supplied")));
+            actual.ValidationDictionary.Should()
+                .ContainKey("PeriodEnd")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
         }
 
         [Test]
@@ -65,7 +74,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshAccountTransfersTest
 
             //Assert
             actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("ReceiverAccountId", "ReceiverAccountId cannot be negative")));
+            actual.ValidationDictionary.Should()
+                .ContainKey("ReceiverAccountId")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
         }
     }
 }

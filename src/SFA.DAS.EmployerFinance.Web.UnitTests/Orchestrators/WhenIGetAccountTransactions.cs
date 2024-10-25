@@ -175,11 +175,11 @@ public class WhenIGetAccountTransactions
 
         var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 
-        var paymenTransaction =
+        var paymentTransaction =
             actualTransactions?.SingleOrDefault(t => t.TransactionType == TransactionItemType.Payment);
 
         //Assert
-        (paymenTransaction).Should().NotBeNull();
+        paymentTransaction.Should().NotBeNull();
         actualTransactions.Length.Should().Be(2);
     }
 
@@ -237,7 +237,7 @@ public class WhenIGetAccountTransactions
         var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
 
         //Assert
-        (actualTransactions).Should().NotBeNull();
+        actualTransactions.Should().NotBeNull();
         actualTransactions.Single(t => t.TransactionType == TransactionItemType.Declaration).Amount.Should().Be(levyTransactions.Sum(t => t.Amount));
     }
 

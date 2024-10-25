@@ -34,8 +34,14 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
 
             //Assert
             actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("AccountId", "AccountId has not been supplied")));
-            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("PeriodEnd", "PeriodEnd has not been supplied")));
+            actual.ValidationDictionary.Should()
+                .ContainKey("AccountId")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
+            actual.ValidationDictionary.Should()
+                .ContainKey("PeriodEnd")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
         }
     }
 }
