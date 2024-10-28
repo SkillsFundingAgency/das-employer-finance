@@ -6,7 +6,6 @@ using SFA.DAS.Authorization.EmployerUserRoles.Options;
 using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.Events.Api.Client;
 using SFA.DAS.TokenService.Api.Client;
 using SFA.DAS.TokenService.Api.Types;
 using StructureMap;
@@ -20,7 +19,6 @@ public class MocksRegistry : Registry
         AddMock<IApprenticeshipLevyApiClient>();
         AddMock<IAuthenticationService>();
         AddMock<IEmployerAccountRepository>();
-        AddMock<IEventsApi>();
         AddMock<IPayeRepository>();
         SetupCurrentDateTimeMock(AddMock<ICurrentDateTime>());
         SetupTokenServiceApiClientMock(AddMock<ITokenServiceApiClient>());

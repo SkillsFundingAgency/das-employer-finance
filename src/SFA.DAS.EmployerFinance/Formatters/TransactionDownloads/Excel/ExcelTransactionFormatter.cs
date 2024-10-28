@@ -4,19 +4,13 @@ using SFA.DAS.EmployerFinance.Models.Transaction;
 
 namespace SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 
-public abstract class ExcelTransactionFormatter
+public abstract class ExcelTransactionFormatter(IExcelService excelService)
 {
     private const string WorksheetName = "Transactions";
-    private readonly IExcelService _excelService;
 
     public string MimeType => "text/xlsx";
     public string FileExtension => "xlsx";
     public DownloadFormatType DownloadFormatType => DownloadFormatType.Excel;
-
-    public ExcelTransactionFormatter(IExcelService excelService)
-    {
-        _excelService = excelService;
-    }
 
     protected abstract string[] GetHeaderRow();
 
@@ -31,7 +25,7 @@ public abstract class ExcelTransactionFormatter
             {WorksheetName, excelRows.ToArray()}
         };
 
-        var fileData = _excelService.CreateExcelFile(transactionData);
+        var fileData = excelService.CreateExcelFile(transactionData);
 
         return fileData;
     }

@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -26,8 +27,6 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ExecutionPolicy, HmrcExecutionPolicy>();
         services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
         services.AddTransient<IOuterApiClient, OuterApiClient>();
-        services.AddTransient<ILevyEventFactory, LevyEventFactory>();
-        services.AddTransient<IGenericEventFactory, GenericEventFactory>();
         services.AddSingleton<IEncodingService, EncodingService>();
         services.AddScoped<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
         services.AddScoped<IUnitOfWork, UnitOfWork.NServiceBus.Pipeline.UnitOfWork>();
