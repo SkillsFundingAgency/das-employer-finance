@@ -1,40 +1,28 @@
 ﻿using System.Collections.Generic;
-using Irony.Ast;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 
 namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 
-public class ImportLevyDeclarationsJob
+public class ImportLevyDeclarationsJob(
+    IMessageSession messageSession,
+    IEmployerAccountRepository accountRepository,
+    IPayeRepository payeRepository)
 {
-    private readonly IMessageSession _messageSession;
-    private readonly IEmployerAccountRepository _accountRepository;
-    private readonly IPayeRepository _payeRepository;
-
-    public ImportLevyDeclarationsJob(
-        IMessageSession messageSession,
-        IEmployerAccountRepository accountRepository,
-        IPayeRepository payeRepository)
-    {
-        _messageSession = messageSession;
-        _accountRepository = accountRepository;
-        _payeRepository = payeRepository;
-    }
-
     public async Task Run([TimerTrigger("0 0 15 23 * *")] TimerInfo timer, ILogger logger)
     {
-        logger.LogInformation($"Starting {nameof(ImportLevyDeclarationsJob)}");
-        var employerAccounts = await _accountRepository.GetAll();
+        logger.LogInformation("Starting {TypeName}", nameof(ImportLevyDeclarationsJob));
+        var employerAccounts = await accountRepository.GetAll();
 
-        logger.LogInformation($"Updating {employerAccounts.Count} levy accounts");
+        logger.LogInformation("Updating {Count} levy accounts", employerAccounts.Count);
 
         var messageTasks = new List<Task>();
         var sendCounter = 0;
 
         foreach (var account in employerAccounts)
         {
-            var schemes = await _payeRepository.GetGovernmentGatewayOnlySchemesByEmployerId(account.Id);
+            var schemes = await payeRepository.GetGovernmentGatewayOnlySchemesByEmployerId(account.Id);
 
             if (schemes?.SchemesList == null)
             {
@@ -43,9 +31,9 @@ public class ImportLevyDeclarationsJob
 
             foreach (var scheme in schemes.SchemesList)
             {
-                logger.LogDebug($"Creating update levy account message for account {account.Name} (ID: {account.Id}) scheme {scheme.EmpRef}");
+                logger.LogDebug("Creating update levy account message for account {Name} (ID: {Id}) scheme {EmpRef}", account.Name, account.Id, scheme.EmpRef);
 
-                messageTasks.Add(_messageSession.Send(new ImportAccountLevyDeclarationsCommand(account.Id, scheme.EmpRef)));
+                messageTasks.Add(messageSession.Send(new ImportAccountLevyDeclarationsCommand(account.Id, scheme.EmpRef)));
             }
 
             sendCounter++;
@@ -53,7 +41,9 @@ public class ImportLevyDeclarationsJob
             if (sendCounter % 1000 == 0)
             {
                 await ProcessAll(messageTasks);
-                logger.LogInformation($"Queued {sendCounter} of {employerAccounts.Count} accounts.");
+                
+                logger.LogInformation("Queued {SendCounter} of {Count} accounts.", sendCounter, employerAccounts.Count);
+                
                 messageTasks.Clear();
                 await Task.Delay(1000);
             }
@@ -62,13 +52,14 @@ public class ImportLevyDeclarationsJob
         // await final tasks not % 1000
         await ProcessAll(messageTasks);
 
-        logger.LogInformation($"{nameof(ImportLevyDeclarationsJob)} completed.");
+        logger.LogInformation("{TypeName} completed.", nameof(ImportLevyDeclarationsJob));
     }
 
-    private Task ProcessAll(List<Task> messageTasks)
+    private static Task ProcessAll(List<Task> messageTasks)
     {
         var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 4 };
-        return Parallel.ForEachAsync(messageTasks, parallelOptions, async (task, cancellationToken) =>
+        
+        return Parallel.ForEachAsync(messageTasks, parallelOptions, async (task, _) =>
         {
             await task;
         });

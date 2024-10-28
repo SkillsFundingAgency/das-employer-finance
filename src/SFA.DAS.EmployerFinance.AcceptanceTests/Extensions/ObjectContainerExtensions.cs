@@ -14,90 +14,85 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.Events.Api.Client;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.UnitOfWork.Managers;
 using StructureMap;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 
-namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions
+namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
+
+public static class ObjectContainerExtensions
 {
-    public static class ObjectContainerExtensions
+    public static void RegisterInstances(this IObjectContainer objectContainer, IContainer container)
     {
-        public static void RegisterInstances(this IObjectContainer objectContainer, IContainer container)
-        {
-            objectContainer.RegisterInstance<EmployerAccountTransactionsOrchestrator>(container);
-            objectContainer.RegisterInstance<EmployerAccountTransactionsController>(container);
-            objectContainer.RegisterInstance<EmployerFinanceConfiguration>(container);
-            objectContainer.RegisterInstance<IContainer>(container);
-            objectContainer.RegisterInstance<IEncodingService>(container);
-            objectContainer.RegisterInstance<ILog>(container);
-            objectContainer.RegisterInstance<IMediator>(container);
-            objectContainer.RegisterInstance<IMessageSession>(container);
-            objectContainer.RegisterInstance<ITestTransactionRepository>(container);
-            objectContainer.RegisterInstance<ITransactionRepository>(container);
-        }
+        objectContainer.RegisterInstance<EmployerAccountTransactionsOrchestrator>(container);
+        objectContainer.RegisterInstance<EmployerAccountTransactionsController>(container);
+        objectContainer.RegisterInstance<EmployerFinanceConfiguration>(container);
+        objectContainer.RegisterInstance<IContainer>(container);
+        objectContainer.RegisterInstance<IEncodingService>(container);
+        objectContainer.RegisterInstance<ILog>(container);
+        objectContainer.RegisterInstance<IMediator>(container);
+        objectContainer.RegisterInstance<IMessageSession>(container);
+        objectContainer.RegisterInstance<ITestTransactionRepository>(container);
+        objectContainer.RegisterInstance<ITransactionRepository>(container);
+    }
 
-        public static void RegisterMocks(this IObjectContainer objectContainer, IContainer container)
-        {
-            objectContainer.RegisterMock<IApprenticeshipLevyApiClient>(container);
-            objectContainer.RegisterMock<IAuthenticationService>(container);
-            objectContainer.RegisterMock<IAuthorizationService>(container);
-            objectContainer.RegisterMock<ICurrentDateTime>(container);
-            objectContainer.RegisterMock<IEmployerAccountRepository>(container);
-            objectContainer.RegisterMock<IEventsApi>(container);
-            objectContainer.RegisterMock<IPayeRepository>(container);
-        }
+    public static void RegisterMocks(this IObjectContainer objectContainer, IContainer container)
+    {
+        objectContainer.RegisterMock<IApprenticeshipLevyApiClient>(container);
+        objectContainer.RegisterMock<IAuthenticationService>(container);
+        objectContainer.RegisterMock<IAuthorizationService>(container);
+        objectContainer.RegisterMock<ICurrentDateTime>(container);
+        objectContainer.RegisterMock<IEmployerAccountRepository>(container);
+        objectContainer.RegisterMock<IPayeRepository>(container);
+    }
 
-        public static async Task ScopeAsync(this IObjectContainer objectContainer, Func<IObjectContainer, Task> step)
-        {
-            using (var nestedContainer = objectContainer.Resolve<IContainer>().GetNestedContainer())
-            using (var nestedObjectContainer = new ObjectContainer(objectContainer))
-            {
-                var unitOfWorkManager = nestedContainer.GetInstance<IUnitOfWorkManager>();
+    public static async Task ScopeAsync(this IObjectContainer objectContainer, Func<IObjectContainer, Task> step)
+    {
+        using var nestedContainer = objectContainer.Resolve<IContainer>().GetNestedContainer();
+        using var nestedObjectContainer = new ObjectContainer(objectContainer);
+            
+        var unitOfWorkManager = nestedContainer.GetInstance<IUnitOfWorkManager>();
                 
-                nestedObjectContainer.RegisterInstances(nestedContainer);
+        nestedObjectContainer.RegisterInstances(nestedContainer);
 
-                await unitOfWorkManager.BeginAsync().ConfigureAwait(false);
+        await unitOfWorkManager.BeginAsync().ConfigureAwait(false);
 
-                try
-                {
-                    await step(nestedObjectContainer).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    nestedContainer.GetInstance<ILog>().Error(ex, "An error occurred in ScopeAsync");
+        try
+        {
+            await step(nestedObjectContainer).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            nestedContainer.GetInstance<ILog>().Error(ex, "An error occurred in ScopeAsync");
 
-                    await unitOfWorkManager.EndAsync(ex).ConfigureAwait(false);
-                    throw;
-                }
-
-                await unitOfWorkManager.EndAsync().ConfigureAwait(false);
-            }
+            await unitOfWorkManager.EndAsync(ex).ConfigureAwait(false);
+            throw;
         }
 
-        public static async Task RunStepsInIsolation(this IObjectContainer container, CancellationToken cancellationToken, params Func<IObjectContainer, Task>[] funcs)
+        await unitOfWorkManager.EndAsync().ConfigureAwait(false);
+    }
 
+    public static async Task RunStepsInIsolation(this IObjectContainer container, CancellationToken cancellationToken, params Func<IObjectContainer, Task>[] funcs)
+    {
+        foreach (var func in funcs)
         {
-            foreach (var func in funcs)
+            if (cancellationToken.IsCancellationRequested)
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                await container.ScopeAsync(func);
+                return;
             }
-        }
 
-        private static void RegisterInstance<T>(this IObjectContainer objectContainer, IContainer container) where T : class
-        {
-            objectContainer.RegisterInstanceAs(container.GetInstance<T>());
+            await container.ScopeAsync(func);
         }
+    }
 
-        private static void RegisterMock<T>(this IObjectContainer objectContainer, IContainer container) where T : class
-        {
-            objectContainer.RegisterInstanceAs(container.GetInstance<Mock<T>>());
-        }
+    private static void RegisterInstance<T>(this IObjectContainer objectContainer, IContainer container) where T : class
+    {
+        objectContainer.RegisterInstanceAs(container.GetInstance<T>());
+    }
+
+    private static void RegisterMock<T>(this IObjectContainer objectContainer, IContainer container) where T : class
+    {
+        objectContainer.RegisterInstanceAs(container.GetInstance<Mock<T>>());
     }
 }

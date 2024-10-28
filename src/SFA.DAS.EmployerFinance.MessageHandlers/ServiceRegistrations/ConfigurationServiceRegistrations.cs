@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.Encoding;
-using SFA.DAS.Events.Api.Client.Configuration;
 using SFA.DAS.Provider.Events.Api.Client.Configuration;
 using SFA.DAS.TokenService.Api.Client;
 
@@ -28,10 +27,7 @@ public static class ConfigurationServiceRegistrations
 
         services.Configure<TokenServiceApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.TokenServiceApi));
         services.AddSingleton<ITokenServiceApiClientConfiguration>(cfg => cfg.GetService<IOptions<TokenServiceApiClientConfiguration>>().Value);
-
-        services.Configure<EventsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.EventsApi));
-        services.AddSingleton<IEventsApiClientConfiguration>(cfg => cfg.GetService<IOptions<EventsApiClientConfiguration>>().Value);
-
+        
         services.Configure<HmrcConfiguration>(configuration.GetSection(ConfigurationKeys.Hmrc));
         services.AddSingleton<IHmrcConfiguration>(cfg => cfg.GetService<IOptions<HmrcConfiguration>>().Value);
 
