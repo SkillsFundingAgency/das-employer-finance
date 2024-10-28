@@ -44,13 +44,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Mes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Api.Types", "SFA.DAS.EmployerFinance.Api.Types\SFA.DAS.EmployerFinance.Api.Types.csproj", "{7C0B08BB-8C28-45F5-B547-25F006615B84}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Events", "SFA.DAS.EmployerFinance.Events\SFA.DAS.EmployerFinance.Events.csproj", "{2245A806-DAF7-42A9-898C-2C3D6C65E87C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.TestCommon", "SFA.DAS.EmployerFinance.TestCommon\SFA.DAS.EmployerFinance.TestCommon.csproj", "{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Types", "SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj", "{77E5F79D-6045-49F0-BF5D-E0A83688C220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.AcceptanceTests", "SFA.DAS.EmployerFinance.AcceptanceTests\SFA.DAS.EmployerFinance.AcceptanceTests.csproj", "{2045971D-A067-454C-92BE-28EFFFD12B00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.AcceptanceTests", "SFA.DAS.EmployerFinance.AcceptanceTests\SFA.DAS.EmployerFinance.AcceptanceTests.csproj", "{2045971D-A067-454C-92BE-28EFFFD12B00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,10 +126,6 @@ Global
 		{7C0B08BB-8C28-45F5-B547-25F006615B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C0B08BB-8C28-45F5-B547-25F006615B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C0B08BB-8C28-45F5-B547-25F006615B84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}.Release|Any CPU.ActiveCfg = Release|Any CPU

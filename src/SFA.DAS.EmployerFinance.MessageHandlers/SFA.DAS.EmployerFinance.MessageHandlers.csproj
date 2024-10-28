@@ -23,7 +23,6 @@
 		<PackageReference Include="Microsoft.Azure.WebJobs.Logging.ApplicationInsights" Version="3.0.41" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\SFA.DAS.EmployerFinance.Events\SFA.DAS.EmployerFinance.Events.csproj" />
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance.Messages\SFA.DAS.EmployerFinance.Messages.csproj" />
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj" />
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
