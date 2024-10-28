@@ -5,11 +5,6 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EmployerFinance.Database", "SFA.DAS.EmployerFinance.Database\SFA.DAS.EmployerFinance.Database.sqlproj", "{6C145D4A-CBA9-439C-984E-0A5953CBE04D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "AzureConfiguration", "{68328FF1-53F2-4737-A983-7E2B67179E17}"
-	ProjectSection(SolutionItems) = preProject
-		AzureTopicConfigurationStrucuture.json = AzureTopicConfigurationStrucuture.json
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Host", "SFA.DAS.EmployerFinance.Host\SFA.DAS.EmployerFinance.Host.csproj", "{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Jobs", "SFA.DAS.EmployerFinance.Jobs\SFA.DAS.EmployerFinance.Jobs.csproj", "{079F027D-0794-463F-9D03-92858538CD31}"
