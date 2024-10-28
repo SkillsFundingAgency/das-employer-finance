@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 using SFA.DAS.EAS.Account.Api.Types.Events.Levy;
-using SFA.DAS.EmployerFinance.Commands.PublishGenericEvent;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -12,7 +10,6 @@ using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.UnitTests.ObjectMothers;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
-using SFA.DAS.Events.Api.Types;
 using SFA.DAS.NServiceBus.Testing.Services;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
@@ -25,8 +22,6 @@ public class WhenIReceiveTheCommand
     private Mock<IDasLevyRepository> _levyRepository;
     private Mock<IMediator> _mediator;
     private Mock<IHmrcDateService> _hmrcDateService;
-    private Mock<ILevyEventFactory> _levyEventFactory;
-    private Mock<IGenericEventFactory> _genericEventFactory;
     private Mock<IEncodingService> _encodingService;
     private ILevyImportCleanerStrategy _levyImportCleanerStrategy;
     private Mock<ILogger<LevyImportCleanerStrategy>> _logger;
@@ -52,15 +47,12 @@ public class WhenIReceiveTheCommand
         _currentDateTime = new Mock<ICurrentDateTime>();
         _currentDateTime.Setup(cdt => cdt.Now).Returns(() => DateTime.UtcNow);
 
-        _levyEventFactory = new Mock<ILevyEventFactory>();
-        _genericEventFactory = new Mock<IGenericEventFactory>();
         _encodingService = new Mock<IEncodingService>();
         _logger = new Mock<ILogger<LevyImportCleanerStrategy>>();
         _eventPublisher = new TestableEventPublisher();
         _levyImportCleanerStrategy = new LevyImportCleanerStrategy(_levyRepository.Object, _hmrcDateService.Object, _logger.Object, _currentDateTime.Object);
 
-        _refreshEmployerLevyDataCommandHandler = new RefreshEmployerLevyDataCommandHandler(_validator.Object, _levyRepository.Object, _mediator.Object,
-            _levyEventFactory.Object, _genericEventFactory.Object, _encodingService.Object, _levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
+        _refreshEmployerLevyDataCommandHandler = new RefreshEmployerLevyDataCommandHandler(_validator.Object, _levyRepository.Object, _levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
     }
 
     [Test]
@@ -155,36 +147,6 @@ public class WhenIReceiveTheCommand
             e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
     }
 
-    //[Test]
-    //public async Task ThenIfTheSubmissionIsAnEndOfYearAdjustmentTheFlagIsSetOnTheRecord()
-    //{
-    //    //Arrange
-    //    _hmrcDateService.Setup(x => x.IsSubmissionEndOfYearAdjustment("16-17", 12, It.IsAny<DateTime>())).Returns(true);
-    //    _levyRepository.Setup(x => x.GetSubmissionByEmprefPayrollYearAndMonth(ExpectedEmpRef, "16-17", 12)).ReturnsAsync(new DasDeclaration { LevyDueYtd = 20 });
-    //    var data = RefreshEmployerLevyDataCommandObjectMother.CreateEndOfYearAdjustment(ExpectedEmpRef, ExpectedAccountId);
-
-    //    //Act
-    //    await _refreshEmployerLevyDataCommandHandler.Handle(data);
-
-    //    //Assert
-    //    _levyRepository.Verify(x => x.CreateEmployerDeclarations(It.Is<IEnumerable<DasDeclaration>>(c => c.Any(d => d.EndOfYearAdjustment)), ExpectedEmpRef, ExpectedAccountId), Times.Once);
-    //}
-
-    //[Test]
-    //public async Task ThenIfTheSubmissionIsAnEndOfYearAdjustmentTheAmountIsWorkedOutFromThePreviousTaxYearValue()
-    //{
-    //    //Arrange
-    //    _hmrcDateService.Setup(x => x.IsSubmissionEndOfYearAdjustment("16-17", 12, It.IsAny<DateTime>())).Returns(true);
-    //    _levyRepository.Setup(x => x.GetSubmissionByEmprefPayrollYearAndMonth(ExpectedEmpRef, "16-17", 12)).ReturnsAsync(new DasDeclaration { LevyDueYtd = 20 });
-    //    var data = RefreshEmployerLevyDataCommandObjectMother.CreateEndOfYearAdjustment(ExpectedEmpRef, ExpectedAccountId);
-
-    //    //Act
-    //    await _refreshEmployerLevyDataCommandHandler.Handle(data);
-
-    //    //Assert
-    //    _levyRepository.Verify(x => x.CreateEmployerDeclarations(It.Is<IEnumerable<DasDeclaration>>(c => c.First().EndOfYearAdjustment && c.First().EndOfYearAdjustmentAmount.Equals(10m)), ExpectedEmpRef, ExpectedAccountId), Times.Once);
-    //}
-
     [Test]
     public async Task ThenIfTheSubmissionIsAnEndOfYearAdjustmentThePeriod12ValueWillBeTakenFromHmrcIfItExists()
     {
@@ -238,39 +200,7 @@ public class WhenIReceiveTheCommand
         //Assert
         _levyRepository.Verify(x => x.CreateEmployerDeclarations(It.Is<IEnumerable<DasDeclaration>>(c => c.Count() == 4), ExpectedEmpRef, ExpectedAccountId), Times.Once);
     }
-
-    [Test]
-    public async Task ThenIfLevyDataHasChangedThenALevyDeclarationUpdatedEventIsPublished()
-    {
-        //Arrange
-        var data = RefreshEmployerLevyDataCommandObjectMother.CreateLevyDataWithMultiplePeriods(ExpectedAccountId, DateTime.UtcNow);
-
-        var hashedAccountId = "ABC123";
-        _encodingService.Setup(x => x.Encode(ExpectedAccountId,EncodingType.AccountId)).Returns(hashedAccountId);
-
-        var expectedLevyEvents = new List<LevyDeclarationUpdatedEvent> { new LevyDeclarationUpdatedEvent { ResourceUri = "ABC" }, new LevyDeclarationUpdatedEvent { ResourceUri = "ZZZ" } };
-        var expectedGenericEvents = new List<GenericEvent> { new GenericEvent { Id = 1 }, new GenericEvent { Id = 2 } };
-
-        _levyEventFactory.Setup(
-            x =>
-                x.CreateDeclarationUpdatedEvent(hashedAccountId, data.EmployerLevyData.First().Declarations.Declarations[0].PayrollYear,
-                    data.EmployerLevyData.First().Declarations.Declarations[0].PayrollMonth)).Returns(expectedLevyEvents[0]);
-        _genericEventFactory.Setup(x => x.Create(expectedLevyEvents[0])).Returns(expectedGenericEvents[0]);
-        _levyEventFactory.Setup(
-            x =>
-                x.CreateDeclarationUpdatedEvent(hashedAccountId, data.EmployerLevyData.ElementAt(1).Declarations.Declarations[0].PayrollYear,
-                    data.EmployerLevyData.ElementAt(1).Declarations.Declarations[0].PayrollMonth)).Returns(expectedLevyEvents[1]);
-        _genericEventFactory.Setup(x => x.Create(expectedLevyEvents[1])).Returns(expectedGenericEvents[1]);
-
-        //Act
-        await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
-
-        //Assert
-        _mediator.Verify(x => x.Send(It.IsAny<PublishGenericEventCommand>(), CancellationToken.None), Times.Exactly(2));
-        _mediator.Verify(x => x.Send(It.Is<PublishGenericEventCommand>(y => y.Event == expectedGenericEvents[0]), CancellationToken.None), Times.Exactly(1));
-        _mediator.Verify(x => x.Send(It.Is<PublishGenericEventCommand>(y => y.Event == expectedGenericEvents[1]), CancellationToken.None), Times.Exactly(1));
-    }
-
+    
     [Test]
     public async Task ThenIfThePayrollYearPreDatesTheLevyItIsNotProcessed()
     {
@@ -291,7 +221,6 @@ public class WhenIReceiveTheCommand
         //Arrange
         var latestDeclaration = new DasDeclaration { LevyDueYtd = 20 };
 
-
         _hmrcDateService.Setup(x => x.IsSubmissionEndOfYearAdjustment("16-17", 12, It.IsAny<DateTime>()))
             .Returns(true);
 
@@ -305,7 +234,7 @@ public class WhenIReceiveTheCommand
         newDeclaration.NoPaymentForPeriod = false;
 
         //Act
-        Func<Task> action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
+        var action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
         action.ShouldThrow<ArgumentNullException>();
     }
@@ -325,7 +254,7 @@ public class WhenIReceiveTheCommand
         newDeclaration.LevyDueYtd = null;
         newDeclaration.NoPaymentForPeriod = true;
         //Act
-        Func<Task> action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
+        var action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
         action.ShouldNotThrow();
     }
 
@@ -335,7 +264,6 @@ public class WhenIReceiveTheCommand
     {
         //Act
         await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId), CancellationToken.None);
-
 
         //Assert
         _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>

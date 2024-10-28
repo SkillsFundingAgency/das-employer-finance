@@ -9,27 +9,17 @@ using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 
-public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>
+public class GetTransactionsDownloadQueryHandler(
+    ITransactionFormatterFactory transactionsFormatterFactory,
+    ITransactionRepository transactionRepository,
+    IAccountApiClient accountApiClient)
+    : IRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>
 {
-    private readonly ITransactionFormatterFactory _transactionsFormatterFactory;
-    private readonly ITransactionRepository _transactionRepository;
-    private readonly IAccountApiClient _accountApiClient;
-
-    public GetTransactionsDownloadQueryHandler(
-        ITransactionFormatterFactory transactionsFormatterFactory, 
-        ITransactionRepository transactionRepository,
-        IAccountApiClient accountApiClient)
-    {
-        _transactionsFormatterFactory = transactionsFormatterFactory;
-        _transactionRepository = transactionRepository;
-        _accountApiClient = accountApiClient;
-    }
-
     public async Task<GetTransactionsDownloadResponse> Handle(GetTransactionsDownloadQuery message,CancellationToken cancellationToken)
     {
         var endDate = message.EndDate.ToDate();
         var endDateBeginningOfNextMonth = new DateTime(endDate.Year, endDate.Month, 1).AddMonths(1);
-        var transactions = await _transactionRepository.GetAllTransactionDetailsForAccountByDate(message.AccountId, message.StartDate, endDateBeginningOfNextMonth);
+        var transactions = await transactionRepository.GetAllTransactionDetailsForAccountByDate(message.AccountId, message.StartDate, endDateBeginningOfNextMonth);
                        
         if (!transactions.Any())
         {
@@ -37,7 +27,7 @@ public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactio
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var accountResponse = await _accountApiClient.GetAccount(message.AccountId);
+        var accountResponse = await accountApiClient.GetAccount(message.AccountId);
         var apprenticeshipEmployerTypeEnum = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountResponse.ApprenticeshipEmployerType, true);
 
         foreach (var transaction in transactions)
@@ -45,7 +35,7 @@ public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactio
             GenerateTransactionDescription(transaction);
         }
 
-        var fileFormatter = _transactionsFormatterFactory.GetTransactionsFormatterByType(
+        var fileFormatter = transactionsFormatterFactory.GetTransactionsFormatterByType(
             message.DownloadFormat.Value,
             apprenticeshipEmployerTypeEnum);
 
@@ -57,7 +47,7 @@ public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactio
         };
     }
 
-    private void GenerateTransactionDescription(TransactionDownloadLine transaction)
+    private static void GenerateTransactionDescription(TransactionDownloadLine transaction)
     {
         transaction.Description = transaction.TransactionType;
 
@@ -67,14 +57,9 @@ public class GetTransactionsDownloadQueryHandler : IRequestHandler<GetTransactio
         }
         else if (transaction.TransactionType.Equals("Transfer", StringComparison.OrdinalIgnoreCase))
         {
-            if (transaction.TransferSenderAccountId.Equals(transaction.AccountId))
-            {
-                transaction.Description = $"Transfer sent to {transaction.TransferReceiverAccountName}";
-            }
-            else
-            {
-                transaction.Description = $"Transfer received from {transaction.TransferSenderAccountName}";
-            }
+            transaction.Description = transaction.TransferSenderAccountId.Equals(transaction.AccountId) 
+                ? $"Transfer sent to {transaction.TransferReceiverAccountName}" 
+                : $"Transfer received from {transaction.TransferSenderAccountName}";
         }
     }
 }

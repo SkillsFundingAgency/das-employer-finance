@@ -1,6 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.EmployerFinance.Models.HmrcLevy;
@@ -60,18 +59,13 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture : FluentTestFixtu
     private readonly Mock<IHmrcDateService> _hmrcDateService;
     private readonly RefreshEmployerLevyDataCommandHandler _handler;
     private readonly Mock<ICurrentDateTime> _currentDateTime;
-    private readonly Mock<IEncodingService> _encodingService;
     private long _accountId = 999;
     private ICollection<EmployerLevyData> _employerLevyData;
 
     public RefreshEmployerLevyDataCommandHandlerTestsFixture()
     {
         _dasLevyRepository = new Mock<IDasLevyRepository>();
-        var genericEventFactory = new Mock<IGenericEventFactory>();
-        _encodingService = new Mock<IEncodingService>();
-        var levyEventFactory = new Mock<ILevyEventFactory>();
         var logger = new Mock<ILogger<LevyImportCleanerStrategy>>();
-        var mediator = new Mock<IMediator>();
         _eventPublisher = new TestableEventPublisher();
         _currentDateTime = new Mock<ICurrentDateTime>();
         _currentDateTime.Setup(cdt => cdt.Now).Returns(() => DateTime.UtcNow);
@@ -82,8 +76,7 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture : FluentTestFixtu
 
         var levyImportCleanerStrategy = new LevyImportCleanerStrategy(_dasLevyRepository.Object, _hmrcDateService.Object, logger.Object, _currentDateTime.Object);
 
-        _handler = new RefreshEmployerLevyDataCommandHandler(validator.Object, _dasLevyRepository.Object, mediator.Object,
-            levyEventFactory.Object, genericEventFactory.Object, _encodingService.Object, levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
+        _handler = new RefreshEmployerLevyDataCommandHandler(validator.Object, _dasLevyRepository.Object, levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
     }
 
     public RefreshEmployerLevyDataCommandHandlerTestsFixture SetAccountId(long accountId)
