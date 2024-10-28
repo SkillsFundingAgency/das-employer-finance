@@ -1,6 +1,4 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Factories;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
