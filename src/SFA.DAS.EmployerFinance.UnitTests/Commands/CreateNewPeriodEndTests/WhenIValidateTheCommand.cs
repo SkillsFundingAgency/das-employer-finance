@@ -25,7 +25,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
                 .ContainKey("NewPeriodEnd")
                 .WhichValue
                 .Should()
-                .Be("ReceiverAccountId has not been supplied");
+                .Be("NewPeriodEnd has not been supplied");
         }
 
         [Test]

@@ -37,11 +37,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshPaymentDataTests
             actual.ValidationDictionary.Should()
                 .ContainKey("AccountId")
                 .WhichValue
-                .Should().Be("ReceiverAccountId has not been supplied");
+                .Should().Be("AccountId has not been supplied");
             actual.ValidationDictionary.Should()
                 .ContainKey("PeriodEnd")
                 .WhichValue
-                .Should().Be("ReceiverAccountId has not been supplied");
+                .Should().Be("PeriodEnd has not been supplied");
         }
     }
 }
