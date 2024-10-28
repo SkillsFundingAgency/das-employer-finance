@@ -9,6 +9,7 @@
     <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.1.338" />
     <PackageReference Include="SFA.DAS.UnitOfWork.EntityFrameworkCore" Version="9.0.28" />
     <PackageReference Include="SFA.DAS.UnitOfWork.Mvc" Version="9.0.28" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.10" />
@@ -27,6 +28,7 @@
       <Version>9.0.28</Version>
     </PackageReference>
     <PackageReference Include="SFA.DAS.Web.Policy" Version="1.1.0.63777" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.1" />
     <PackageReference Include="WebEssentials.AspNetCore.CdnTagHelpers" Version="1.0.21" />
   </ItemGroup>
   <ItemGroup>
