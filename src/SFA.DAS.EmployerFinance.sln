@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Types", "SFA.DAS.EmployerFinance.Types\SFA.DAS.EmployerFinance.Types.csproj", "{77E5F79D-6045-49F0-BF5D-E0A83688C220}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.AcceptanceTests", "SFA.DAS.EmployerFinance.AcceptanceTests\SFA.DAS.EmployerFinance.AcceptanceTests.csproj", "{2045971D-A067-454C-92BE-28EFFFD12B00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.EmployerFinance.AcceptanceTests", "SFA.DAS.EmployerFinance.AcceptanceTests\SFA.DAS.EmployerFinance.AcceptanceTests.csproj", "{2045971D-A067-454C-92BE-28EFFFD12B00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
