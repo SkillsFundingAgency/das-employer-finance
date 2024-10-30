@@ -4,21 +4,26 @@ using SFA.DAS.EmployerFinance.Models.Paye;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 
-public class CreateAccountPayeCommandHandler(IPayeRepository payeRepository, ILogger<CreateAccountPayeCommandHandler> logger)
+public class CreateAccountPayeCommandHandler(
+    IPayeRepository payeRepository,
+    ILogger<CreateAccountPayeCommandHandler> logger)
     : IHandleMessages<CreateAccountPayeCommand>
 {
     public async Task Handle(CreateAccountPayeCommand message, IMessageHandlerContext context)
     {
         try
         {
-            logger.LogInformation($"Account Paye scheme created via {(string.IsNullOrEmpty(message.Aorn) ? "Gov gateway" : "Aorn")} - Account Id: {message.AccountId}; Emp Ref: {message.EmpRef};");
+            logger.LogInformation("Account Paye scheme created via {Mechanism} - Account Id: {AccountId}; Emp Ref: {EmpRef};",
+                string.IsNullOrEmpty(message.Aorn) ? "Gov gateway" : "Aorn",
+                message.AccountId,
+                message.EmpRef);
 
             var payeScheme = new Paye(message.EmpRef, message.AccountId, message.Name, message.Aorn);
             await payeRepository.CreatePayeScheme(payeScheme);
 
             await GetLevyForNoneAornPayeSchemes(payeScheme, context);
 
-            logger.LogInformation($"Account Paye scheme created - Account Id: {payeScheme.AccountId}; Emp Ref: {payeScheme.EmpRef}");
+            logger.LogInformation("Account Paye scheme created - Account Id: {AccountId}; Emp Ref: {EmpRef}", payeScheme.AccountId, payeScheme.EmpRef);
         }
         catch (Exception exception)
         {
@@ -33,7 +38,7 @@ public class CreateAccountPayeCommandHandler(IPayeRepository payeRepository, ILo
         {
             await context.SendLocal(new ImportAccountLevyDeclarationsCommand(payeScheme.AccountId, payeScheme.EmpRef));
 
-            logger.LogInformation($"Requested levy for - Account Id: {payeScheme.AccountId}; Emp Ref: {payeScheme.EmpRef}");
+            logger.LogInformation("Requested levy for - Account Id: {AccountId}; Emp Ref: {EmpRef}", payeScheme.AccountId, payeScheme.EmpRef);
         }
     }
 }
