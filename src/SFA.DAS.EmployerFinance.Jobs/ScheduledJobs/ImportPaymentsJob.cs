@@ -3,17 +3,10 @@ using SFA.DAS.EmployerFinance.Messages.Commands;
 
 namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 
-public class ImportPaymentsJob
+public class ImportPaymentsJob(IMessageSession messageSession)
 {
-    private readonly IMessageSession _messageSession;
-
-    public ImportPaymentsJob(IMessageSession messageSession)
-    {
-        _messageSession = messageSession;
-    }
-
     public Task Run([TimerTrigger("0 0 * * * *")] TimerInfo timer, ILogger logger)
     {
-        return _messageSession.Send(new ImportPaymentsCommand());
+        return messageSession.Send(new ImportPaymentsCommand());
     }
 }
