@@ -16,7 +16,7 @@ public class ImportPaymentsCommandHandler(
 {
     public async Task Handle(ImportPaymentsCommand message, IMessageHandlerContext context)
     {
-        logger.LogInformation($"Calling Payments API");
+        logger.LogInformation("Calling Payments API");
 
         if (configuration.PaymentsDisabled)
         {
@@ -27,7 +27,10 @@ public class ImportPaymentsCommandHandler(
         var periodEnds = await paymentsEventsApiClient.GetPeriodEnds();
 
         var result = await mediator.Send(new GetPeriodEndsRequest());
-        var periodsToProcess = periodEnds.Where(pe => result.CurrentPeriodEnds.All(existing => existing.PeriodEndId != pe.Id));
+        
+        var periodsToProcess = periodEnds
+            .Where(pe => result.CurrentPeriodEnds.All(existing => existing.PeriodEndId != pe.Id))
+            .ToList();
 
         if (!periodsToProcess.Any())
         {
