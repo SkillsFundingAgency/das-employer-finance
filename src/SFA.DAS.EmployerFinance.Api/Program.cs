@@ -20,6 +20,7 @@ public class Program
             .UseNLog()
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseStartup<Startup>();
+                webBuilder.ConfigureKestrel(c => c.AddServerHeader = false)
+                .UseStartup<Startup>();
             });
 }
