@@ -6,6 +6,9 @@
 		<LangVersion>latestmajor</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Content Remove="web.config" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
 		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.35" />
@@ -65,5 +68,13 @@
 	<ItemGroup>
 		<None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\4.5.3\contentFiles\any\any\NLog.xsd" />
 		<None Remove="internal-nlog.txt" />
+	</ItemGroup>
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="web.config" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="web.config">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

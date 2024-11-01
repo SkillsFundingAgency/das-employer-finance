@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Routing;
+﻿using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.OpenApi.Models;
@@ -114,21 +113,6 @@ public class Startup
         }
 
         app.UseHttpsRedirection();
-
-        app.Use(async (context, next) =>
-        {
-            context.Response.OnStarting(() =>
-            {
-                if (context.Response.Headers.ContainsKey("X-Powered-By"))
-                {
-                    context.Response.Headers.Remove("X-Powered-By");
-                }
-
-                return Task.CompletedTask;
-            });
-
-            await next();
-        });
 
         app.UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
             .UseHealthChecks()
