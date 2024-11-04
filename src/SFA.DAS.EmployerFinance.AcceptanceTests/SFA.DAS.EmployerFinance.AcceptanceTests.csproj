@@ -10,7 +10,6 @@
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NLog.Schema" Version="5.2.8" />
     <PackageReference Include="SFA.DAS.Authentication" Version="1.1.2" />
-    <PackageReference Include="SFA.DAS.Authorization.EmployerUserRoles" Version="6.0.52" />
     <PackageReference Include="SFA.DAS.AutoConfiguration" Version="2.2.17" />
     <PackageReference Include="SFA.DAS.EmployerAccounts.Messages" Version="1.6.3195" />
     <PackageReference Include="SFA.DAS.NLog.Logger" Version="1.2.1" />
