@@ -10,7 +10,6 @@ using Moq;
 using NServiceBus.Testing;
 using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Models.Account;
@@ -30,7 +29,6 @@ public class GivenAnImportPaymentsCommand
     private Mock<IMediator> _mediatorMock;
     private Mock<ILogger<ImportPaymentsCommandHandler>> _loggerMock;
     private TestableMessageHandlerContext _messageHandlerContext;
-    private PaymentsEventsApiClientLocalConfiguration _configuration;
     private IFixture Fixture = new Fixture();
     private ImportPaymentsCommand _importPaymentsCommand;
 
@@ -58,23 +56,7 @@ public class GivenAnImportPaymentsCommand
         _mediatorMock.Setup(mock => mock.Send(It.IsAny<GetAllEmployerAccountsRequest>(),CancellationToken.None))
             .ReturnsAsync(new GetAllEmployerAccountsResponse { Accounts = new List<Account> { Fixture.Create<Account>() } });
 
-        _configuration = new PaymentsEventsApiClientLocalConfiguration { PaymentsDisabled = false };
-
-        _sut = new ImportPaymentsCommandHandler(_paymentsEventsApiClientMock.Object, _mediatorMock.Object, _loggerMock.Object, _configuration);
-    }
-
-    [Test]
-    [Category("UnitTest")]
-    public async Task WhenPaymentsAreDisableThenDoNothing()
-    {
-        // Arrange
-        _configuration.PaymentsDisabled = true;
-
-        // Act
-        await _sut.Handle(_importPaymentsCommand, _messageHandlerContext);
-
-        // Assert
-        _paymentsEventsApiClientMock.Verify(x => x.GetPeriodEnds(), Times.Never);
+        _sut = new ImportPaymentsCommandHandler(_paymentsEventsApiClientMock.Object, _mediatorMock.Object, _loggerMock.Object);
     }
 
     [Test]

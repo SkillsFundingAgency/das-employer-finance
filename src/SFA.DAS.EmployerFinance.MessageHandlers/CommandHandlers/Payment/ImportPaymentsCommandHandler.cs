@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.Provider.Events.Api.Client;
@@ -10,24 +9,17 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 public class ImportPaymentsCommandHandler(
     IPaymentsEventsApiClient paymentsEventsApiClient,
     IMediator mediator,
-    ILogger<ImportPaymentsCommandHandler> logger,
-    PaymentsEventsApiClientLocalConfiguration configuration)
+    ILogger<ImportPaymentsCommandHandler> logger)
     : IHandleMessages<ImportPaymentsCommand>
 {
     public async Task Handle(ImportPaymentsCommand message, IMessageHandlerContext context)
     {
         logger.LogInformation("Calling Payments API");
 
-        if (configuration.PaymentsDisabled)
-        {
-            logger.LogInformation("Payment processing disabled");
-            return;
-        }
-
         var periodEnds = await paymentsEventsApiClient.GetPeriodEnds();
 
         var result = await mediator.Send(new GetPeriodEndsRequest());
-        
+
         var periodsToProcess = periodEnds
             .Where(pe => result.CurrentPeriodEnds.All(existing => existing.PeriodEndId != pe.Id))
             .ToList();
@@ -48,7 +40,8 @@ public class ImportPaymentsCommandHandler(
     {
         var periodEnd = MapToDbPaymentPeriod(paymentsPeriodEnd);
 
-        logger.LogInformation($"Creating period end {periodEnd.PeriodEndId}");
+        logger.LogInformation("Creating period end {PeriodEndId}", periodEnd.PeriodEndId);
+
         await mediator.Send(new CreateNewPeriodEndCommand { NewPeriodEnd = periodEnd });
 
         if (!periodEnd.AccountDataValidAt.HasValue || !periodEnd.CommitmentDataValidAt.HasValue)
@@ -56,7 +49,7 @@ public class ImportPaymentsCommandHandler(
             return;
         }
 
-        logger.LogInformation($"Creating process period end queue message for period end ref: '{paymentsPeriodEnd.Id}'");
+        logger.LogInformation("Creating process period end queue message for period end ref: '{Id}'", paymentsPeriodEnd.Id);
 
         await context.SendLocal(new ProcessPeriodEndPaymentsCommand
         {
