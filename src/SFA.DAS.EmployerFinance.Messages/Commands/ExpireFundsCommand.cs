@@ -1,8 +1,6 @@
-﻿using SFA.DAS.NServiceBus;
-
-namespace SFA.DAS.EmployerFinance.Messages.Commands
+﻿namespace SFA.DAS.EmployerFinance.Messages.Commands
 {
-    public class ExpireFundsCommand : Command
+    public class ExpireFundsCommand
     {
     }
 }
