@@ -22,9 +22,6 @@ public static class ConfigurationServiceRegistrations
         services.Configure<IPaymentsEventsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient));
         services.AddSingleton<IPaymentsEventsApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient).Get<PaymentsEventsApiClientConfiguration>());
 
-        services.Configure<PaymentsEventsApiClientLocalConfiguration>(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient));
-        services.AddSingleton(configuration.GetSection(ConfigurationKeys.PaymentEventsApiClient).Get<PaymentsEventsApiClientLocalConfiguration>());
-
         services.Configure<TokenServiceApiClientConfiguration>(configuration.GetSection(ConfigurationKeys.TokenServiceApi));
         services.AddSingleton<ITokenServiceApiClientConfiguration>(cfg => cfg.GetService<IOptions<TokenServiceApiClientConfiguration>>().Value);
         
