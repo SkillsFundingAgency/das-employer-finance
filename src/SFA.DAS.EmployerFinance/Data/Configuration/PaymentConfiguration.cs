@@ -8,6 +8,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     public void Configure(EntityTypeBuilder<Payment> builder)
     {
         builder.ToTable("Payment");
+        builder.Property(x => x.Amount).HasPrecision(18, 5);
         builder.Property(x => x.Id).HasColumnName("PaymentId");
         builder.Property(x => x.EmployerAccountId).HasColumnName("AccountId");
         builder.Ignore(a => a.StandardCode);
