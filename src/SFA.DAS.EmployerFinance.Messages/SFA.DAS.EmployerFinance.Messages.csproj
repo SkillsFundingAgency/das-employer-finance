@@ -3,6 +3,7 @@
   <PropertyGroup>
     <LangVersion>latestmajor</LangVersion>
     <TargetFramework>net6.0</TargetFramework>
+    <Version>2.0.1</Version>
     <IsPackable>true</IsPackable>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         
