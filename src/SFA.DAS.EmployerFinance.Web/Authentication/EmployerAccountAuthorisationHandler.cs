@@ -36,6 +36,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
         // re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
         if (user.ClaimsAreEmpty())
         {
+            _logger.LogInformation("User claims are empty");
             return false;
         }
         
@@ -132,11 +133,12 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
 
         if (employerAccounts == null)
         {
+            _logger.LogInformation("Employer accounts null");
             return false;
         }
 
-        var employerIdentifier = employerAccounts.ContainsKey(accountIdFromUrl)
-                ? employerAccounts[accountIdFromUrl] : null;
+        var employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
+                ? account : null;
 
         if (employerIdentifier == null)
         {
@@ -148,6 +150,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
             return false;
         }
 
+        _logger.LogInformation("Claim user role: {ClaimUserRole}", claimUserRole.ToString());
         switch (userRoleRequired)
         {
             case EmployerUserRole.Owner when claimUserRole == EmployerUserRole.Owner:
