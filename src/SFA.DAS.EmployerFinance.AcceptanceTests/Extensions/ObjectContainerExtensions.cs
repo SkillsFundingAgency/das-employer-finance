@@ -7,17 +7,16 @@ using MediatR;
 using Moq;
 using NServiceBus;
 using SFA.DAS.Authentication;
-using SFA.DAS.Authorization.Services;
 using SFA.DAS.EmployerFinance.AcceptanceTests.TestRepositories;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.Encoding;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
+using SFA.DAS.Encoding;
 using SFA.DAS.NLog.Logger;
 using SFA.DAS.UnitOfWork.Managers;
 using StructureMap;
-using SFA.DAS.EmployerFinance.Data.Contracts;
 
 namespace SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
 
@@ -41,7 +40,6 @@ public static class ObjectContainerExtensions
     {
         objectContainer.RegisterMock<IApprenticeshipLevyApiClient>(container);
         objectContainer.RegisterMock<IAuthenticationService>(container);
-        objectContainer.RegisterMock<IAuthorizationService>(container);
         objectContainer.RegisterMock<ICurrentDateTime>(container);
         objectContainer.RegisterMock<IEmployerAccountRepository>(container);
         objectContainer.RegisterMock<IPayeRepository>(container);

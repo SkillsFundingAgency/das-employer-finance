@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using BoDi;
 using Moq;
 using NServiceBus;
-using SFA.DAS.EmployerFinance.AcceptanceTests.DependencyResolution;
 using SFA.DAS.EmployerFinance.AcceptanceTests.Extensions;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -19,106 +18,97 @@ using SFA.DAS.UnitOfWork.NServiceBus.Configuration;
 using StructureMap;
 using TechTalk.SpecFlow;
 
-namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps
+namespace SFA.DAS.EmployerFinance.AcceptanceTests.Steps;
+
+[Binding]
+public class Hooks(IObjectContainer objectContainer)
 {
-    [Binding]
-    public class Hooks
+    private static IContainer _container;
+    private static IEndpointInstance _endpoint;
+
+    [BeforeTestRun]
+    public static async Task BeforeTestRun()
     {
-        private static IContainer _container;
-        private static IEndpointInstance _endpoint;
-        private readonly IObjectContainer _objectContainer;
+        AzureStorageEmulatorManager.StartStorageEmulator();
 
-        public Hooks(IObjectContainer objectContainer)
+        await StartNServiceBusEndpoint();
+    }
+
+    [BeforeScenario]
+    public void BeforeScenario()
+    {
+        _container.GetInstance<ILog>().Info("Starting Scenario.");
+
+        ResetCurrentDateTime(_container);
+        ResetFundsExpiryPeriod(_container);
+
+        objectContainer.RegisterInstances(_container);
+        objectContainer.RegisterMocks(_container);
+    }
+
+    [AfterScenario]
+    public void AfterScenario()
+    {
+        objectContainer.Dispose();
+    }
+
+    [AfterTestRun]
+    public static async Task AfterTestRun()
+    {
+        using (_container)
         {
-            _objectContainer = objectContainer;
+            await StopNServiceBusEndpoint();
         }
+    }
 
-        [BeforeTestRun]
-        public static async Task BeforeTestRun()
+    private static void ResetCurrentDateTime(IContainer container)
+    {
+        var currentDateTime = container.GetInstance<Mock<ICurrentDateTime>>();
+        currentDateTime.Setup(x => x.Now).Returns(DateTime.Now);
+    }
+
+    private static void ResetFundsExpiryPeriod(IContainer container)
+    {
+        var config = container.GetInstance<EmployerFinanceConfiguration>();
+        config.FundsExpiryPeriod = 24;
+    }
+
+    private static async Task StartNServiceBusEndpoint()
+    {
+        try
         {
-            AzureStorageEmulatorManager.StartStorageEmulator();
+            _container.GetInstance<ILog>().Info("Starting endpoint.");
 
-            ;
+            var endpointConfiguration = new EndpointConfiguration("SFA.DAS.EmployerFinance.AcceptanceTests")
+                .UseAzureServiceBusTransport()
+                .UseErrorQueue("SFA.DAS.EmployerFinance.AcceptanceTests-errors")
+                .UseInstallers()
+                .UseLicense(WebUtility.HtmlDecode(_container.GetInstance<EmployerFinanceConfiguration>().NServiceBusLicense))
+                .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
+                .UseNewtonsoftJsonSerializer()
+                .UseOutbox()
+                .UseUnitOfWork();
 
-            await StartNServiceBusEndpoint();
-        }
-
-        [BeforeScenario]
-        public void BeforeScenario()
-        {
-            _container.GetInstance<ILog>().Info("Starting Scenario.");
-
-            ResetCurrentDateTime(_container);
-            ResetFundsExpiryPeriod(_container);
-
-            _objectContainer.RegisterInstances(_container);
-            _objectContainer.RegisterMocks(_container);
-        }
-
-        [AfterScenario]
-        public void AfterScenario()
-        {
-            _objectContainer.Dispose();
-        }
-
-        [AfterTestRun]
-        public static async Task AfterTestRun()
-        {
-            using (_container)
+            if (Debugger.IsAttached)
             {
-                await StopNServiceBusEndpoint();
+                endpointConfiguration.PurgeOnStartup(true);
             }
-        }
 
-        private static void ResetCurrentDateTime(IContainer container)
+            _endpoint = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);
+
+            _container.Configure(c => c.For<IMessageSession>().Use(_endpoint));
+
+            _container.GetInstance<ILog>().Info("Endpoint Started.");
+        }
+        catch (Exception e)
         {
-            var currentDateTime = container.GetInstance<Mock<ICurrentDateTime>>();
-            currentDateTime.Setup(x => x.Now).Returns(DateTime.Now);
+            _container.GetInstance<ILog>().Error(e, "Error starting endpoint.");
+            throw;
         }
+    }
 
-        private static void ResetFundsExpiryPeriod(IContainer container)
-        {
-            var config = container.GetInstance<EmployerFinanceConfiguration>();
-            config.FundsExpiryPeriod = 24;
-        }
-
-        private static async Task StartNServiceBusEndpoint()
-        {
-            try
-            {
-                _container.GetInstance<ILog>().Info("Starting endpoint.");
-
-                var endpointConfiguration = new EndpointConfiguration("SFA.DAS.EmployerFinance.AcceptanceTests")
-                    .UseAzureServiceBusTransport()
-                    .UseErrorQueue("SFA.DAS.EmployerFinance.AcceptanceTests-errors")
-                    .UseInstallers()
-                    .UseLicense(WebUtility.HtmlDecode(_container.GetInstance<EmployerFinanceConfiguration>().NServiceBusLicense))
-                    .UseSqlServerPersistence(() => _container.GetInstance<DbConnection>())
-                    .UseNewtonsoftJsonSerializer()
-                    .UseOutbox()
-                    .UseUnitOfWork();
-
-                if (Debugger.IsAttached)
-                {
-                    endpointConfiguration.PurgeOnStartup(true);
-                }
-
-                _endpoint = await Endpoint.Start(endpointConfiguration).ConfigureAwait(false);
-
-                _container.Configure(c => c.For<IMessageSession>().Use(_endpoint));
-
-                _container.GetInstance<ILog>().Info("Endpoint Started.");
-            }
-            catch (Exception e)
-            {
-                _container.GetInstance<ILog>().Error(e, "Error starting endpoint.");
-                throw;
-            }
-        }
-
-        private static Task StopNServiceBusEndpoint()
-        {
-            return _endpoint.Stop();
-        }
+    private static Task StopNServiceBusEndpoint()
+    {
+        return _endpoint.Stop();
     }
 }
