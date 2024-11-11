@@ -45,7 +45,13 @@ public class TransfersControllerTests
         _accountDetailViewModel = new AccountDetailViewModel();
         _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
         
-        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
+        _orchestrator = new TransfersOrchestrator(
+            _authorisationService.Object, 
+            _encodingService.Object,
+            _transfersService.Object,
+            _accountApiClient.Object,
+            _configuration,
+            Mock.Of<ILogger<TransfersOrchestrator>>());
 
         _controller = new TransfersController(_orchestrator);
     }

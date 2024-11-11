@@ -33,8 +33,14 @@ public class WhenGettingTransfersCounts
         _configuration = new EmployerFinanceConfiguration { TransferAllowancePercentage = TransferAllowancePercentage };
 
         _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
-        
-        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
+
+        _orchestrator = new TransfersOrchestrator(
+            _authorisationService.Object,
+            _encodingService.Object,
+            _transfersService.Object,
+            _accountApiClient.Object,
+            _configuration,
+            Mock.Of<ILogger<TransfersOrchestrator>>());
     }
 
     [TestCase(true, true)]
