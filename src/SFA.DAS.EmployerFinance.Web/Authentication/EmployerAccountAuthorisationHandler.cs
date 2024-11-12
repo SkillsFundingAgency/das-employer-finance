@@ -36,19 +36,23 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
         // re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
         if (user.ClaimsAreEmpty())
         {
-            _logger.LogInformation("User claims are empty");
+            _logger.LogInformation("CF: User claims are empty");
             return false;
         }
         
         if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
         {
+            _logger.LogInformation("CF: ID not in url");
             return false;
         }
         var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
         var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
         if (employerAccountClaim?.Value == null)
+        {
+            _logger.LogInformation("CF: No employer account claim found");
             return false;
+        }
 
         Dictionary<string, EmployerUserAccountItem> employerAccounts;
 
@@ -85,6 +89,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
             var result = await _accountsService.GetUserAccounts(userId, email);
 
             var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
+            _logger.LogInformation("CF: {AccountsAsJson}", accountsAsJson);
             var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
 
             var updatedEmployerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
@@ -137,6 +142,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
             return false;
         }
 
+        _logger.LogInformation("Employer accounts: {EmployerAccounts}", JsonConvert.SerializeObject(employerAccounts));
         var employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
                 ? account : null;
 
