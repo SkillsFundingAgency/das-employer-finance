@@ -126,6 +126,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
         Dictionary<string, EmployerUserAccountItem> employerAccounts;
         var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
         var employerAccountClaim = _httpContextAccessor.HttpContext.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
+        _logger.LogInformation("CF: {EmployerAccountClaim}", employerAccountClaim.Value);
         try
         {
             employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim.Value);
