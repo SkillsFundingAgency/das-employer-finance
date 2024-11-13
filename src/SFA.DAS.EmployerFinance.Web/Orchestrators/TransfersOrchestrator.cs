@@ -19,15 +19,14 @@ public class TransfersOrchestrator(
 {
     private const int minimumTransferFunds = 2000;
 
-    public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId,
-        ClaimsPrincipal claimsPrincipal)
+    public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
         var indexTask = transfersService.GetCounts(accountId);
         var accountDetail = accountApiClient.GetAccount(hashedAccountId);
 
-        var renderCreateTransfersPledgeButton = authorizationService.CheckUserAccountAccess(claimsPrincipal, EmployerUserRole.Transactor);  
-        logger.LogInformation("{RenderCreateTransfersPledgeButton}", renderCreateTransfersPledgeButton);
+        var renderCreateTransfersPledgeButton = authorizationService.CheckUserAccountAccess(EmployerUserRole.Transactor);  
+        logger.LogInformation("CF: {RenderCreateTransfersPledgeButton}", renderCreateTransfersPledgeButton);
 
         await Task.WhenAll(indexTask, accountDetail);
 

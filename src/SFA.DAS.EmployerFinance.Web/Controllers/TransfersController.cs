@@ -21,7 +21,7 @@ public class TransfersController :Controller
     [Route("transfers")]
     public async Task<IActionResult> Index(string hashedAccountId)
     {
-        var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId, User);
+        var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId);
 
         return View(viewModel);
     }

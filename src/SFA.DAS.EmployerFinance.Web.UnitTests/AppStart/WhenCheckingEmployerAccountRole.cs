@@ -35,14 +35,15 @@ public class WhenCheckingEmployerAccountRole
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
         var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
-        var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
+        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         
         var httpContext = new DefaultHttpContext(new FeatureCollection());
         httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
+        httpContext.User = claimsPrinciple;
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(claimsPrinciple, userRoleRequired);
+        var actual = authorizationHandler.CheckUserAccountAccess(userRoleRequired);
 
         //Assert
         actual.Should().Be(expectedResponse);
@@ -60,13 +61,16 @@ public class WhenCheckingEmployerAccountRole
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
         var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
-        var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
+        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         
-        var httpContext = new DefaultHttpContext(new FeatureCollection());
+        var httpContext = new DefaultHttpContext(new FeatureCollection())
+        {
+            User = claimsPrinciple
+        };
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(claimsPrinciple, EmployerUserRole.Viewer);
+        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
@@ -80,14 +84,15 @@ public class WhenCheckingEmployerAccountRole
     {
         //Arrange
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(new object()));
-        var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
+        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         
         var httpContext = new DefaultHttpContext(new FeatureCollection());
         httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
+        httpContext.User = claimsPrinciple;
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(claimsPrinciple, EmployerUserRole.Viewer);
+        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
@@ -102,14 +107,17 @@ public class WhenCheckingEmployerAccountRole
         //Arrange
         var employerAccounts = new Dictionary<string, EmployerIdentifier>();
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
-        var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
+        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         
-        var httpContext = new DefaultHttpContext(new FeatureCollection());
+        var httpContext = new DefaultHttpContext(new FeatureCollection())
+        {
+            User = claimsPrinciple
+        };
         httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(claimsPrinciple, EmployerUserRole.Viewer);
+        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
@@ -127,13 +135,14 @@ public class WhenCheckingEmployerAccountRole
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
         var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
-        var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
+        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
         httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
+        httpContext.User = claimsPrinciple;
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(claimsPrinciple, EmployerUserRole.Viewer);
+        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
@@ -151,13 +160,14 @@ public class WhenCheckingEmployerAccountRole
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
         var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
-        var claimsPrinciple = new ClaimsPrincipal(new[] {new ClaimsIdentity(new[] {claim})});
+        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
         httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
+        httpContext.User = claimsPrinciple;
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(claimsPrinciple, EmployerUserRole.Viewer);
+        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();

@@ -11,7 +11,7 @@ namespace SFA.DAS.EmployerFinance.Web.Authentication;
 public interface IEmployerAccountAuthorisationHandler
 {
     Task<bool> IsEmployerAuthorised(AuthorizationHandlerContext context, bool allowAllUserRoles);
-    bool CheckUserAccountAccess(ClaimsPrincipal user, EmployerUserRole userRoleRequired);
+    bool CheckUserAccountAccess(EmployerUserRole userRoleRequired);
 }
 
 public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisationHandler
@@ -116,7 +116,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
         return true;
     }
 
-    public bool CheckUserAccountAccess(ClaimsPrincipal user, EmployerUserRole userRoleRequired)
+    public bool CheckUserAccountAccess(EmployerUserRole userRoleRequired)
     {
         if (!_httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
         {
@@ -125,7 +125,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
 
         Dictionary<string, EmployerUserAccountItem> employerAccounts;
         var accountIdFromUrl = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
-        var employerAccountClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
+        var employerAccountClaim = _httpContextAccessor.HttpContext.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
         try
         {
             employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim.Value);
@@ -142,7 +142,7 @@ public class EmployerAccountAuthorisationHandler : IEmployerAccountAuthorisation
             return false;
         }
 
-        _logger.LogInformation("Employer accounts: {EmployerAccounts}", JsonConvert.SerializeObject(employerAccounts));
+        _logger.LogInformation("CF: Employer accounts: {EmployerAccounts}", JsonConvert.SerializeObject(employerAccounts));
         var employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
                 ? account : null;
 

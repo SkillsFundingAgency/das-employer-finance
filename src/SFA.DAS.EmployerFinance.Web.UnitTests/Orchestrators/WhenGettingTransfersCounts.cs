@@ -51,7 +51,7 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(isLevyPayer);
             
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         Assert.AreEqual(expectIsLevyEmployer, actual.Data.IsLevyEmployer);
     }
@@ -64,9 +64,9 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(),Authentication.EmployerUserRole.Transactor)).Returns(isAuthorised);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).Returns(isAuthorised);
 
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         Assert.AreEqual(expected, actual.Data.RenderCreateTransfersPledgeButton);
     }
@@ -80,9 +80,9 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true, startingAllowance);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(), Authentication.EmployerUserRole.Transactor)).Returns(true);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).Returns(true);
 
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         Assert.AreEqual(expected, actual.Data.EstimatedRemainingAllowance);
     }
@@ -97,9 +97,9 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true, startingAllowance);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(), Authentication.EmployerUserRole.Transactor)).Returns(true);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).Returns(true);
 
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         Assert.AreEqual(expected, actual.Data.HasMinimumTransferFunds);
     }
