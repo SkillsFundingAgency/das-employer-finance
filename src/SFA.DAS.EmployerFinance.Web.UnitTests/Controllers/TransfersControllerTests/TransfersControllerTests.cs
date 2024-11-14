@@ -53,7 +53,7 @@ public class TransfersControllerTests
             _configuration,
             Mock.Of<ILogger<TransfersOrchestrator>>());
 
-        _controller = new TransfersController(_orchestrator);
+        _controller = new TransfersController(_orchestrator, Mock.Of<ILogger<TransfersController>>());
     }
 
     [Test]
