@@ -12,11 +12,7 @@ public class EmployerFinanceConfiguration
     public string EmployerFinanceBaseUrl { get; set; }
 }
 
-public class EmployerFinanceJobsConfiguration : EmployerFinanceConfiguration
-{
-    public string LegacyServiceBusConnectionString { get; set; }
-    public string MessageServiceBusConnectionString => LegacyServiceBusConnectionString;
-}
+public class EmployerFinanceJobsConfiguration : EmployerFinanceConfiguration { }
 
 public class EmployerFinanceWebConfiguration : EmployerFinanceConfiguration
 {
