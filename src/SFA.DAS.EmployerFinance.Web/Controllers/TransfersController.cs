@@ -17,7 +17,7 @@ public class TransfersController(
     [Route("transfers")]
     public async Task<IActionResult> Index(string hashedAccountId)
     {
-        logger.LogInformation("CF: Index: {ContextUser}", JsonConvert.SerializeObject(User));
+        logger.LogInformation("CF: Index: {ContextUser}", JsonConvert.SerializeObject(User.Claims));
         var viewModel = await transfersOrchestrator.GetIndexViewModel(hashedAccountId);
 
         return View(viewModel);
