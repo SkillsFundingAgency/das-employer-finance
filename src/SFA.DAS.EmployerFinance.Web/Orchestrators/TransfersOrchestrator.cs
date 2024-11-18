@@ -25,7 +25,7 @@ public class TransfersOrchestrator(
         var indexTask = transfersService.GetCounts(accountId);
         var accountDetail = accountApiClient.GetAccount(hashedAccountId);
 
-        var renderCreateTransfersPledgeButton = authorizationService.CheckUserAccountAccess(EmployerUserRole.Transactor);  
+        var renderCreateTransfersPledgeButton = await authorizationService.CheckUserAccountAccess(EmployerUserRole.Transactor);  
         logger.LogInformation("CF: {RenderCreateTransfersPledgeButton}", renderCreateTransfersPledgeButton);
 
         await Task.WhenAll(indexTask, accountDetail);

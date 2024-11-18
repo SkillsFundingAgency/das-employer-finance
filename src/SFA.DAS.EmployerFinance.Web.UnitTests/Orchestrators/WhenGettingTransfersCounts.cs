@@ -64,7 +64,7 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).Returns(isAuthorised);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(isAuthorised);
 
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
@@ -80,7 +80,7 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true, startingAllowance);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).Returns(true);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(true);
 
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
@@ -97,7 +97,7 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true, startingAllowance);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).Returns(true);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(true);
 
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 

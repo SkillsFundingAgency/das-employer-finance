@@ -21,7 +21,7 @@ public class WhenCheckingEmployerAccountRole
     [MoqInlineAutoData(EmployerUserRole.Viewer, "Owner", true)]
     [MoqInlineAutoData(EmployerUserRole.Viewer, "Transactor", true)]
     [MoqInlineAutoData(EmployerUserRole.Viewer, "Viewer", true)]
-    public void Then_Checks_Role_And_Returns_True_If_Valid(
+    public async Task Then_Checks_Role_And_Returns_True_If_Valid(
         EmployerUserRole userRoleRequired,
         string roleInClaim,
         bool expectedResponse,
@@ -43,14 +43,14 @@ public class WhenCheckingEmployerAccountRole
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(userRoleRequired);
+        var actual = await authorizationHandler.CheckUserAccountAccess(userRoleRequired);
 
         //Assert
         actual.Should().Be(expectedResponse);
     }
 
     [Test, MoqAutoData]
-    public void Then_If_No_Account_Id_In_Url_Returns_False(
+    public async Task Then_If_No_Account_Id_In_Url_Returns_False(
         EmployerIdentifier employerIdentifier,
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
@@ -70,14 +70,14 @@ public class WhenCheckingEmployerAccountRole
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
+        var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
     
     [Test, MoqAutoData]
-    public void Then_If_Not_Valid_Account_Claims_Returns_False(
+    public async Task Then_If_Not_Valid_Account_Claims_Returns_False(
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         EmployerAccountAuthorisationHandler authorizationHandler)
@@ -92,14 +92,14 @@ public class WhenCheckingEmployerAccountRole
         httpContext.User = claimsPrinciple;
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
+        var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
     
     [Test, MoqAutoData]
-    public void Then_If_No_Account_Claims_Returns_False(
+    public async Task Then_If_No_Account_Claims_Returns_False(
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         EmployerAccountAuthorisationHandler authorizationHandler)
@@ -117,14 +117,14 @@ public class WhenCheckingEmployerAccountRole
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
+        var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
     
     [Test, MoqAutoData]
-    public void Then_If_No_Account_Claims_Matching_Returns_False(
+    public async Task Then_If_No_Account_Claims_Matching_Returns_False(
         EmployerIdentifier employerIdentifier,
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
@@ -142,14 +142,14 @@ public class WhenCheckingEmployerAccountRole
         httpContext.User = claimsPrinciple;
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
+        var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
     
     [Test, MoqAutoData]
-    public void Then_If_Not_Correct_Account_Claim_Role_Returns_False(
+    public async Task Then_If_Not_Correct_Account_Claim_Role_Returns_False(
         EmployerIdentifier employerIdentifier,
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
@@ -167,7 +167,7 @@ public class WhenCheckingEmployerAccountRole
         httpContext.User = claimsPrinciple;
         
         //Act
-        var actual = authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
+        var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
