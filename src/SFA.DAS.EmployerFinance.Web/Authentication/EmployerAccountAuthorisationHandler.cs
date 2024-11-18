@@ -120,8 +120,22 @@ public class EmployerAccountAuthorisationHandler(
         var accountIdFromUrl = context.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
         var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
-        if (employerAccountClaim == null)
+        logger.LogInformation("CF: {EmployerAccountClaim}", employerAccountClaim.Value);
+        try
         {
+            employerAccounts =
+                JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim
+                    .Value);
+        }
+        catch (JsonSerializationException e)
+        {
+            logger.LogError(e, "Could not deserialize employer account claim for user");
+            return false;
+        }
+        
+        if (!employerAccounts.Any())
+        {
+            logger.LogInformation("CF: no employer accounts");
             if (!context.User.HasClaim(c => c.Type.Equals(ClaimTypes.NameIdentifier)))
                 return false;
 
@@ -135,23 +149,8 @@ public class EmployerAccountAuthorisationHandler(
             var updatedEmployerAccounts = await accountsService.GetUserAccounts(userId, email);
             employerAccounts = updatedEmployerAccounts.EmployerAccounts.ToDictionary(x => x.AccountId);
         }
-        else
-        {
-            logger.LogInformation("CF: {EmployerAccountClaim}", employerAccountClaim.Value);
-            try
-            {
-                employerAccounts =
-                    JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim
-                        .Value);
-            }
-            catch (JsonSerializationException e)
-            {
-                logger.LogError(e, "Could not deserialize employer account claim for user");
-                return false;
-            }
-        }
 
-        if (employerAccounts == null)
+        if (employerAccounts == null || !employerAccounts.Any())
         {
             logger.LogInformation("Employer accounts null");
             return false;
