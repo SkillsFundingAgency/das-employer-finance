@@ -5,11 +5,6 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.EmployerFinance.Database", "SFA.DAS.EmployerFinance.Database\SFA.DAS.EmployerFinance.Database.sqlproj", "{6C145D4A-CBA9-439C-984E-0A5953CBE04D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureConfiguration", "AzureConfiguration", "{68328FF1-53F2-4737-A983-7E2B67179E17}"
-	ProjectSection(SolutionItems) = preProject
-		AzureTopicConfigurationStrucuture.json = AzureTopicConfigurationStrucuture.json
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Host", "SFA.DAS.EmployerFinance.Host\SFA.DAS.EmployerFinance.Host.csproj", "{D494902B-C081-47DD-9CD4-6EF4D9CD6FF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Jobs", "SFA.DAS.EmployerFinance.Jobs\SFA.DAS.EmployerFinance.Jobs.csproj", "{079F027D-0794-463F-9D03-92858538CD31}"
@@ -43,8 +38,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.MessageHandlers.TestHarness", "SFA.DAS.EmployerFinance.MessageHandlers.TestHarness\SFA.DAS.EmployerFinance.MessageHandlers.TestHarness.csproj", "{73080F2E-1875-4DBC-BE84-381E2FD603D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Api.Types", "SFA.DAS.EmployerFinance.Api.Types\SFA.DAS.EmployerFinance.Api.Types.csproj", "{7C0B08BB-8C28-45F5-B547-25F006615B84}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.Events", "SFA.DAS.EmployerFinance.Events\SFA.DAS.EmployerFinance.Events.csproj", "{2245A806-DAF7-42A9-898C-2C3D6C65E87C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.EmployerFinance.TestCommon", "SFA.DAS.EmployerFinance.TestCommon\SFA.DAS.EmployerFinance.TestCommon.csproj", "{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}"
 EndProject
@@ -128,10 +121,6 @@ Global
 		{7C0B08BB-8C28-45F5-B547-25F006615B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C0B08BB-8C28-45F5-B547-25F006615B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C0B08BB-8C28-45F5-B547-25F006615B84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2245A806-DAF7-42A9-898C-2C3D6C65E87C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B7CD9CC-7338-4DC7-80E7-2DDF4FC095B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
