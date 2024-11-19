@@ -28,13 +28,11 @@ public class EmployerAccountAuthorisationHandler(
         // re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
         if (user.ClaimsAreEmpty())
         {
-            logger.LogInformation("CF: User claims are empty");
             return false;
         }
         
         if (!httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
         {
-            logger.LogInformation("CF: ID not in url");
             return false;
         }
         var accountIdFromUrl = httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
@@ -42,7 +40,6 @@ public class EmployerAccountAuthorisationHandler(
 
         if (employerAccountClaim?.Value == null)
         {
-            logger.LogInformation("CF: No employer account claim found");
             return false;
         }
 
@@ -81,7 +78,7 @@ public class EmployerAccountAuthorisationHandler(
             var result = await accountsService.GetUserAccounts(userId, email);
 
             var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
-            logger.LogInformation("CF: {AccountsAsJson}", accountsAsJson);
+            
             var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
 
             var updatedEmployerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
@@ -119,8 +116,7 @@ public class EmployerAccountAuthorisationHandler(
         Dictionary<string, EmployerUserAccountItem> employerAccounts;
         var accountIdFromUrl = context.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
         var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
-
-        logger.LogInformation("CF: {EmployerAccountClaim}", employerAccountClaim.Value);
+        
         try
         {
             employerAccounts =
@@ -135,7 +131,6 @@ public class EmployerAccountAuthorisationHandler(
         
         if (!employerAccounts.Any())
         {
-            logger.LogInformation("CF: no employer accounts");
             if (!context.User.HasClaim(c => c.Type.Equals(ClaimTypes.NameIdentifier)))
                 return false;
 
@@ -156,7 +151,6 @@ public class EmployerAccountAuthorisationHandler(
             return false;
         }
 
-        logger.LogInformation("CF: Employer accounts: {EmployerAccounts}", JsonConvert.SerializeObject(employerAccounts));
         var employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
                 ? account : null;
 
