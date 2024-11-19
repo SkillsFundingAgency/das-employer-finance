@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerUsers.WebClientComponents;
@@ -7,23 +6,14 @@ using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.Handlers;
 
-public class EmployerAccountPostAuthenticationClaimsHandler : ICustomClaims
+public class EmployerAccountPostAuthenticationClaimsHandler(
+    IUserAccountService userAccountService,
+    ILogger<EmployerAccountPostAuthenticationClaimsHandler> logger)
+    : ICustomClaims
 {
-    private readonly IUserAccountService _userAccountService;
-    private readonly ILogger<EmployerAccountPostAuthenticationClaimsHandler> _logger;
-
-    public EmployerAccountPostAuthenticationClaimsHandler(
-        IUserAccountService userAccountService, 
-        ILogger<EmployerAccountPostAuthenticationClaimsHandler> logger
-    )
-    {
-        _userAccountService = userAccountService;
-        _logger = logger;
-    }
-
     public async Task<IEnumerable<Claim>> GetClaims(TokenValidatedContext tokenValidatedContext)
     {
-        _logger.LogInformation("Updating finance claims");
+        logger.LogInformation("Updating finance claims");
         var claims = new List<Claim>();
 
         var userId = tokenValidatedContext.Principal.Claims
@@ -34,9 +24,10 @@ public class EmployerAccountPostAuthenticationClaimsHandler : ICustomClaims
             .Value;
         claims.Add(new Claim(EmployerClaims.IdamsUserEmailClaimTypeIdentifier, email));
                 
-        var result = await _userAccountService.GetUserAccounts(userId, email);
+        var result = await userAccountService.GetUserAccounts(userId, email);
 
         var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
+        logger.LogInformation("CF: Accounts {AccountsAsJson}", accountsAsJson);
         var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
         claims.Add(associatedAccountsClaim);
 
