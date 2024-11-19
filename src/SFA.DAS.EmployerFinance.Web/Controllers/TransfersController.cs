@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using SFA.DAS.Employer.Shared.UI;
+﻿using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -10,8 +9,7 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers;
 [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
 [Route("accounts/{HashedAccountId}")] 
 public class TransfersController(
-    TransfersOrchestrator transfersOrchestrator,
-    ILogger<TransfersController> logger) : Controller
+    TransfersOrchestrator transfersOrchestrator) : Controller
 {
     [HttpGet]
     [Route("transfers")]

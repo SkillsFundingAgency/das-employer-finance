@@ -53,7 +53,7 @@ public class TransfersControllerTests
             _configuration,
             Mock.Of<ILogger<TransfersOrchestrator>>());
 
-        _controller = new TransfersController(_orchestrator, Mock.Of<ILogger<TransfersController>>());
+        _controller = new TransfersController(_orchestrator);
     }
 
     [Test]
@@ -61,7 +61,7 @@ public class TransfersControllerTests
     {   
         var result = await _controller.FinancialBreakdown(HashedAccountId);
         var view = result as ViewResult;
-        var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
+        var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
            
         Assert.IsNotNull(viewModel);
         Assert.IsNotNull(viewModel.Data);
@@ -110,12 +110,12 @@ public class TransfersControllerTests
         Assert.AreEqual(availablePledgedFunds, viewModel.Data.AvailablePledgedFunds);
     }
 
-    private async Task<Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
+    private async Task<OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
     {
         var result = await _controller.FinancialBreakdown(HashedAccountId);
 
         var view = result as ViewResult;
-        var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
+        var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
 
         Assert.IsNotNull(viewModel);
 
