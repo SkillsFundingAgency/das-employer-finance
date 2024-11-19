@@ -58,7 +58,8 @@
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Remove="C:\Users\ADM_HarrisJo\.nuget\packages\nlog.schema\4.5.3\contentFiles\any\any\NLog.xsd" />
-		<None Remove="internal-nlog.txt" />
+	  <None Include="web.config">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
