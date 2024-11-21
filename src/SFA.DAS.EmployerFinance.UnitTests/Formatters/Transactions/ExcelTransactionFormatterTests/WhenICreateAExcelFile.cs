@@ -46,15 +46,19 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
             {
                 new[]
                 {
-                    "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month", "Levy declared",
+                    "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month",
+                    "Levy declared",
                     "English %", "10% top up", "Training provider", "Unique learner number",
-                    "Apprentice", "Apprenticeship training course", "Course level", "Paid from levy", "Your contribution",
+                    "Apprentice", "Apprenticeship training course", "Course level", "Paid from levy",
+                    "Your contribution",
                     "Government contribution", "Total"
                 },
                 new[]
                 {
-                    _transactionLine.DateCreated.ToString("dd/MM/yyyy"), _transactionLine.TransactionType, _transactionLine.Description,
-                    _transactionLine.PayeScheme, "'" +  _transactionLine.PeriodEnd, _transactionLine.LevyDeclaredFormatted,
+                    _transactionLine.DateCreated.ToString("dd/MM/yyyy"), _transactionLine.TransactionType,
+                    _transactionLine.Description,
+                    _transactionLine.PayeScheme, "'" + _transactionLine.PeriodEnd,
+                    _transactionLine.LevyDeclaredFormatted,
                     _transactionLine.EnglishFractionFormatted, _transactionLine.TenPercentTopUpFormatted,
                     _transactionLine.TrainingProvider, _transactionLine.Uln,
                     _transactionLine.Apprentice, _transactionLine.ApprenticeTrainingCourse,
@@ -86,7 +90,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
             var result = _formatter.GetFileData(new List<TransactionDownloadLine> {_transactionLine});
 
             //Assert
-            Assert.AreEqual(expectedFileData, result);
+            result.Should().BeEquivalentTo(expectedFileData);
         }
     }
 }

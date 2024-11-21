@@ -31,7 +31,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const int expectedCount = 1;
-        Assert.AreEqual(expectedCount, fixtures.Result.Length);
+        fixtures.Result.Length.Should().Be(expectedCount);
     }
 
     [Test]
@@ -46,7 +46,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const int expectedInfoMessages = 1;
-        Assert.AreEqual(expectedInfoMessages, fixtures.Result.Length);
+        fixtures.Result.Length.Should().Be(expectedInfoMessages);
     }
 
     [Test]
@@ -62,9 +62,10 @@ public class LevyImportCleanerStrategyTests
         await fixtures.RunStrategy();
 
         //Assert 
-        Assert.IsFalse(fixtures.Result[0].EndOfYearAdjustment, "normal period 12 declaration is marked as adjustment");
-        Assert.IsTrue(fixtures.Result[1].EndOfYearAdjustment, "period 12 adjustment is not marked as adjustment");
-        Assert.IsTrue(fixtures.Result[2].EndOfYearAdjustment, "period 12 adjustment is not marked as adjustment");
+        //Assert.IsFalse(fixtures.Result[0].EndOfYearAdjustment, "normal period 12 declaration is marked as adjustment");
+        fixtures.Result[0].EndOfYearAdjustment.Should().BeFalse("normal period 12 declaration is marked as adjustment");
+        fixtures.Result[1].EndOfYearAdjustment.Should().BeTrue("period 12 adjustment is not marked as adjustment");
+        fixtures.Result[2].EndOfYearAdjustment.Should().BeTrue("period 12 adjustment is not marked as adjustment");
     }
 
     [Test(Description = "The first adjustment should apply to the P12 declaration")]
@@ -85,7 +86,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = (firstAdjustmentValue - period12Value) * -1; // adjustments are inverted
-        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[1].EndOfYearAdjustmentAmount);
+        fixtures.Result[1].EndOfYearAdjustmentAmount.Should().Be(expectedYearEndAdjustment);
     }
 
 
@@ -105,7 +106,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = (firstAdjustmentValue - period12Value) * -1; // adjustments are inverted
-        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[1].EndOfYearAdjustmentAmount);
+        fixtures.Result[1].EndOfYearAdjustmentAmount.Should().Be(expectedYearEndAdjustment);
     }
 
     [Test(Description = "A later adjustment should apply on top of earlier adjustments, not replace")]
@@ -125,7 +126,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = (secondAdjustmentValue - firstAdjustmentValue) * -1; // adjustments are inverted
-        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[2].EndOfYearAdjustmentAmount);
+        fixtures.Result[2].EndOfYearAdjustmentAmount.Should().Be(expectedYearEndAdjustment);
     }
 
     [Test, Description("When an adjustment is received and a period 12 declaration has been made the adjustment should apply to the period 12 declaration")]
@@ -144,7 +145,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = (adjustmentValue - period12Value) * -1; // adjustments are inverted
-        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[1].EndOfYearAdjustmentAmount);
+        fixtures.Result[1].EndOfYearAdjustmentAmount.Should().Be(expectedYearEndAdjustment);
     }
 
     [Test, Description("When an adjustment is received and the latest declaration is not period 12 the adjustment should apply to the latest declaration")]
@@ -163,7 +164,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = (adjustmentValue - period8Value) * -1; // adjustments are inverted
-        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[1].EndOfYearAdjustmentAmount);
+        fixtures.Result[1].EndOfYearAdjustmentAmount.Should().Be(expectedYearEndAdjustment);
     }
 
     [Test, Description("When an adjustment is received but there is no declaration the adjustment should apply to an assumed zero declaration")]
@@ -180,7 +181,7 @@ public class LevyImportCleanerStrategyTests
 
         //Assert 
         const decimal expectedYearEndAdjustment = adjustmentValue * -1; // adjustments are inverted
-        Assert.AreEqual(expectedYearEndAdjustment, fixtures.Result[0].EndOfYearAdjustmentAmount);
+        fixtures.Result[0].EndOfYearAdjustmentAmount.Should().Be(expectedYearEndAdjustment);
     }
 }
 

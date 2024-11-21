@@ -54,12 +54,12 @@ public class WhenIViewFinanceDashboard
 
         //Assert
         var viewResult = result as ViewResult;
-        Assert.IsNotNull(viewResult);
+        (viewResult).Should().NotBeNull();
 
         var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
-        Assert.IsNotNull(model);
-        Assert.IsNotNull(model.Data);
-        Assert.AreEqual(ExpectedHashedAccountId, model.Data.HashedAccountId);
+        (model).Should().NotBeNull();
+        (model.Data).Should().NotBeNull();
+        model.Data.HashedAccountId.Should().BeEquivalentTo(ExpectedHashedAccountId);
     }
 
     [Test]
@@ -70,12 +70,12 @@ public class WhenIViewFinanceDashboard
 
         //Assert
         var viewResult = result as ViewResult;
-        Assert.IsNotNull(viewResult);
+        (viewResult).Should().NotBeNull();
 
         var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
-        Assert.IsNotNull(model);
-        Assert.IsNotNull(model.Data);
-        Assert.AreEqual(ExpectedCurrentFunds, model.Data.CurrentLevyFunds);
+        (model).Should().NotBeNull();
+        (model.Data).Should().NotBeNull();
+        model.Data.CurrentLevyFunds.Should().Be(ExpectedCurrentFunds);
     }
 
     [Test]
@@ -95,9 +95,9 @@ public class WhenIViewFinanceDashboard
 
         //Assert
         var redirectResult = result as RedirectResult;
-        Assert.IsNotNull(redirectResult);
-        Assert.AreEqual(redirectUrl, redirectResult.Url);
-        Assert.IsFalse(redirectResult.Permanent);
+        (redirectResult).Should().NotBeNull();
+        redirectResult.Url.Should().Be(redirectUrl);
+        redirectResult.Permanent.Should().BeFalse();
     }
 
     [Test]
@@ -107,6 +107,6 @@ public class WhenIViewFinanceDashboard
         var result = await _controller.Index(ExpectedHashedAccountId);
 
         //Assert
-        Assert.IsNotInstanceOf<RedirectResult>(result);
+        result.Should().NotBeOfType<RedirectResult>();
     }
 }

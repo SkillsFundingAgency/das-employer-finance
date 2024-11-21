@@ -66,8 +66,8 @@ public class WhenIGetTheTransactionSummaryForAnAccount
         var response = await _controller.Index(hashedAccountId);
 
         //Assert            
-        Assert.IsNotNull(response);
-        Assert.IsInstanceOf<OkObjectResult>(response);
+        response.Should().NotBeNull();
+        response.Should().BeOfType<OkObjectResult>();
         var model = ((OkObjectResult)response).Value as List<TransactionSummary>;
 
         model?.Should().NotBeNull();

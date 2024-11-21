@@ -188,9 +188,9 @@ public class RefreshPaymentDataCommandHandlerTestsFixture : FluentTestFixture
 
     public void VerifyRefreshPaymentDataCompletedEventIsPublished(bool expectedPaymentProcessedValue)
     {
-        Assert.IsTrue(eventPublisher.Events.OfType<RefreshPaymentDataCompletedEvent>().Any(e =>
+        (eventPublisher.Events.OfType<RefreshPaymentDataCompletedEvent>().Any(e =>
             e.AccountId == _accountId
             && e.PeriodEnd == _periodEnd
-            && e.PaymentsProcessed == expectedPaymentProcessedValue));
+            && e.PaymentsProcessed == expectedPaymentProcessedValue)).Should().BeTrue();
     }
 }
