@@ -20,8 +20,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
             var actual = _validator.Validate(new CreateNewPeriodEndCommand());
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string,string>("NewPeriodEnd","NewPeriodEnd has not been supplied"),actual.ValidationDictionary );
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should()
+                .ContainKey("NewPeriodEnd")
+                .WhichValue
+                .Should()
+                .Be("NewPeriodEnd has not been supplied");
         }
 
         [Test]
@@ -31,7 +35,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
             var actual = _validator.Validate(new CreateNewPeriodEndCommand {NewPeriodEnd = new PeriodEnd() });
 
             //Assert
-            Assert.IsTrue(actual.IsValid());
+            actual.IsValid().Should().BeTrue();
         }
     }
 }

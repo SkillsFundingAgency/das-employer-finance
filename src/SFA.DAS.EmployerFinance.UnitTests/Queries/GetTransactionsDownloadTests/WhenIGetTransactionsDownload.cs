@@ -71,10 +71,10 @@ public class WhenIGetTransactionsDownload
     {
         var response = await _handler.Handle(_query, CancellationToken.None);
 
-        Assert.IsNotNull(response);
-        Assert.AreEqual("csv", response.FileExtension);
-        Assert.AreEqual("text/csv", response.MimeType);
-        Assert.IsNotNull(response.FileData);
+        response.Should().NotBeNull();
+        response.FileExtension.Should().Be("csv");
+        response.MimeType.Should().Be("text/csv");
+        response.FileData.Should().NotBeNull();
     }
 
     [Test]

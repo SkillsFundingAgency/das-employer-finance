@@ -13,7 +13,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Extensions
         {
             var dateTime = new DateTime(year, month, day);
             var result = dateTime.ToFinancialYearString();
-            Assert.AreEqual(expected, result);
+            result.Should().Be(expected);
         }
 
         [TestCase(2022, 4, 20, "2023/24")]
@@ -22,7 +22,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Extensions
         {
             var dateTime = new DateTime(year, month, day);
             var result = dateTime.AddYears(1).ToFinancialYearString();
-            Assert.AreEqual(expected, result);
+            result.Should().Be(expected);
         }
 
         [TestCase(2022, 4, 20, "2024/25")]
@@ -31,7 +31,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Extensions
         {
             var dateTime = new DateTime(year, month, day);
             var result = dateTime.AddYears(2).ToFinancialYearString();
-            Assert.AreEqual(expected, result);
+            result.Should().Be(expected);
         }
 
         [TestCase(2023, 12, 31, "23-24")]

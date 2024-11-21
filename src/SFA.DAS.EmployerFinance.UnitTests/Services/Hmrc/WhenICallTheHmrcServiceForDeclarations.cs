@@ -86,7 +86,7 @@ internal class WhenICallTheHmrcServiceForDeclarations
             x => x.GetEmployerLevyDeclarations(ExpectedAuthToken, EmpRef, It.IsAny<DateTime?>(),
                 It.IsAny<DateTime?>()), Times.Once);
 
-        Assert.AreEqual(levyDeclarations, result);
+        result.Should().Be(levyDeclarations);
     }
 
     [Test]

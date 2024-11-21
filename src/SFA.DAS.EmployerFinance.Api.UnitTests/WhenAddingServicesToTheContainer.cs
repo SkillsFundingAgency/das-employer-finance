@@ -29,7 +29,7 @@ public class WhenAddingServicesToTheContainer
         var provider = serviceCollection.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
 
     [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
@@ -48,7 +48,7 @@ public class WhenAddingServicesToTheContainer
         var provider = services.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
 
     private static void SetupServiceCollection(IServiceCollection services)

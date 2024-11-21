@@ -47,7 +47,7 @@ public class WhenGettingTransfersCounts
             
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
 
-        Assert.AreEqual(expectIsLevyEmployer, actual.Data.IsLevyEmployer);
+        actual.Data.IsLevyEmployer.Should().Be(expectIsLevyEmployer);
     }
 
     [TestCase(true, true)]
@@ -62,7 +62,7 @@ public class WhenGettingTransfersCounts
 
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
 
-        Assert.AreEqual(expected, actual.Data.RenderCreateTransfersPledgeButton);
+        actual.Data.RenderCreateTransfersPledgeButton.Should().Be(expected);
     }
 
     [TestCase(10000, 9000, 1000)]
@@ -78,7 +78,7 @@ public class WhenGettingTransfersCounts
 
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
 
-        Assert.AreEqual(expected, actual.Data.EstimatedRemainingAllowance);
+        actual.Data.EstimatedRemainingAllowance.Should().Be(expected);
     }
 
     [TestCase(10000, 5000, true)]
@@ -95,7 +95,7 @@ public class WhenGettingTransfersCounts
 
         var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
 
-        Assert.AreEqual(expected, actual.Data.HasMinimumTransferFunds);
+        actual.Data.HasMinimumTransferFunds.Should().Be(expected);
     }
 
     private void SetupTheAccountApiClient(bool isLevy = false, decimal? startingAllowance = null)

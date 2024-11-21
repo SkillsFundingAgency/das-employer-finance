@@ -32,6 +32,6 @@ public class WhenIMakeABadRequest
 
         //Assert
         const int expectedNumberOfCalls = 1;
-        Assert.AreEqual(expectedNumberOfCalls, actualNumberOfCalls);
+        actualNumberOfCalls.Should().Be(expectedNumberOfCalls);
     }
 }

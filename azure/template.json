@@ -41,12 +41,6 @@
         "configurationStorageConnectionString": {
             "type": "securestring"
         },
-        "loggingRedisConnectionString": {
-            "type": "securestring"
-        },
-        "loggingRedisKey": {
-            "type": "string"
-        },
         "sharedStorageAccountConnectionString": {
             "type": "securestring"
         },
@@ -307,14 +301,6 @@
                         "value": {
                             "array": [
                                 {
-                                    "name": "LoggingRedisConnectionString",
-                                    "value": "[parameters('loggingRedisConnectionString')]"
-                                },
-                                {
-                                    "name": "LoggingRedisKey",
-                                    "value": "[parameters('loggingRedisKey')]"
-                                },
-                                {
                                     "name": "ConfigurationStorageConnectionString",
                                     "value": "[parameters('configurationStorageConnectionString')]"
                                 },
@@ -449,14 +435,6 @@
                     "appServiceAppSettings": {
                         "value": {
                             "array": [
-                                {
-                                    "name": "LoggingRedisConnectionString",
-                                    "value": "[parameters('loggingRedisConnectionString')]"
-                                },
-                                {
-                                    "name": "LoggingRedisKey",
-                                    "value": "[parameters('loggingRedisKey')]"
-                                },
                                 {
                                     "name": "ConfigurationStorageConnectionString",
                                     "value": "[parameters('configurationStorageConnectionString')]"
@@ -604,14 +582,6 @@
                     "appServiceAppSettings": {
                         "value": {
                             "array": [
-                                {
-                                    "name": "LoggingRedisConnectionString",
-                                    "value": "[parameters('loggingRedisConnectionString')]"
-                                },
-                                {
-                                    "name": "LoggingRedisKey",
-                                    "value": "[parameters('loggingRedisKey')]"
-                                },
                                 {
                                     "name": "ConfigurationStorageConnectionString",
                                     "value": "[parameters('configurationStorageConnectionString')]"
