@@ -34,7 +34,13 @@ public class WhenIValidateTheCommand
         var actual = validator.Validate(new RefreshPaymentMetadataCommand());
 
         actual.IsValid().Should().BeFalse();
-        actual.ValidationDictionary.Should().Contain(new KeyValuePair<string, string>("AccountId", "AccountId has not been supplied"));
-        actual.ValidationDictionary.Should().Contain(new KeyValuePair<string, string>("PaymentId", "PaymentId has not been supplied"));
+        actual.ValidationDictionary.Should()
+            .ContainKey("AccountId")
+            .WhichValue
+            .Should().Be("AccountId has not been supplied");
+        actual.ValidationDictionary.Should()
+            .ContainKey("PaymentId")
+            .WhichValue
+            .Should().Be("PaymentId has not been supplied");
     }
 }

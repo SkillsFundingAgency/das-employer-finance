@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using MediatR;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Jobs.Extensions;
 using SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 using SFA.DAS.EmployerFinance.Jobs.ServiceRegistrations;
@@ -26,7 +25,7 @@ public class WhenAddingServicesToTheContainer
         var provider = services.BuildServiceProvider();
 
         var type = provider.GetService(toResolve);
-        Assert.IsNotNull(type);
+        type.Should().NotBeNull();
     }
 
     private static void SetupServiceCollection(IServiceCollection services)

@@ -15,9 +15,9 @@ public class WhenUpsertingUser
     {
         var actual = await controller.Upsert(request);
         
-        Assert.IsNotNull(actual);
+        actual.Should().NotBeNull();
         var actualResult = actual as OkResult;
-        Assert.IsNotNull(actualResult);
+        actualResult.Should().NotBeNull();
         mediator.Verify(x=>x.Send(request, CancellationToken.None));
     }
     
@@ -32,9 +32,9 @@ public class WhenUpsertingUser
         
         var actual = await controller.Upsert(request);
         
-        Assert.IsNotNull(actual);
+        actual.Should().NotBeNull();
         var actualResult = actual as StatusCodeResult;
-        Assert.IsNotNull(actualResult);
+        actualResult.Should().NotBeNull();
         actualResult.StatusCode.Should().Be(500);
     }
 }

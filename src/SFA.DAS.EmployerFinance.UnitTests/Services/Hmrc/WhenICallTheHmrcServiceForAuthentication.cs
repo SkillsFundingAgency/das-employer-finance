@@ -60,6 +60,6 @@ public class WhenICallTheHmrcServiceForAuthentication
         var actual = _hmrcService.GenerateAuthRedirectUrl(redirectUrl);
 
         //Assert
-        Assert.AreEqual($"{ExpectedBaseUrl}oauth/authorize?response_type=code&client_id={ExpectedClientId}&scope={ExpectedScope}&redirect_uri={urlFriendlyRedirectUrl}", actual);
+        actual.Should().Be($"{ExpectedBaseUrl}oauth/authorize?response_type=code&client_id={ExpectedClientId}&scope={ExpectedScope}&redirect_uri={urlFriendlyRedirectUrl}");
     }
 }

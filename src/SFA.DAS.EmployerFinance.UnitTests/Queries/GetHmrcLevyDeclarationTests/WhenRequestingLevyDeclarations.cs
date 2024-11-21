@@ -70,9 +70,9 @@ public class WhenRequestingLevyDeclarations
         var actual = await _getHMRCLevyDeclarationQueryHandler.Handle(new GetHMRCLevyDeclarationQuery { EmpRef = ExpectedEmpRef }, CancellationToken.None);
 
         //Assert
-        Assert.IsNotNull(actual);
-        Assert.AreEqual(ExpectedEmpRef, actual.Empref);
-        Assert.IsTrue(actual.LevyDeclarations.Declarations.Any());
+        actual.Should().NotBeNull();
+        actual.Empref.Should().Be(ExpectedEmpRef);
+        actual.LevyDeclarations.Declarations.Any().Should().BeTrue();
     }
 
     [Test]

@@ -39,7 +39,7 @@ public class WhenIViewTheOutstandingTransferConnectionInvitationPage
 
         var actionResult = await _controller.Outstanding(HashedAccountId);
 
-        Assert.AreEqual(typeof(RedirectToActionResult), actionResult.GetType());
+        actionResult.Should().BeOfType<RedirectToActionResult>();
     }
 
     [Test]
@@ -70,7 +70,7 @@ public class WhenIViewTheOutstandingTransferConnectionInvitationPage
 
         var actionResult = await _controller.Outstanding(HashedAccountId);
 
-        Assert.AreEqual(typeof(RedirectToActionResult), actionResult.GetType());
+        actionResult.Should().BeOfType<RedirectToActionResult>();
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class WhenIViewTheOutstandingTransferConnectionInvitationPage
             expectedControllerName = expectedControllerName.Substring(0, expectedControllerName.Length - "Controller".Length);
         }
 
-        Assert.AreEqual(expectedControllerName, actualRoute.ControllerName);
-        Assert.AreEqual(expectedActionName, actualRoute.ActionName);
+        actualRoute.ControllerName.Should().Be(expectedControllerName);
+        actualRoute.ActionName.Should().Be(expectedActionName);
     }
 }

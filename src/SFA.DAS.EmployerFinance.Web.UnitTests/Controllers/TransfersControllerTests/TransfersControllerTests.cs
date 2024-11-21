@@ -63,15 +63,15 @@ public class TransfersControllerTests
         var view = result as ViewResult;
         var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
            
-        Assert.IsNotNull(viewModel);
-        Assert.IsNotNull(viewModel.Data);
-        Assert.IsNotNull(viewModel.Data.AcceptedPledgeApplications);
-        Assert.IsNotNull(viewModel.Data.ApprovedPledgeApplications);
-        Assert.IsNotNull(viewModel.Data.Commitments);
-        Assert.IsNotNull(viewModel.Data.TransferConnections);
-        Assert.IsNotNull(viewModel.Data.CurrentYearEstimatedSpend);
-        Assert.IsNotNull(viewModel.Data.NextYearEstimatedSpend);
-        Assert.IsNotNull(viewModel.Data.YearAfterNextYearEstimatedSpend);
+        viewModel.Should().NotBeNull();
+        viewModel.Data.Should().NotBeNull();
+        viewModel.Data.AcceptedPledgeApplications.Should().NotBe(0);
+        viewModel.Data.ApprovedPledgeApplications.Should().NotBe(0);
+        viewModel.Data.Commitments.Should().NotBe(0);
+        viewModel.Data.TransferConnections.Should().NotBe(0);
+        viewModel.Data.CurrentYearEstimatedSpend.Should().NotBe(0);
+        viewModel.Data.NextYearEstimatedSpend.Should().NotBe(0);
+        viewModel.Data.YearAfterNextYearEstimatedSpend.Should().NotBe(0);
     }        
 
     [Test]
@@ -80,7 +80,7 @@ public class TransfersControllerTests
         var viewModel = await GetViewModel();
 
         var estimatedRemainingAllowance = viewModel.Data.StartingTransferAllowance - viewModel.Data.CurrentYearEstimatedSpend;
-        Assert.AreEqual(estimatedRemainingAllowance, viewModel.Data.EstimatedRemainingAllowance);
+        viewModel.Data.EstimatedRemainingAllowance.Should().Be(estimatedRemainingAllowance);
     }
 
     [Test]
@@ -89,7 +89,7 @@ public class TransfersControllerTests
         var viewModel = await GetViewModel();
 
         var totalAvailablePledgedFunds = viewModel.Data.TotalAvailableTransferAllowance - viewModel.Data.TotalPledgedAndTransferConnections;
-        Assert.AreEqual(totalAvailablePledgedFunds, viewModel.Data.TotalAvailablePledgedFunds);
+        viewModel.Data.TotalAvailablePledgedFunds.Should().Be(totalAvailablePledgedFunds);
     }
 
     [Test]
@@ -98,7 +98,7 @@ public class TransfersControllerTests
         var viewModel = await GetViewModel();
 
         var totalPledgedAndTransferConnections = viewModel.Data.AmountPledged + viewModel.Data.TransferConnections;
-        Assert.AreEqual(totalPledgedAndTransferConnections, viewModel.Data.TotalPledgedAndTransferConnections);
+        viewModel.Data.TotalPledgedAndTransferConnections.Should().Be(totalPledgedAndTransferConnections);
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class TransfersControllerTests
         var viewModel = await GetViewModel();
 
         var availablePledgedFunds = viewModel.Data.AmountPledged - (viewModel.Data.ApprovedPledgeApplications + viewModel.Data.AcceptedPledgeApplications);
-        Assert.AreEqual(availablePledgedFunds, viewModel.Data.AvailablePledgedFunds);
+        viewModel.Data.AvailablePledgedFunds.Should().Be(availablePledgedFunds);
     }
 
     private async Task<OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
@@ -117,7 +117,7 @@ public class TransfersControllerTests
         var view = result as ViewResult;
         var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
 
-        Assert.IsNotNull(viewModel);
+        (viewModel).Should().NotBeNull();
 
         return viewModel;
     }

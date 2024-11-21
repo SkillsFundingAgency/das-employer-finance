@@ -118,8 +118,8 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture : FluentTestFixtu
 
     public void VerifyRefreshEmployerLevyDataCompletedEventIsPublished(bool expectedLevyImportedValue)
     {
-        Assert.IsTrue(_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
+        (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(_accountId)
-            && e.LevyImported.Equals(expectedLevyImportedValue)));
+            && e.LevyImported.Equals(expectedLevyImportedValue))).Should().BeTrue();
     }
 }

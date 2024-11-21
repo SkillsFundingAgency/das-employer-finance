@@ -34,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.LevyTransferMatchingService
 
             var actualResult = await _transfersService.GetCounts(accountId);
 
-            Assert.AreEqual(expectedResult, actualResult.PledgesCount);
+            actualResult.PledgesCount.Should().Be(expectedResult);
         }
     }
 }

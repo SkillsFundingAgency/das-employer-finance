@@ -50,8 +50,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
             var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
             //Assert
-            Assert.IsNotNull(actual);
-            Assert.AreSame(_expectedLevyDeclarationViews, actual.Declarations);
+            actual.Should().NotBeNull();
+            actual.Declarations.Should().BeEquivalentTo(_expectedLevyDeclarationViews);
         }
     }
 

@@ -72,8 +72,8 @@ public class WhenIGetEmployerLevyDeclarationTransactionDetails : QueryBaseTest<F
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
         //Assert
-        Assert.IsNotNull(actual);
-        Assert.IsNotEmpty(actual.Transactions);
+        actual.Should().NotBeNull();
+        actual.Transactions.Should().NotBeEmpty();
     }
 
     [Test]
@@ -92,6 +92,6 @@ public class WhenIGetEmployerLevyDeclarationTransactionDetails : QueryBaseTest<F
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 
         //Assert
-        Assert.AreEqual(11,actual.Total);
+        actual.Total.Should().Be(11);
     }
 }

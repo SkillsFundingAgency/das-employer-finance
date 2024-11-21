@@ -45,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsCont
             var response = await _employerAccountsController.GetAccountProjectionSummary(accountId);
 
             //Assert
-            Assert.IsNotNull(response);
+            response.Should().NotBeNull();
         }
 
         [Test]
