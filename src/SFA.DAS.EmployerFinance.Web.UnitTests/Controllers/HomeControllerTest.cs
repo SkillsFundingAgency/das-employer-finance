@@ -29,7 +29,7 @@ public class HomeControllerTest
         var result = _homeController.Index() as RedirectResult;
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(ExpectedUrl, result.Url);
+        (result).Should().NotBeNull();
+        result.Url.Should().BeEquivalentTo(ExpectedUrl);
     }
 }

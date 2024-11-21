@@ -47,8 +47,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
             var actual = await RequestHandler.Handle(Query,CancellationToken.None);
 
             //Assert
-            Assert.IsNotNull(actual.Transaction);
-            Assert.AreEqual(expectedDate, actual.Transaction.SubmissionDate);
+            actual.Transaction.Should().NotBeNull();
+            actual.Transaction.SubmissionDate.Should().Be(expectedDate);
         }
         
     }

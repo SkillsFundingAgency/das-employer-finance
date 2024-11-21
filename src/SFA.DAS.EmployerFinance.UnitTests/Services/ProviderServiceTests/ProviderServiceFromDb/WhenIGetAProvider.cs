@@ -46,8 +46,8 @@ internal class WhenIGetAProvider
         var result = await _sut.Get(ukPrn);
 
         // assert
-        Assert.AreEqual(_providerName, result.Name);
-        Assert.AreEqual(ukPrn, result.Ukprn);
-        Assert.AreEqual(true, result.IsHistoricProviderName);
+        result.Name.Should().Be(_providerName);
+        result.Ukprn.Should().Be(ukPrn);
+        result.IsHistoricProviderName.Should().Be(true);
     }
 }

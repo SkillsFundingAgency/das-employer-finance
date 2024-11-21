@@ -43,6 +43,6 @@ public class WhenIGetTransferAllowance
         var response = await _employerAccountsController.GetTransferAllowance(hashedAccountId);
 
         //Assert
-        Assert.IsNotNull(response);
+        response.Should().NotBeNull();
     }
 }

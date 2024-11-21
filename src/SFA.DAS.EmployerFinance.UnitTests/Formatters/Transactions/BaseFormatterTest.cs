@@ -95,9 +95,9 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
         [Test]
         public void CsvPaymentFormatterHasTheCorrectProperties()
         {
-            Assert.AreEqual(ExpectedMimeType, PaymentFormatter.MimeType);
-            Assert.AreEqual(ExpectedFileExtension, PaymentFormatter.FileExtension);
-            Assert.AreEqual(ExpectedDownloadFormats, PaymentFormatter.DownloadFormatType);
+            PaymentFormatter.MimeType.Should().Be(ExpectedMimeType);
+            PaymentFormatter.FileExtension.Should().Be(ExpectedFileExtension);
+            PaymentFormatter.DownloadFormatType.Should().Be(ExpectedDownloadFormats);
         }
     }
 }
