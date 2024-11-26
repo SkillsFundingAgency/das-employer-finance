@@ -24,7 +24,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
                 });
 
             //Assert
-            Assert.IsTrue(actual.IsValid());
+            actual.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -34,10 +34,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
             var actual = await _validator.ValidateAsync(new FindEmployerAccountLevyDeclarationTransactionsQuery());
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string,string>("FromDate", "From date has not been supplied"), actual.ValidationDictionary);
-            Assert.Contains(new KeyValuePair<string,string>("ToDate", "To date has not been supplied"), actual.ValidationDictionary);
-            Assert.Contains(new KeyValuePair<string,string>("HashedAccountId", "HashedAccountId has not been supplied"), actual.ValidationDictionary);
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("FromDate", "From date has not been supplied")));
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("ToDate", "To date has not been supplied")));
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied")));
         }
     }
 }

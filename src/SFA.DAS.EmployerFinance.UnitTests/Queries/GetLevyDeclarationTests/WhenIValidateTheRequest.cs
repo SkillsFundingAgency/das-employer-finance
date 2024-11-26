@@ -19,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
             var actual = _validator.Validate(new GetLevyDeclarationRequest { HashedAccountId = "12587" });
 
             //Assert
-            Assert.IsTrue(actual.IsValid());
+            actual.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -29,8 +29,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevyDeclarationTests
             var actual = _validator.Validate(new GetLevyDeclarationRequest { HashedAccountId = "" });
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied"), actual.ValidationDictionary);
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied")));
         }
     }
 }

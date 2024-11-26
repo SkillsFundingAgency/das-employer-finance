@@ -23,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             });
 
             //Assert
-            Assert.IsTrue(actual.IsValid());
+            actual.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -33,9 +33,16 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             var actual = _validator.Validate(new CreateTransferTransactionsCommand());
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string, string>("ReceiverAccountId", "ReceiverAccountId has not been supplied"), actual.ValidationDictionary);
-            Assert.Contains(new KeyValuePair<string, string>("PeriodEnd", "PeriodEnd has not been supplied"), actual.ValidationDictionary);
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should()
+                .ContainKey("ReceiverAccountId")
+                .WhichValue
+                .Should().Be("ReceiverAccountId has not been supplied");
+
+            actual.ValidationDictionary.Should()
+                .ContainKey("PeriodEnd")
+                .WhichValue
+                .Should().Be("PeriodEnd has not been supplied");
         }
 
         [Test]
@@ -49,8 +56,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             });
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string, string>("PeriodEnd", "PeriodEnd has not been supplied"), actual.ValidationDictionary);
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should()
+                .ContainKey("PeriodEnd")
+                .WhichValue
+                .Should().Be("PeriodEnd has not been supplied");
         }
 
         [Test]
@@ -64,8 +74,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             });
 
             //Assert
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string, string>("ReceiverAccountId", "ReceiverAccountId cannot be negative"), actual.ValidationDictionary);
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should()
+                .ContainKey("ReceiverAccountId")
+                .WhichValue
+                .Should().Be("ReceiverAccountId cannot be negative");
         }
     }
 }

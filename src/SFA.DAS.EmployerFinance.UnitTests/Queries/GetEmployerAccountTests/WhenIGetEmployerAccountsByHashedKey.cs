@@ -61,8 +61,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEmployerAccountTests
             }, CancellationToken.None);
 
             //Assert
-            Assert.IsNotNull(result);
-            Assert.AreSame(ExpectedAccount, result.Account);
+            result.Should().NotBeNull();
+            result.Account.Should().Be(ExpectedAccount);
         }
 
 

@@ -19,8 +19,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
             var actual = _getHMRCLevyDeclarationQueryValidator.Validate(new GetHMRCLevyDeclarationQuery());
 
             //Assert
-            Assert.IsNotNull(actual);
-            Assert.Contains(new KeyValuePair<string, string>("EmpRef", "The EmpRef field has not been supplied"), actual.ValidationDictionary);
+            actual.Should().NotBeNull();
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("EmpRef", "The EmpRef field has not been supplied")));
         }
 
         [Test]
@@ -30,8 +30,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetHmrcLevyDeclarationTests
             var actual = _getHMRCLevyDeclarationQueryValidator.Validate(new GetHMRCLevyDeclarationQuery {EmpRef = "123456"});
 
             //Assert
-            Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.IsValid());
+            actual.Should().NotBeNull();
+            actual.IsValid().Should().BeTrue();
         }
     }
 }

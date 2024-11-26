@@ -122,11 +122,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
             return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestSenderAccountId),
                 assert: f =>
                 {
-                    Assert.IsTrue(f.TransferConnectionInvitation.DeletedBySender);
-                    Assert.IsFalse(f.TransferConnectionInvitation.DeletedByReceiver);
-                    Assert.IsTrue(f.TransferConnectionInvitation.Changes.SingleOrDefault(tcic => 
+                    f.TransferConnectionInvitation.DeletedBySender.Should().BeTrue();
+                    f.TransferConnectionInvitation.DeletedByReceiver.Should().BeFalse();
+                    (f.TransferConnectionInvitation.Changes.SingleOrDefault(tcic => 
                                       tcic.DeletedBySender.HasValue && 
-                                      tcic.DeletedBySender.Value && !tcic.DeletedByReceiver.HasValue) != null);
+                                      tcic.DeletedBySender.Value && !tcic.DeletedByReceiver.HasValue) != null).Should().BeTrue();
                 });
         }
 
@@ -135,12 +135,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
             return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId),
                 assert: f =>
                 {
-                    Assert.IsTrue(f.TransferConnectionInvitation.DeletedByReceiver);
-                    Assert.IsFalse(f.TransferConnectionInvitation.DeletedBySender);
-                    Assert.IsTrue(f.TransferConnectionInvitation.Changes.SingleOrDefault(tcic =>
+                    f.TransferConnectionInvitation.DeletedByReceiver.Should().BeTrue();
+                    f.TransferConnectionInvitation.DeletedBySender.Should().BeFalse();
+                    (f.TransferConnectionInvitation.Changes.SingleOrDefault(tcic =>
                                       tcic.DeletedByReceiver.HasValue && 
                                       tcic.DeletedByReceiver.Value &&
-                                      !tcic.DeletedBySender.HasValue) != null);
+                                      !tcic.DeletedBySender.HasValue) != null).Should().BeTrue();
                 });
         }
 

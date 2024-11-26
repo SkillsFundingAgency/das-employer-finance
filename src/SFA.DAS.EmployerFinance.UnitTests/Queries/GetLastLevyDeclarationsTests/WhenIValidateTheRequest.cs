@@ -19,7 +19,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
             var actual = _validator.Validate(new GetLastLevyDeclarationQuery {EmpRef = "asdasd"});
 
             //Act
-            Assert.IsTrue(actual.IsValid());
+            actual.IsValid().Should().BeTrue();
         }
 
         [Test]
@@ -29,8 +29,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLastLevyDeclarationsTests
             var actual = _validator.Validate(new GetLastLevyDeclarationQuery());
 
             //Act
-            Assert.IsFalse(actual.IsValid());
-            Assert.Contains(new KeyValuePair<string,string>("EmpRef", "EmpRef has not been supplied"), actual.ValidationDictionary );
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("EmpRef", "EmpRef has not been supplied")));
         }
     }
 }

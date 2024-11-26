@@ -30,7 +30,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateReq
             var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest(), CancellationToken.None);
 
             //Assert
-            Assert.IsTrue(result.UpdateRequired); 
+            result.UpdateRequired.Should().BeTrue(); 
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetEnglishFractionsUpdateReq
             var result = await _handler.Handle(new GetEnglishFractionUpdateRequiredRequest(),CancellationToken.None);
 
             //Assert
-            Assert.IsFalse(result.UpdateRequired);
+            result.UpdateRequired.Should().BeFalse();
         }
     }
 }

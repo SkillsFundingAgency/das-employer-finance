@@ -52,6 +52,8 @@ stages:
     parameters:
       SolutionBaseName: $(SolutionBaseName).dacpac
       SqlProjectPath: src/$(SolutionBaseName).Database/$(SolutionBaseName).Database.sqlproj
+- template: azure-pipelines-templates/deploy/stage/nuget-publish.yml@das-platform-building-blocks
+
 
 - stage: Deploy_AT
   dependsOn: Build
@@ -165,4 +167,3 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
       AppRoleAssignmentsServiceConnection: das-app-role-assignments-CDS
-

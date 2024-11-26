@@ -75,6 +75,6 @@ class WhenIViewTranferTransactions
 
         var viewModel = view?.Model as TransferTransactionDetailsViewModel;
 
-        Assert.AreEqual(expectedViewModel, viewModel);
+        viewModel.Should().Be(expectedViewModel);
     }
 }

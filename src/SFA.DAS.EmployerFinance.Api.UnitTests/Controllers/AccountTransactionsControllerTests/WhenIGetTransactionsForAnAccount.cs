@@ -42,8 +42,8 @@ public class WhenIGetTransactionsForAnAccount
         var response = await _controller.GetTransactions(hashedAccountId, year, month);
 
         //Assert
-        Assert.IsNotNull(response);
-        Assert.IsInstanceOf<OkObjectResult>(response);
+        response.Should().NotBeNull();
+        response.Should().BeOfType<OkObjectResult>();
         var model = ((OkObjectResult)response).Value as Transactions;
 
         model?.Should().NotBeNull();
@@ -68,8 +68,8 @@ public class WhenIGetTransactionsForAnAccount
         var response = await _controller.GetTransactions(hashedAccountId, year, month);
             
         //Assert
-        Assert.IsNotNull(response);
-        Assert.IsInstanceOf<OkObjectResult>(response);
+        response.Should().NotBeNull();
+        response.Should().BeOfType<OkObjectResult>();
         var model = ((OkObjectResult)response).Value as Transactions;
 
         model?.Should().NotBeNull();
