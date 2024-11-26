@@ -58,28 +58,4 @@ public static class ServiceCollectionExtensions
             })
             .AddHostedService<NServiceBusHostedService>();
     }
-
-    public static EndpointConfiguration UseMessageConventions(this EndpointConfiguration endpointConfiguration)
-    {
-        endpointConfiguration.Conventions()
-            .DefiningMessagesAs(IsMessage)
-            .DefiningEventsAs(IsEvent)
-            .DefiningCommandsAs(IsCommand);
-
-        return endpointConfiguration;
-    }
-
-    public static bool IsMessage(Type t) => IsSfaMessage(t, "Messages");
-
-    public static bool IsEvent(Type t) =>
-        (t.FullName != null && t.FullName.EndsWith("Event")) || IsSfaMessage(t, "Messages.Events");
-
-    public static bool IsCommand(Type t) => (t.FullName != null && t.FullName.EndsWith("Command")) ||
-                                            IsSfaMessage(t, "Messages.Commands");
-
-    public static bool IsSfaMessage(Type t, string namespaceSuffix)
-        => t.Namespace != null &&
-           t.Namespace.StartsWith("SFA.DAS") &&
-           t.Namespace.EndsWith(namespaceSuffix);
-
 }
