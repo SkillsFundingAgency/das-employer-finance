@@ -35,8 +35,7 @@ public class ImportAccountPaymentsCommandHandler(
 
     private async Task SendImportAccountPaymentMetadataCommand(ImportAccountPaymentsCommand message, IMessageHandlerContext context, PaymentDetails payment)
     {
-        logger.LogInformation(
-            "Creating {MessageType} message for {AccountId} - {PaymentId}",
+        logger.LogInformation("Creating {MessageType} message for {AccountId} - {PaymentId}",
             nameof(ImportAccountPaymentMetadataCommand),
             message.AccountId,
             payment.Id);
@@ -56,7 +55,10 @@ public class ImportAccountPaymentsCommandHandler(
 
     private async Task CreateTransferTransactions(ImportAccountPaymentsCommand message, Guid correlationId)
     {
-        logger.LogInformation($"Processing create account transfer transactions command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}, CorrelationId: {correlationId}");
+        logger.LogInformation("Processing create account transfer transactions command for AccountId:{AccountId} PeriodEnd:{PeriodEndRef}, CorrelationId: {CorrelationId}",
+            message.AccountId,
+            message.PeriodEndRef, 
+            correlationId);
 
         await mediator.Send(new CreateTransferTransactionsCommand
         {
@@ -68,7 +70,10 @@ public class ImportAccountPaymentsCommandHandler(
 
     private async Task RefreshAccountTransfers(ImportAccountPaymentsCommand message, Guid correlationId)
     {
-        logger.LogInformation($"Processing refresh account transfers command for AccountId:{message.AccountId} PeriodEnd:{message.PeriodEndRef}, CorrelationId: {correlationId}");
+        logger.LogInformation("Processing refresh account transfers command for AccountId:{AccountId} PeriodEnd:{PeriodEndRef}, CorrelationId: {CorrelationId}",
+            message.AccountId,
+            message.PeriodEndRef,
+            correlationId);
 
         await mediator.Send(new RefreshAccountTransfersCommand
         {
@@ -80,7 +85,11 @@ public class ImportAccountPaymentsCommandHandler(
 
     private async Task<RefreshPaymentDataResponse> RefreshPaymentData(ImportAccountPaymentsCommand message, IMessageHandlerContext context, Guid correlationId)
     {
-        logger.LogInformation($"Processing refresh payment command for Account ID: {message.AccountId} PeriodEnd: {message.PeriodEndRef} CorrelationId: {correlationId}, MessageId: {context.MessageId}");
+        logger.LogInformation("Processing refresh payment command for Account ID: {AccountId} PeriodEnd: {PeriodEndRef} CorrelationId: {CorrelationId}, MessageId: {MessageId}",
+            message.AccountId,
+            message.PeriodEndRef,
+            correlationId,
+            context.MessageId);
 
         return await mediator.Send(new RefreshPaymentDataCommand
         {

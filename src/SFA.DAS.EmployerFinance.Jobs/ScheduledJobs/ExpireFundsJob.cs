@@ -6,25 +6,14 @@ using SFA.DAS.EmployerFinance.Messages.Commands;
 
 namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 
-public class ExpireFundsJob
+public class ExpireFundsJob(IMessageSession messageSession, ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository)
 {
-    private readonly IMessageSession _messageSession;
-    private readonly ICurrentDateTime _currentDateTime;
-    private readonly IEmployerAccountRepository _accountRepository;
-
-    public ExpireFundsJob(IMessageSession messageSession, ICurrentDateTime currentDateTime, IEmployerAccountRepository accountRepository)
-    {
-        _messageSession = messageSession;
-        _currentDateTime = currentDateTime;
-        _accountRepository = accountRepository;
-    }
-
     public async Task Run([TimerTrigger("0 0 0 28 * *")] TimerInfo timer, ILogger logger)
     {
         logger.LogInformation($"Starting {nameof(ExpireFundsJob)}");
 
-        var now = _currentDateTime.Now;
-        var accounts = await _accountRepository.GetAll();
+        var now = currentDateTime.Now;
+        var accounts = await accountRepository.GetAll();
 
         logger.LogInformation($"Queueing {nameof(ExpireAccountFundsCommand)} messages for {accounts.Count} accounts.");
 
@@ -37,7 +26,7 @@ public class ExpireFundsJob
 
             sendOptions.SetMessageId($"{nameof(ExpireAccountFundsCommand)}-{now.Year}-{now.Month}-{account.Id}");
 
-            messageTasks.Add(_messageSession.Send(new ExpireAccountFundsCommand { AccountId = account.Id }, sendOptions));
+            messageTasks.Add(messageSession.Send(new ExpireAccountFundsCommand { AccountId = account.Id }, sendOptions));
             sendCounter++;
 
             if (sendCounter % 1000 == 0)

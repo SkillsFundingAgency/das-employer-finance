@@ -14,13 +14,15 @@ public class ImportPaymentsCommandHandler(
 {
     public async Task Handle(ImportPaymentsCommand message, IMessageHandlerContext context)
     {
-        logger.LogInformation($"Calling Payments API");
+        logger.LogInformation("Calling Payments API");
 
         var periodEnds = await paymentsEventsApiClient.GetPeriodEnds();
 
         var result = await mediator.Send(new GetPeriodEndsRequest());
-        var periodsToProcess =
-            periodEnds.Where(pe => result.CurrentPeriodEnds.All(existing => existing.PeriodEndId != pe.Id));
+
+        var periodsToProcess = periodEnds
+            .Where(pe => result.CurrentPeriodEnds.All(existing => existing.PeriodEndId != pe.Id))
+            .ToList();
 
         if (!periodsToProcess.Any())
         {
@@ -38,7 +40,8 @@ public class ImportPaymentsCommandHandler(
     {
         var periodEnd = MapToDbPaymentPeriod(paymentsPeriodEnd);
 
-        logger.LogInformation($"Creating period end {periodEnd.PeriodEndId}");
+        logger.LogInformation("Creating period end {PeriodEndId}", periodEnd.PeriodEndId);
+
         await mediator.Send(new CreateNewPeriodEndCommand { NewPeriodEnd = periodEnd });
 
         if (!periodEnd.AccountDataValidAt.HasValue || !periodEnd.CommitmentDataValidAt.HasValue)
@@ -46,8 +49,7 @@ public class ImportPaymentsCommandHandler(
             return;
         }
 
-        logger.LogInformation(
-            $"Creating process period end queue message for period end ref: '{paymentsPeriodEnd.Id}'");
+        logger.LogInformation("Creating process period end queue message for period end ref: '{Id}'", paymentsPeriodEnd.Id);
 
         await context.SendLocal(new ProcessPeriodEndPaymentsCommand
         {

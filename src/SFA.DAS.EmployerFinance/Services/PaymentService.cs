@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Text.Json;
+﻿using System.Text.Json;
 using AutoMapper;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
@@ -14,29 +13,16 @@ using Payment = SFA.DAS.Provider.Events.Api.Types.Payment;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public class PaymentService : IPaymentService
+public class PaymentService(
+    IPaymentsEventsApiClient paymentsEventsApiClient,
+    ICommitmentsV2ApiClient commitmentsV2ApiClient,
+    IApprenticeshipInfoServiceWrapper apprenticeshipInfoService,
+    IMapper mapper,
+    ILogger<PaymentService> logger,
+    IInProcessCache inProcessCache,
+    IProviderService providerService)
+    : IPaymentService
 {
-    private readonly IPaymentsEventsApiClient _paymentsEventsApiClient;
-    private readonly ICommitmentsV2ApiClient _commitmentsV2ApiClient;
-    private readonly IApprenticeshipInfoServiceWrapper _apprenticeshipInfoService;
-    private readonly IMapper _mapper;
-    private readonly ILogger<PaymentService> _logger;
-    private readonly IInProcessCache _inProcessCache;
-    private readonly IProviderService _providerService;
-
-    public PaymentService(IPaymentsEventsApiClient paymentsEventsApiClient,
-        ICommitmentsV2ApiClient commitmentsV2ApiClient, IApprenticeshipInfoServiceWrapper apprenticeshipInfoService,
-        IMapper mapper, ILogger<PaymentService> logger, IInProcessCache inProcessCache, IProviderService providerService)
-    {
-        _paymentsEventsApiClient = paymentsEventsApiClient;
-        _commitmentsV2ApiClient = commitmentsV2ApiClient;
-        _apprenticeshipInfoService = apprenticeshipInfoService;
-        _mapper = mapper;
-        _logger = logger;
-        _inProcessCache = inProcessCache;
-        _providerService = providerService;
-    }
-
     public async Task<ICollection<PaymentDetails>> GetAccountPayments(string periodEnd, long employerAccountId, Guid correlationId)
     {
         var populatedPayments = new List<PaymentDetails>();
@@ -47,15 +33,19 @@ public class PaymentService : IPaymentService
         {
             var payments = await GetPaymentsPage(employerAccountId, periodEnd, index).ConfigureAwait(false);
 
-            if (payments == null) continue;
+            if (payments == null)
+            {
+                continue;
+            }
 
             totalPages = payments.TotalNumberOfPages;
 
-            var paymentDetails = payments.Items.Select(x => _mapper.Map<PaymentDetails>(x));
+            var paymentDetails = payments.Items.Select(mapper.Map<PaymentDetails>);
 
             populatedPayments.AddRange(paymentDetails);
 
-            _logger.LogInformation($"Populated payments page {index} of {totalPages} for AccountId = {employerAccountId}, periodEnd={periodEnd}, correlationId = {correlationId}");
+            logger.LogInformation("Populated payments page {Index} of {TotalPages} for AccountId = {EmployerAccountId}, PeriodEnd={PeriodEnd}, correlationId = {CorrelationId}",
+                index, totalPages, employerAccountId, periodEnd, correlationId);
         }
 
         await Parallel.ForEachAsync(populatedPayments, (details, _) =>
@@ -67,56 +57,20 @@ public class PaymentService : IPaymentService
         return populatedPayments;
     }
 
-    // TODO: Remove this code once the use of AddSinglePaymentDetailsMetadata() has been confirmed
-    public async Task<ICollection<PaymentDetails>> AddPaymentDetailsMetadata(string periodEnd, long employerAccountId, Guid correlationId, ICollection<PaymentDetails> paymentDetails)
-    {
-        _logger.LogInformation("Fetching provider and apprenticeship for {PaymentDetailsCount} payments for AccountId = {EmployerAccountId}, periodEnd={PeriodEnd}, correlationId = {CorrelationId}", paymentDetails.Count, employerAccountId, periodEnd, correlationId);
-
-        var ukprnList = paymentDetails.Select(pd => pd.Ukprn).Distinct();
-        var apprenticeshipIdList = paymentDetails.Select(pd => pd.ApprenticeshipId).Distinct();
-
-        var getProviderDetailsTask = GetProviderDetailsDict(ukprnList);
-        var getApprenticeDetailsTask = GetApprenticeshipDetailsDict(employerAccountId, apprenticeshipIdList, correlationId);
-
-        await Task.WhenAll(getProviderDetailsTask, getApprenticeDetailsTask);
-
-        var apprenticeshipDetails = getApprenticeDetailsTask.Result;
-        var providerDetails = getProviderDetailsTask.Result;
-
-        _logger.LogInformation("Fetched provider and apprenticeship for AccountId = {EmployerAccountId}, periodEnd={PeriodEnd}, correlationId = {CorrelationId} - with {ProviderDetailsCount} providers and {ApprenticeshipDetailsCount} apprenticeship details", employerAccountId, periodEnd, correlationId, providerDetails.Count, apprenticeshipDetails.Count);
-
-        await Parallel.ForEachAsync(paymentDetails, async (details, _) =>
-        {
-            providerDetails.TryGetValue(details.Ukprn, out var provider);
-            details.ProviderName = provider?.Name;
-            details.IsHistoricProviderName = provider?.IsHistoricProviderName ?? false;
-
-            if (apprenticeshipDetails.TryGetValue(details.ApprenticeshipId, out var apprenticeship))
-            {
-                details.ApprenticeName = $"{apprenticeship.FirstName} {apprenticeship.LastName}";
-                details.CourseStartDate = apprenticeship.StartDate;
-            }
-
-            await GetCourseDetails(details);
-        });
-
-        return paymentDetails;
-    }
-
     public async Task<PaymentDetails> AddSinglePaymentDetailsMetadata(long employerAccountId, PaymentDetails paymentDetails)
     {
-        _logger.LogInformation("{MethodName}: Starting processing for {PaymentId} - {ApprenticeshipId} - {PeriodEnd}.", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId, paymentDetails.PeriodEnd);
+        logger.LogInformation("{MethodName}: Starting processing for {PaymentId} - {ApprenticeshipId} - {PeriodEnd}.", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId, paymentDetails.PeriodEnd);
 
-        var providerDetailsTask = _providerService.Get(paymentDetails.Ukprn);
+        var providerDetailsTask = providerService.Get(paymentDetails.Ukprn);
         var apprenticeshipTask = GetApprenticeship(employerAccountId, paymentDetails.ApprenticeshipId);
-        
+
         await Task.WhenAll(providerDetailsTask, apprenticeshipTask);
 
         var apprenticeship = apprenticeshipTask.Result;
         var providerDetails = providerDetailsTask.Result;
-        
-        _logger.LogInformation("{MethodName}: Provider {Provider}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(providerDetails));
-        _logger.LogInformation("{MethodName}: Apprenticeship {Apprenticeship}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(apprenticeship));
+
+        logger.LogInformation("{MethodName}: Provider {Provider}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(providerDetails));
+        logger.LogInformation("{MethodName}: Apprenticeship {Apprenticeship}", nameof(AddSinglePaymentDetailsMetadata), JsonSerializer.Serialize(apprenticeship));
 
         if (apprenticeship != null)
         {
@@ -125,7 +79,7 @@ public class PaymentService : IPaymentService
         }
         else
         {
-            _logger.LogInformation("{MethodName}: Apprentice not found for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
+            logger.LogInformation("{MethodName}: Apprentice not found for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
         }
 
         paymentDetails.ProviderName = providerDetails?.Name;
@@ -133,14 +87,14 @@ public class PaymentService : IPaymentService
 
         await GetCourseDetails(paymentDetails);
 
-        _logger.LogInformation("{MethodName}: Completed processing for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
+        logger.LogInformation("{MethodName}: Completed processing for {PaymentId} - {ApprenticeshipId}", nameof(AddSinglePaymentDetailsMetadata), paymentDetails.Id, paymentDetails.ApprenticeshipId);
 
         return paymentDetails;
     }
 
     public async Task<IEnumerable<AccountTransfer>> GetAccountTransfers(string periodEnd, long receiverAccountId, Guid correlationId)
     {
-        var pageOfTransfers = await _paymentsEventsApiClient.GetTransfers(periodEnd, receiverAccountId: receiverAccountId);
+        var pageOfTransfers = await paymentsEventsApiClient.GetTransfers(periodEnd, receiverAccountId: receiverAccountId);
 
         var transfers = new List<AccountTransfer>();
 
@@ -160,51 +114,6 @@ public class PaymentService : IPaymentService
 
         return transfers;
     }
-    
-    private async Task<ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>> GetProviderDetailsDict(IEnumerable<long> ukprnList)
-    {
-        var maxConcurrentThreads = 10;
-        var resultProviders = new ConcurrentDictionary<long, Models.ApprenticeshipProvider.Provider>();
-
-        await Parallel.ForEachAsync(
-            ukprnList,
-            new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
-            async (ukprn, _) =>
-            {
-                if (!resultProviders.ContainsKey(ukprn))
-                {
-                    var provider = await _providerService.Get(ukprn).ConfigureAwait(false);
-                    resultProviders.TryAdd(ukprn, provider);
-                }
-            });
-
-        return resultProviders;
-    }
-
-    private async Task<ConcurrentDictionary<long, GetApprenticeshipResponse>> GetApprenticeshipDetailsDict(long employerAccountId, IEnumerable<long> apprenticeshipIdList, Guid correlationId)
-    {
-        var resultApprenticeships = new ConcurrentDictionary<long, GetApprenticeshipResponse>();
-        var maxConcurrentThreads = 10;
-        var counter = 0;
-        var total = apprenticeshipIdList.Count();
-
-        await Parallel.ForEachAsync(
-            apprenticeshipIdList,
-            new ParallelOptions { MaxDegreeOfParallelism = maxConcurrentThreads },
-            async (apprenticeshipId, _) =>
-            {
-                var apprenticeship = await GetApprenticeship(employerAccountId, apprenticeshipId).ConfigureAwait(false);
-                if (apprenticeship != null)
-                {
-                    resultApprenticeships.TryAdd(apprenticeship.Id, apprenticeship);
-                }
-
-                var currentCount = Interlocked.Increment(ref counter);
-                _logger.LogInformation("Fetched {CurrentCount}/{Total} apprenticeships for EmployerAccountId = {EmployerAccountId}, correlationId = {CorrelationId}", currentCount, total, employerAccountId, correlationId);
-            });
-
-        return resultApprenticeships;
-    }
 
     private async Task GetCourseDetails(PaymentDetails payment)
     {
@@ -223,7 +132,7 @@ public class PaymentService : IPaymentService
         }
         else
         {
-            _logger.LogWarning($"No framework code or standard code set on payment. Cannot get course details. PaymentId: {payment.Id}");
+            logger.LogWarning("No framework code or standard code set on payment. Cannot get course details. PaymentId: {PaymentId}", payment.Id);
         }
     }
 
@@ -244,15 +153,15 @@ public class PaymentService : IPaymentService
 
     private async Task<GetApprenticeshipResponse> GetApprenticeship(long employerAccountId, long apprenticeshipId)
     {
-        _logger.LogInformation("Getting apprenticeship details for EmployerAccountId: {EmployerId} and ApprenticeshipId: {ApprenticeshipId}", employerAccountId, apprenticeshipId);
+        logger.LogInformation("Getting apprenticeship details for EmployerAccountId: {EmployerId} and ApprenticeshipId: {ApprenticeshipId}", employerAccountId, apprenticeshipId);
 
         try
         {
-            return await _commitmentsV2ApiClient.GetApprenticeship(apprenticeshipId);
+            return await commitmentsV2ApiClient.GetApprenticeship(apprenticeshipId);
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, $"Unable to get Apprenticeship with Employer Account ID {employerAccountId} and apprenticeship ID {apprenticeshipId} from commitments API.");
+            logger.LogWarning(exception, "Unable to get Apprenticeship with Employer Account ID {EmployerAccountId} and apprenticeship ID {ApprenticeshipId} from commitments API.", employerAccountId, apprenticeshipId);
         }
 
         return null;
@@ -262,11 +171,11 @@ public class PaymentService : IPaymentService
     {
         try
         {
-            return await _paymentsEventsApiClient.GetPayments(periodEnd, employerAccountId.ToString(), page, null);
+            return await paymentsEventsApiClient.GetPayments(periodEnd, employerAccountId.ToString(), page, null);
         }
         catch (WebException webException)
         {
-            _logger.LogError(webException, $"Unable to get payment information for {periodEnd} accountid {employerAccountId}");
+            logger.LogError(webException, "Unable to get payment information for {PeriodEnd} accountId {EmployerAccountId}", periodEnd, employerAccountId);
         }
 
         return null;
@@ -276,23 +185,25 @@ public class PaymentService : IPaymentService
     {
         try
         {
-            var standardsView = _inProcessCache.Get<StandardsView>(nameof(StandardsView));
-
-            if (standardsView != null)
-                return standardsView.Standards?.SingleOrDefault(s => s.Code.Equals(standardCode));
-
-            standardsView = await _apprenticeshipInfoService.GetStandardsAsync();
+            var standardsView = inProcessCache.Get<StandardsView>(nameof(StandardsView));
 
             if (standardsView != null)
             {
-                _inProcessCache.Set(nameof(StandardsView), standardsView, new TimeSpan(1, 0, 0));
+                return standardsView.Standards?.SingleOrDefault(s => s.Code.Equals(standardCode));
+            }
+
+            standardsView = await apprenticeshipInfoService.GetStandardsAsync();
+
+            if (standardsView != null)
+            {
+                inProcessCache.Set(nameof(StandardsView), standardsView, new TimeSpan(1, 0, 0));
             }
 
             return standardsView?.Standards?.SingleOrDefault(s => s.Code.Equals(standardCode));
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, "Could not get standards from apprenticeship API.");
+            logger.LogWarning(exception, "Could not get standards from apprenticeship API.");
         }
 
         return null;
@@ -302,19 +213,21 @@ public class PaymentService : IPaymentService
     {
         try
         {
-            var frameworksView = _inProcessCache.Get<FrameworksView>(nameof(FrameworksView));
+            var frameworksView = inProcessCache.Get<FrameworksView>(nameof(FrameworksView));
 
             if (frameworksView != null)
+            {
                 return frameworksView.Frameworks.SingleOrDefault(f =>
                     f.FrameworkCode.Equals(frameworkCode) &&
                     f.ProgrammeType.Equals(programType) &&
                     f.PathwayCode.Equals(pathwayCode));
+            }
 
-            frameworksView = await _apprenticeshipInfoService.GetFrameworksAsync();
+            frameworksView = await apprenticeshipInfoService.GetFrameworksAsync();
 
             if (frameworksView != null)
             {
-                _inProcessCache.Set(nameof(FrameworksView), frameworksView, new TimeSpan(1, 0, 0));
+                inProcessCache.Set(nameof(FrameworksView), frameworksView, new TimeSpan(1, 0, 0));
             }
 
             return frameworksView?.Frameworks.SingleOrDefault(f =>
@@ -324,7 +237,7 @@ public class PaymentService : IPaymentService
         }
         catch (Exception exception)
         {
-            _logger.LogWarning(exception, "Could not get frameworks from apprenticeship API.");
+            logger.LogWarning(exception, "Could not get frameworks from apprenticeship API.");
         }
 
         return null;

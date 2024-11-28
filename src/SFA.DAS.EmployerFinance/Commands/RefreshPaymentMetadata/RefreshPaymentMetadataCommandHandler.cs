@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using SFA.DAS.EmployerFinance.Data.Contracts;
-using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 
@@ -45,14 +43,12 @@ public class RefreshPaymentMetadataCommandHandler(
         }
         else
         {
-            logger.LogInformation("{HandlerName}: Found payment from DB, executing AddSinglePaymentDetailsMetadata(): {Payment}.",
-                nameof(RefreshPaymentMetadataCommandHandler), JsonSerializer.Serialize(payment));
+            logger.LogInformation("{HandlerName}: Found payment from DB, retrieving Payment Details Metadata.",
+                nameof(RefreshPaymentMetadataCommandHandler));
             
             await paymentService.AddSinglePaymentDetailsMetadata(request.AccountId, payment);
 
-            logger.LogInformation("{HandlerName}: Saving PaymentDetails: {PaymentDetails}.",
-                nameof(RefreshPaymentMetadataCommandHandler), 
-                JsonSerializer.Serialize(payment));
+            logger.LogInformation("{HandlerName}: Saving PaymentDetails.", nameof(RefreshPaymentMetadataCommandHandler));
 
             await levyRepository.UpdatePaymentMetadata(payment);
         }
