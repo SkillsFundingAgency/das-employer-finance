@@ -8,20 +8,14 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers;
 [SetNavigationSection(NavigationSection.AccountsFinance)]
 [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
 [Route("accounts/{HashedAccountId}")] 
-public class TransfersController :Controller
+public class TransfersController(
+    TransfersOrchestrator transfersOrchestrator) : Controller
 {
-    private readonly TransfersOrchestrator _transfersOrchestrator;
-
-    public TransfersController(TransfersOrchestrator transfersOrchestrator)
-    {
-        _transfersOrchestrator = transfersOrchestrator;
-    }
-
     [HttpGet]
     [Route("transfers")]
     public async Task<IActionResult> Index(string hashedAccountId)
     {
-        var viewModel = await _transfersOrchestrator.GetIndexViewModel(hashedAccountId, User);
+        var viewModel = await transfersOrchestrator.GetIndexViewModel(hashedAccountId);
 
         return View(viewModel);
     }
@@ -30,7 +24,7 @@ public class TransfersController :Controller
     [Route("transfers/financial-breakdown")]
     public async Task<IActionResult> FinancialBreakdown(string hashedAccountId)
     {
-        var viewModel = await _transfersOrchestrator.GetFinancialBreakdownViewModel(hashedAccountId);
+        var viewModel = await transfersOrchestrator.GetFinancialBreakdownViewModel(hashedAccountId);
         return View(viewModel);
     }
 }

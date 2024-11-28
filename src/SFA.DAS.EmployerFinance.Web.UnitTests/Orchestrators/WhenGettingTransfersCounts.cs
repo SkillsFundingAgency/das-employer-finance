@@ -33,8 +33,14 @@ public class WhenGettingTransfersCounts
         _configuration = new EmployerFinanceConfiguration { TransferAllowancePercentage = TransferAllowancePercentage };
 
         _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
-        
-        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
+
+        _orchestrator = new TransfersOrchestrator(
+            _authorisationService.Object,
+            _encodingService.Object,
+            _transfersService.Object,
+            _accountApiClient.Object,
+            _configuration,
+            Mock.Of<ILogger<TransfersOrchestrator>>());
     }
 
     [TestCase(true, true)]
@@ -45,7 +51,7 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(isLevyPayer);
             
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         actual.Data.IsLevyEmployer.Should().Be(expectIsLevyEmployer);
     }
@@ -58,9 +64,9 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(),Authentication.EmployerUserRole.Transactor)).Returns(isAuthorised);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(isAuthorised);
 
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         actual.Data.RenderCreateTransfersPledgeButton.Should().Be(expected);
     }
@@ -74,9 +80,9 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true, startingAllowance);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(), Authentication.EmployerUserRole.Transactor)).Returns(true);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(true);
 
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         actual.Data.EstimatedRemainingAllowance.Should().Be(expected);
     }
@@ -91,9 +97,9 @@ public class WhenGettingTransfersCounts
 
         SetupTheAccountApiClient(true, startingAllowance);
 
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(It.IsAny<ClaimsPrincipal>(), Authentication.EmployerUserRole.Transactor)).Returns(true);
+        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(true);
 
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId, new ClaimsPrincipal());
+        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
 
         actual.Data.HasMinimumTransferFunds.Should().Be(expected);
     }

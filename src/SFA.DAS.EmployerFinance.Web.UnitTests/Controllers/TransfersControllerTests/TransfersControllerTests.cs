@@ -45,7 +45,13 @@ public class TransfersControllerTests
         _accountDetailViewModel = new AccountDetailViewModel();
         _accountApiClient.Setup(m => m.GetAccount(HashedAccountId)).ReturnsAsync(_accountDetailViewModel);
         
-        _orchestrator = new TransfersOrchestrator( _authorisationService.Object, _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
+        _orchestrator = new TransfersOrchestrator(
+            _authorisationService.Object, 
+            _encodingService.Object,
+            _transfersService.Object,
+            _accountApiClient.Object,
+            _configuration,
+            Mock.Of<ILogger<TransfersOrchestrator>>());
 
         _controller = new TransfersController(_orchestrator);
     }
@@ -55,7 +61,7 @@ public class TransfersControllerTests
     {   
         var result = await _controller.FinancialBreakdown(HashedAccountId);
         var view = result as ViewResult;
-        var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
+        var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
            
         viewModel.Should().NotBeNull();
         viewModel.Data.Should().NotBeNull();
@@ -104,12 +110,12 @@ public class TransfersControllerTests
         viewModel.Data.AvailablePledgedFunds.Should().Be(availablePledgedFunds);
     }
 
-    private async Task<Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
+    private async Task<OrchestratorResponse<FinancialBreakdownViewModel>> GetViewModel()
     {
         var result = await _controller.FinancialBreakdown(HashedAccountId);
 
         var view = result as ViewResult;
-        var viewModel = view?.Model as Web.Orchestrators.OrchestratorResponse<FinancialBreakdownViewModel>;
+        var viewModel = view?.Model as OrchestratorResponse<FinancialBreakdownViewModel>;
 
         (viewModel).Should().NotBeNull();
 

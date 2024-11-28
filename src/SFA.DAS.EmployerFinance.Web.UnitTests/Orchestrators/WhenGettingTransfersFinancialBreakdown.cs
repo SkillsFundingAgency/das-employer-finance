@@ -42,7 +42,13 @@ public class WhenGettingTransfersFinancialBreakdown
         });
 
 
-        _orchestrator = new TransfersOrchestrator( Mock.Of<IEmployerAccountAuthorisationHandler>(), _encodingService.Object, _transfersService.Object, _accountApiClient.Object, _configuration);
+        _orchestrator = new TransfersOrchestrator( 
+            Mock.Of<IEmployerAccountAuthorisationHandler>(),
+            _encodingService.Object,
+            _transfersService.Object,
+            _accountApiClient.Object,
+            _configuration,
+            Mock.Of<ILogger<TransfersOrchestrator>>());
     }
     [Test]
     public async Task CheckFinancialBreakdownViewModel()

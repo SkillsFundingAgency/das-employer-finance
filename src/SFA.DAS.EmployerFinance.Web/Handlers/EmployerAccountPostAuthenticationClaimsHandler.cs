@@ -23,7 +23,6 @@ public class EmployerAccountPostAuthenticationClaimsHandler : ICustomClaims
 
     public async Task<IEnumerable<Claim>> GetClaims(TokenValidatedContext tokenValidatedContext)
     {
-        _logger.LogInformation("Updating finance claims");
         var claims = new List<Claim>();
 
         var userId = tokenValidatedContext.Principal.Claims
@@ -37,7 +36,9 @@ public class EmployerAccountPostAuthenticationClaimsHandler : ICustomClaims
         var result = await _userAccountService.GetUserAccounts(userId, email);
 
         var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
+        
         var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
+        
         claims.Add(associatedAccountsClaim);
 
         if (result.IsSuspended)

@@ -9,37 +9,23 @@ using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators;
 
-public class TransfersOrchestrator
+public class TransfersOrchestrator(
+    IEmployerAccountAuthorisationHandler authorizationService,
+    IEncodingService encodingService,
+    ITransfersService transfersService,
+    IAccountApiClient accountApiClient,
+    EmployerFinanceConfiguration configuration,
+    ILogger<TransfersOrchestrator> logger)
 {
-    private readonly IEmployerAccountAuthorisationHandler _authorizationService;
-    private readonly IEncodingService _encodingService;
-    private readonly ITransfersService _transfersService;
-    private readonly IAccountApiClient _accountApiClient;
-    private readonly EmployerFinanceConfiguration _configuration;
     private const int minimumTransferFunds = 2000;
 
-    public TransfersOrchestrator(
-        IEmployerAccountAuthorisationHandler authorizationService,
-        IEncodingService encodingService,
-        ITransfersService transfersService,
-        IAccountApiClient accountApiClient,
-        EmployerFinanceConfiguration configuration)
+    public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId)
     {
-        _authorizationService = authorizationService;
-        _encodingService = encodingService;
-        _transfersService = transfersService;
-        _accountApiClient = accountApiClient;
-        _configuration = configuration;
-    }
+        var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+        var indexTask = transfersService.GetCounts(accountId);
+        var accountDetail = accountApiClient.GetAccount(hashedAccountId);
 
-    public async Task<OrchestratorResponse<IndexViewModel>> GetIndexViewModel(string hashedAccountId,
-        ClaimsPrincipal claimsPrincipal)
-    {
-        var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var indexTask = _transfersService.GetCounts(accountId);
-        var accountDetail = _accountApiClient.GetAccount(hashedAccountId);
-
-        var renderCreateTransfersPledgeButton = _authorizationService.CheckUserAccountAccess(claimsPrincipal, EmployerUserRole.Transactor);            
+        var renderCreateTransfersPledgeButton = await authorizationService.CheckUserAccountAccess(EmployerUserRole.Transactor);  
 
         await Task.WhenAll(indexTask, accountDetail);
 
@@ -62,16 +48,16 @@ public class TransfersOrchestrator
                 CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
                 EstimatedRemainingAllowance = estimatedRemainingAllowance,
                 HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement,
-                TransferAllowancePercentage = _configuration.TransferAllowancePercentage * 100
+                TransferAllowancePercentage = configuration.TransferAllowancePercentage * 100
             }
         };
     }
 
     public async Task<OrchestratorResponse<FinancialBreakdownViewModel>> GetFinancialBreakdownViewModel(string hashedAccountId) 
     {
-        var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var financialBreakdownTask = _transfersService.GetFinancialBreakdown(accountId);
-        var accountDetailTask = _accountApiClient.GetAccount(hashedAccountId);
+        var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+        var financialBreakdownTask = transfersService.GetFinancialBreakdown(accountId);
+        var accountDetailTask = accountApiClient.GetAccount(hashedAccountId);
         await Task.WhenAll(financialBreakdownTask, accountDetailTask);
 
         return new OrchestratorResponse<FinancialBreakdownViewModel>
