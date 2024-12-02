@@ -45,7 +45,7 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_AccountId_TransactionType_TransactionDate] ON [employer_financial].[TransactionLine] ([AccountId] ASC, [TransactionType] ASC, [TransactionDate] ASC) WHERE [TransactionType] = /*ExpiredFund*/ 5
 GO
 
-CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_AccountId_TransactionType_Ukprn_PeriodEnd] ON [employer_financial].[TransactionLine] ([AccountId] ASC, [Ukprn] ASC, [PeriodEnd] ASC) WHERE [TransactionType] IN /* Payment, Transfer */ (3,4) WITH (ONLINE = ON)
+CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_AccountId_TransactionType_Ukprn_PeriodEnd] ON [employer_financial].[TransactionLine] ([AccountId] ASC, [Ukprn] ASC, [PeriodEnd] ASC) WHERE [TransactionType] = /* Payment */ 3 WITH (ONLINE = ON)
 GO
               
 CREATE NONCLUSTERED INDEX [IX_NC_wi_TransactionLine_AccountId_DateCreated] ON [employer_financial].[TransactionLine] ([AccountId], [DateCreated]) INCLUDE ([Amount], [EmpRef], [EnglishFraction], [LevyDeclared], [PeriodEnd], [SubmissionId], [TransactionDate], [TransactionType], [TransferSenderAccountId]) WITH (ONLINE = ON)
