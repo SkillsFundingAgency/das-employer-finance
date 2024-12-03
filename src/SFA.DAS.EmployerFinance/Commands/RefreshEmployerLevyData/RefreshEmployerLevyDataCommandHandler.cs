@@ -54,6 +54,8 @@ public class RefreshEmployerLevyDataCommandHandler(
 
     private Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
     {
+        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2}", levyImported, levyTotalTransactionValue, accountId);
+
         return eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
             AccountId = accountId,
@@ -65,6 +67,7 @@ public class RefreshEmployerLevyDataCommandHandler(
 
     private async Task PublishAccountLevyStatusEvent(decimal levyTotalTransactionValue, long accountId)
     {
+        logger.LogInformation("Publishing LevyAddedToAccount if levyTotalTransactionValue {0} != 0.00 for account {1}", levyTotalTransactionValue, accountId);
         if (levyTotalTransactionValue != decimal.Zero)
         {
             await eventPublisher.Publish(new LevyAddedToAccount
