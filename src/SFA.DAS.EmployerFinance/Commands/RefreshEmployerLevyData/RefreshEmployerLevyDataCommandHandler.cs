@@ -87,7 +87,7 @@ public class RefreshEmployerLevyDataCommandHandler(
             logger.LogInformation("Processing declarations for {AccountId}, PAYE: {PayeRef}", message.AccountId, ObscurePayeScheme(empRef));
             levyTransactionTotalAmount += await dasLevyRepository.ProcessDeclarations(message.AccountId, empRef);
         }
-        logger.LogInformation("Totaled levy declarations for {AccountId}, LevyTotal: {total}", message.AccountId, levyTransactionTotalAmount);
+        logger.LogInformation("Total levy declarations for {AccountId}, LevyTotal: {total}", message.AccountId, levyTransactionTotalAmount);
 
         return levyTransactionTotalAmount;
     }
