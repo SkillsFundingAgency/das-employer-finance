@@ -13,13 +13,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [Test]
         public Task Handle_WhenHandlingARunHealthCheckCommand_ThenShouldAddAHealthCheck()
         {
-            return RunAsync(f => f.Handle(), f => f.Db.Verify(d => d.HealthChecks.Add(It.IsAny<HealthCheck>())));
+            return TestAsync(f => f.Handle(), f => f.Db.Verify(d => d.HealthChecks.Add(It.IsAny<HealthCheck>())));
         }
 
         [Test]
         public Task Handle_WhenHandlingARunHealthCheckCommand_ThenShouldRequestAnEmployerFinanceApiHealthCheckResponse()
         {
-            return RunAsync(f => f.Handle(), f => f.EmployerFinanceApiClient.Verify(c => c.HealthCheck(), Times.Once));
+            return TestAsync(f => f.Handle(), f => f.EmployerFinanceApiClient.Verify(c => c.HealthCheck(), Times.Once));
         }
     }
 

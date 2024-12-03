@@ -36,11 +36,11 @@ public class WhenIValidateTheCommand
         actual.IsValid().Should().BeFalse();
         actual.ValidationDictionary.Should()
             .ContainKey("AccountId")
-            .WhichValue
+            .WhoseValue
             .Should().Be("AccountId has not been supplied");
         actual.ValidationDictionary.Should()
             .ContainKey("PaymentId")
-            .WhichValue
+            .WhoseValue
             .Should().Be("PaymentId has not been supplied");
     }
 }

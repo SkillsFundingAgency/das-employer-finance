@@ -10,12 +10,13 @@ using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
-using SFA.DAS.EmployerFinance.Web.Handlers;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
+using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.UnitOfWork.Mvc.Extensions;
@@ -31,7 +32,6 @@ public class Startup
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         _environment = environment;
-
         _configuration = configuration.BuildDasConfiguration();
     }
 
@@ -69,11 +69,12 @@ public class Startup
         services.AddEmployerFinanceApi();
 
         services.AddAuthenticationServices();
-
-        services.AddAndConfigureGovUkAuthentication(_configuration,
-                typeof(EmployerAccountPostAuthenticationClaimsHandler),
-                "",
-                "/service/SignIn-Stub");
+       
+        services.AddAndConfigureGovUkAuthentication(_configuration, new AuthRedirects
+        {
+            SignedOutRedirectUrl = "",
+            LocalStubLoginPath = "/service/SignIn-Stub"
+        }, null, typeof(UserAccountService));
 
         services.Configure<IISServerOptions>(options => { options.AutomaticAuthentication = false; });
 

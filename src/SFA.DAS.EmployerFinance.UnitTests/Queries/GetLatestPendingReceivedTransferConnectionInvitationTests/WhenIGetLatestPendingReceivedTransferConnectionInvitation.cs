@@ -13,11 +13,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLatestPendingReceivedTran
         [Test]
         public void Handle_WhenIGetLatestPendingReceivedTransferConnectionInvitation_ThenShouldCallRepository()
         {
-            RunAsync(f => f.Handle(), f => f.VerifyGetLatestByReceiverIsCalled());
+            TestAsync(f => f.Handle(), f => f.VerifyGetLatestByReceiverIsCalled());
         }
     }
 
-    public class LatestPendingTransferConnectionInvitationFixture : FluentTestFixture
+    public class LatestPendingTransferConnectionInvitationFixture
     {
         public GetLatestPendingReceivedTransferConnectionInvitationQueryHandler Handler { get; set; }
         public GetLatestPendingReceivedTransferConnectionInvitationQuery Query { get; set; }
