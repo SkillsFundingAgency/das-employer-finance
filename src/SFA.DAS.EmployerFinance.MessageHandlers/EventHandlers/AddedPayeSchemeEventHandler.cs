@@ -9,16 +9,16 @@ public class AddedPayeSchemeEventHandler : IHandleMessages<AddedPayeSchemeEvent>
     {
         await context.SendLocal(new CreateAccountPayeCommand(message.AccountId, message.PayeRef, message.SchemeName, message.Aorn));
 
-        if (SchemeWasAddedViaAornRoute(message))
-        {
-            return;
-        }
+        //if (SchemeWasAddedViaAornRoute(message))
+        //{
+        //    return;
+        //}
 
-        await context.SendLocal(new ImportAccountLevyDeclarationsCommand(message.AccountId, message.PayeRef));
+        //await context.SendLocal(new ImportAccountLevyDeclarationsCommand(message.AccountId, message.PayeRef));
     }
 
-    private static bool SchemeWasAddedViaAornRoute(AddedPayeSchemeEvent message)
-    {
-        return !string.IsNullOrEmpty(message.Aorn);
-    }
+    //private static bool SchemeWasAddedViaAornRoute(AddedPayeSchemeEvent message)
+    //{
+    //    return !string.IsNullOrEmpty(message.Aorn);
+    //}
 }

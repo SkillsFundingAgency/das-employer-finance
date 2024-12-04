@@ -23,16 +23,16 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
                 f => f.Context.Verify(x => x.Send(It.IsAny<ImportAccountLevyDeclarationsCommand>(), It.IsAny<SendOptions>()), Times.Never()));
         }
 
-        [Test]
-        public Task Handle_WhenThePayeSchemeWasAddedViaGovernmentGateway_ThenLevyShouldBeAddedToAccount()
-        {
-            return RunAsync(f =>
-                {
-                    f.Event.Aorn = string.Empty;
-                },
-                f => f.Handle(),
-                f => f.Context.Verify(x => x.Send(It.Is<ImportAccountLevyDeclarationsCommand>(y => y.AccountId == f.Event.AccountId && y.PayeRef == f.Event.PayeRef), It.IsAny<SendOptions>()), Times.Once()));
-        }
+        //[Test]
+        //public Task Handle_WhenThePayeSchemeWasAddedViaGovernmentGateway_ThenLevyShouldBeAddedToAccount()
+        //{
+        //    return RunAsync(f =>
+        //        {
+        //            f.Event.Aorn = string.Empty;
+        //        },
+        //        f => f.Handle(),
+        //        f => f.Context.Verify(x => x.Send(It.Is<ImportAccountLevyDeclarationsCommand>(y => y.AccountId == f.Event.AccountId && y.PayeRef == f.Event.PayeRef), It.IsAny<SendOptions>()), Times.Once()));
+        //}
 
         [Test]
         public Task Handle_WhenThePayeSchemeWasAddedViaAorn_ThenShouldCreateAccountPaye()
