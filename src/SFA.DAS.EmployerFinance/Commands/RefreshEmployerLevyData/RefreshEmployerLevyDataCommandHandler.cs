@@ -54,11 +54,13 @@ public class RefreshEmployerLevyDataCommandHandler(
 
     private Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
     {
-        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2}", levyImported, levyTotalTransactionValue, accountId);
+        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2} + 100000", levyImported, levyTotalTransactionValue, accountId);
+
+        // This is to force a failure on EA side
 
         return eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
-            AccountId = accountId,
+            AccountId = accountId + 100000,
             Created = DateTime.UtcNow,
             LevyImported = levyImported,
             LevyTransactionValue = levyTotalTransactionValue

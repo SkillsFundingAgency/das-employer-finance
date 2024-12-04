@@ -119,7 +119,7 @@ public class WhenIReceiveTheCommand
             && e.Amount.Equals(decimal.One))).Should().BeTrue();
 
         (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId) &&
+            e.AccountId.Equals(ExpectedAccountId+100000) &&
             e.LevyImported.Equals(true) &&
             e.LevyTransactionValue.Equals(decimal.One))).Should().BeTrue();
     }
@@ -142,7 +142,7 @@ public class WhenIReceiveTheCommand
             && e.Amount.Equals(decimal.One)).Should().BeFalse();
 
         _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId) &&
+            e.AccountId.Equals(ExpectedAccountId + 100000) &&
             e.LevyImported.Equals(false) &&
             e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
     }
@@ -267,6 +267,6 @@ public class WhenIReceiveTheCommand
 
         //Assert
         _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId)).Should().BeTrue();
+            e.AccountId.Equals(ExpectedAccountId + 100000)).Should().BeTrue();
     }
 }
