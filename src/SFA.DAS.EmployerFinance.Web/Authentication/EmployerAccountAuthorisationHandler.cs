@@ -3,7 +3,6 @@ using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Authorization;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.GovUK.Auth.Employer;
-using EmployerClaims = SFA.DAS.EmployerFinance.Infrastructure.EmployerClaims;
 
 namespace SFA.DAS.EmployerFinance.Web.Authentication;
 
@@ -23,14 +22,14 @@ public class EmployerAccountAuthorisationHandler(
     {
         var user = httpContextAccessor.HttpContext?.User;
 
-        // If the user is redirected to a controller action from another site (very likely) and this is method is executed, the claims will be empty until the middleware has
-        // re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
+        // If the user is redirected to a controller action from another site (very likely) and this is method is executed, the claims will be empty until the middleware
+        // has re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
         if (user.ClaimsAreEmpty())
         {
             return false;
         }
 
-        if (!httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
+        if (!httpContextAccessor.HttpContext!.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
         {
             return false;
         }
