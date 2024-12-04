@@ -21,7 +21,7 @@ public class CreateAccountPayeCommandHandler(
             var payeScheme = new Paye(message.EmpRef, message.AccountId, message.Name, message.Aorn);
             await payeRepository.CreatePayeScheme(payeScheme);
 
-            await GetLevyForNoneAornPayeSchemes(payeScheme, context);
+            //await GetLevyForNoneAornPayeSchemes(payeScheme, context);
 
             logger.LogInformation("Account Paye scheme created - Account Id: {AccountId}; Emp Ref: {EmpRef}", payeScheme.AccountId, payeScheme.EmpRef);
         }
