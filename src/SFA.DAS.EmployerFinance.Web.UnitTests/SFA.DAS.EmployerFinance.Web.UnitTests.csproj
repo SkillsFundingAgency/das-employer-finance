@@ -12,14 +12,14 @@
     </PackageReference>
     <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="SFA.DAS.Testing" Version="3.0.169" />
     <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="3.0.169" />
     <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
-    <PackageReference Include="System.IO.Packaging" Version="8.0.1" />
+    <PackageReference Include="System.IO.Packaging" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.EmployerFinance.Web\SFA.DAS.EmployerFinance.Web.csproj" />
