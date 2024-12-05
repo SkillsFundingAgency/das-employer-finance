@@ -54,9 +54,17 @@ public class RefreshEmployerLevyDataCommandHandler(
 
     private Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
     {
+        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2} + 100000", levyImported, levyTotalTransactionValue, accountId);
+
+        if (levyTotalTransactionValue == 0)
+        {
+            logger.LogInformation("Exited RefreshEmployerLevyDataCompletedEvent, did not make call");
+            return Task.CompletedTask;
+        }
+
         return eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
-            AccountId = accountId,
+            AccountId = accountId + 100000,
             Created = DateTime.UtcNow,
             LevyImported = levyImported,
             LevyTransactionValue = levyTotalTransactionValue
@@ -65,6 +73,7 @@ public class RefreshEmployerLevyDataCommandHandler(
 
     private async Task PublishAccountLevyStatusEvent(decimal levyTotalTransactionValue, long accountId)
     {
+        logger.LogInformation("Publishing LevyAddedToAccount if levyTotalTransactionValue {0} != 0.00 for account {1}", levyTotalTransactionValue, accountId);
         if (levyTotalTransactionValue != decimal.Zero)
         {
             await eventPublisher.Publish(new LevyAddedToAccount
@@ -84,6 +93,7 @@ public class RefreshEmployerLevyDataCommandHandler(
             logger.LogInformation("Processing declarations for {AccountId}, PAYE: {PayeRef}", message.AccountId, ObscurePayeScheme(empRef));
             levyTransactionTotalAmount += await dasLevyRepository.ProcessDeclarations(message.AccountId, empRef);
         }
+        logger.LogInformation("Total levy declarations for {AccountId}, LevyTotal: {total}", message.AccountId, levyTransactionTotalAmount);
 
         return levyTransactionTotalAmount;
     }

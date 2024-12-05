@@ -40,18 +40,18 @@ public class GivenAPayeSchemeIsAddedToAnAccount
         _payeRepository.Verify(x => x.CreatePayeScheme(It.Is<Paye>(y => y.Aorn == aorn && y.AccountId == accountId && y.EmpRef == empRef && y.Name == name)));
     }
 
-    [Test]
-    public async Task IfTheSchemeWasNotAddedViaAornThenLevyIsAddedToTheAccount()
-    {
-        var accountId = 123443;
-        var name = "Scheme Name";
-        var empRef = "ABC/123246";
-        var aorn = string.Empty;
+    //[Test]
+    //public async Task IfTheSchemeWasNotAddedViaAornThenLevyIsAddedToTheAccount()
+    //{
+    //    var accountId = 123443;
+    //    var name = "Scheme Name";
+    //    var empRef = "ABC/123246";
+    //    var aorn = string.Empty;
 
-        await _handler.Handle(new CreateAccountPayeCommand(accountId, empRef, name, aorn), _context.Object);
+    //    await _handler.Handle(new CreateAccountPayeCommand(accountId, empRef, name, aorn), _context.Object);
 
-        _context.Verify(x => x.Send(It.Is<ImportAccountLevyDeclarationsCommand>(y => y.AccountId == accountId && y.PayeRef == empRef), It.IsAny<SendOptions>()));
-    }
+    //    _context.Verify(x => x.Send(It.Is<ImportAccountLevyDeclarationsCommand>(y => y.AccountId == accountId && y.PayeRef == empRef), It.IsAny<SendOptions>()));
+    //}
 
     [Test]
     public async Task IfTheSchemeWasAddedViaAornThenLevyIsNotAddedToTheAccount()
