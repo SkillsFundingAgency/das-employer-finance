@@ -36,12 +36,12 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             actual.IsValid().Should().BeFalse();
             actual.ValidationDictionary.Should()
                 .ContainKey("ReceiverAccountId")
-                .WhichValue
+                .WhoseValue
                 .Should().Be("ReceiverAccountId has not been supplied");
 
             actual.ValidationDictionary.Should()
                 .ContainKey("PeriodEnd")
-                .WhichValue
+                .WhoseValue
                 .Should().Be("PeriodEnd has not been supplied");
         }
 
@@ -59,7 +59,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             actual.IsValid().Should().BeFalse();
             actual.ValidationDictionary.Should()
                 .ContainKey("PeriodEnd")
-                .WhichValue
+                .WhoseValue
                 .Should().Be("PeriodEnd has not been supplied");
         }
 
@@ -77,7 +77,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateTransferTransactionsT
             actual.IsValid().Should().BeFalse();
             actual.ValidationDictionary.Should()
                 .ContainKey("ReceiverAccountId")
-                .WhichValue
+                .WhoseValue
                 .Should().Be("ReceiverAccountId cannot be negative");
         }
     }

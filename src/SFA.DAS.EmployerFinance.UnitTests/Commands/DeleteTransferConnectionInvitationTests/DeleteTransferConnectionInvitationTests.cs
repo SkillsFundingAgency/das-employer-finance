@@ -17,7 +17,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenMakingAValidCall_ThenShouldVerifyDeletingAccountExists(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId), 
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId), 
                 assert: f => f.EmployerAccountRepositoryMock.Verify(r => r.Get(deletingAccountId), Times.Once));
         }
 
@@ -25,7 +25,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenMakingAValidCall_ThenShouldVerifyUserExists(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f => f.UserRepositoryMock.Verify(r => r.Get(f.DeleterUser.Ref), Times.Once));
         }
 
@@ -33,7 +33,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenMakingAValidCall_ThenShouldVerifyTransferConnectionInvitationExists(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f => f.TransferConnectionInvitationRepositoryMock.Verify(r => r.Get(f.TransferConnectionInvitation.Id), Times.Once));
         }
 
@@ -41,21 +41,21 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenMakingAValidCall_ThenInvitationShouldEndInRejectedStatus(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f => Assert.That(f.TransferConnectionInvitation.Status, Is.EqualTo(TransferConnectionInvitationStatus.Rejected)));
         }
 
         [Test]
         public Task Handle_WhenSenderDeleting_ThenShouldBeDeletedBySender()
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestSenderAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestSenderAccountId),
                 assert: f =>Assert.That(f.TransferConnectionInvitation.DeletedBySender, Is.True));
         }
 
         [Test]
         public Task Handle_WhenreceiverDeleting_ThenShouldBeDeletedByReceiver()
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId),
                 assert: f => Assert.That(f.TransferConnectionInvitation.DeletedByReceiver, Is.True));
         }
 
@@ -63,7 +63,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenDeleting_ThenShouldBeOneChangeEntry(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f => Assert.That(f.TransferConnectionInvitation.Changes.Count, Is.EqualTo(1)));
         }
 
@@ -73,7 +73,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         {
             var now = DateTime.UtcNow;
 
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f =>
                 {
                     var change = f.TransferConnectionInvitation.Changes.Single();
@@ -89,7 +89,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenDeleting_ThenSingleEventShouldBeCreated(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f => Assert.That(f.UnitOfWorkContext.GetEvents().OfType<DeletedTransferConnectionRequestEvent>().Count(), Is.EqualTo(1)));
         }
 
@@ -97,7 +97,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         [TestCase(DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId)]
         public Task Handle_WhenDeleting_ThenSingleEventShouldBeSetCorrectly(long deletingAccountId)
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, deletingAccountId),
                 assert: f =>
                 {
                     var message = f.UnitOfWorkContext.GetEvents().OfType<DeletedTransferConnectionRequestEvent>().Single();
@@ -119,7 +119,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public Task Handle_WhenSenderDeleting_ThenShouldLookLikeDeletedBySender()
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestSenderAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestSenderAccountId),
                 assert: f =>
                 {
                     f.TransferConnectionInvitation.DeletedBySender.Should().BeTrue();
@@ -132,7 +132,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
 
         public Task Handle_WhenReceiverDeleting_ThenShouldLookLikeDeletedByReceiver()
         {
-            return RunAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId),
+            return TestAsync(act: f => f.Handle(TransferConnectionInvitationStatus.Rejected, DeleteTransferConnectionInvitationTestFixture.Constants.TestReceiverAccountId),
                 assert: f =>
                 {
                     f.TransferConnectionInvitation.DeletedByReceiver.Should().BeTrue();
@@ -151,13 +151,13 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands
         public void Handle_WhenDeleting_ThenShouldThrowExceptionIfNotRejected(long deletingAccountId, TransferConnectionInvitationStatus status)
         {
             Assert.ThrowsAsync<InvalidOperationException>(() =>
-                RunAsync(
+                TestAsync(
                     act: f => f.Handle(status, deletingAccountId),
                     assert: null), "Requires transfer connection invitation is rejected.");
         }
     }
 
-    public class DeleteTransferConnectionInvitationTestFixture : FluentTestFixture
+    public class DeleteTransferConnectionInvitationTestFixture 
     {
         public DeleteTransferConnectionInvitationTestFixture()
         {

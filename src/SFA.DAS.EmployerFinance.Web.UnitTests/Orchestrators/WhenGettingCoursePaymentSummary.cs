@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Common.Domain.Types;
-using SFA.DAS.EAS.Account.Api.Client;
+﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -7,6 +6,8 @@ using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
+using SFA.DAS.GovUK.Auth.Employer;
+using ApprenticeshipEmployerType = SFA.DAS.Common.Domain.Types.ApprenticeshipEmployerType;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators;
 
@@ -38,7 +39,7 @@ public class WhenGettingCoursePaymentSummary
             _accountApiMock.Object, 
             _mediatorMock.Object, 
             _currentTimeMock.Object,
-            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>(), Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IUserAccountService>());
+            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>(), Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>());
     }
 
     [Test]

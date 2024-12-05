@@ -28,7 +28,6 @@ public class WhenAddingServicesToTheContainer
     }
     
     [TestCase(typeof(IEmployerAccountAuthorisationHandler))]
-    [TestCase(typeof(ICustomClaims))]
     [TestCase(typeof(ICommitmentsV2ApiClient))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Services(Type toResolve)
     {

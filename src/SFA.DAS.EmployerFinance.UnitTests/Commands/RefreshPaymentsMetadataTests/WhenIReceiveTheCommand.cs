@@ -53,7 +53,7 @@ public class WhenIReceiveTheCommand
 
         var result = async () => await handler.Handle(command, CancellationToken.None);
 
-        result.ShouldThrow<ValidationException>();
+        result.Should().ThrowAsync<ValidationException>();
     }
 
     [Test, MoqAutoData]

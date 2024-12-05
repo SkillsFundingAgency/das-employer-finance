@@ -17,7 +17,7 @@ public class RefreshPaymentDataCommandHandlerTests : FluentTest<RefreshPaymentDa
     {
         const long accountId = 999;
 
-        return RunAsync(f => f
+        return TestAsync(f => f
                 .SetAccountId(accountId)
                 .SetPeriodEnd("2017R14")
                 .SetExistingPayments(new List<Guid>
@@ -48,7 +48,7 @@ public class RefreshPaymentDataCommandHandlerTests : FluentTest<RefreshPaymentDa
         const long accountId = 999;
         var paymentGuid = Guid.Parse("953EC305-06FD-483C-A155-50211921143C");
 
-        return RunAsync(f => f
+        return TestAsync(f => f
                 .SetAccountId(accountId)
                 .SetPeriodEnd("2017R14")
                 .SetExistingPayments(new List<Guid>
@@ -78,7 +78,7 @@ public class RefreshPaymentDataCommandHandlerTests : FluentTest<RefreshPaymentDa
     {
         const long accountId = 999;
 
-        return RunAsync(f => f
+        return TestAsync(f => f
                 .SetAccountId(accountId)
                 .SetPeriodEnd("2017R14")
                 .SetExistingPayments(new List<Guid>
@@ -99,7 +99,7 @@ public class RefreshPaymentDataCommandHandlerTests : FluentTest<RefreshPaymentDa
     {
         const long accountId = 999;
 
-        return RunAsync(f => f
+        return TestAsync(f => f
                 .SetAccountId(accountId)
                 .SetPeriodEnd("2017R14")
                 .SetExistingPayments(new List<Guid>
@@ -115,7 +115,7 @@ public class RefreshPaymentDataCommandHandlerTests : FluentTest<RefreshPaymentDa
     }
 }
 
-public class RefreshPaymentDataCommandHandlerTestsFixture : FluentTestFixture
+public class RefreshPaymentDataCommandHandlerTestsFixture 
 {
     private readonly Mock<IDasLevyRepository> _dasLevyRepository;
     private readonly Mock<IPaymentService> _paymentService;

@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         [Test]
         public Task Handle_WhenHandlingAHealthCheckEvent_ThenShouldUpdateHealthCheck()
         {
-            return RunAsync(f => f.Handle(), f => f.HealthChecks[1].ReceivedEvent.Should().HaveValue());
+            return TestAsync(f => f.Handle(), f => f.HealthChecks[1].ReceivedEvent.Should().HaveValue());
         }
     }
 

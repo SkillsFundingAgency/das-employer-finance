@@ -36,7 +36,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateEnglishFractionCalcul
              actual.ValidationDictionary
                 .Should()
                 .ContainKey("DateCalculated")
-                .WhichValue
+                .WhoseValue
                 .Should()
                 .Be("DateCalculated has not been supplied");
         }

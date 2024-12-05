@@ -52,7 +52,7 @@ public class RefreshEmployerLevyDataCommandHandlerTests
     }
 }
 
-public class RefreshEmployerLevyDataCommandHandlerTestsFixture : FluentTestFixture
+public class RefreshEmployerLevyDataCommandHandlerTestsFixture 
 {
     private readonly TestableEventPublisher _eventPublisher;
     private readonly Mock<IDasLevyRepository> _dasLevyRepository;

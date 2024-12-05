@@ -1,6 +1,4 @@
-﻿using SFA.DAS.Common.Domain.Types;
-using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EmployerFinance.Infrastructure;
+﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -14,62 +12,50 @@ using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
+using SFA.DAS.GovUK.Auth.Employer;
 using AggregationData = SFA.DAS.EmployerFinance.Models.Transaction.AggregationData;
+using ApprenticeshipEmployerType = SFA.DAS.Common.Domain.Types.ApprenticeshipEmployerType;
+using EmployerClaims = SFA.DAS.EmployerFinance.Infrastructure.EmployerClaims;
 using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.TransactionItemType;
 using TransactionViewModel = SFA.DAS.EmployerFinance.Web.ViewModels.TransactionViewModel;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators;
 
-public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransactionsOrchestrator
+public class EmployerAccountTransactionsOrchestrator(
+    IAccountApiClient accountApiClient,
+    IMediator mediator,
+    ICurrentDateTime currentTime,
+    ILogger<EmployerAccountTransactionsOrchestrator> logger,
+    IEncodingService encodingService,
+    IAuthenticationOrchestrator authenticationOrchestrator,
+    IGovAuthEmployerAccountService accountService)
+    : IEmployerAccountTransactionsOrchestrator
 {
-    private readonly ICurrentDateTime _currentTime;
-    private readonly ILogger<EmployerAccountTransactionsOrchestrator> _logger;
-    private readonly IEncodingService _encodingService;
-    private readonly IAuthenticationOrchestrator _authenticationOrchestrator;
-    private readonly IUserAccountService _accountService;
-    private readonly IAccountApiClient _accountApiClient;
-    private readonly IMediator _mediator;
-
-    public EmployerAccountTransactionsOrchestrator(
-        IAccountApiClient accountApiClient,
-        IMediator mediator,
-        ICurrentDateTime currentTime,
-        ILogger<EmployerAccountTransactionsOrchestrator> logger, IEncodingService encodingService, IAuthenticationOrchestrator authenticationOrchestrator, IUserAccountService accountService)
-    {
-        _accountApiClient = accountApiClient;   
-        _mediator = mediator;
-        _currentTime = currentTime;
-        _logger = logger;       
-        _encodingService = encodingService;
-        _authenticationOrchestrator = authenticationOrchestrator;
-        _accountService = accountService;
-    }
-
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
 
         //TODO this storing of user details should be removed from this applications database
         var email = userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserEmailClaimTypeIdentifier)?.Value;
         var userId = userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value;
-        var userAccountDetails = await _accountService.GetUserAccounts(
+        var userAccountDetails = await accountService.GetUserAccounts(
             userId,
             email);
         if (!string.IsNullOrEmpty(userAccountDetails?.FirstName))
         {
-            await _authenticationOrchestrator.SaveIdentityAttributes(userAccountDetails.EmployerUserId, email, userAccountDetails.FirstName, userAccountDetails.LastName);    
+            await authenticationOrchestrator.SaveIdentityAttributes(userAccountDetails.EmployerUserId, email, userAccountDetails.FirstName, userAccountDetails.LastName);    
         }
         
-        var accountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId);
-        var accountDetailViewModel = await _accountApiClient.GetAccount(accountId);
+        var accountId = encodingService.Decode(hashedAccountId,EncodingType.AccountId);
+        var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
         
-        _logger.LogInformation("After GetAccount call");
-        var getAccountFinanceOverview = await _mediator.Send(new GetAccountFinanceOverviewQuery
+        logger.LogInformation("After GetAccount call");
+        var getAccountFinanceOverview = await mediator.Send(new GetAccountFinanceOverviewQuery
         {
             AccountId = accountId
         });
 
-        _logger.LogInformation("account : {HashedAccountId}  getAccountFinanceOverview: {GetAccountFinanceOverview} ", hashedAccountId, getAccountFinanceOverview);
-        _logger.LogInformation(" account.ApprenticeshipEmployerType: {ApprenticeshipEmployerType}  HashedAccountId: {HashedAccountId} CurrentLevyFunds: {CurrentFunds} ", accountDetailViewModel.ApprenticeshipEmployerType, hashedAccountId, getAccountFinanceOverview.CurrentFunds);
+        logger.LogInformation("account : {HashedAccountId}  getAccountFinanceOverview: {GetAccountFinanceOverview} ", hashedAccountId, getAccountFinanceOverview);
+        logger.LogInformation(" account.ApprenticeshipEmployerType: {ApprenticeshipEmployerType}  HashedAccountId: {HashedAccountId} CurrentLevyFunds: {CurrentFunds} ", accountDetailViewModel.ApprenticeshipEmployerType, hashedAccountId, getAccountFinanceOverview.CurrentFunds);
 
         var viewModel = new OrchestratorResponse<FinanceDashboardViewModel>
         {
@@ -95,7 +81,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
     {
         try
         {
-            var data = await _mediator.Send(new FindAccountProviderPaymentsQuery
+            var data = await mediator.Send(new FindAccountProviderPaymentsQuery
             {
                 HashedAccountId = hashedId,
                 UkPrn = ukprn,
@@ -160,9 +146,9 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
     {
         try
         {
-            var accountTask = _accountApiClient.GetAccount(hashedAccountId);
+            var accountTask = accountApiClient.GetAccount(hashedAccountId);
                 
-            var getProviderPaymentsTask = _mediator.Send(new FindAccountProviderPaymentsQuery
+            var getProviderPaymentsTask = mediator.Send(new FindAccountProviderPaymentsQuery
             {
                 HashedAccountId = hashedAccountId,
                 UkPrn = ukprn,
@@ -248,7 +234,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
     {
         try
         {
-            var accountCoursePaymentsResponse = await _mediator.Send(new FindAccountCoursePaymentsQuery
+            var accountCoursePaymentsResponse = await mediator.Send(new FindAccountCoursePaymentsQuery
             {
                 HashedAccountId = hashedAccountId,
                 UkPrn = ukprn,
@@ -285,7 +271,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
 
             var apprenticePayments = paymentSummaries.ToList();
 
-            var accountResponse = await _accountApiClient.GetAccount(hashedAccountId);
+            var accountResponse = await accountApiClient.GetAccount(hashedAccountId);
 
             return new OrchestratorResponse<CoursePaymentDetailsViewModel>
             {
@@ -327,18 +313,18 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
     public virtual async Task<OrchestratorResponse<TransactionViewResultViewModel>> GetAccountTransactions(
         string hashedId, int year, int month)
     {
-        var employerAccountResult = await _accountApiClient.GetAccount(hashedId);
+        var employerAccountResult = await accountApiClient.GetAccount(hashedId);
 
         if (employerAccountResult == null)
         {
             return new OrchestratorResponse<TransactionViewResultViewModel>
             {
-                Data = new TransactionViewResultViewModel(_currentTime.Now)
+                Data = new TransactionViewResultViewModel(currentTime.Now)
             };
         }
 
         var aggregratedTransactions = await
-                _mediator.Send(new GetEmployerAccountTransactionsQuery
+                mediator.Send(new GetEmployerAccountTransactionsQuery
                 {
                     Year = year,
                     Month = month,
@@ -349,7 +335,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
 
         return new OrchestratorResponse<TransactionViewResultViewModel>
         {
-            Data = new TransactionViewResultViewModel(_currentTime.Now)
+            Data = new TransactionViewResultViewModel(currentTime.Now)
             {
                 Account = employerAccountResult,
                 Model = viewModel,
@@ -407,7 +393,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
 
     public async Task<OrchestratorResponse<TransactionLineViewModel<LevyDeclarationTransactionLine>>> FindAccountLevyDeclarationTransactions(string hashedId, DateTime fromDate, DateTime toDate)
     {
-        var data = await _mediator.Send(new FindEmployerAccountLevyDeclarationTransactionsQuery
+        var data = await mediator.Send(new FindEmployerAccountLevyDeclarationTransactionsQuery
         {
             HashedAccountId = hashedId,
             FromDate = fromDate,
@@ -416,7 +402,7 @@ public class EmployerAccountTransactionsOrchestrator : IEmployerAccountTransacti
 
         foreach (var transaction in data.Transactions)
         {
-            var payeSchemeData = await _mediator.Send(new GetPayeSchemeByRefQuery
+            var payeSchemeData = await mediator.Send(new GetPayeSchemeByRefQuery
             {
                 HashedAccountId = hashedId,
                 Ref = transaction.EmpRef

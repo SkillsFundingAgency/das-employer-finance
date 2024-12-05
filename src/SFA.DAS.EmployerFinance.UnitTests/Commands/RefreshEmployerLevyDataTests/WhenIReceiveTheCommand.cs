@@ -236,7 +236,7 @@ public class WhenIReceiveTheCommand
         //Act
         var action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
-        action.ShouldThrow<ArgumentNullException>();
+        action.Should().ThrowAsync<ArgumentNullException>();
     }
 
     [Test]
@@ -255,7 +255,7 @@ public class WhenIReceiveTheCommand
         newDeclaration.NoPaymentForPeriod = true;
         //Act
         var action = () => _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
-        action.ShouldNotThrow();
+        action.Should().NotThrowAsync();
     }
 
 

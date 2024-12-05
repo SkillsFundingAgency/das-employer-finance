@@ -23,7 +23,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.CreateNewPeriodEndTests
             actual.IsValid().Should().BeFalse();
             actual.ValidationDictionary.Should()
                 .ContainKey("NewPeriodEnd")
-                .WhichValue
+                .WhoseValue
                 .Should()
                 .Be("NewPeriodEnd has not been supplied");
         }

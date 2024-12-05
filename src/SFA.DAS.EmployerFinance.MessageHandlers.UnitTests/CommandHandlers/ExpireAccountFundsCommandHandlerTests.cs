@@ -30,7 +30,7 @@ public class ExpireAccountFundsCommandHandlerTests : FluentTest<ExpireAccountFun
     [Test]
     public Task Handle_WhenHandlingExpireAccountFundsCommand_ThenShouldCreateTheExpiredFundsRecords()
     {
-        return RunAsync(f => f.Handle(),
+        return TestAsync(f => f.Handle(),
             f => f.MockExpiredFundsRepository.Verify(x =>
                 x.Create(f.ExpectedAccountId, It.Is<IEnumerable<ExpiredFund>>(ex => f.AreExpiredFundsEqual(ex, f.ExpiredFunds)), f.Now), Times.Once));
     }
@@ -74,20 +74,20 @@ public class ExpireAccountFundsCommandHandlerTests : FluentTest<ExpireAccountFun
     [Test]
     public Task Handle_WhenHandlingExpireAccountFundsCommandAndAccountFundsAreExpired_ThenShouldPublishAccountFundsExpiredEvent()
     {
-        return RunAsync(f => f.Handle(), f => f.VerifyAccountFundsExpiredEventPublished());
+        return TestAsync(f => f.Handle(), f => f.VerifyAccountFundsExpiredEventPublished());
     }
 
     [Test]
     public Task Handle_WhenHandlingExpireAccountFundsCommandAndNoAccountFundsAreExpired_ThenShouldNotPublishAccountFundsExpiredEvent()
     {
-        return RunAsync(f => f.ArrangeNoExpiringFunds(), f => f.Handle(),
+        return TestAsync(f => f.ArrangeNoExpiringFunds(), f => f.Handle(),
             f => f.VerifyAccountFundsExpiredEventNotPublished());
     }
 
     [Test]
     public Task Handle_WhenHandlingExpireAccountFundsCommandAndNoAccountExpiredFundsAreReturned_ThenShouldNotPublishAccountFundsExpiredEvent()
     {
-        return RunAsync(f => f.ArrangeNoExpiringFundsReturned(), f => f.Handle(),
+        return TestAsync(f => f.ArrangeNoExpiringFundsReturned(), f => f.Handle(),
             f => f.VerifyAccountFundsExpiredEventNotPublished());
     }
 }

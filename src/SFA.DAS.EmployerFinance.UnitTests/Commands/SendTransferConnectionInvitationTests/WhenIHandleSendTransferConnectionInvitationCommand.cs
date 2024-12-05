@@ -26,7 +26,7 @@ public class WhenIHandleSendTransferConnectionInvitationCommand
     }
 }
 
-public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture : FluentTestFixture
+public class WhenIHandleSendTransferConnectionInvitationCommandTestFixture 
 {
     private SendTransferConnectionInvitationCommandHandler Handler { get; }
     private SendTransferConnectionInvitationCommand Command { get; }
