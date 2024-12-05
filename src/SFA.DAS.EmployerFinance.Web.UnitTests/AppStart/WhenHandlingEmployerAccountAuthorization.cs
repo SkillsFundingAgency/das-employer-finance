@@ -273,17 +273,12 @@ public class WhenHandlingEmployerAccountAuthorization
         EmployerAccountOwnerRequirement ownerRequirement,
         EmployerUserAccountItem serviceResponse,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
-        [Frozen] Mock<IGovAuthEmployerAccountService> employerAccountService,
+        [Frozen] Mock<IAssociatedAccountsService> associatedAccountsService,
         EmployerAccountAuthorisationHandler authorizationHandler)
     {
         //Arrange
         serviceResponse.AccountId = serviceResponse.AccountId.ToUpper();
         serviceResponse.Role = "Owner";
-        employerAccountService.Setup(x => x.GetUserAccounts(userId, ""))
-            .ReturnsAsync(new EmployerUserAccounts
-            {
-                EmployerAccounts = new List<EmployerUserAccountItem> { serviceResponse }
-            });
 
         var userClaim = new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier, userId);
         var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
@@ -296,6 +291,15 @@ public class WhenHandlingEmployerAccountAuthorization
         };
         httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, accountId.ToUpper());
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
+        
+        var accounts = new List<EmployerUserAccountItem>
+        {
+            serviceResponse
+        };
+
+        var accountsDictionary = accounts.ToDictionary(x => x.AccountId);
+
+        associatedAccountsService.Setup(x => x.GetAccounts(false)).ReturnsAsync(accountsDictionary);
 
         //Act
         var actual = await authorizationHandler.IsEmployerAuthorised(context, false);
