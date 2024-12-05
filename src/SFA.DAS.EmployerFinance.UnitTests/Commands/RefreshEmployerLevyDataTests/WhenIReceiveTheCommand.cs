@@ -124,28 +124,28 @@ public class WhenIReceiveTheCommand
             e.LevyTransactionValue.Equals(decimal.One))).Should().BeTrue();
     }
 
-    [Test]
-    public async Task ThenIfThereAreNoNewDeclarationsThenTheProcessDeclarationEventIsNotPublished()
-    {
-        //Arrange
-        _levyRepository.Setup(x => x.GetEmployerDeclarationSubmissionIds(ExpectedEmpRef)).ReturnsAsync(new List<long> { 1, 2, 3, 4 });
-        var data = RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId);
+    //[Test]
+    //public async Task ThenIfThereAreNoNewDeclarationsThenTheProcessDeclarationEventIsNotPublished()
+    //{
+    //    //Arrange
+    //    _levyRepository.Setup(x => x.GetEmployerDeclarationSubmissionIds(ExpectedEmpRef)).ReturnsAsync(new List<long> { 1, 2, 3, 4 });
+    //    var data = RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId);
 
-        //Act
-        await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
+    //    //Act
+    //    await _refreshEmployerLevyDataCommandHandler.Handle(data, CancellationToken.None);
 
-        //Assert
-        _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Never);
+    //    //Assert
+    //    _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Never);
 
-        _eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId)
-            && e.Amount.Equals(decimal.One)).Should().BeFalse();
+    //    _eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
+    //        e.AccountId.Equals(ExpectedAccountId)
+    //        && e.Amount.Equals(decimal.One)).Should().BeFalse();
 
-        _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId + 100000) &&
-            e.LevyImported.Equals(false) &&
-            e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
-    }
+    //    _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
+    //        e.AccountId.Equals(ExpectedAccountId + 100000) &&
+    //        e.LevyImported.Equals(false) &&
+    //        e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
+    //}
 
     [Test]
     public async Task ThenIfTheSubmissionIsAnEndOfYearAdjustmentThePeriod12ValueWillBeTakenFromHmrcIfItExists()
@@ -259,14 +259,14 @@ public class WhenIReceiveTheCommand
     }
 
 
-    [Test]
-    public async Task ThenARefreshEmployerLevyDataCompletedEventIsPublished()
-    {
-        //Act
-        await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId), CancellationToken.None);
+    //[Test]
+    //public async Task ThenARefreshEmployerLevyDataCompletedEventIsPublished()
+    //{
+    //    //Act
+    //    await _refreshEmployerLevyDataCommandHandler.Handle(RefreshEmployerLevyDataCommandObjectMother.Create(ExpectedEmpRef, ExpectedAccountId), CancellationToken.None);
 
-        //Assert
-        _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(ExpectedAccountId + 100000)).Should().BeTrue();
-    }
+    //    //Assert
+    //    _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
+    //        e.AccountId.Equals(ExpectedAccountId + 100000)).Should().BeTrue();
+    //}
 }

@@ -56,7 +56,11 @@ public class RefreshEmployerLevyDataCommandHandler(
     {
         logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2} + 100000", levyImported, levyTotalTransactionValue, accountId);
 
-        // This is to force a failure on EA side
+        if (levyTotalTransactionValue == 0)
+        {
+            logger.LogInformation("Exited RefreshEmployerLevyDataCompletedEvent, did not make call");
+            return Task.CompletedTask;
+        }
 
         return eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
