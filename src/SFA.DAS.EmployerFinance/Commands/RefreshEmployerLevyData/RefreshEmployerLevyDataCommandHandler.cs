@@ -52,17 +52,18 @@ public class RefreshEmployerLevyDataCommandHandler(
         await PublishAccountLevyStatusEvent(levyTotalTransactionValue, request.AccountId);
     }
 
-    private Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
+    private async Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
     {
         logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2} + 100000", levyImported, levyTotalTransactionValue, accountId);
 
-        if (levyTotalTransactionValue == 0)
+        if (levyTotalTransactionValue == decimal.Zero)
         {
             logger.LogInformation("Exited RefreshEmployerLevyDataCompletedEvent, did not make call");
-            return Task.CompletedTask;
+            return;
         }
+        logger.LogInformation("Publishing message RefreshEmployerLevyDataCompletedEvent with {0} levy value", levyTotalTransactionValue);
 
-        return eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
+        eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
             AccountId = accountId + 100000,
             Created = DateTime.UtcNow,

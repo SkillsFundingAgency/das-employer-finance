@@ -10,7 +10,6 @@ public class AddedPayeSchemeEventHandler : IHandleMessages<AddedPayeSchemeEvent>
     {
         await context.SendLocal(new CreateAccountPayeCommand(message.AccountId, message.PayeRef, message.SchemeName, message.Aorn));
 
-        Thread.Sleep(20000);
         if (SchemeWasAddedViaAornRoute(message))
         {
             return;
