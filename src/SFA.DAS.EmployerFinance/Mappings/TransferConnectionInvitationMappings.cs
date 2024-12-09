@@ -22,7 +22,7 @@ public class TransferConnectionInvitationMappings : Profile
             .ForMember(m => m.FundingEmployerAccountName, o => o.MapFrom(i => i.SenderAccount.Name))
             .ForMember(m => m.FundingEmployerAccountName, o => o.MapFrom(i => i.SenderAccount.Name))
             .ForMember(m => m.Status, o => o.MapFrom(i => (short?)i.Status))
-            .ForMember(dest => dest.StatusSetOn,
+            .ForMember(dest => dest.StatusAssignedOn,
                 opt => opt.MapFrom(src =>
                     src.Changes.Where(s => s.Status == src.Status).Select(s => (DateTime?)s.CreatedDate).FirstOrDefault()));
     }
