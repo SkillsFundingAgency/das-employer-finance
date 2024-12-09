@@ -1,8 +1,6 @@
-﻿using SFA.DAS.NServiceBus;
-
-namespace SFA.DAS.EmployerFinance.Messages.Commands
+﻿namespace SFA.DAS.EmployerFinance.Messages.Commands
 {
-    public class ImportAccountLevyDeclarationsCommand : Command
+    public class ImportAccountLevyDeclarationsCommand
     {
         public ImportAccountLevyDeclarationsCommand(long accountId, string payeRef)
         {

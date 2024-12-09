@@ -1,8 +1,8 @@
-﻿using SFA.DAS.NServiceBus;
+﻿using System;
 
 namespace SFA.DAS.EmployerFinance.Messages.Events
 {
-    public class RefreshPaymentDataCompletedEvent : Event
+    public class RefreshPaymentDataCompletedEvent
     {
         public long AccountId { get; set; }
         public string PeriodEnd { get; set; }
@@ -10,5 +10,6 @@ namespace SFA.DAS.EmployerFinance.Messages.Events
         /// true if we have processed some payments; otherwsie false;
         /// </summary>
         public bool PaymentsProcessed { get; set; }
+        public DateTime Created { get; set; }
     }
 }
