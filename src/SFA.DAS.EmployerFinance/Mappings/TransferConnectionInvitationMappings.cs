@@ -27,7 +27,3 @@ public class TransferConnectionInvitationMappings : Profile
                     src.Changes.Where(s => s.Status == src.Status).Select(s => (DateTime?)s.CreatedDate).FirstOrDefault()));
     }
 }
-
-
-
-
