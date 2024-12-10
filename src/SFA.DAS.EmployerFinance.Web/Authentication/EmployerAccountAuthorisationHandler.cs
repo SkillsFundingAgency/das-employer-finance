@@ -1,10 +1,8 @@
 using Newtonsoft.Json;
-using SFA.DAS.EmployerFinance.Configuration;
-using SFA.DAS.EmployerFinance.Infrastructure;
-using SFA.DAS.EmployerFinance.Models.UserAccounts;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Authorization;
 using SFA.DAS.EmployerFinance.Web.Extensions;
+using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFinance.Web.Authentication;
 
@@ -16,38 +14,33 @@ public interface IEmployerAccountAuthorisationHandler
 
 public class EmployerAccountAuthorisationHandler(
     IHttpContextAccessor httpContextAccessor,
-    IUserAccountService accountsService,
+    IAccountClaimsService accountClaimsService,
     ILogger<EmployerAccountOwnerAuthorizationHandler> logger)
     : IEmployerAccountAuthorisationHandler
 {
     public async Task<bool> IsEmployerAuthorised(AuthorizationHandlerContext context, bool allowAllUserRoles)
     {
         var user = httpContextAccessor.HttpContext?.User;
-        
-        // If the user is redirected to a controller action from another site (very likely) and this is method is executed, the claims will be empty until the middleware has
-        // re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
+
+        // If the user is redirected to a controller action from another site (very likely) and this is method is executed, the claims will be empty until the middleware
+        // has re-authenticated the user. Once authentication is confirmed this method will be executed again with the claims populated and will run properly.
         if (user.ClaimsAreEmpty())
         {
             return false;
         }
-        
-        if (!httpContextAccessor.HttpContext.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
-        {
-            return false;
-        }
-        var accountIdFromUrl = httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
-        var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
-        if (employerAccountClaim?.Value == null)
+        if (!httpContextAccessor.HttpContext!.Request.RouteValues.ContainsKey(RouteValueKeys.HashedAccountId))
         {
             return false;
         }
+
+        var accountIdFromUrl = httpContextAccessor.HttpContext.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
 
         Dictionary<string, EmployerUserAccountItem> employerAccounts;
 
         try
         {
-            employerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim.Value);
+            employerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: false);
         }
         catch (JsonSerializationException e)
         {
@@ -60,35 +53,24 @@ public class EmployerAccountAuthorisationHandler(
         if (employerAccounts != null)
         {
             employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
-                ? account : null;
+                ? account
+                : null;
         }
 
         if (employerAccounts == null || !employerAccounts.ContainsKey(accountIdFromUrl))
         {
             if (!context.User.HasClaim(c => c.Type.Equals(ClaimTypes.NameIdentifier)))
+            {
                 return false;
+            }
 
-            var userClaim = context.User.Claims
-                .First(c => c.Type.Equals(ClaimTypes.NameIdentifier));
-
-            var email = context.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email))?.Value;
-
-            var userId = userClaim.Value;
-
-            var result = await accountsService.GetUserAccounts(userId, email);
-
-            var accountsAsJson = JsonConvert.SerializeObject(result.EmployerAccounts.ToDictionary(k => k.AccountId));
-            
-            var associatedAccountsClaim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, accountsAsJson, JsonClaimValueTypes.Json);
-
-            var updatedEmployerAccounts = JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(associatedAccountsClaim.Value);
-
-            userClaim.Subject.AddClaim(associatedAccountsClaim);
+            var updatedEmployerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: true);
 
             if (!updatedEmployerAccounts.ContainsKey(accountIdFromUrl))
             {
                 return false;
             }
+
             employerIdentifier = updatedEmployerAccounts[accountIdFromUrl];
         }
 
@@ -97,12 +79,7 @@ public class EmployerAccountAuthorisationHandler(
             httpContextAccessor.HttpContext.Items.Add("Employer", employerAccounts.GetValueOrDefault(accountIdFromUrl));
         }
 
-        if (!CheckUserRoleForAccess(employerIdentifier, allowAllUserRoles))
-        {
-            return false;
-        }
-
-        return true;
+        return CheckUserRoleForAccess(employerIdentifier, allowAllUserRoles);
     }
 
     public async Task<bool> CheckUserAccountAccess(EmployerUserRole userRoleRequired)
@@ -113,46 +90,39 @@ public class EmployerAccountAuthorisationHandler(
             return false;
         }
 
-        Dictionary<string, EmployerUserAccountItem> employerAccounts;
         var accountIdFromUrl = context.Request.RouteValues[RouteValueKeys.HashedAccountId].ToString().ToUpper();
-        var employerAccountClaim = context.User.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
-        
+
+        Dictionary<string, EmployerUserAccountItem> employerAccounts;
+
         try
         {
-            employerAccounts =
-                JsonConvert.DeserializeObject<Dictionary<string, EmployerUserAccountItem>>(employerAccountClaim
-                    .Value);
+            employerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: false);
         }
         catch (JsonSerializationException e)
         {
-            logger.LogError(e, "Could not deserialize employer account claim for user");
+            logger.LogError(e, "Could not retrieve employer accounts for user");
             return false;
         }
-        
-        if (!employerAccounts.Any())
+
+        if (employerAccounts.Count == 0)
         {
             if (!context.User.HasClaim(c => c.Type.Equals(ClaimTypes.NameIdentifier)))
+            {
                 return false;
+            }
 
-            var userClaim = context.User.Claims
-                .First(c => c.Type.Equals(ClaimTypes.NameIdentifier));
-
-            var email = context.User.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email))?.Value;
-
-            var userId = userClaim.Value;
-
-            var updatedEmployerAccounts = await accountsService.GetUserAccounts(userId, email);
-            employerAccounts = updatedEmployerAccounts.EmployerAccounts.ToDictionary(x => x.AccountId);
+            employerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: true);
         }
 
-        if (employerAccounts == null || !employerAccounts.Any())
+        if (employerAccounts == null || employerAccounts.Count == 0)
         {
             logger.LogInformation("Employer accounts null");
             return false;
         }
 
         var employerIdentifier = employerAccounts.TryGetValue(accountIdFromUrl, out var account)
-                ? account : null;
+            ? account
+            : null;
 
         if (employerIdentifier == null)
         {
@@ -165,6 +135,7 @@ public class EmployerAccountAuthorisationHandler(
         }
 
         logger.LogInformation("Claim user role: {ClaimUserRole}", claimUserRole.ToString());
+
         switch (userRoleRequired)
         {
             case EmployerUserRole.Owner when claimUserRole == EmployerUserRole.Owner:

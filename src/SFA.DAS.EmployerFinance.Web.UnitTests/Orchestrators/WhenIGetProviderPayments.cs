@@ -7,6 +7,7 @@ using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
+using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators;
 
@@ -38,10 +39,7 @@ internal class WhenIGetProviderPayments
             ProviderName = "Test Provider",
             TransactionDate = DateTime.Now,
             Total = 100,
-            Transactions = new List<PaymentTransactionLine>
-            {
-                new PaymentTransactionLine {Amount = 100}
-            }
+            Transactions = [new PaymentTransactionLine { Amount = 100 }]
         };
 
         _mediator.Setup(AssertExpressionValidation()).ReturnsAsync(_response);
@@ -57,7 +55,7 @@ internal class WhenIGetProviderPayments
         _orchestrator =
             new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object,
                 _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(),
-                Mock.Of<IEncodingService>(),Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IUserAccountService>());
+                Mock.Of<IEncodingService>(),Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>());
     }
 
     private Expression<Func<IMediator, Task<FindAccountProviderPaymentsResponse>>> AssertExpressionValidation()
