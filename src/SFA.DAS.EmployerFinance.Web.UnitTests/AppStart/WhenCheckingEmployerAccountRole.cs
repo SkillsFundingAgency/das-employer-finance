@@ -29,7 +29,7 @@ public class WhenCheckingEmployerAccountRole
         bool expectedResponse,
         EmployerIdentifier employerIdentifier,
         EmployerUserAccountItem serviceResponse,
-        [Frozen] Mock<IAssociatedAccountsService> associatedAccountsService,
+        [Frozen] Mock<IAccountClaimsService> associatedAccountsService,
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         EmployerAccountAuthorisationHandler authorizationHandler)
@@ -55,7 +55,7 @@ public class WhenCheckingEmployerAccountRole
 
         var accountsDictionary = accounts.ToDictionary(x => x.AccountId);
 
-        associatedAccountsService.Setup(x => x.GetAccounts(false)).ReturnsAsync(accountsDictionary);
+        associatedAccountsService.Setup(x => x.GetAssociatedAccounts(false)).ReturnsAsync(accountsDictionary);
 
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(userRoleRequired);

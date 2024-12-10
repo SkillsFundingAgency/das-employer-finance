@@ -6,12 +6,12 @@ using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public interface IAssociatedAccountsService
+public interface IAccountClaimsService
 {
-    Task<Dictionary<string, EmployerUserAccountItem>> GetAccounts(bool forceRefresh);
+    Task<Dictionary<string, EmployerUserAccountItem>> GetAssociatedAccounts(bool forceRefresh);
 }
 
-public class AssociatedAccountsService(IGovAuthEmployerAccountService accountsService, IHttpContextAccessor httpContextAccessor, ILogger<AssociatedAccountsService> logger) : IAssociatedAccountsService
+public class AccountClaimsService(IGovAuthEmployerAccountService accountsService, IHttpContextAccessor httpContextAccessor, ILogger<AccountClaimsService> logger) : IAccountClaimsService
 {
     // To allow unit testing
     public int MaxPermittedNumberOfAccountsOnClaim { get; set; } = Constants.WebConstants.MaxNumberOfEmployerAccountsAllowedOnClaim;
@@ -22,7 +22,7 @@ public class AssociatedAccountsService(IGovAuthEmployerAccountService accountsSe
     /// </summary>
     /// <param name="forceRefresh">Forces data to be refreshed from UserAccountsService and persisted to user claims regardless of claims state.</param>
     /// <returns>Dictionary of string, EmployerUserAccountItem</returns>
-    public async Task<Dictionary<string, EmployerUserAccountItem>> GetAccounts(bool forceRefresh)
+    public async Task<Dictionary<string, EmployerUserAccountItem>> GetAssociatedAccounts(bool forceRefresh)
     {
         var user = httpContextAccessor.HttpContext.User;
         var employerAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
@@ -54,7 +54,10 @@ public class AssociatedAccountsService(IGovAuthEmployerAccountService accountsSe
         var result = await accountsService.GetUserAccounts(userId, email);
         var associatedAccounts = result.EmployerAccounts.ToDictionary(k => k.AccountId);
 
-        PersistToClaims(associatedAccounts, employerAccountsClaim, userClaim);
+        if (forceRefresh)
+        {
+            PersistToClaims(associatedAccounts, employerAccountsClaim, userClaim);
+        }
 
         return associatedAccounts;
     }

@@ -14,7 +14,7 @@ public interface IEmployerAccountAuthorisationHandler
 
 public class EmployerAccountAuthorisationHandler(
     IHttpContextAccessor httpContextAccessor,
-    IAssociatedAccountsService associatedAccountsService,
+    IAccountClaimsService accountClaimsService,
     ILogger<EmployerAccountOwnerAuthorizationHandler> logger)
     : IEmployerAccountAuthorisationHandler
 {
@@ -40,7 +40,7 @@ public class EmployerAccountAuthorisationHandler(
 
         try
         {
-            employerAccounts = await associatedAccountsService.GetAccounts(forceRefresh: false);
+            employerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: false);
         }
         catch (JsonSerializationException e)
         {
@@ -64,7 +64,7 @@ public class EmployerAccountAuthorisationHandler(
                 return false;
             }
 
-            var updatedEmployerAccounts = await associatedAccountsService.GetAccounts(forceRefresh: true);
+            var updatedEmployerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: true);
 
             if (!updatedEmployerAccounts.ContainsKey(accountIdFromUrl))
             {
@@ -96,7 +96,7 @@ public class EmployerAccountAuthorisationHandler(
 
         try
         {
-            employerAccounts = await associatedAccountsService.GetAccounts(forceRefresh: false);
+            employerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: false);
         }
         catch (JsonSerializationException e)
         {
@@ -111,7 +111,7 @@ public class EmployerAccountAuthorisationHandler(
                 return false;
             }
 
-            employerAccounts = await associatedAccountsService.GetAccounts(forceRefresh: true);
+            employerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: true);
         }
 
         if (employerAccounts == null || employerAccounts.Count == 0)
