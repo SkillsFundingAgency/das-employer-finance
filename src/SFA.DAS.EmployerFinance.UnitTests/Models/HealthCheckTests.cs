@@ -4,106 +4,105 @@ using SFA.DAS.EmployerFinance.UnitTests.Builders;
 using SFA.DAS.Testing;
 using SFA.DAS.UnitOfWork.Context;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Models
+namespace SFA.DAS.EmployerFinance.UnitTests.Models;
+
+[TestFixture]
+public class HealthCheckTests : FluentTest<HealthCheckTestsFixture>
 {
-    [TestFixture]
-    public class HealthCheckTests : FluentTest<HealthCheckTestsFixture>
+    [Test]
+    public void New_WhenCreatingAHealthCheck_ThenShouldCreateAHealthCheck()
     {
-        [Test]
-        public void New_WhenCreatingAHealthCheck_ThenShouldCreateAHealthCheck()
-        {
-            Run(f => f.New(), (f, r) => r.Should().NotBeNull().And.Match<HealthCheck>(h => h.UserRef == f.UserRef));
-        }
-
-        [Test]
-        public Task Run_WhenRunningAHealthCheck_ThenShouldSetSentRequestProperty()
-        {
-            return RunAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.SentRequest >= f.PreRun && h.SentRequest <= f.PostRun));
-        }
-
-        [Test]
-        public Task Run_WhenRunningAHealthCheck_ThenShouldSetReceivedResponseProperty()
-        {
-            return RunAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.ReceivedResponse >= f.PreRun && h.ReceivedResponse <= f.PostRun));
-        }
-
-        [Test]
-        public Task Run_WhenRunningAHealthCheckAndAnApiExceptionIsThrown_ThenShouldSetReceivedResponseProperty()
-        {
-            return RunAsync(f => f.SetHealthCheck().SetApiRequestException(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.ReceivedResponse == null));
-        }
-
-        [Test]
-        public Task Run_WhenRunningAHealthCheck_ThenShouldSetPublishedEventProperty()
-        {
-            return RunAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.PublishedEvent >= f.PreRun && h.PublishedEvent <= f.PostRun));
-        }
-
-        [Test]
-        public Task Run_WhenRunningAHealthCheck_ThenShouldPublishAHealthCheckEvent()
-        {
-            return RunAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.UnitOfWorkContext.GetEvents().ShouldAllBeEquivalentTo(
-                new List<HealthCheckEvent> { new HealthCheckEvent { Id = f.HealthCheck.Id, Created = f.HealthCheck.PublishedEvent } }));
-        }
-
-        [Test]
-        public void ReceiveEvent_WhenReceivingAHealthCheckEvent_ThenShouldSetReceivedEventProperty()
-        {
-            Run(f => f.SetHealthCheck(), f => f.ReceiveEvent(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.ReceivedEvent >= f.PreRun && h.ReceivedEvent <= f.PostRun));
-        }
+        Test(f => f.New(), (f, r) => r.Should().NotBeNull().And.Match<HealthCheck>(h => h.UserRef == f.UserRef));
     }
 
-    public class HealthCheckTestsFixture
+    [Test]
+    public Task Run_WhenRunningAHealthCheck_ThenShouldSetSentRequestProperty()
     {
-        public Guid UserRef { get; set; }
-        public IUnitOfWorkContext UnitOfWorkContext { get; set; }
-        public HealthCheck HealthCheck { get; set; }
-        public Func<Task> ApiRequest { get; set; }
-        public DateTime? PreRun { get; set; }
-        public DateTime? PostRun { get; set; }
+        return TestAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.SentRequest >= f.PreRun && h.SentRequest <= f.PostRun));
+    }
 
-        public HealthCheckTestsFixture()
-        {
-            UserRef = Guid.NewGuid();
-            UnitOfWorkContext = new UnitOfWorkContext();
-            ApiRequest = () => Task.CompletedTask;
-        }
+    [Test]
+    public Task Run_WhenRunningAHealthCheck_ThenShouldSetReceivedResponseProperty()
+    {
+        return TestAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.ReceivedResponse >= f.PreRun && h.ReceivedResponse <= f.PostRun));
+    }
 
-        public HealthCheck New()
-        {
-            return new HealthCheck(UserRef);
-        }
+    [Test]
+    public Task Run_WhenRunningAHealthCheckAndAnApiExceptionIsThrown_ThenShouldSetReceivedResponseProperty()
+    {
+        return TestAsync(f => f.SetHealthCheck().SetApiRequestException(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.ReceivedResponse == null));
+    }
 
-        public async Task Run()
-        {
-            PreRun = DateTime.UtcNow;
+    [Test]
+    public Task Run_WhenRunningAHealthCheck_ThenShouldSetPublishedEventProperty()
+    {
+        return TestAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.PublishedEvent >= f.PreRun && h.PublishedEvent <= f.PostRun));
+    }
 
-            await HealthCheck.Run(ApiRequest);
+    [Test]
+    public Task Run_WhenRunningAHealthCheck_ThenShouldPublishAHealthCheckEvent()
+    {
+        return TestAsync(f => f.SetHealthCheck(), f => f.Run(), f => f.UnitOfWorkContext.GetEvents().Should().BeEquivalentTo(
+            new List<HealthCheckEvent> { new() { Id = f.HealthCheck.Id, Created = f.HealthCheck.PublishedEvent } }));
+    }
 
-            PostRun = DateTime.UtcNow;
-        }
+    [Test]
+    public void ReceiveEvent_WhenReceivingAHealthCheckEvent_ThenShouldSetReceivedEventProperty()
+    {
+        Test(f => f.SetHealthCheck(), f => f.ReceiveEvent(), f => f.HealthCheck.Should().Match<HealthCheck>(h => h.ReceivedEvent >= f.PreRun && h.ReceivedEvent <= f.PostRun));
+    }
+}
 
-        public void ReceiveEvent()
-        {
-            PreRun = DateTime.UtcNow;
+public class HealthCheckTestsFixture
+{
+    public Guid UserRef { get; set; }
+    public IUnitOfWorkContext UnitOfWorkContext { get; set; }
+    public HealthCheck HealthCheck { get; set; }
+    public Func<Task> ApiRequest { get; set; }
+    public DateTime? PreRun { get; set; }
+    public DateTime? PostRun { get; set; }
 
-            HealthCheck.ReceiveEvent(new HealthCheckEvent());
+    public HealthCheckTestsFixture()
+    {
+        UserRef = Guid.NewGuid();
+        UnitOfWorkContext = new UnitOfWorkContext();
+        ApiRequest = () => Task.CompletedTask;
+    }
 
-            PostRun = DateTime.UtcNow;
-        }
+    public HealthCheck New()
+    {
+        return new HealthCheck(UserRef);
+    }
 
-        public HealthCheckTestsFixture SetHealthCheck()
-        {
-            HealthCheck = new HealthCheckBuilder().WithId(1).Build();
+    public async Task Run()
+    {
+        PreRun = DateTime.UtcNow;
 
-            return this;
-        }
+        await HealthCheck.Run(ApiRequest);
 
-        public HealthCheckTestsFixture SetApiRequestException()
-        {
-            ApiRequest = () => throw new Exception();
+        PostRun = DateTime.UtcNow;
+    }
 
-            return this;
-        }
+    public void ReceiveEvent()
+    {
+        PreRun = DateTime.UtcNow;
+
+        HealthCheck.ReceiveEvent(new HealthCheckEvent());
+
+        PostRun = DateTime.UtcNow;
+    }
+
+    public HealthCheckTestsFixture SetHealthCheck()
+    {
+        HealthCheck = new HealthCheckBuilder().WithId(1).Build();
+
+        return this;
+    }
+
+    public HealthCheckTestsFixture SetApiRequestException()
+    {
+        ApiRequest = () => throw new Exception();
+
+        return this;
     }
 }

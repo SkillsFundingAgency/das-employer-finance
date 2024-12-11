@@ -52,7 +52,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTest
 //    }
 //}
 
-public class RefreshEmployerLevyDataCommandHandlerTestsFixture : FluentTestFixture
+public class RefreshEmployerLevyDataCommandHandlerTestsFixture 
 {
     private readonly TestableEventPublisher _eventPublisher;
     private readonly Mock<IDasLevyRepository> _dasLevyRepository;

@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 
@@ -24,4 +25,6 @@ public class EmployerIdentifier
     public string EmployerName { get; set; }
     [JsonProperty("Role")]
     public string Role { get; set; }
+    [JsonProperty("apprenticeshipEmployerType")]
+    public ApprenticeshipEmployerType ApprenticeshipEmployerType { get; set; }
 }

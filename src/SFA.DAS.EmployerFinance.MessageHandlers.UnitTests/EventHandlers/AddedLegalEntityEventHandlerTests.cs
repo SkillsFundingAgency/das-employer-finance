@@ -20,7 +20,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         [Test]
         public Task Handle_WhenHandlingEvent_ThenShouldSendCreateAccountLegalEntityCommand()
         {
-            return RunAsync(f => f.Handler.Handle(f.Message, Mock.Of<IMessageHandlerContext>()),
+            return TestAsync(f => f.Handler.Handle(f.Message, Mock.Of<IMessageHandlerContext>()),
                 f => f.Mediator.Verify(x => x.Send(It.Is<CreateAccountLegalEntityCommand>(p =>
                         p.AccountId == f.AccountId &&
                         p.LegalEntityId == f.LegalEntityId &&

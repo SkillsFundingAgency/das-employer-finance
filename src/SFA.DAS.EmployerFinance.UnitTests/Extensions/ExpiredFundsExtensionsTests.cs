@@ -12,7 +12,7 @@ public class ExpiredFundsExtensionsTests : FluentTest<ExpiredFundsExtensionsTest
     [Test]
     public void ToExpiredFundsDataTable_WhenCreatingTable_ShouldReturnPopulatedTable()
     {
-        Run(f => f.ToExpiredFundsDataTable(), (f, r) => r.Should().Match<DataTable>(
+        Test(f => f.ToExpiredFundsDataTable(), (f, r) => r.Should().Match<DataTable>(
             dt => dt.Rows.Count == 1
                   && dt.Rows[0].Field<int>("CalendarPeriodYear") == 2020
                   && dt.Rows[0].Field<int>("CalendarPeriodMonth") == 2

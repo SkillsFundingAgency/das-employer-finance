@@ -4,11 +4,9 @@ using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
-using SFA.DAS.EmployerFinance.Infrastructure;
-using SFA.DAS.EmployerFinance.Models.UserAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Encoding;
+using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators;
 
@@ -28,7 +26,7 @@ public class WhenGettingFinanceIndex
     private Mock<ICurrentDateTime> _currentTime;
     private Mock<IEncodingService> _encodingService;
     private Mock<IAuthenticationOrchestrator> _authenticationService;
-    private Mock<IUserAccountService> _userAccountService;
+    private Mock<IGovAuthEmployerAccountService> _userAccountService;
 
     [SetUp]
     public void Arrange()
@@ -54,7 +52,7 @@ public class WhenGettingFinanceIndex
 
         _encodingService.Setup(h => h.Decode(HashedAccountId, EncodingType.AccountId)).Returns(AccountId);
         _authenticationService = new Mock<IAuthenticationOrchestrator>();
-        _userAccountService = new Mock<IUserAccountService>();
+        _userAccountService = new Mock<IGovAuthEmployerAccountService>();
         _userAccountService.Setup(x => x.GetUserAccounts(UserId, UserEmail)).ReturnsAsync(new EmployerUserAccounts
         {
             EmployerUserId = UserId,

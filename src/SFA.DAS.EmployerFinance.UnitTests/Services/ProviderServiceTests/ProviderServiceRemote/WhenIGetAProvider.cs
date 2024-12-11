@@ -49,11 +49,7 @@ internal class WhenIGetAProvider
         // assert
         _mockApiClient.Verify(m => m.Get<GetProviderResponse>(It.Is<GetProviderRequest>(c=>c.GetUrl.Equals($"providers/{ukPrn}"))), Times.Once);
         _mockProviderService.Verify(m => m.Get(ukPrn), Times.Never);
-        actual.ShouldBeEquivalentTo(_provider, options=>options
-            .Excluding(c=>c.Id)
-            .Excluding(c=>c.NationalProvider)
-            .Excluding(c=>c.IsHistoricProviderName)
-        );
+        actual.Should().BeEquivalentTo(_provider, options=>options);
     }
 
 
