@@ -54,18 +54,11 @@ public class RefreshEmployerLevyDataCommandHandler(
 
     private async Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
     {
-        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2} + 100000", levyImported, levyTotalTransactionValue, accountId);
-
-        if (levyTotalTransactionValue == decimal.Zero)
-        {
-            logger.LogInformation("Exited RefreshEmployerLevyDataCompletedEvent, did not make call for accountId {0}", accountId);
-            return;
-        }
-        logger.LogInformation("Publishing message RefreshEmployerLevyDataCompletedEvent with {0} levy value for accountId {1}", levyTotalTransactionValue, accountId);
+        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2}", levyImported, levyTotalTransactionValue, accountId);
 
         eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
-            AccountId = accountId + 100000,
+            AccountId = accountId,
             Created = DateTime.UtcNow,
             LevyImported = levyImported,
             LevyTransactionValue = levyTotalTransactionValue

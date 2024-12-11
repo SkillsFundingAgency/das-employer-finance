@@ -13,44 +13,44 @@ using SFA.DAS.Testing;
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTests;
 
 [TestFixture]
-//public class RefreshEmployerLevyDataCommandHandlerTests
-//{
-//    [Test]
-//    public async Task WhenIHaveCompletedProcessing_AndHaveNewLevy()
-//    {
-//        const long accountId = 999;
-//        const string empRef = "ABC/12345";
+public class RefreshEmployerLevyDataCommandHandlerTests
+{
+    [Test]
+    public async Task WhenIHaveCompletedProcessing_AndHaveNewLevy()
+    {
+        const long accountId = 999;
+        const string empRef = "ABC/12345";
 
-//        var fixture = new RefreshEmployerLevyDataCommandHandlerTestsFixture();
+        var fixture = new RefreshEmployerLevyDataCommandHandlerTestsFixture();
 
-//        fixture.SetAccountId(accountId);
-//        fixture.SetIsSubmissionForFuturePeriod(false);
-//        fixture.SetLastSubmissionForScheme(empRef, new DasDeclaration { LevyDueYtd = 1000m, LevyAllowanceForFullYear = 1200m });
-//        fixture.SetEmployerLevyData(new List<EmployerLevyData>
-//        {
-//            new()
-//            {
-//                EmpRef = empRef,
-//                Declarations = new DasDeclarations
-//                {
-//                    Declarations = new List<DasDeclaration>
-//                    {
-//                        new()
-//                        {
-//                            LevyDueYtd = 2000,
-//                            PayrollYear = "2018",
-//                            PayrollMonth = 6
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        fixture.SetAccountId(accountId);
+        fixture.SetIsSubmissionForFuturePeriod(false);
+        fixture.SetLastSubmissionForScheme(empRef, new DasDeclaration { LevyDueYtd = 1000m, LevyAllowanceForFullYear = 1200m });
+        fixture.SetEmployerLevyData(new List<EmployerLevyData>
+        {
+            new()
+            {
+                EmpRef = empRef,
+                Declarations = new DasDeclarations
+                {
+                    Declarations = new List<DasDeclaration>
+                    {
+                        new()
+                        {
+                            LevyDueYtd = 2000,
+                            PayrollYear = "2018",
+                            PayrollMonth = 6
+                        }
+                    }
+                }
+            }
+        });
 
-//        await fixture.Handle();
+        await fixture.Handle();
 
-//        fixture.VerifyRefreshEmployerLevyDataCompletedEventIsPublished(true);
-//    }
-//}
+        fixture.VerifyRefreshEmployerLevyDataCompletedEventIsPublished(true);
+    }
+}
 
 public class RefreshEmployerLevyDataCommandHandlerTestsFixture 
 {
@@ -119,7 +119,7 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
     public void VerifyRefreshEmployerLevyDataCompletedEventIsPublished(bool expectedLevyImportedValue)
     {
         (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
-            e.AccountId.Equals(_accountId +100000)
+            e.AccountId.Equals(_accountId)
             && e.LevyImported.Equals(expectedLevyImportedValue))).Should().BeTrue();
     }
 }
