@@ -58,10 +58,10 @@ public class RefreshEmployerLevyDataCommandHandler(
 
         if (levyTotalTransactionValue == decimal.Zero)
         {
-            logger.LogInformation("Exited RefreshEmployerLevyDataCompletedEvent, did not make call");
+            logger.LogInformation("Exited RefreshEmployerLevyDataCompletedEvent, did not make call for accountId {0}", accountId);
             return;
         }
-        logger.LogInformation("Publishing message RefreshEmployerLevyDataCompletedEvent with {0} levy value", levyTotalTransactionValue);
+        logger.LogInformation("Publishing message RefreshEmployerLevyDataCompletedEvent with {0} levy value for accountId {1}", levyTotalTransactionValue, accountId);
 
         eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
