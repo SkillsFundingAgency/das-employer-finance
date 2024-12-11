@@ -28,6 +28,6 @@ public class WhenGettingUserAccounts
         var actual = await service.GetUserAccounts(userId, email);
 
         //Assert
-        actual.ShouldBeEquivalentTo((EmployerUserAccounts)apiResponse);
+        actual.Should().BeEquivalentTo((EmployerUserAccounts)apiResponse);
     }
 }

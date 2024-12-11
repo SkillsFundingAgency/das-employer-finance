@@ -15,7 +15,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         [Test]
         public Task Handle_WhenThePayeSchemeWasAddedViaAorn_ThenShouldNotAddLevyToAccount()
         {
-            return RunAsync(f =>
+            return TestAsync(f =>
                 {
                     f.Event.Aorn = "AORN";
                 }, 
@@ -26,7 +26,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         [Test]
         public Task Handle_WhenThePayeSchemeWasAddedViaGovernmentGateway_ThenLevyShouldBeAddedToAccount()
         {
-            return RunAsync(f =>
+            return TestAsync(f =>
                 {
                     f.Event.Aorn = string.Empty;
                 },
@@ -37,7 +37,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         [Test]
         public Task Handle_WhenThePayeSchemeWasAddedViaAorn_ThenShouldCreateAccountPaye()
         {
-            return RunAsync(f =>
+            return TestAsync(f =>
                 {
                     f.Event.Aorn = "AORN";
                 },
@@ -48,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         [Test]
         public Task Handle_WhenThePayeSchemeWasAddedViaGovernmentGateway_ThenShouldCreateAccountPaye()
         {
-            return RunAsync(f =>
+            return TestAsync(f =>
                 {
                     f.Event.Aorn = string.Empty;
                 },

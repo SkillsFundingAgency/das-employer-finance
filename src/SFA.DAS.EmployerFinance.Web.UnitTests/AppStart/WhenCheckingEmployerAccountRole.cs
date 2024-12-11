@@ -1,11 +1,13 @@
 using AutoFixture.NUnit3;
 using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
-using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Authorization;
+using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
+using EmployerClaims = SFA.DAS.EmployerFinance.Infrastructure.EmployerClaims;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
@@ -26,6 +28,8 @@ public class WhenCheckingEmployerAccountRole
         string roleInClaim,
         bool expectedResponse,
         EmployerIdentifier employerIdentifier,
+        EmployerUserAccountItem serviceResponse,
+        [Frozen] Mock<IAccountClaimsService> associatedAccountsService,
         EmployerAccountOwnerRequirement ownerRequirement,
         [Frozen] Mock<IHttpContextAccessor> httpContextAccessor,
         EmployerAccountAuthorisationHandler authorizationHandler)
@@ -33,15 +37,26 @@ public class WhenCheckingEmployerAccountRole
         //Arrange
         employerIdentifier.Role = roleInClaim;
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
-        var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
-        var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
-        var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
+        serviceResponse.Role = roleInClaim;
         
+        serviceResponse.AccountId = employerIdentifier.AccountId.ToUpper();
+        
+        var claimsPrinciple = new ClaimsPrincipal();
+
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, employerIdentifier.AccountId);
         httpContext.User = claimsPrinciple;
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
-        
+
+        var accounts = new List<EmployerUserAccountItem>
+        {
+            serviceResponse
+        };
+
+        var accountsDictionary = accounts.ToDictionary(x => x.AccountId);
+
+        associatedAccountsService.Setup(x => x.GetAssociatedAccounts(false)).ReturnsAsync(accountsDictionary);
+
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(userRoleRequired);
 
@@ -59,23 +74,23 @@ public class WhenCheckingEmployerAccountRole
         //Arrange
         employerIdentifier.Role = "Owner";
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
-        var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
+        var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
-        
+
         var httpContext = new DefaultHttpContext(new FeatureCollection())
         {
             User = claimsPrinciple
         };
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
-        
+
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
-    
+
     [Test, MoqAutoData]
     public async Task Then_If_Not_Valid_Account_Claims_Returns_False(
         EmployerAccountOwnerRequirement ownerRequirement,
@@ -85,19 +100,19 @@ public class WhenCheckingEmployerAccountRole
         //Arrange
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(new object()));
         var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
-        
+
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, "ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         httpContext.User = claimsPrinciple;
-        
+
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
-    
+
     [Test, MoqAutoData]
     public async Task Then_If_No_Account_Claims_Returns_False(
         EmployerAccountOwnerRequirement ownerRequirement,
@@ -108,21 +123,21 @@ public class WhenCheckingEmployerAccountRole
         var employerAccounts = new Dictionary<string, EmployerIdentifier>();
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
-        
+
         var httpContext = new DefaultHttpContext(new FeatureCollection())
         {
             User = claimsPrinciple
         };
-        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, "ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
-        
+
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
-    
+
     [Test, MoqAutoData]
     public async Task Then_If_No_Account_Claims_Matching_Returns_False(
         EmployerIdentifier employerIdentifier,
@@ -133,21 +148,21 @@ public class WhenCheckingEmployerAccountRole
         //Arrange
         employerIdentifier.Role = "Owner";
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
-        var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
+        var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,"ABC123");
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, "ABC123");
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         httpContext.User = claimsPrinciple;
-        
+
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
         //Assert
         actual.Should().BeFalse();
     }
-    
+
     [Test, MoqAutoData]
     public async Task Then_If_Not_Correct_Account_Claim_Role_Returns_False(
         EmployerIdentifier employerIdentifier,
@@ -158,14 +173,14 @@ public class WhenCheckingEmployerAccountRole
         //Arrange
         employerIdentifier.Role = "Owner_Thing";
         employerIdentifier.AccountId = employerIdentifier.AccountId.ToUpper();
-        var employerAccounts = new Dictionary<string, EmployerIdentifier>{{employerIdentifier.AccountId, employerIdentifier}};
+        var employerAccounts = new Dictionary<string, EmployerIdentifier> { { employerIdentifier.AccountId, employerIdentifier } };
         var claim = new Claim(EmployerClaims.AccountsClaimsTypeIdentifier, JsonConvert.SerializeObject(employerAccounts));
         var claimsPrinciple = new ClaimsPrincipal([new ClaimsIdentity([claim])]);
         var httpContext = new DefaultHttpContext(new FeatureCollection());
-        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId,employerIdentifier.AccountId);
+        httpContext.Request.RouteValues.Add(RouteValueKeys.HashedAccountId, employerIdentifier.AccountId);
         httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext);
         httpContext.User = claimsPrinciple;
-        
+
         //Act
         var actual = await authorizationHandler.CheckUserAccountAccess(EmployerUserRole.Viewer);
 
