@@ -73,5 +73,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ITransactionFormatter, NonLevyCsvTransactionFormatter>();
         services.AddTransient<ITransactionFormatter, LevyExcelTransactionFormatter>();
         services.AddTransient<ITransactionFormatter, NonLevyExcelTransactionFormatter>();
+        
+        services.AddTransient<IAccountClaimsService, AccountClaimsService>();
     }
 }

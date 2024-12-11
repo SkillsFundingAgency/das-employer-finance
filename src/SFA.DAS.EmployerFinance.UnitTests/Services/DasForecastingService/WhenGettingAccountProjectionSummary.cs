@@ -72,7 +72,7 @@ public class WhenGettingAccountProjectionSummary
         var result = await _service.GetAccountProjectionSummary(ExpectedAccountId);
 
         result.ExpiringAccountFunds.ExpiryAmounts.Count.Should().Be(1);
-        result.ExpiringAccountFunds.ExpiryAmounts.First().ShouldBeEquivalentTo(_expectedAccountProjectionSummaryResponse.ExpiryAmounts.First());
+        result.ExpiringAccountFunds.ExpiryAmounts.First().Should().BeEquivalentTo(_expectedAccountProjectionSummaryResponse.ExpiryAmounts.First());
     }
 
     [Test]

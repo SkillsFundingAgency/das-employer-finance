@@ -11,13 +11,13 @@ public class WhenCastingFromApiResponseToEmployerUserAccounts
     {
         //Arrange
         source.IsSuspended = true;
-        
+
         //Act
-        var actual = (EmployerUserAccounts) source;
+        var actual = (EmployerUserAccounts)source;
 
         //Assert
-        actual.ShouldBeEquivalentTo(source, options=>options.Excluding(x=>x.EmployerAccounts));
-        actual.EmployerAccounts.ShouldBeEquivalentTo(source.UserAccounts);
+        actual.Should().BeEquivalentTo(source, options => options.Excluding(x => x.UserAccounts));
+        actual.EmployerAccounts.Should().BeEquivalentTo(source.UserAccounts, options => options.Excluding(x => x.ApprenticeshipEmployerType));
         actual.IsSuspended.Should().BeTrue();
     }
 
@@ -26,20 +26,20 @@ public class WhenCastingFromApiResponseToEmployerUserAccounts
     {
         //Arrange
         source.UserAccounts = null;
-        
+
         //Act
-        var actual = (EmployerUserAccounts) source;
+        var actual = (EmployerUserAccounts)source;
 
         //Assert
-        actual.ShouldBeEquivalentTo(source, options=>options.Excluding(x=>x.EmployerAccounts));
+        actual.Should().BeEquivalentTo(source, options => options.Excluding(x => x.UserAccounts));
         actual.EmployerAccounts.Should().BeEmpty();
     }
 
     [Test, AutoData]
     public void Then_If_No_Values_Null_Returned()
-    {   
+    {
         //Act
-        var actual = (EmployerUserAccounts) ((GetUserAccountsResponse)null);
+        var actual = (EmployerUserAccounts)((GetUserAccountsResponse)null);
 
         //Assert
         actual.FirstName.Should().BeNullOrEmpty();
