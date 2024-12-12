@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using SFA.DAS.EmployerAccounts.Messages.Events;
+﻿using SFA.DAS.EmployerAccounts.Messages.Events;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;

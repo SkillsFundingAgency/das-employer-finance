@@ -63,6 +63,7 @@ public class RefreshEmployerLevyDataCommandHandler(
             LevyImported = levyImported,
             LevyTransactionValue = levyTotalTransactionValue
         });
+        logger.LogInformation("Published RefreshEmployerLevyDataCompletedEvent for account {0}", accountId);
     }
 
     private async Task PublishAccountLevyStatusEvent(decimal levyTotalTransactionValue, long accountId)
