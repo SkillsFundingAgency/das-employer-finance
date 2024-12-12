@@ -52,15 +52,20 @@ public class RefreshEmployerLevyDataCommandHandler(
         await PublishAccountLevyStatusEvent(levyTotalTransactionValue, request.AccountId);
     }
 
-    private Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
+    private async Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
     {
-        return eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
+
+        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2}", levyImported, levyTotalTransactionValue, accountId);
+
+        eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
             AccountId = accountId,
             Created = DateTime.UtcNow,
             LevyImported = levyImported,
             LevyTransactionValue = levyTotalTransactionValue
         });
+
+        logger.LogInformation("Published RefreshEmployerLevyDataCompletedEvent for account {2}", accountId);
     }
 
     private async Task PublishAccountLevyStatusEvent(decimal levyTotalTransactionValue, long accountId)
