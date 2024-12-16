@@ -57,7 +57,7 @@ public class RefreshEmployerLevyDataCommandHandler(
 
         logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2}", levyImported, levyTotalTransactionValue, accountId);
 
-        eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
+        await eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
             AccountId = accountId,
             Created = DateTime.UtcNow,
