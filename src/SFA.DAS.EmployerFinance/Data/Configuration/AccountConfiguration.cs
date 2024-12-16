@@ -9,8 +9,10 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
     {
         builder.ToTable("Account");
         builder.HasKey(x => x.Id);
+        
         builder.Property(x => x.Id).HasColumnName("Id").HasColumnType("bigint").IsRequired().ValueGeneratedNever();
         builder.Property(x => x.Name).HasColumnName("Name").HasColumnType("varchar").HasMaxLength(100).IsRequired();
+        
         builder.HasMany(a => a.ReceivedTransferConnectionInvitations);
         builder.HasMany(a => a.SentTransferConnectionInvitations);
         
