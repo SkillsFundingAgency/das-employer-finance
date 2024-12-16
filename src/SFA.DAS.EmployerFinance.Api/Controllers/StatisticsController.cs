@@ -7,19 +7,12 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
 [Authorize(Policy = ApiRoles.ReadUserAccounts)]
 [Route("api/financestatistics")]
-public class StatisticsController : ControllerBase
+public class StatisticsController(StatisticsOrchestrator statisticsController) : ControllerBase
 {
-    private readonly StatisticsOrchestrator _statisticsOrchestrator;
-
-    public StatisticsController(StatisticsOrchestrator statisticsController)
-    {
-        _statisticsOrchestrator = statisticsController;
-    }
-
     [HttpGet]
     [Route("")]
     public async Task<IActionResult> GetStatistics()
     {
-        return Ok(await _statisticsOrchestrator.Get());
+        return Ok(await statisticsController.Get());
     }
 }

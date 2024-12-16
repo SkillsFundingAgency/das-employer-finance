@@ -9,24 +9,15 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
 [Authorize(Policy = ApiRoles.ReadUserAccounts)]
 [Route("api/accounts")]
-public class TransferConnectionsController : ControllerBase
+public class TransferConnectionsController(IMediator mediator, IEncodingService encodingService) : ControllerBase
 {
-    private readonly IMediator _mediator;
-    private readonly IEncodingService _encodingService;
-
-    public TransferConnectionsController(IMediator mediator, IEncodingService encodingService)
-    {
-        _mediator = mediator;
-        _encodingService = encodingService;
-    }
-
     [HttpGet]
     [Route("{hashedAccountId}/transfers/connections")]
     public async Task<IActionResult> GetTransferConnections(string hashedAccountId)
     {
-        var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+        var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
-        var response = await _mediator.Send(new GetTransferConnectionsQuery { AccountId = accountId });
+        var response = await mediator.Send(new GetTransferConnectionsQuery { AccountId = accountId });
         return Ok(response.TransferConnections);
     }
 
@@ -34,7 +25,7 @@ public class TransferConnectionsController : ControllerBase
     [Route("internal/{accountId}/transfers/connections")]
     public async Task<IActionResult> GetTransferConnections(long accountId, TransferConnectionInvitationStatus status = TransferConnectionInvitationStatus.Approved)
     {
-        var response = await _mediator.Send(new GetTransferConnectionsQuery
+        var response = await mediator.Send(new GetTransferConnectionsQuery
         {
             AccountId = accountId,
             Status = status

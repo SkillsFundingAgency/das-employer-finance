@@ -5,25 +5,18 @@ using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
 
-public class GetTransferConnectionsQueryHandler : IRequestHandler<GetTransferConnectionsQuery, GetTransferConnectionsResponse>
+public class GetTransferConnectionsQueryHandler(
+    ITransferConnectionInvitationRepository transferConnectionInvitationRepository,
+    IMapper mapper)
+    : IRequestHandler<GetTransferConnectionsQuery, GetTransferConnectionsResponse>
 {
-    private readonly ITransferConnectionInvitationRepository _transferConnectionInvitationRepository;
-    private readonly IMapper _mapper;
-
-    public GetTransferConnectionsQueryHandler(ITransferConnectionInvitationRepository transferConnectionInvitationRepository, IMapper mapper)
-    {
-        _transferConnectionInvitationRepository = transferConnectionInvitationRepository;
-        _mapper = mapper;
-    }
-
     public async Task<GetTransferConnectionsResponse> Handle(GetTransferConnectionsQuery message, CancellationToken cancellationToken)
     {
-        var transferConnectionInvitations =
-            await _transferConnectionInvitationRepository.GetByReceiver(message.AccountId, message.Status);
+        var transferConnectionInvitations = await transferConnectionInvitationRepository.GetByReceiver(message.AccountId, message.Status);
 
         return new GetTransferConnectionsResponse
         {
-            TransferConnections = _mapper.Map<List<TransferConnectionInvitation>, List<TransferConnection>>(transferConnectionInvitations)
+            TransferConnections = mapper.Map<List<TransferConnectionInvitation>, List<TransferConnection>>(transferConnectionInvitations)
         };
     }
 }
