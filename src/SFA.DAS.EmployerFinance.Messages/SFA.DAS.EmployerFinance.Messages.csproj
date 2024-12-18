@@ -20,9 +20,4 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors />
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
-  </ItemGroup>
-
 </Project>
