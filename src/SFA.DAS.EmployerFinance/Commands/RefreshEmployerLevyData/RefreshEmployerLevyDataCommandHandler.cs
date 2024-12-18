@@ -75,14 +75,14 @@ public class RefreshEmployerLevyDataCommandHandler(
             // This has been moved into a static class to overcome the bug we are seeing. If we publish LevyAddedToAccount without it inheriting from
             // Event base class, the system does not actually publish the event, it appears to create an error in the UoW (but no error is logged,
             // nor transaction rolled back). 
-            await LevyAddedToAccountWithEventBaseClass.Publish(eventPublisher, levyTotalTransactionValue, accountId);
-            logger.LogInformation("Published LevyAddedToAccount levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
+            //await LevyAddedToAccountWithEventBaseClass.Publish(eventPublisher, levyTotalTransactionValue, accountId);
 
             await eventPublisher.Publish(new LevyAddedToAccountEvent
             {
                 AccountId = accountId,
                 Amount = levyTotalTransactionValue
             });
+            logger.LogInformation("Published LevyAddedToAccount levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
         }
     }
 
