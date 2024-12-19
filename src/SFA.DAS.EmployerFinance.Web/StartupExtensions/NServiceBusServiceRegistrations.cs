@@ -31,7 +31,7 @@ public static class NServiceBusServiceRegistrations
         var endpointConfiguration = new EndpointConfiguration(EndPointName)
             .UseErrorQueue($"{EndPointName}-errors")
             .UseInstallers()
-            .UseMessageConventions()
+            .UseNewMessageConventions()
             .UseServicesBuilder(services)
             .UseNewtonsoftJsonSerializer()
             .UseOutbox(true)
