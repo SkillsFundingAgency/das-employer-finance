@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
                     .UseErrorQueue($"{EndpointName}-errors")
                     .UseInstallers()
                     .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
-                    .UseMessageConventions()
+                    .UseNewMessageConventions()
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)

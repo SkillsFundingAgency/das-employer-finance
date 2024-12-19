@@ -1,9 +1,8 @@
 ﻿using System;
-using SFA.DAS.NServiceBus;
 
 namespace SFA.DAS.EmployerFinance.Messages.Commands
 {
-    public class DraftExpireFundsCommand : Command
+    public class DraftExpireFundsCommand
     {
         public DateTime? DateTo { get; set; }
     }

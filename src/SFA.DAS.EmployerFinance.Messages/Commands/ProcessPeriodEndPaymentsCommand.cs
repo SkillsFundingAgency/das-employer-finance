@@ -1,8 +1,6 @@
-﻿using SFA.DAS.NServiceBus;
-
-namespace SFA.DAS.EmployerFinance.Messages.Commands
+﻿namespace SFA.DAS.EmployerFinance.Messages.Commands
 {
-    public class ProcessPeriodEndPaymentsCommand : Command
+    public class ProcessPeriodEndPaymentsCommand
     {
         public string PeriodEndRef { get; init; }
         public int BatchNumber { get; init; } = 0;
