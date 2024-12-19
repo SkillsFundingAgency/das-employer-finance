@@ -258,7 +258,6 @@ public class WhenIReceiveTheCommand
         action.Should().NotThrowAsync();
     }
 
-
     [Test]
     public async Task ThenARefreshEmployerLevyDataCompletedEventIsPublished()
     {
