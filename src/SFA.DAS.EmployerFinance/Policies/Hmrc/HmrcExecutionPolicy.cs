@@ -10,7 +10,7 @@ public class HmrcExecutionPolicy : ExecutionPolicy
 
     private readonly ILogger<HmrcExecutionPolicy> _logger;
 
-    public HmrcExecutionPolicy(ILogger<HmrcExecutionPolicy> logger) : this(logger, new TimeSpan(0, 0, 10))
+    public HmrcExecutionPolicy(ILogger<HmrcExecutionPolicy> logger) : this(logger, new TimeSpan(0, 0, 2))
     {
     }
 
@@ -18,12 +18,11 @@ public class HmrcExecutionPolicy : ExecutionPolicy
     {
         _logger = logger;
 
-        var tooManyRequestsPolicy = Policy.Handle<ApiHttpException>(ex => ex.HttpCode.Equals(429)).WaitAndRetryForeverAsync(i => retryWaitTime, (ex, ts) => OnRetryableFailure(ex));
-        var requestTimeoutPolicy = Policy.Handle<ApiHttpException>(ex => ex.HttpCode.Equals(408)).WaitAndRetryForeverAsync(i => retryWaitTime, (ex, ts) => OnRetryableFailure(ex));
-        var serviceUnavailablePolicy = CreateAsyncRetryPolicy<ApiHttpException>(ex => ex.HttpCode.Equals(503), 5, retryWaitTime, OnRetryableFailure);
-        var internalServerErrorPolicy = CreateAsyncRetryPolicy<ApiHttpException>(ex => ex.HttpCode.Equals(500), 5, retryWaitTime, OnRetryableFailure);
+        var tooManyRequestsPolicy = CreateAsyncRetryPolicy<ApiHttpException>(ex => ex.HttpCode.Equals(429), 1, TimeSpan.FromSeconds(10), OnRetryableFailure);
+        var serviceUnavailablePolicy = CreateAsyncRetryPolicy<ApiHttpException>(ex => ex.HttpCode.Equals(503), 3, retryWaitTime, OnRetryableFailure);
+        var internalServerErrorPolicy = CreateAsyncRetryPolicy<ApiHttpException>(ex => ex.HttpCode.Equals(500), 3, retryWaitTime, OnRetryableFailure);
 
-        RootPolicy = Policy.WrapAsync(tooManyRequestsPolicy, serviceUnavailablePolicy, internalServerErrorPolicy, requestTimeoutPolicy);
+        RootPolicy = Policy.WrapAsync(tooManyRequestsPolicy, serviceUnavailablePolicy, internalServerErrorPolicy);
     }
 
     protected override T OnException<T>(Exception ex)
