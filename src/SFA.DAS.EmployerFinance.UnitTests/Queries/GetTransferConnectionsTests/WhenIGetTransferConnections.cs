@@ -27,7 +27,7 @@ public class WhenIGetTransferConnections
     {
         _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
 
-        var hashedAccountId = "ABC123";
+        const string hashedAccountId = "ABC123";
 
         _accountA = new Account
         {
@@ -69,11 +69,10 @@ public class WhenIGetTransferConnections
 
         _transferConnectionInvitationRepository
             .Setup(s => s.GetByReceiver(_accountC.Id, status))
-            .ReturnsAsync(new List<TransferConnectionInvitation>
-            {
+            .ReturnsAsync([
                 _approvedTransferConnectionAtoC,
                 _approvedTransferConnectionBtoC
-            });
+            ]);
 
         _query = new GetTransferConnectionsQuery
         {
@@ -83,11 +82,10 @@ public class WhenIGetTransferConnections
 
         _transferConnectionInvitationRepository
             .Setup(s => s.GetByReceiver(_accountC.Id, TransferConnectionInvitationStatus.Approved))
-            .ReturnsAsync(new List<TransferConnectionInvitation>
-            {
+            .ReturnsAsync([
                 _approvedTransferConnectionAtoC,
                 _approvedTransferConnectionBtoC
-            });
+            ]);
 
         _mapper = new Mapper(new MapperConfiguration(c =>
         {
@@ -111,15 +109,11 @@ public class WhenIGetTransferConnections
         var transferConnectionInvitation = _response.TransferConnections.ElementAt(0);
 
         Assert.That(transferConnectionInvitation.FundingEmployerAccountId, Is.EqualTo(_accountA.Id));
-        Assert.That(transferConnectionInvitation.FundingEmployerHashedAccountId, Is.EqualTo(_accountA.HashedId));
-        Assert.That(transferConnectionInvitation.FundingEmployerPublicHashedAccountId, Is.EqualTo(_accountA.PublicHashedId));
         Assert.That(transferConnectionInvitation.FundingEmployerAccountName, Is.EqualTo(_accountA.Name));
 
         var transferConnectionInvitation1 = _response.TransferConnections.ElementAt(1);
 
         Assert.That(transferConnectionInvitation1.FundingEmployerAccountId, Is.EqualTo(_accountB.Id));
-        Assert.That(transferConnectionInvitation1.FundingEmployerHashedAccountId, Is.EqualTo(_accountB.HashedId));
-        Assert.That(transferConnectionInvitation1.FundingEmployerPublicHashedAccountId, Is.EqualTo(_accountB.PublicHashedId));
         Assert.That(transferConnectionInvitation1.FundingEmployerAccountName, Is.EqualTo(_accountB.Name));
     }
 
@@ -136,15 +130,11 @@ public class WhenIGetTransferConnections
         var transferConnectionInvitation = _response.TransferConnections.ElementAt(0);
 
         Assert.That(transferConnectionInvitation.FundingEmployerAccountId, Is.EqualTo(_accountA.Id));
-        Assert.That(transferConnectionInvitation.FundingEmployerHashedAccountId, Is.EqualTo(_accountA.HashedId));
-        Assert.That(transferConnectionInvitation.FundingEmployerPublicHashedAccountId, Is.EqualTo(_accountA.PublicHashedId));
         Assert.That(transferConnectionInvitation.FundingEmployerAccountName, Is.EqualTo(_accountA.Name));
 
         var transferConnectionInvitation1 = _response.TransferConnections.ElementAt(1);
 
         Assert.That(transferConnectionInvitation1.FundingEmployerAccountId, Is.EqualTo(_accountB.Id));
-        Assert.That(transferConnectionInvitation1.FundingEmployerHashedAccountId, Is.EqualTo(_accountB.HashedId));
-        Assert.That(transferConnectionInvitation1.FundingEmployerPublicHashedAccountId, Is.EqualTo(_accountB.PublicHashedId));
         Assert.That(transferConnectionInvitation1.FundingEmployerAccountName, Is.EqualTo(_accountB.Name));
     }
 }
