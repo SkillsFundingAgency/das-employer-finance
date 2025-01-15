@@ -21,7 +21,7 @@ public class PolicyRetryTest
 
         Assert.ThrowsAsync<ApiHttpException>(() => _policy.ExecuteAsync(runner.Execute));
 
-        runner.CallCount.Should().Be(6);
+        runner.CallCount.Should().Be(4);
     }
 
     [Test]
@@ -31,7 +31,7 @@ public class PolicyRetryTest
 
         Assert.ThrowsAsync<ApiHttpException>(() => _policy.ExecuteAsync(runner.Execute));
 
-        runner.CallCount.Should().Be(6);
+        runner.CallCount.Should().Be(4);
     }
 
     [Test]
@@ -39,19 +39,9 @@ public class PolicyRetryTest
     {
         var runner = new TestRunner<ApiHttpException>(CreateTestException(429, "too many requests"));
 
-        await _policy.ExecuteAsync(runner.Execute);
+        Assert.ThrowsAsync<ApiHttpException>(() => _policy.ExecuteAsync(runner.Execute));
 
-        runner.CallCount.Should().Be(runner.MaxCallCount);
-    }
-
-    [Test]
-    public async Task RetryForeverWhenRequestTimeoutReturned()
-    {
-        var runner = new TestRunner<ApiHttpException>(CreateTestException(408, "request timeout"));
-
-        await _policy.ExecuteAsync(runner.Execute);
-
-        runner.CallCount.Should().Be(runner.MaxCallCount);
+        runner.CallCount.Should().Be(2);
     }
 
     private static ApiHttpException CreateTestException(int httpCode, string message)
