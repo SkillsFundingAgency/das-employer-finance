@@ -9,23 +9,15 @@ using SFA.DAS.EmployerFinance.Helpers;
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
 [Route("api/accounts/{hashedAccountId}/transactions")]
-public class AccountTransactionsController : ControllerBase
+public class AccountTransactionsController(AccountTransactionsOrchestrator orchestrator, ILinkGeneratorWrapper linkGenerator)
+    : ControllerBase
 {
-    private readonly AccountTransactionsOrchestrator _orchestrator;
-    private readonly ILinkGeneratorWrapper _linkGenerator;
-
-    public AccountTransactionsController(AccountTransactionsOrchestrator orchestrator, ILinkGeneratorWrapper linkGenerator)
-    {
-        _orchestrator = orchestrator;
-        _linkGenerator = linkGenerator;
-    }
-
     [Route("", Name = "GetTransactionSummary")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpGet]
     public async Task<IActionResult> Index(string hashedAccountId)
     {
-        var result = await _orchestrator.GetAccountTransactionSummary(hashedAccountId);
+        var result = await orchestrator.GetAccountTransactionSummary(hashedAccountId);
 
         if (result == null)
         {
@@ -34,7 +26,7 @@ public class AccountTransactionsController : ControllerBase
 
         result.ForEach(x =>
         {
-            x.Href = _linkGenerator.GetPathByName("GetTransactions", new { hashedAccountId, year = x.Year, month = x.Month });
+            x.Href = linkGenerator.GetPathByName("GetTransactions", new { hashedAccountId, year = x.Year, month = x.Month });
         });
 
         return Ok(result);
@@ -55,7 +47,7 @@ public class AccountTransactionsController : ControllerBase
         if (result.HasPreviousTransactions)
         {
             var previousMonth = new DateTime(result.Year, result.Month, 1).AddMonths(-1);
-            result.PreviousMonthUri = _linkGenerator.GetPathByName("GetTransactions", new { hashedAccountId, year = previousMonth.Year, month = previousMonth.Month });
+            result.PreviousMonthUri = linkGenerator.GetPathByName("GetTransactions", new { hashedAccountId, year = previousMonth.Year, month = previousMonth.Month });
         }
 
         return Ok(result);
@@ -73,7 +65,6 @@ public class AccountTransactionsController : ControllerBase
             month = DateTime.Now.Month;
         }
 
-        var result = await _orchestrator.GetAccountTransactions(hashedAccountId, year, month);
-        return result;
+        return await orchestrator.GetAccountTransactions(hashedAccountId, year, month);
     }
 }

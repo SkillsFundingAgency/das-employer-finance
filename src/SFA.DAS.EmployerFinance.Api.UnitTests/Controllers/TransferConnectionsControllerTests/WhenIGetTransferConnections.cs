@@ -15,9 +15,8 @@ public class WhenIGetTransferConnections
     private GetTransferConnectionsResponse _response;
     private IEnumerable<TransferConnection> _transferConnections;
     private const string HashedAccountId = "GF3XWP";
-    private const string PublicHashedAccountId = "DJ7JL";
     private const int AccountId = 123;
-    private readonly TransferConnectionInvitationStatus PendingStatus = TransferConnectionInvitationStatus.Pending;
+    private const TransferConnectionInvitationStatus PendingStatus = TransferConnectionInvitationStatus.Pending;
 
     [SetUp]
     public void Arrange()
@@ -25,7 +24,7 @@ public class WhenIGetTransferConnections
         _mediator = new Mock<IMediator>();
         _transferConnections = new List<TransferConnection>
         {
-            new TransferConnection { FundingEmployerAccountId = AccountId, FundingEmployerAccountName = "ACCOUNT NAME", FundingEmployerHashedAccountId = HashedAccountId, FundingEmployerPublicHashedAccountId = PublicHashedAccountId }
+            new() { FundingEmployerAccountId = AccountId, FundingEmployerAccountName = "ACCOUNT NAME" }
         };
 
         _response = new GetTransferConnectionsResponse { TransferConnections = _transferConnections };
@@ -83,7 +82,7 @@ public class WhenIGetTransferConnections
 
         result.Should().NotBeNull();
 
-        Assert.That(result.Value, Is.SameAs(_transferConnections));
+        Assert.That(result!.Value, Is.SameAs(_transferConnections));
     }
 
     [Test]
@@ -91,7 +90,7 @@ public class WhenIGetTransferConnections
     {
         var result = await _controller.GetTransferConnections(AccountId) as OkObjectResult;
 
-        Assert.That(result.Value, Is.Not.Null);
+        Assert.That(result!.Value, Is.Not.Null);
         Assert.That(result.Value, Is.SameAs(_transferConnections));
     }
 
@@ -100,7 +99,7 @@ public class WhenIGetTransferConnections
     {
         var result = await _controller.GetTransferConnections(AccountId, PendingStatus) as OkObjectResult;
 
-        Assert.That(result.Value, Is.Not.Null);
+        Assert.That(result!.Value, Is.Not.Null);
         Assert.That(result.Value, Is.SameAs(_transferConnections));
     }
 }

@@ -27,7 +27,7 @@ public class WhenIGetTransferConnections
     {
         _transferConnectionInvitationRepository = new Mock<ITransferConnectionInvitationRepository>();
 
-        var hashedAccountId = "ABC123";
+        const string hashedAccountId = "ABC123";
 
         _accountA = new Account
         {
@@ -69,11 +69,10 @@ public class WhenIGetTransferConnections
 
         _transferConnectionInvitationRepository
             .Setup(s => s.GetByReceiver(_accountC.Id, status))
-            .ReturnsAsync(new List<TransferConnectionInvitation>
-            {
+            .ReturnsAsync([
                 _approvedTransferConnectionAtoC,
                 _approvedTransferConnectionBtoC
-            });
+            ]);
 
         _query = new GetTransferConnectionsQuery
         {
@@ -83,11 +82,10 @@ public class WhenIGetTransferConnections
 
         _transferConnectionInvitationRepository
             .Setup(s => s.GetByReceiver(_accountC.Id, TransferConnectionInvitationStatus.Approved))
-            .ReturnsAsync(new List<TransferConnectionInvitation>
-            {
+            .ReturnsAsync([
                 _approvedTransferConnectionAtoC,
                 _approvedTransferConnectionBtoC
-            });
+            ]);
 
         _mapper = new Mapper(new MapperConfiguration(c =>
         {

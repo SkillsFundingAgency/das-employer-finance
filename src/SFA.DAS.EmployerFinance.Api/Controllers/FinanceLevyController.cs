@@ -6,21 +6,14 @@ using SFA.DAS.EmployerFinance.Api.Orchestrators;
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
 [Route("api/accounts/{hashedAccountId}/levy")]
-public class FinanceLevyController : ControllerBase
+public class FinanceLevyController(FinanceOrchestrator orchestrator) : ControllerBase
 {
-    private readonly FinanceOrchestrator _orchestrator;
-
-    public FinanceLevyController(FinanceOrchestrator orchestrator)
-    {
-        _orchestrator = orchestrator;
-    }
-
     [Route("", Name = "GetLevy")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpGet]
     public async Task<IActionResult> Index(string hashedAccountId)
     {
-        var result = await _orchestrator.GetLevy(hashedAccountId);
+        var result = await orchestrator.GetLevy(hashedAccountId);
 
         if (result == null)
         {
@@ -35,7 +28,7 @@ public class FinanceLevyController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
     {
-        var result = await _orchestrator.GetLevy(hashedAccountId, payrollYear, payrollMonth);
+        var result = await orchestrator.GetLevy(hashedAccountId, payrollYear, payrollMonth);
 
         if (result == null)
         {
@@ -50,7 +43,7 @@ public class FinanceLevyController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetEnglishFractionHistory(string hashedAccountId, string empRef)
     {
-        var result = await _orchestrator.GetEnglishFractionHistory(hashedAccountId, empRef);
+        var result = await orchestrator.GetEnglishFractionHistory(hashedAccountId, empRef);
 
         if (result == null)
         {
@@ -65,7 +58,7 @@ public class FinanceLevyController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetEnglishFractionCurrent([System.Web.Http.FromUri] string[] empRefs, string hashedAccountId)
     {
-        var result = await _orchestrator.GetEnglishFractionCurrent(hashedAccountId, empRefs);
+        var result = await orchestrator.GetEnglishFractionCurrent(hashedAccountId, empRefs);
 
         if (result == null)
         {
