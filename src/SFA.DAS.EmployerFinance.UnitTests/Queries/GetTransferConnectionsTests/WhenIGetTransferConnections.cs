@@ -103,18 +103,23 @@ public class WhenIGetTransferConnections
 
         _response = await _handler.Handle(_query, CancellationToken.None);
 
-        Assert.That(_response, Is.Not.Null);
-        Assert.That(_response.TransferConnections.Count(), Is.EqualTo(2));
+        _response.Should().NotBeNull();
+        _response.TransferConnections.Count().Should().Be(2);
 
         var transferConnectionInvitation = _response.TransferConnections.ElementAt(0);
 
-        Assert.That(transferConnectionInvitation.FundingEmployerAccountId, Is.EqualTo(_accountA.Id));
-        Assert.That(transferConnectionInvitation.FundingEmployerAccountName, Is.EqualTo(_accountA.Name));
+        transferConnectionInvitation.FundingEmployerAccountId.Should().Be(_accountA.Id);
+        transferConnectionInvitation.FundingEmployerHashedAccountId.Should().Be(_accountA.HashedId);
+        transferConnectionInvitation.FundingEmployerPublicHashedAccountId.Should().Be(_accountA.PublicHashedId);
+        transferConnectionInvitation.FundingEmployerAccountName.Should().Be(_accountA.Name);
 
         var transferConnectionInvitation1 = _response.TransferConnections.ElementAt(1);
 
-        Assert.That(transferConnectionInvitation1.FundingEmployerAccountId, Is.EqualTo(_accountB.Id));
-        Assert.That(transferConnectionInvitation1.FundingEmployerAccountName, Is.EqualTo(_accountB.Name));
+        transferConnectionInvitation1.FundingEmployerAccountId.Should().Be(_accountB.Id);
+        transferConnectionInvitation1.FundingEmployerHashedAccountId.Should().Be(_accountB.HashedId);
+        transferConnectionInvitation1.FundingEmployerPublicHashedAccountId.Should().Be(_accountB.PublicHashedId);
+        transferConnectionInvitation1.FundingEmployerAccountName.Should().Be(_accountB.Name);
+        transferConnectionInvitation1.Status.Should().Be((short?)TransferConnectionInvitationStatus.Approved);
     }
 
     [Test]
@@ -124,17 +129,21 @@ public class WhenIGetTransferConnections
 
         _response = await _handler.Handle(_query, CancellationToken.None);
 
-        Assert.That(_response, Is.Not.Null);
-        Assert.That(_response.TransferConnections.Count(), Is.EqualTo(2));
+        _response.Should().NotBeNull();
+        _response.TransferConnections.Count().Should().Be(2);
 
         var transferConnectionInvitation = _response.TransferConnections.ElementAt(0);
 
-        Assert.That(transferConnectionInvitation.FundingEmployerAccountId, Is.EqualTo(_accountA.Id));
-        Assert.That(transferConnectionInvitation.FundingEmployerAccountName, Is.EqualTo(_accountA.Name));
+        transferConnectionInvitation.FundingEmployerAccountId.Should().Be(_accountA.Id);
+        transferConnectionInvitation.FundingEmployerHashedAccountId.Should().Be(_accountA.HashedId);
+        transferConnectionInvitation.FundingEmployerPublicHashedAccountId.Should().Be(_accountA.PublicHashedId);
+        transferConnectionInvitation.FundingEmployerAccountName.Should().Be(_accountA.Name);
 
         var transferConnectionInvitation1 = _response.TransferConnections.ElementAt(1);
 
-        Assert.That(transferConnectionInvitation1.FundingEmployerAccountId, Is.EqualTo(_accountB.Id));
-        Assert.That(transferConnectionInvitation1.FundingEmployerAccountName, Is.EqualTo(_accountB.Name));
+        transferConnectionInvitation1.FundingEmployerAccountId.Should().Be(_accountB.Id);
+        transferConnectionInvitation1.FundingEmployerHashedAccountId.Should().Be(_accountB.HashedId);
+        transferConnectionInvitation1.FundingEmployerPublicHashedAccountId.Should().Be(_accountB.PublicHashedId);
+        transferConnectionInvitation1.FundingEmployerAccountName.Should().Be(_accountB.Name);
     }
 }
