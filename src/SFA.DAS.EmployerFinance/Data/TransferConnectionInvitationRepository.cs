@@ -3,27 +3,20 @@ using SFA.DAS.EmployerFinance.Models.TransferConnections;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-public class TransferConnectionInvitationRepository : ITransferConnectionInvitationRepository
+public class TransferConnectionInvitationRepository(Lazy<EmployerFinanceDbContext> db) : ITransferConnectionInvitationRepository
 {
-    private readonly Lazy<EmployerFinanceDbContext> _db;
-
-    public TransferConnectionInvitationRepository(Lazy<EmployerFinanceDbContext> db)
-    {
-        _db = db;
-    }
-
     public Task Add(TransferConnectionInvitation transferConnectionInvitation)
     {
-        _db.Value.Attach(transferConnectionInvitation);
-        _db.Value.TransferConnectionInvitations.Add(transferConnectionInvitation);
+        db.Value.Attach(transferConnectionInvitation);
+        db.Value.TransferConnectionInvitations.Add(transferConnectionInvitation);
 
         // TODO: investigate why this is saved here - shouldn't the unit of work pattern be saving it with the published events
-        return _db.Value.SaveChangesAsync();
+        return db.Value.SaveChangesAsync();
     }
 
     public Task<TransferConnectionInvitation> Get(int id)
     {
-        return _db.Value.TransferConnectionInvitations
+        return db.Value.TransferConnectionInvitations
             .Include(i => i.ReceiverAccount)
             .Include(i => i.SenderAccount)
             .Include(c => c.Changes)
@@ -34,7 +27,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<TransferConnectionInvitation> GetBySender(int id, long senderAccountId, TransferConnectionInvitationStatus status)
     {
-        var query = _db.Value.TransferConnectionInvitations
+        var query = db.Value.TransferConnectionInvitations
             .Include(c => c.ReceiverAccount)
             .Include(c => c.SenderAccount)
             .Include(c => c.Changes)
@@ -50,7 +43,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<TransferConnectionInvitation> GetByReceiver(int id, long receiverAccountId, TransferConnectionInvitationStatus status)
     {
-        var query = _db.Value.TransferConnectionInvitations
+        var query = db.Value.TransferConnectionInvitations
             .Include(c => c.ReceiverAccount)
             .Include(c => c.SenderAccount)
             .Include(c => c.Changes)
@@ -66,7 +59,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<List<TransferConnectionInvitation>> GetByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
     {
-        return _db.Value.TransferConnectionInvitations
+        return db.Value.TransferConnectionInvitations
             .Include(c => c.ReceiverAccount)
             .Include(c => c.SenderAccount)
             .Include(c => c.Changes)
@@ -80,7 +73,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<TransferConnectionInvitation> GetLatestByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status)
     {
-        return _db.Value.TransferConnectionInvitations
+        return db.Value.TransferConnectionInvitations
             .Include(c => c.ReceiverAccount)
             .Include(c => c.SenderAccount)
             .Include(c => c.Changes)
@@ -94,7 +87,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<TransferConnectionInvitation> GetBySenderOrReceiver(int id, long accountId)
     {
-        return _db.Value.TransferConnectionInvitations
+        return db.Value.TransferConnectionInvitations
             .Include(c => c.ReceiverAccount)
             .Include(c => c.SenderAccount)
             .Include(c => c.Changes)
@@ -108,7 +101,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<List<TransferConnectionInvitation>> GetBySenderOrReceiver(long accountId)
     {
-        var query = _db.Value.TransferConnectionInvitations
+        var query = db.Value.TransferConnectionInvitations
             .Include(i => i.ReceiverAccount)
             .Include(i => i.SenderAccount)
             .Include(x => x.Changes)
@@ -125,7 +118,7 @@ public class TransferConnectionInvitationRepository : ITransferConnectionInvitat
 
     public Task<bool> AnyTransferConnectionInvitations(long senderAccountId, long receiverAccountId, List<TransferConnectionInvitationStatus> statuses)
     {
-        return _db.Value.TransferConnectionInvitations.AnyAsync(i =>
+        return db.Value.TransferConnectionInvitations.AnyAsync(i =>
             i.SenderAccount.Id == senderAccountId &&
             i.ReceiverAccount.Id == receiverAccountId &&
             statuses.Contains(i.Status));
