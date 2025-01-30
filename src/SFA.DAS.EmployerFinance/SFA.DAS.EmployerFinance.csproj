@@ -5,7 +5,7 @@
     <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.13.1" />
+    <PackageReference Include="Azure.Identity" Version="1.13.2" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.2" />
     <PackageReference Include="ClosedXML" Version="0.104.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.11" />
