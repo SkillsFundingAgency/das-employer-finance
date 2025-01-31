@@ -153,8 +153,32 @@
         "workerAppServicePlanTier": {
             "type": "string",
             "defaultValue": "Standard"
+        },
+        "applicationInsightsConnectionString": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Shared application insights connection string retrieved from the get-product-app-insights step"
+            }
+        },
+        "applicationInsightsResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Shared application insights resource ID retrieved from the get-product-app-insights step"
+            }
+        },
+        "alertActionGroupResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Alert group resource ID found in the management resources variable groups"
+            }
+        },
+        "enableFailedRequestAlert": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enables alerting on app insights failed requests"
+            }
         }
-
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -175,78 +199,6 @@
             "location": "[parameters('resourceGroupLocation')]",
             "tags": "[parameters('tags')]",
             "properties": {}
-        },
-        {
-            "apiVersion": "2020-06-01",
-            "name": "[concat('UIAppInsights-', parameters('utcValue'))]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('resourceGroupName')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appInsightsName": {
-                        "value": "[variables('uiAppServiceName')]"
-                    },
-                    "attachedService": {
-                        "value": "[variables('uiAppServiceName')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('resourceGroupName')]"
-            ]
-        },
-        {
-            "apiVersion": "2020-06-01",
-            "name": "[concat('ApiAppInsights-', parameters('utcValue'))]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('resourceGroupName')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appInsightsName": {
-                        "value": "[variables('apiAppServiceName')]"
-                    },
-                    "attachedService": {
-                        "value": "[variables('apiAppServiceName')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('resourceGroupName')]"
-            ]
-        },
-        {
-            "apiVersion": "2020-06-01",
-            "name": "[concat('WorkerAppInsights-', parameters('utcValue'))]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('resourceGroupName')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appInsightsName": {
-                        "value": "[variables('workerAppServiceName')]"
-                    },
-                    "attachedService": {
-                        "value": "[variables('workerAppServiceName')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('resourceGroupName')]"
-            ]
         },
         {
             "condition": "[greater(length(parameters('uiCustomHostName')), 0)]",
@@ -326,7 +278,7 @@
                                 },
                                 {
                                     "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                                    "value": "[reference(concat('UIAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                    "value": "[parameters('applicationInsightsConnectionString')]"
                                 },
                                 {
                                     "name": "WEBSITE_LOAD_CERTIFICATES",
@@ -355,6 +307,31 @@
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('frontEndAccessRestrictions')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableFailedRequestAlert'), true())]",
+            "apiVersion": "2021-04-01",
+            "name": "[concat('application-insights-', variables('uiAppServiceName'), '-alert-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights-failed-requests-alert.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serviceName": {
+                        "value": "[variables('uiAppServiceName')]"
+                    },
+                    "applicationInsightsResourceId": {
+                        "value": "[parameters('applicationInsightsResourceId')]"
+                    },
+                    "alertActionGroupResourceId": {
+                        "value": "[parameters('alertActionGroupResourceId')]"
                     }
                 }
             }
@@ -445,7 +422,7 @@
                                 },
                                 {
                                     "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                                    "value": "[reference(concat('ApiAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                    "value": "[parameters('applicationInsightsConnectionString')]"
                                 },
                                 {
                                     "name": "IdaTenant",
@@ -470,6 +447,31 @@
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('backEndAccessRestrictions')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableFailedRequestAlert'), true())]",
+            "apiVersion": "2021-04-01",
+            "name": "[concat('application-insights-', variables('apiAppServiceName'), '-alert-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights-failed-requests-alert.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serviceName": {
+                        "value": "[variables('apiAppServiceName')]"
+                    },
+                    "applicationInsightsResourceId": {
+                        "value": "[parameters('applicationInsightsResourceId')]"
+                    },
+                    "alertActionGroupResourceId": {
+                        "value": "[parameters('alertActionGroupResourceId')]"
                     }
                 }
             }
@@ -596,7 +598,7 @@
                                 },
                                 {
                                     "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                                    "value": "[reference(concat('WorkerAppInsights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                    "value": "[parameters('applicationInsightsConnectionString')]"
                                 },
                                 {
                                     "name": "WEBSITE_RUN_FROM_PACKAGE",
@@ -632,6 +634,31 @@
             "dependsOn": [
                 "[concat('WorkerAppServicePlan-', parameters('utcValue'))]"
             ]
+        },
+        {
+            "condition": "[equals(parameters('enableFailedRequestAlert'), true())]",
+            "apiVersion": "2021-04-01",
+            "name": "[concat('application-insights-', variables('workerAppServiceName'), '-alert-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights-failed-requests-alert.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "serviceName": {
+                        "value": "[variables('workerAppServiceName')]"
+                    },
+                    "applicationInsightsResourceId": {
+                        "value": "[parameters('applicationInsightsResourceId')]"
+                    },
+                    "alertActionGroupResourceId": {
+                        "value": "[parameters('alertActionGroupResourceId')]"
+                    }
+                }
+            }
         },
         {
             "apiVersion": "2020-06-01",
