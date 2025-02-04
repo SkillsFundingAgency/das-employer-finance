@@ -42,7 +42,7 @@
 		<PackageReference Include="SFA.DAS.Web.Policy" Version="1.1.0.63777" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.11" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Update="appsettings.json">
