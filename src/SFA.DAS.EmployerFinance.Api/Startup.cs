@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.ErrorHandler;
 using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Filters;
+using SFA.DAS.EmployerFinance.Api.Middleware;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
@@ -114,6 +115,8 @@ public class Startup
 
         app.UseHttpsRedirection();
 
+        app.UseMiddleware<SecurityHeadersMiddleware>();
+        
         app.UseApiGlobalExceptionHandler(loggerFactory.CreateLogger("Startup"))
             .UseHealthChecks()
             .UseAuthentication()
