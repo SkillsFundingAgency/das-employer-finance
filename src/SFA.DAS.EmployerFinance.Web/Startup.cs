@@ -14,6 +14,7 @@ using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
+using SFA.DAS.EmployerFinance.Web.Middleware;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
 using SFA.DAS.GovUK.Auth.Models;
@@ -119,18 +120,15 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        
+        app.UseMiddleware<SecurityHeadersMiddleware>();
 
         app.UseAuthentication();
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthorization();
         app.UseUnitOfWork();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-        });
+        app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
     }
         
     public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
