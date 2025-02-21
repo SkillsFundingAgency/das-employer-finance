@@ -140,7 +140,7 @@
         },
         "websiteRunFromPackage": {
             "type": "int",
-            "defaultValue": 0
+            "defaultValue": 1
         },
         "workerAppServicePlanInstances": {
             "type": "int",
@@ -603,6 +603,10 @@
                                 {
                                     "name": "WEBSITE_RUN_FROM_PACKAGE",
                                     "value": "[parameters('websiteRunFromPackage')]"
+                                },
+                                {    
+                                    "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
+                                    "value": "1"
                                 }
                             ]
                         }

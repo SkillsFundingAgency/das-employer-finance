@@ -33,10 +33,9 @@ public class EmployerAccountTransactionsOrchestrator(
 {
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
-
         //TODO this storing of user details should be removed from this applications database
-        var email = userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserEmailClaimTypeIdentifier)?.Value;
-        var userId = userClaims.Claims.FirstOrDefault(c => c.Type == EmployerClaims.IdamsUserIdClaimTypeIdentifier)?.Value;
+        var email = userClaims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        var userId = userClaims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var userAccountDetails = await accountService.GetUserAccounts(
             userId,
             email);

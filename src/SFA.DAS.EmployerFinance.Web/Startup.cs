@@ -14,6 +14,7 @@ using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
+using SFA.DAS.EmployerFinance.Web.Middleware;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
 using SFA.DAS.GovUK.Auth.Extensions;
@@ -120,6 +121,8 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        
+        app.UseMiddleware<SecurityHeadersMiddleware>();
 
         app.UseAuthentication();
         app.UseStaticFiles();
@@ -128,7 +131,6 @@ public class Startup
         app.UseUnitOfWork();
         app.UseEndpoints(endpoints =>
         {
-            
             endpoints.MapSessionKeepAliveEndpoint();  
             endpoints.MapControllerRoute(
                 name: "default",

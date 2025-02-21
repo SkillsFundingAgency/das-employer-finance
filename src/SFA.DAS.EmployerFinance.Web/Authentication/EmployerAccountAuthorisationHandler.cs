@@ -66,12 +66,12 @@ public class EmployerAccountAuthorisationHandler(
 
             var updatedEmployerAccounts = await accountClaimsService.GetAssociatedAccounts(forceRefresh: true);
 
-            if (!updatedEmployerAccounts.ContainsKey(accountIdFromUrl))
+            if (!updatedEmployerAccounts.TryGetValue(accountIdFromUrl, out var account))
             {
                 return false;
             }
 
-            employerIdentifier = updatedEmployerAccounts[accountIdFromUrl];
+            employerIdentifier = account;
         }
 
         if (!httpContextAccessor.HttpContext.Items.ContainsKey("Employer"))
