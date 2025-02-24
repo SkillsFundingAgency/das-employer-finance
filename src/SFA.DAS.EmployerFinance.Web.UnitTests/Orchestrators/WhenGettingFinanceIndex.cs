@@ -79,8 +79,8 @@ public class WhenGettingFinanceIndex
         //Act
         var response = await _orchestrator.Index(HashedAccountId, new ClaimsIdentity(new List<Claim>
         {
-            new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier, UserId),
-            new Claim(EmployerClaims.IdamsUserEmailClaimTypeIdentifier, UserEmail)
+            new(ClaimTypes.NameIdentifier, UserId),
+            new Claim(ClaimTypes.Email, UserEmail)
         }));
 
         //Assert
@@ -105,13 +105,13 @@ public class WhenGettingFinanceIndex
         //Act
         var response = await _orchestrator.Index(HashedAccountId, new ClaimsIdentity(new List<Claim>
         {
-            new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier, "UserId"),
-            new Claim(EmployerClaims.IdamsUserEmailClaimTypeIdentifier, "UserEmail")
+            new(ClaimTypes.NameIdentifier, "UserId"),
+            new(ClaimTypes.Email, "UserEmail")
         }));
 
         //Assert
         response.Should().NotBeNull();
         response.Data.IsLevyEmployer.Should().Be(isLevy);
-        _authenticationService.Verify(x=>x.SaveIdentityAttributes(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _authenticationService.VerifyNoOtherCalls();
     }
 }

@@ -19,7 +19,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="17.1.113" />
     <PackageReference Include="SFA.DAS.Employer.Shared.UI" Version="17.1.130-prerelease-9" />
-    <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.121" />
+    <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.127" />
     <PackageReference Include="SFA.DAS.Logging">
       <Version>1.0.5</Version>
     </PackageReference>
