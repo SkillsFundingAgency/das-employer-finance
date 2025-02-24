@@ -1,10 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Reflection.Metadata;
+using Moq;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
@@ -546,5 +549,62 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         actualTransaction.Description.Should().Be(expectedDescription);
         actualTransaction.Amount.Should().Be(transaction.Amount);
+    }
+
+    [Test]
+    public async Task Handle_GetAllTransactionsFalse_UsesCorrectDateRange()
+    {
+        // Arrange
+        var query = new GetEmployerAccountTransactionsQuery
+        {
+            HashedAccountId = "someHash",
+            Year = 2023,
+            Month = 6,
+            GetAllTransactions = false
+        };
+
+        var accountId = 123;
+        _encodingService.Setup(es => es.Decode(query.HashedAccountId, EncodingType.AccountId)).Returns(accountId);
+
+        var toDate = new DateTime(2023, 6, DateTime.DaysInMonth(2023, 6));
+        var fromDate = new DateTime(toDate.Year, toDate.Month, 1);
+
+        _dasLevyService.Setup(x =>
+                     x.GetAccountTransactionsByDateRange(accountId, fromDate, toDate))
+                 .ReturnsAsync([]);
+
+        // Act
+        var result = await RequestHandler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dasLevyService.Verify(dls => dls.GetAccountTransactionsByDateRange(accountId, fromDate, toDate), Times.Once);
+    }
+
+    [Test]
+    public async Task Handle_GetAllTransactionsTrue_UsesCorrectDateRange()
+    {
+        // Arrange
+        var query = new GetEmployerAccountTransactionsQuery
+        {
+            HashedAccountId = "someHash",
+            Year = 2023,
+            Month = 6,
+            GetAllTransactions = true
+        };
+
+        var accountId = 123;
+        _encodingService.Setup(es => es.Decode(query.HashedAccountId, EncodingType.AccountId)).Returns(accountId);
+
+        var toDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+        var fromDate = new DateTime(query.Year, query.Month, 1);
+
+        _dasLevyService.Setup(dls => dls.GetAccountTransactionsByDateRange(accountId, fromDate, toDate))
+            .ReturnsAsync([]);
+
+        // Act
+        var result = await RequestHandler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _dasLevyService.Verify(dls => dls.GetAccountTransactionsByDateRange(accountId, fromDate, toDate), Times.Once);
     }
 }

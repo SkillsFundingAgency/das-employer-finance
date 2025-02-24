@@ -44,7 +44,12 @@ public class GetEmployerAccountTransactionsHandler :
         }
 
         var toDate = CalculateToDate(message);
+
         var fromDate = new DateTime(toDate.Year, toDate.Month, 1);
+        if (message.GetAllTransactions)
+        {
+            fromDate = new DateTime(message.Year, message.Month, 1);
+        }
 
         var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
         var transactions = await _dasLevyService.GetAccountTransactionsByDateRange(accountId, fromDate, toDate);
@@ -71,13 +76,10 @@ public class GetEmployerAccountTransactionsHandler :
 
     private static DateTime CalculateToDate(GetEmployerAccountTransactionsQuery message)
     {
-        var year = message.Year == default(int) ? DateTime.Now.Year : message.Year;
-        var month = message.Month == default(int) ? DateTime.Now.Month : message.Month;
+        int year = message.GetAllTransactions ? DateTime.Now.Year : (message.Year == default ? DateTime.Now.Year : message.Year);
+        int month = message.GetAllTransactions ? DateTime.Now.Month : (message.Month == default ? DateTime.Now.Month : message.Month);
 
-        var daysInMonth = DateTime.DaysInMonth(year, month);
-
-        var toDate = new DateTime(year, month, daysInMonth);
-        return toDate;
+        return new DateTime(year, month, DateTime.DaysInMonth(year, month));
     }
 
     private async Task GenerateTransactionDescription(TransactionLine transaction)
