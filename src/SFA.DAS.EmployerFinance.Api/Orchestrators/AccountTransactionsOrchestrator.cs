@@ -20,14 +20,15 @@ public class AccountTransactionsOrchestrator
         _linkGenerator = linkGenerator;
     }
       
-    public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month)
+    public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month, bool getAllTransctions = false)
     {
         _logger.LogInformation("Requesting account transactions for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
 
         var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery {
             Year = year,
             Month = month,
-            HashedAccountId = hashedAccountId
+            HashedAccountId = hashedAccountId,
+            GetAllTransactions = getAllTransctions
         });
 
         var response = new Transactions
