@@ -21,14 +21,23 @@
 
 GO
 
-CREATE INDEX [IX_LevyDeclaration_EmpRef] ON [employer_financial].[LevyDeclaration] (EmpRef,PayrollYear,PayrollMonth,EndOfYearAdjustment) 
+CREATE INDEX [IX_LevyDeclaration_EmpRef] 
+ON [employer_financial].[LevyDeclaration] (EmpRef,PayrollYear,PayrollMonth,EndOfYearAdjustment) 
 GO
 
-CREATE INDEX [IX_LevyDeclaration_Account_Payroll] ON [employer_financial].[LevyDeclaration] (AccountId,PayrollMonth,PayrollYear) INCLUDE (LevyDueYTD)
+CREATE INDEX [IX_LevyDeclaration_Account_Payroll]
+ON [employer_financial].[LevyDeclaration] (AccountId,PayrollMonth,PayrollYear) INCLUDE (LevyDueYTD)
 GO
 
-CREATE UNIQUE NONCLUSTERED INDEX [IDX_UNIQUE_LevyDeclaration_SubmissionId] ON [employer_financial].[LevyDeclaration] (SubmissionId)
+CREATE UNIQUE NONCLUSTERED INDEX [IDX_UNIQUE_LevyDeclaration_SubmissionId]
+ON [employer_financial].[LevyDeclaration] (SubmissionId)
 GO
 
-CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_EmpRef_EOYAdjustment] ON [employer_financial].[LevyDeclaration] ([empRef],[EndOfYearAdjustment]) INCLUDE ([SubmissionDate],[PayrollYear],[PayrollMonth])
+CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_EmpRef_EOYAdjustment]
+ON [employer_financial].[LevyDeclaration] ([empRef],[EndOfYearAdjustment]) INCLUDE ([SubmissionDate],[PayrollYear],[PayrollMonth])
+GO
+       
+CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_EmpRef_AccountId_LevyDueYTD]
+ON [employer_financial].[LevyDeclaration] ([empRef], [AccountId], [LevyDueYTD]) INCLUDE ([CreatedDate], [DateCeased], [EndOfYearAdjustment], [EndOfYearAdjustmentAmount], [HmrcSubmissionId], [InactiveFrom], [InactiveTo], [LevyAllowanceForYear], [NoPaymentForPeriod], [PayrollMonth], [PayrollYear], [SubmissionDate], [SubmissionId]) 
+WITH (ONLINE = ON)
 GO
