@@ -18,4 +18,4 @@ WHERE EmpRef IN
 AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
 AND AccountId = @AccountId
 AND SubmissionDate >= DATEADD(month, -@months, GETDATE())
-ORDER BY SubmissionDate DESC
+ORDER BY SubmissionDate ASC
