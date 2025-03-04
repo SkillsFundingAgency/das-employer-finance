@@ -46,7 +46,6 @@ public class TransfersOrchestrator(
                 FinancialYearString = DateTime.UtcNow.Year.ToString(),
                 HashedAccountID = hashedAccountId,
                 CurrentYearEstimatedSpend = indexTask.Result.CurrentYearEstimatedCommittedSpend,
-                EstimatedRemainingAllowance = estimatedRemainingAllowance,
                 HasMinimumTransferFunds = exceedsMinimumTransferFundRequirement,
                 TransferAllowancePercentage = configuration.TransferAllowancePercentage * 100
             }

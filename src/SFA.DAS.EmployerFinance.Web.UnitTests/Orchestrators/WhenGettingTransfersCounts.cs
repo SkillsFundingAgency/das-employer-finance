@@ -71,22 +71,6 @@ public class WhenGettingTransfersCounts
         actual.Data.RenderCreateTransfersPledgeButton.Should().Be(expected);
     }
 
-    [TestCase(10000, 9000, 1000)]
-    public async Task ThenChecksEstimatedRemainingAllowanceCalculation(decimal startingAllowance, decimal currentEstimatedSpend, decimal expected)
-    {
-        GetCountsResponse countResponse = new GetCountsResponse { CurrentYearEstimatedCommittedSpend = currentEstimatedSpend };
-
-        _transfersService.Setup(o => o.GetCounts(AccountId)).ReturnsAsync(countResponse);
-
-        SetupTheAccountApiClient(true, startingAllowance);
-
-        _authorisationService.Setup(o => o.CheckUserAccountAccess(EmployerUserRole.Transactor)).ReturnsAsync(true);
-
-        var actual = await _orchestrator.GetIndexViewModel(HashedAccountId);
-
-        actual.Data.EstimatedRemainingAllowance.Should().Be(expected);
-    }
-
     [TestCase(10000, 5000, true)]
     [TestCase(10000, 9000, false)]
     public async Task ThenChecksIfUserHasMinimumTransferFunds(decimal startingAllowance, decimal currentEstimatedSpend, bool expected)
