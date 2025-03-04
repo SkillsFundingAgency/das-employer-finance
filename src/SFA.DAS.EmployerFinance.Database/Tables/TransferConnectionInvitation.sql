@@ -20,8 +20,3 @@ CREATE UNIQUE INDEX [IX_TransferConnectionInvitation_SenderAccountId_ReceiverAcc
 ON [employer_financial].[TransferConnectionInvitation] (SenderAccountId, ReceiverAccountId)
 WHERE [Status] <> 3
 GO
-
-CREATE NONCLUSTERED INDEX [IX_TransferConnectionInvitation_ReceiverAccountId_Status] 
-ON [employer_financial].[TransferConnectionInvitation] ([ReceiverAccountId], [Status]) 
-WITH (ONLINE = ON)
-GO

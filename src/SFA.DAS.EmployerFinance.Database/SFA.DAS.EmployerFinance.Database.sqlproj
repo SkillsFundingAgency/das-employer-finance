@@ -77,9 +77,9 @@
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown" />
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown\All" />
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown\ByAccount" />
-    <Folder Include="StoredProcedures\" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="StoredProcedures\GetLevyDeclarationsForPreviousMonths_ByAccountId.sql" />
     <Build Include="StoredProcedures\GetPaymentsWithMissingMetadata.sql" />
     <Build Include="StoredProcedures\UpdatePaymentMetadata.sql" />
     <Build Include="Tables\EnglishFraction.sql" />
