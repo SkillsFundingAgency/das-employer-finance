@@ -63,8 +63,6 @@ public class EmployerAccountTransactionsOrchestrator(
                 IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = getAccountFinanceOverview.CurrentFunds,
-                ExpiringFunds = getAccountFinanceOverview.ExpiringFundsAmount,
-                ExpiryDate = getAccountFinanceOverview.ExpiringFundsExpiryDate,
                 TotalSpendForLastYear = getAccountFinanceOverview.TotalSpendForLastYear,
                 FundingExpected = getAccountFinanceOverview.FundsIn,
                 AvailableFunds = getAccountFinanceOverview.FundsIn - getAccountFinanceOverview.FundsOut,
