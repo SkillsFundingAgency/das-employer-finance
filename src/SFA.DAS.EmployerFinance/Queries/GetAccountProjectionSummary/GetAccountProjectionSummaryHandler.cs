@@ -40,9 +40,9 @@ public class GetAccountProjectionSummaryHandler(
         foreach (var group in groupedDeclarations)
         {
             var forecastDeclaration = group
-                .Where(x => IsRecentDeclaration(x, currentPayrollYear, currentPayrollMonth, previousPayrollYear))
-                .OrderByDescending(x => x.PayrollYear)
-                .ThenByDescending(x => x.PayrollMonth)
+                .Where(levyDeclarationItem => IsRecentDeclaration(levyDeclarationItem, currentPayrollYear, currentPayrollMonth, previousPayrollYear))
+                .OrderByDescending(levyDeclarationItem => levyDeclarationItem.PayrollYear)
+                .ThenByDescending(levyDeclarationItem => levyDeclarationItem.PayrollMonth)
                 .Take(2)
                 .FirstOrDefault();
 
