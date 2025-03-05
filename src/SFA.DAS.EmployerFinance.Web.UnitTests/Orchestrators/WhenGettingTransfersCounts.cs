@@ -39,8 +39,7 @@ public class WhenGettingTransfersCounts
             _encodingService.Object,
             _transfersService.Object,
             _accountApiClient.Object,
-            _configuration,
-            Mock.Of<ILogger<TransfersOrchestrator>>());
+            _configuration);
     }
 
     [TestCase(true, true)]
