@@ -114,17 +114,6 @@
         </h2>
         <p>Download your financial transactions within a specific date range. </p>
     </div>
-    @if (Model.Data.IsLevyEmployer)
-    {
-        <div class="govuk-grid-column-one-@colummSize">
-            <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
-                <a href="@UrlHelpers.EmployerProjectionsAction("forecasting/projections")" class="govuk-link govuk-link--no-visited-state">
-                    Funding projection
-                </a>
-            </h2>
-            <p>View funding projection to plan your future spending. </p>
-        </div>
-    }
     <div class="govuk-grid-column-one-@colummSize">
         <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
