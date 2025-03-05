@@ -9,6 +9,5 @@ public class FinanceDashboardViewModel
     public decimal TotalSpendForLastYear { get; set; }
     public decimal AvailableFunds { get; set; }
     public decimal FundingExpected { get; set; }
-    public decimal ProjectedSpend { get; set; }
     public bool IsLevyEmployer { get; set; }
 }

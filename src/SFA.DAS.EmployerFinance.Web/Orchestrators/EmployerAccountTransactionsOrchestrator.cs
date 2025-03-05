@@ -68,7 +68,6 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalSpendForLastYear = getAccountFinanceOverview.TotalSpendForLastYear,
                 FundingExpected = getAccountFinanceOverview.FundsIn,
                 AvailableFunds = getAccountFinanceOverview.FundsIn - getAccountFinanceOverview.FundsOut,
-                ProjectedSpend = getAccountFinanceOverview.FundsOut
             }
         };
 
