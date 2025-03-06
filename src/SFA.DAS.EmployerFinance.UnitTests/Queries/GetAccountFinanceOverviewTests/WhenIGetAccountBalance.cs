@@ -39,15 +39,6 @@ public class WhenIGetAccountBalance
         {
             AccountId = ExpectedAccountId,
             ProjectionGenerationDate = DateTime.UtcNow,
-            ExpiringAccountFunds = new ExpiringAccountFunds
-            {
-                ExpiryAmounts = new List<ExpiringFunds>
-                {
-                    new ExpiringFunds {PayrollDate = new DateTime(2019, 4, 6), Amount = 3000},
-                    new ExpiringFunds {PayrollDate = new DateTime(2019, 5, 6), Amount = 4000},
-                    new ExpiringFunds {PayrollDate = new DateTime(2019, 3, 6), Amount = 2000}
-                }
-            },
             ProjectionCalulation = new ProjectedCalculation
             {
                 FundsIn = ExpectedFundsIn,
