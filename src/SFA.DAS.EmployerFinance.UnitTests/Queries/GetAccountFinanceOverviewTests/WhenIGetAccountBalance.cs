@@ -1,5 +1,4 @@
 ﻿using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Models.ProjectedCalculations;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -57,9 +56,7 @@ public class WhenIGetAccountBalance
             }
         };
 
-        _handler = new GetAccountFinanceOverviewQueryHandler(
-            _currentDateTime.Object,
-            _forecastingService.Object,
+        _handler = new GetAccountFinanceOverviewQueryHandler(_forecastingService.Object,
             _levyService.Object, _validator.Object,
             _logger.Object);
         _currentDateTime.Setup(d => d.Now).Returns(_now);

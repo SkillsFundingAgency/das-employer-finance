@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Models.ExpiringFunds;
 using SFA.DAS.EmployerFinance.Models.ProjectedCalculations;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -59,7 +58,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTes
                 }
             };
 
-            _handler = new GetAccountFinanceOverviewQueryHandler(_currentDateTime.Object, _dasForecastingService.Object, _levyService.Object, _validator.Object, _logger.Object);
+            _handler = new GetAccountFinanceOverviewQueryHandler(_dasForecastingService.Object, _levyService.Object, _validator.Object, _logger.Object);
             _currentDateTime.Setup(d => d.Now).Returns(_now);
             _dasForecastingService.Setup(s => s.GetAccountProjectionSummary(ExpectedAccountId)).ReturnsAsync(_accountProjectionSummary);
             _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedBalance);
