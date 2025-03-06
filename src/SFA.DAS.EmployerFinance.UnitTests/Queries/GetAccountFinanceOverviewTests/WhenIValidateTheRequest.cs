@@ -1,30 +1,29 @@
 ﻿using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests
+namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests;
+
+public class WhenIValidateTheRequest
 {
-    public class WhenIValidateTheRequest
-    {
         
-        private GetAccountFinanceOverviewQueryValidator _validator;
+    private GetAccountFinanceOverviewQueryValidator _validator;
 
-        [SetUp]
-        public void Arrange()
-        {
-            _validator = new GetAccountFinanceOverviewQueryValidator();
-        }
-
-        [Test]
-        public async Task ThenTrueIsReturnedWhenAllFieldsArePopulatedAndTheMemberIsPartOfTheAccount()
-        {
-            //Act
-            var actual = await _validator.ValidateAsync(new GetAccountFinanceOverviewQuery
-                {
-                    AccountId = 10
-                });
-
-            //Assert
-            (actual.IsValid()).Should().BeTrue();
-        }
-
+    [SetUp]
+    public void Arrange()
+    {
+        _validator = new GetAccountFinanceOverviewQueryValidator();
     }
+
+    [Test]
+    public async Task ThenTrueIsReturnedWhenAllFieldsArePopulatedAndTheMemberIsPartOfTheAccount()
+    {
+        //Act
+        var actual = await _validator.ValidateAsync(new GetAccountFinanceOverviewQuery
+        {
+            AccountId = 10
+        });
+
+        //Assert
+        (actual.IsValid()).Should().BeTrue();
+    }
+
 }

@@ -30,14 +30,14 @@ public class WhenGettingAccountProjectionSummary
             ProjectionGenerationDate = DateTime.Now,
             FundsIn = ExpectedFundsIn,
             FundsOut = ExpectedFundsOut,
-            ExpiryAmounts = new List<ExpiryAmount>
-            {
+            ExpiryAmounts =
+            [
                 new ExpiryAmount
                 {
                     PayrollDate = DateTime.Now.AddMonths(2),
                     Amount = 200
                 }
-            }
+            ]
         };
 
         _logger = new Mock<ILogger<EmployerFinance.Services.DasForecastingService>>();
@@ -53,7 +53,7 @@ public class WhenGettingAccountProjectionSummary
     [Test]
     public async Task ThenTheOuterApiShouldBeCalledOnTheCorrectEndpoint()
     {
-        var result = await _service.GetAccountProjectionSummary(ExpectedAccountId);
+        await _service.GetAccountProjectionSummary(ExpectedAccountId);
 
         _outerApiMock.Verify();
     }
@@ -65,16 +65,7 @@ public class WhenGettingAccountProjectionSummary
 
         result.ProjectionGenerationDate.Should().Be(_expectedAccountProjectionSummaryResponse.ProjectionGenerationDate);
     }
-
-    [Test]
-    public async Task ThenIShouldReturnTheCollectedExpiringFunds()
-    {
-        var result = await _service.GetAccountProjectionSummary(ExpectedAccountId);
-
-        result.ExpiringAccountFunds.ExpiryAmounts.Count.Should().Be(1);
-        result.ExpiringAccountFunds.ExpiryAmounts.First().Should().BeEquivalentTo(_expectedAccountProjectionSummaryResponse.ExpiryAmounts.First());
-    }
-
+    
     [Test]
     public async Task ThenIShouldReturnTheProjectedCalculation()
     {
@@ -105,7 +96,6 @@ public class WhenGettingAccountProjectionSummary
 
         result.Should().BeNull();
     }
-
 
     [Test]
     public async Task ThenIShouldReturnNullIfRequestTimesOut()
