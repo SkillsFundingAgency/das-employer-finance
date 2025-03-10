@@ -53,22 +53,26 @@ public class AccountTransactionsController(AccountTransactionsOrchestrator orche
         return Ok(result);
     }
 
-    [Route("all-transactions/{year}/{month}", Name = "GetAllTransactionsFrom")]
+    [Route("query", Name = "QueryAccountTransactions")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpGet]
-    public async Task<IActionResult> GetAllTransactionsFrom(string hashedAccountId, int year = 0, int month = 0)
+    public async Task<IActionResult> QueryAccountTransactions(string hashedAccountId, DateTime? fromDate, DateTime? toDate)
     {
-        var result = await GetAccountTransactions(hashedAccountId, year, month, true);
+        if (fromDate == null || toDate == null)
+        {
+            return BadRequest();
+        }
+        var result = await orchestrator.QueryAccountTransactions(hashedAccountId, fromDate.Value, toDate.Value);
 
         if (result == null)
         {
             return NotFound();
-        }     
+        }
 
         return Ok(result);
     }
 
-    private async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month, bool getAllTransactions = false)
+    private async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month)
     {
         if (year == 0)
         {
@@ -80,6 +84,6 @@ public class AccountTransactionsController(AccountTransactionsOrchestrator orche
             month = DateTime.Now.Month;
         }
 
-        return await orchestrator.GetAccountTransactions(hashedAccountId, year, month, getAllTransactions);
+        return await orchestrator.GetAccountTransactions(hashedAccountId, year, month);
     }
 }

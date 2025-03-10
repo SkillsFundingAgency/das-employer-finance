@@ -552,7 +552,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
     }
 
     [Test]
-    public async Task Handle_GetAllTransactionsFalse_UsesCorrectDateRange()
+    public async Task Handle_IsQueryingToUpperDate_false_UsesCorrectDateRange()
     {
         // Arrange
         var query = new GetEmployerAccountTransactionsQuery
@@ -560,7 +560,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             HashedAccountId = "someHash",
             Year = 2023,
             Month = 6,
-            GetAllTransactions = false
+            ToDate = null
         };
 
         var accountId = 123;
@@ -571,40 +571,43 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         _dasLevyService.Setup(x =>
                      x.GetAccountTransactionsByDateRange(accountId, fromDate, toDate))
-                 .ReturnsAsync([]);
+                 .ReturnsAsync([])
+                 .Verifiable();
 
         // Act
         var result = await RequestHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        _dasLevyService.Verify(dls => dls.GetAccountTransactionsByDateRange(accountId, fromDate, toDate), Times.Once);
+        _dasLevyService.Verify();
     }
 
     [Test]
-    public async Task Handle_GetAllTransactionsTrue_UsesCorrectDateRange()
+    public async Task Handle_IsQueryingToUpperDate_True_UsesCorrectDateRange()
     {
         // Arrange
+        var toDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+
         var query = new GetEmployerAccountTransactionsQuery
         {
             HashedAccountId = "someHash",
             Year = 2023,
             Month = 6,
-            GetAllTransactions = true
+            ToDate = toDate
         };
 
         var accountId = 123;
         _encodingService.Setup(es => es.Decode(query.HashedAccountId, EncodingType.AccountId)).Returns(accountId);
 
-        var toDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
         var fromDate = new DateTime(query.Year, query.Month, 1);
 
         _dasLevyService.Setup(dls => dls.GetAccountTransactionsByDateRange(accountId, fromDate, toDate))
-            .ReturnsAsync([]);
+            .ReturnsAsync([])
+            .Verifiable();
 
         // Act
         var result = await RequestHandler.Handle(query, CancellationToken.None);
 
         // Assert
-        _dasLevyService.Verify(dls => dls.GetAccountTransactionsByDateRange(accountId, fromDate, toDate), Times.Once);
+        _dasLevyService.Verify();
     }
 }

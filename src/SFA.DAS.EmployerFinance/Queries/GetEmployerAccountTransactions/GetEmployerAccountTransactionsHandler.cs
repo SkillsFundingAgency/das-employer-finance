@@ -46,7 +46,7 @@ public class GetEmployerAccountTransactionsHandler :
         var toDate = CalculateToDate(message);
 
         var fromDate = new DateTime(toDate.Year, toDate.Month, 1);
-        if (message.GetAllTransactions)
+        if (message.IsQueryingToUpperDate())
         {
             fromDate = new DateTime(message.Year, message.Month, 1);
         }
@@ -76,8 +76,8 @@ public class GetEmployerAccountTransactionsHandler :
 
     private static DateTime CalculateToDate(GetEmployerAccountTransactionsQuery message)
     {
-        int year = message.GetAllTransactions ? DateTime.Now.Year : (message.Year == default ? DateTime.Now.Year : message.Year);
-        int month = message.GetAllTransactions ? DateTime.Now.Month : (message.Month == default ? DateTime.Now.Month : message.Month);
+        int year = message.IsQueryingToUpperDate() ? message.ToDate.Value.Year : (message.Year == default ? DateTime.Now.Year : message.Year);
+        int month = message.IsQueryingToUpperDate() ? message.ToDate.Value.Month : (message.Month == default ? DateTime.Now.Month : message.Month);
 
         return new DateTime(year, month, DateTime.DaysInMonth(year, month));
     }
