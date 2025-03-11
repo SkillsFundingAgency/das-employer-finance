@@ -49,7 +49,7 @@ public class AccountTransactionsOrchestrator
 
     public async Task<Transactions> QueryAccountTransactions(string hashedAccountId, DateTime fromDate, DateTime toDate)
     {
-        _logger.LogInformation("Querying account transactions for account {HashedAccountId}, from {Year} to {Month}", hashedAccountId, fromDate.ToString(), toDate.ToString());
+        _logger.LogInformation("Querying account transactions for account {HashedAccountId}, from {FromDate} to {ToDate}", hashedAccountId, fromDate.ToString(), toDate.ToString());
 
         var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery
         {
@@ -67,7 +67,7 @@ public class AccountTransactionsOrchestrator
 
         response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x)));
 
-        _logger.LogInformation("Returning account transactions for account {HashedAccountId}, from {Year} to {Month}", hashedAccountId, fromDate.ToString(), toDate.ToString());
+        _logger.LogInformation("Returning account transactions for account {HashedAccountId}, from {FromDate} to {ToDate}", hashedAccountId, fromDate.ToString(), toDate.ToString());
         return response;
     }
 
