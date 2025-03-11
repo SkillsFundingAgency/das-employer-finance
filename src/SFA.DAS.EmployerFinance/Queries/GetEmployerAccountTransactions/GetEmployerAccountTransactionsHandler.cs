@@ -29,33 +29,25 @@ public class GetEmployerAccountTransactionsHandler :
         _encodingService = encodingService;
     }
 
-    public async Task<GetEmployerAccountTransactionsResponse> Handle(GetEmployerAccountTransactionsQuery message,CancellationToken  cancellationToken)
+    public async Task<GetEmployerAccountTransactionsResponse> Handle(GetEmployerAccountTransactionsQuery message, CancellationToken cancellationToken)
     {
         var result = await _validator.ValidateAsync(message);
 
         if (!result.IsValid())
         {
             throw new ValidationException(result.ConvertToDataAnnotationsValidationResult(), null, null);
-        }            
+        }
 
         if (result.IsUnauthorized)
         {
             throw new UnauthorizedAccessException();
         }
 
-        var toDate = CalculateToDate(message);
-
-        var fromDate = new DateTime(toDate.Year, toDate.Month, 1);
-        if (message.IsQueryingToUpperDate())
-        {
-            fromDate = new DateTime(message.Year, message.Month, 1);
-        }
-
         var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
-        var transactions = await _dasLevyService.GetAccountTransactionsByDateRange(accountId, fromDate, toDate);
+        var transactions = await _dasLevyService.GetAccountTransactionsByDateRange(accountId, message.FromDate, message.ToDate);
         var balance = await _dasLevyService.GetAccountBalance(accountId);
 
-        var hasPreviousTransactions = await _dasLevyService.GetPreviousAccountTransaction(accountId, fromDate) > 0;
+        var hasPreviousTransactions = await _dasLevyService.GetPreviousAccountTransaction(accountId, message.FromDate) > 0;
 
         foreach (var transaction in transactions)
         {
@@ -65,21 +57,13 @@ public class GetEmployerAccountTransactionsHandler :
         PopulateTransferPublicHashedIds(transactions);
 
         return GetResponse(
-            message.HashedAccountId, 
-            accountId, 
-            transactions, 
-            balance, 
-            hasPreviousTransactions, 
-            toDate.Year, 
-            toDate.Month);
-    }
-
-    private static DateTime CalculateToDate(GetEmployerAccountTransactionsQuery message)
-    {
-        int year = message.IsQueryingToUpperDate() ? message.ToDate.Value.Year : (message.Year == default ? DateTime.Now.Year : message.Year);
-        int month = message.IsQueryingToUpperDate() ? message.ToDate.Value.Month : (message.Month == default ? DateTime.Now.Month : message.Month);
-
-        return new DateTime(year, month, DateTime.DaysInMonth(year, month));
+            message.HashedAccountId,
+            accountId,
+            transactions,
+            balance,
+            hasPreviousTransactions,
+            message.ToDate.Year,
+            message.ToDate.Month);
     }
 
     private async Task GenerateTransactionDescription(TransactionLine transaction)
@@ -133,12 +117,12 @@ public class GetEmployerAccountTransactionsHandler :
     }
 
     private static GetEmployerAccountTransactionsResponse GetResponse(
-        string hashedAccountId, 
-        long accountId, 
-        TransactionLine[] transactions, 
+        string hashedAccountId,
+        long accountId,
+        TransactionLine[] transactions,
         decimal balance,
-        bool hasPreviousTransactions, 
-        int year, 
+        bool hasPreviousTransactions,
+        int year,
         int month)
     {
         return new GetEmployerAccountTransactionsResponse

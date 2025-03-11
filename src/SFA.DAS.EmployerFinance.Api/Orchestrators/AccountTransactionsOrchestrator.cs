@@ -24,10 +24,13 @@ public class AccountTransactionsOrchestrator
     {
         _logger.LogInformation("Requesting account transactions for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
 
+        year =  year == default ? DateTime.Now.Year : year;
+        month = month == default ? DateTime.Now.Month : month;
+
         var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery
         {
-            Year = year,
-            Month = month,
+            FromDate = new DateTime(year, month, 1),
+            ToDate = new DateTime(year, month, DateTime.DaysInMonth(year, month)),
             HashedAccountId = hashedAccountId
         });
 
@@ -50,8 +53,7 @@ public class AccountTransactionsOrchestrator
 
         var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery
         {
-            Year = fromDate.Year,
-            Month = fromDate.Month,
+            FromDate = fromDate,
             ToDate = toDate,
             HashedAccountId = hashedAccountId
         });

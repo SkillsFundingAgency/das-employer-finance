@@ -52,7 +52,9 @@ public class WhenIQueryAccountTransactions
         };
 
         _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>
-                (q => q.HashedAccountId == hashedAccountId && q.Year == fromDate.Year && q.Month == fromDate.Month && q.ToDate == toDate),
+                (q => q.HashedAccountId == hashedAccountId
+                && q.FromDate == fromDate
+                && q.ToDate == toDate),
             It.IsAny<CancellationToken>()))
             .ReturnsAsync(transactionsResponse)
             .Verifiable();
