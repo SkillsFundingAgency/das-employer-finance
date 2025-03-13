@@ -306,27 +306,28 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@months", months, DbType.Int32);
 
         const string sqlQuery = @"
-                        SELECT
-                            EmpRef
-	                        ,TotalAmount
-	                        ,PayrollYear
-	                        ,PayrollMonth
-                        FROM [employer_financial].[GetLevyDeclarationAndTopUp]
-                        WHERE EmpRef IN
-                        (
-                            SELECT
-                                EmpRef
-                            FROM [employer_financial].LevyDeclaration
-                            WHERE AccountId = @AccountId
-                        )
-                        AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
-                        AND AccountId = @AccountId
-                        AND SubmissionDate >= DATEADD(month, -@months, GETDATE())
-                        ORDER BY SubmissionDate ASC"; 
+                                SELECT
+	                                EmpRef
+	                                ,TotalAmount
+	                                ,PayrollYear
+	                                ,PayrollMonth
+                                FROM [employer_financial].[GetLevyDeclarationAndTopUp]
+                                WHERE EmpRef IN
+                                (
+	                                SELECT
+		                                EmpRef
+	                                FROM [employer_financial].LevyDeclaration
+	                                WHERE AccountId = @AccountId
+                                )
+                                AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
+                                AND AccountId = @AccountId
+                                AND SubmissionDate >= DATEADD(month, -@months, GETDATE())
+                                ORDER BY SubmissionDate ASC"; 
 
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
             sql: sqlQuery,
             param: parameters,
+            commandTimeout: 60,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
 
