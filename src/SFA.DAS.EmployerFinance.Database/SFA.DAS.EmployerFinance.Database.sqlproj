@@ -77,6 +77,7 @@
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown" />
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown\All" />
     <Folder Include="Scripts\Manual\GenerateTestData\Cleardown\ByAccount" />
+    <Folder Include="StoredProcedures\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="StoredProcedures\GetPaymentsWithMissingMetadata.sql" />
