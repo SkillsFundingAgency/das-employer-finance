@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EAS.Account.Api.Client;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -62,11 +63,14 @@ public class WhenIGetAccountTransactions
     public async Task ThenARequestShouldBeMadeForTransactions(int month, int year)
     {
         //Act
+        var fromDate = new DateTime(year, month, 1);
+        var toDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+
         await _orchestrator.GetAccountTransactions(HashedAccountId, year, month);
 
         //Assert
         _mediator.Verify(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(
-            q => q.Year == year && q.Month == month), CancellationToken.None), Times.Once);
+            q => q.FromDate == fromDate && q.ToDate == toDate), CancellationToken.None), Times.Once);
     }
 
     [Test]
@@ -77,7 +81,13 @@ public class WhenIGetAccountTransactions
 
         //Assert
         _mediator.Verify(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(
-            q => q.Year == 0 && q.Month == 0), CancellationToken.None), Times.Once);
+            q => q.FromDate.Year == DateTime.Now.Year
+            && q.FromDate.Month == DateTime.Now.Month
+            && q.FromDate.Day == 1
+            && q.ToDate.Year == DateTime.Now.Year
+            && q.ToDate.Month == DateTime.Now.Month
+            && q.ToDate.Day == DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)
+            ), CancellationToken.None), Times.Once);
     }
 
     [Test]

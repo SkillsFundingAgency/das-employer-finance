@@ -21,7 +21,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
     public override GetEmployerAccountTransactionsHandler RequestHandler { get; set; }
     public override Mock<IValidator<GetEmployerAccountTransactionsQuery>> RequestValidator { get; set; }
     private Mock<IEncodingService> _encodingService;
-    
+
 
     [SetUp]
     public void Arrange()
@@ -56,14 +56,14 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
     [Test]
     public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
     {
-        //Arrange
-        _request.Year = 0;
-        _request.Month = 0;
-
+        //Arrange        
         var daysInMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
 
         var fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         var toDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, daysInMonth);
+
+        _request.FromDate = fromDate;
+        _request.ToDate = toDate;
 
         //Act
         await RequestHandler.Handle(_request, CancellationToken.None);
@@ -76,13 +76,12 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
     public async Task ThenIfAMonthIsProvidedTheRepositoryIsCalledForThatMonthMonth()
     {
         //Arrange
-        _request.Year = 2017;
-        _request.Month = 3;
+        var fromDate = new DateTime(2017, 3, 1);
+        var daysInMonth = DateTime.DaysInMonth(fromDate.Year, fromDate.Month);
+        var toDate = new DateTime(fromDate.Year, fromDate.Month, daysInMonth);
 
-        var daysInMonth = DateTime.DaysInMonth(_request.Year, _request.Month);
-
-        var fromDate = new DateTime(_request.Year, _request.Month, 1);
-        var toDate = new DateTime(_request.Year, _request.Month, daysInMonth);
+        _request.FromDate = fromDate;
+        _request.ToDate = toDate;
 
         //Act
         await RequestHandler.Handle(_request, CancellationToken.None);
@@ -186,7 +185,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         //Assert
         actual.Data.TransactionLines.First().Description.Should().Be("Training provider - name not recognised");
-        _logger.Verify(x => x.Log(LogLevel.Information,0,
+        _logger.Verify(x => x.Log(LogLevel.Information, 0,
             It.Is<It.IsAnyType>((message, type) => message.ToString().StartsWith("Provider not found for UkPrn:1254545")),
             It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
         ), Times.Once);
@@ -246,7 +245,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         await RequestHandler.Handle(_request, CancellationToken.None);
 
         //Assert
-        _logger.Verify(x => x.Log(LogLevel.Information,0,
+        _logger.Verify(x => x.Log(LogLevel.Information, 0,
             It.Is<It.IsAnyType>((message, type) => message.ToString().StartsWith("Provider not found for UkPrn:1254545")),
             It.IsAny<Exception>(), It.IsAny<Func<It.IsAnyType, Exception, string>>()
         ), Times.Once);
@@ -509,7 +508,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
 
         _encodingService.Setup(x => x.Encode(transaction.ReceiverAccountId, EncodingType.PublicAccountId))
             .Returns(expectedPublicHashedId);
-        
+
         //Act
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
 

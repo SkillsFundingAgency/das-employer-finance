@@ -36,7 +36,15 @@ public class WhenIGetTransactionsForAnAccount
             Data = TransactionLineObjectMother.Create(),
             AccountHasPreviousTransactions = false
         };
-        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
+
+        var fromDate = new DateTime(year, month, 1);
+        var toDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+
+        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q =>
+                q.HashedAccountId == hashedAccountId 
+                && q.FromDate == fromDate 
+                && q.ToDate == toDate), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(transactionsResponse);
            
         //Act
         var response = await _controller.GetTransactions(hashedAccountId, year, month);
@@ -62,7 +70,15 @@ public class WhenIGetTransactionsForAnAccount
             Data = TransactionLineObjectMother.Create(),
             AccountHasPreviousTransactions = false
         };
-        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
+
+        var fromDate = new DateTime(year, month, 1);
+        var toDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+
+        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q =>
+                q.HashedAccountId == hashedAccountId
+                && q.FromDate == fromDate
+                && q.ToDate == toDate), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(transactionsResponse);
 
         //Act
         var response = await _controller.GetTransactions(hashedAccountId, year, month);
@@ -90,8 +106,15 @@ public class WhenIGetTransactionsForAnAccount
             Year = year,
             Month = month
         };
-        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
+        var fromDate = new DateTime(year, month, 1);
+        var toDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+
+        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q =>
+                q.HashedAccountId == hashedAccountId
+                && q.FromDate == fromDate
+                && q.ToDate == toDate), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(transactionsResponse);
         //Act
         var expectedUri = "someuri";
 
@@ -159,8 +182,15 @@ public class WhenIGetTransactionsForAnAccount
             Year = year,
             Month = month
         };
-        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q => q.HashedAccountId == hashedAccountId && q.Year == year && q.Month == month), It.IsAny<CancellationToken>())).ReturnsAsync(transactionsResponse);
 
+        var fromDate = new DateTime(year, month, 1);
+        var toDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+
+        _mediator.Setup(x => x.Send(It.Is<GetEmployerAccountTransactionsQuery>(q =>
+                q.HashedAccountId == hashedAccountId
+                && q.FromDate == fromDate
+                && q.ToDate == toDate), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(transactionsResponse);
         var expectedUri = "someuri";
 
         _linkGenerator.Setup(
