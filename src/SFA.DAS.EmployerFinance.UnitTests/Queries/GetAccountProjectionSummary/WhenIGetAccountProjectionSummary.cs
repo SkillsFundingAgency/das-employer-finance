@@ -51,7 +51,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             declarations.Add(currentMonthRecord);
 
-            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarationsForPreviousMonths(query.AccountId, GetAccountProjectionSummaryHandler.PreviousMonths))
                 .ReturnsAsync(declarations);
 
             // Act
@@ -87,7 +87,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
             };
             declarations.Add(previousMonthRecord);
 
-            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarationsForPreviousMonths(query.AccountId, GetAccountProjectionSummaryHandler.PreviousMonths))
                 .ReturnsAsync(declarations);
 
             // Act
@@ -123,7 +123,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
             };
             declarations.Add(previousMonthRecord);
 
-            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarationsForPreviousMonths(query.AccountId, GetAccountProjectionSummaryHandler.PreviousMonths))
                 .ReturnsAsync(declarations);
 
             // Act
@@ -143,7 +143,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
 
             _currentDateTime.Setup(x => x.Now).Returns(DateTime.UtcNow);
 
-            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+            _repositoryMock.Setup(repo => repo.GetAccountLevyDeclarationsForPreviousMonths(query.AccountId, GetAccountProjectionSummaryHandler.PreviousMonths))
                 .ReturnsAsync(declarations);
 
             // Act
@@ -203,7 +203,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountProjectionSummary
             };
 
             _repositoryMock
-                .Setup(repo => repo.GetAccountLevyDeclarations(query.AccountId))
+                .Setup(repo => repo.GetAccountLevyDeclarationsForPreviousMonths(query.AccountId, GetAccountProjectionSummaryHandler.PreviousMonths))
                 .ReturnsAsync(declarations);
 
             // Act
