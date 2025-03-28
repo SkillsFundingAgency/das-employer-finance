@@ -70,21 +70,15 @@ public class RefreshEmployerLevyDataCommandHandler(
     {
         if (levyTotalTransactionValue != decimal.Zero)
         {
-            logger.LogInformation("Publishing LevyAddedToAccount levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
-            // To be removed later
-            await eventPublisher.Publish(new LevyAddedToAccount
-            {
-                AccountId = accountId,
-                Amount = levyTotalTransactionValue
-            });
+            logger.LogInformation("Publishing LevyAddedToAccountEvent levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
+            
             await eventPublisher.Publish(new LevyAddedToAccountEvent
             {
                 AccountId = accountId,
                 Amount = levyTotalTransactionValue
             });
 
-
-            logger.LogInformation("Published LevyAddedToAccount levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
+            logger.LogInformation("Published LevyAddedToAccountEvent levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
         }
     }
 
