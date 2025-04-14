@@ -322,11 +322,14 @@ public class EmployerAccountTransactionsOrchestrator(
             };
         }
 
+        year = year == default ? DateTime.Now.Year : year;
+        month = month == default ? DateTime.Now.Month : month;
+
         var aggregratedTransactions = await
                 mediator.Send(new GetEmployerAccountTransactionsQuery
                 {
-                    Year = year,
-                    Month = month,
+                    FromDate = new DateTime(year, month, 1),
+                    ToDate = new DateTime(year, month, DateTime.DaysInMonth(year, month)),
                     HashedAccountId = hashedId
                 });
 
