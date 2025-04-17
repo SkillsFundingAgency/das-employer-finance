@@ -114,7 +114,7 @@ public class WhenIReceiveTheCommand
         //Assert
         _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Once);
 
-        (_eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
+        (_eventPublisher.Events.OfType<LevyAddedToAccountEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId)
             && e.Amount.Equals(decimal.One))).Should().BeTrue();
 
@@ -137,7 +137,7 @@ public class WhenIReceiveTheCommand
         //Assert
         _levyRepository.Verify(x => x.ProcessDeclarations(ExpectedAccountId, ExpectedEmpRef), Times.Never);
 
-        _eventPublisher.Events.OfType<LevyAddedToAccount>().Any(e =>
+        _eventPublisher.Events.OfType<LevyAddedToAccountEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId)
             && e.Amount.Equals(decimal.One)).Should().BeFalse();
 
