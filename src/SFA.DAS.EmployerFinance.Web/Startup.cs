@@ -131,7 +131,6 @@ public class Startup
         app.UseUnitOfWork();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapSessionKeepAliveEndpoint();  
             endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
