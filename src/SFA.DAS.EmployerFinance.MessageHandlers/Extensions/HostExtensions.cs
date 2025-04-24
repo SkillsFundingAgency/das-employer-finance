@@ -8,13 +8,7 @@ using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.Notifications.Api.Client.Configuration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.ApplicationInsights.WindowsServer.Channel.Implementation;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 
