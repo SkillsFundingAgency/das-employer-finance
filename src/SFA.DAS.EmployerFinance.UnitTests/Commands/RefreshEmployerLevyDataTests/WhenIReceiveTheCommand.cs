@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
-using SFA.DAS.EAS.Account.Api.Types.Events.Levy;
 using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;

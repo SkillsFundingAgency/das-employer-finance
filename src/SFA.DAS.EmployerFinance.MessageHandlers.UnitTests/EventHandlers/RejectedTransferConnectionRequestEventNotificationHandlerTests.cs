@@ -6,7 +6,6 @@ using NUnit.Framework;
 using SFA.DAS.EmployerFinance.MessageHandlers.EventHandlers;
 using SFA.DAS.EmployerFinance.Messages.Events;
 using SFA.DAS.Encoding;
-using SFA.DAS.Notifications.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers;
 

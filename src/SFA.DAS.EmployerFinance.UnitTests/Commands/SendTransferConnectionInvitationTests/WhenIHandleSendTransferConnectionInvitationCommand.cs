@@ -7,7 +7,6 @@ using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Models.UserProfile;
 using SFA.DAS.EmployerFinance.TestCommon.Builders;
 using SFA.DAS.Encoding;
-using SFA.DAS.Testing;
 using SFA.DAS.UnitOfWork.Context;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.SendTransferConnectionInvitationTests;

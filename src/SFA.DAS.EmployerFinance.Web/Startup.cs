@@ -17,7 +17,6 @@ using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.Middleware;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
-using SFA.DAS.GovUK.Auth.Extensions;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;

@@ -3,7 +3,6 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
-using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;

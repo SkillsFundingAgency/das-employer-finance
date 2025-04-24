@@ -6,7 +6,6 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.EmployerFinance.UnitTests.Policies.Hmrc;
 using SFA.DAS.TokenService.Api.Client;
 using SFA.DAS.TokenService.Api.Types;
 
@@ -62,7 +61,14 @@ internal class WhenICallTheHmrcServiceForEnglishFractions
                     _configuration.AzureResourceId, _configuration.AzureTenant))
             .ReturnsAsync(ExpectedAuthToken);
 
-        _hmrcService = new HmrcService(_configuration, _httpClientWrapper.Object, _apprenticeshipLevyApiClient.Object, _tokenService.Object, new NoopExecutionPolicy(), null, _azureAdAuthService.Object, new Mock<ILogger<HmrcService>>().Object);
+        _hmrcService = new HmrcService(
+            _configuration,
+            _httpClientWrapper.Object,
+            _apprenticeshipLevyApiClient.Object,
+            _tokenService.Object,
+            null,
+            _azureAdAuthService.Object,
+            new Mock<ILogger<HmrcService>>().Object);
     }
 
     [Test]
