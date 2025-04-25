@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using HMRC.ESFA.Levy.Api.Client;
 using HMRC.ESFA.Levy.Api.Types;
+using HMRC.ESFA.Levy.Api.Types.Exceptions;
 using SFA.DAS.ActiveDirectory;
 using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
@@ -49,7 +50,15 @@ public class HmrcService : IHmrcService
 
     public async Task<EmpRefLevyInformation> GetEmprefInformation(string authToken, string empRef)
     {
-        return await _apprenticeshipLevyApiClient.GetEmployerDetails(authToken, empRef);
+        try
+        {
+            return await _apprenticeshipLevyApiClient.GetEmployerDetails(authToken, empRef);
+        }
+        catch (ApiHttpException ex) when (ex.HttpCode == 404)
+        {
+            _log.LogInformation("Employer details not found for empRef {EmpRef}", empRef);
+            return null;
+        }
     }
 
     public async Task<EmpRefLevyInformation> GetEmprefInformation(string empRef)
@@ -75,14 +84,22 @@ public class HmrcService : IHmrcService
 
     public async Task<LevyDeclarations> GetLevyDeclarations(string empRef, DateTime? fromDate)
     {
-        var accessToken = await GetOgdAccessToken();
+        try
+        {
+            var accessToken = await GetOgdAccessToken();
 
-        var earliestDate = new DateTime(2017, 04, 01);
-        if (!fromDate.HasValue || fromDate.Value < earliestDate) fromDate = earliestDate;
+            var earliestDate = new DateTime(2017, 04, 01);
+            if (!fromDate.HasValue || fromDate.Value < earliestDate) fromDate = earliestDate;
 
-        var levyDeclarations = await _apprenticeshipLevyApiClient.GetEmployerLevyDeclarations(accessToken, empRef, fromDate);
-        _log.LogDebug($"Received {levyDeclarations?.Declarations?.Count} levy declarations empRef:{empRef} fromDate:{fromDate}");
-        return levyDeclarations;
+            var levyDeclarations = await _apprenticeshipLevyApiClient.GetEmployerLevyDeclarations(accessToken, empRef, fromDate);
+            _log.LogDebug($"Received {levyDeclarations?.Declarations?.Count} levy declarations empRef:{empRef} fromDate:{fromDate}");
+            return levyDeclarations;
+        }
+        catch (ApiHttpException ex) when (ex.HttpCode == 404)
+        {
+            _log.LogInformation("Levy declarations not found for empRef {EmpRef}", empRef);
+            return new LevyDeclarations { Declarations = [] };
+        }
     }
 
     public async Task<EnglishFractionDeclarations> GetEnglishFractions(string empRef)
@@ -92,24 +109,41 @@ public class HmrcService : IHmrcService
 
     public async Task<EnglishFractionDeclarations> GetEnglishFractions(string empRef, DateTime? fromDate)
     {
-        var accessToken = await GetOgdAccessToken();
-        return await _apprenticeshipLevyApiClient.GetEmployerFractionCalculations(accessToken, empRef, fromDate);
+        try
+        {
+            var accessToken = await GetOgdAccessToken();
+            return await _apprenticeshipLevyApiClient.GetEmployerFractionCalculations(accessToken, empRef, fromDate);
+        }
+        catch (ApiHttpException ex) when (ex.HttpCode == 404)
+        {
+            _log.LogInformation("English fractions not found for empRef {EmpRef}", empRef);
+            return new EnglishFractionDeclarations();
+        }
     }
 
     public async Task<DateTime> GetLastEnglishFractionUpdate()
     {
-        var hmrcLatestUpdateDate = _inProcessCache.Get<DateTime?>("HmrcFractionLastCalculatedDate");
-        if (hmrcLatestUpdateDate == null)
+        try
         {
-            var accessToken = await GetOgdAccessToken();
-            hmrcLatestUpdateDate = await _apprenticeshipLevyApiClient.GetLastEnglishFractionUpdate(accessToken);
+            var hmrcLatestUpdateDate = _inProcessCache.Get<DateTime?>("HmrcFractionLastCalculatedDate");
+            if (hmrcLatestUpdateDate == null)
+            {
+                var accessToken = await GetOgdAccessToken();
+                hmrcLatestUpdateDate = await _apprenticeshipLevyApiClient.GetLastEnglishFractionUpdate(accessToken);
 
-            if (hmrcLatestUpdateDate != null)
-                _inProcessCache.Set("HmrcFractionLastCalculatedDate", hmrcLatestUpdateDate.Value, new TimeSpan(0, 0, 30, 0));
+                if (hmrcLatestUpdateDate != null)
+                    _inProcessCache.Set("HmrcFractionLastCalculatedDate", hmrcLatestUpdateDate.Value, new TimeSpan(0, 0, 30, 0));
 
+                return hmrcLatestUpdateDate.Value;
+            }
+            
             return hmrcLatestUpdateDate.Value;
         }
-        return hmrcLatestUpdateDate.Value;
+        catch (ApiHttpException ex) when (ex.HttpCode == 404)
+        {
+            _log.LogInformation("Last English fraction update date not found");
+            return DateTime.MinValue;
+        }
     }
 
     private async Task<string> GetOgdAccessToken()
