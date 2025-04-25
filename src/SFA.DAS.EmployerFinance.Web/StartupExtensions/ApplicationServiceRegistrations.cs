@@ -7,9 +7,9 @@ using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Mappings;
-using SFA.DAS.EmployerFinance.Policies.Hmrc;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
@@ -57,7 +57,6 @@ public static class ApplicationServiceRegistrations
         services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
         services.AddScoped<IUrlActionHelper, UrlActionHelper>();
 
-        services.AddTransient<HmrcExecutionPolicy>();
         services.AddTransient<IHmrcDateService, HmrcDateService>();
         
         services.AddTransient<IPaymentService, PaymentService>();
@@ -75,5 +74,6 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ITransactionFormatter, NonLevyExcelTransactionFormatter>();
         
         services.AddTransient<IAccountClaimsService, AccountClaimsService>();
+        services.AddTransient<IHmrcService, HmrcService>();
     }
 }

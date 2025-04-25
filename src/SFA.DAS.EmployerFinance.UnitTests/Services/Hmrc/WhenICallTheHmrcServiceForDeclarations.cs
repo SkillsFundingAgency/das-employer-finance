@@ -1,10 +1,10 @@
 ﻿using HMRC.ESFA.Levy.Api.Client;
 using HMRC.ESFA.Levy.Api.Types;
 using SFA.DAS.ActiveDirectory;
+using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.EmployerFinance.UnitTests.Policies.Hmrc;
 using SFA.DAS.TokenService.Api.Client;
 using SFA.DAS.TokenService.Api.Types;
 
@@ -63,9 +63,15 @@ internal class WhenICallTheHmrcServiceForDeclarations
                 _configuration.AzureTenant))
             .ReturnsAsync(ExpectedAuthToken);
 
-        _hmrcService = new HmrcService(_configuration, _httpClientWrapper.Object,
-            _apprenticeshipLevyApiClient.Object, _tokenService.Object, new NoopExecutionPolicy(), null,
-            _azureAdAuthService.Object, new Mock<ILogger<HmrcService>>().Object);
+        var inProcessCache = new Mock<IInProcessCache>();
+        _hmrcService = new HmrcService(
+            _configuration,
+            _httpClientWrapper.Object,
+            _apprenticeshipLevyApiClient.Object,
+            _tokenService.Object,
+            inProcessCache.Object,
+            _azureAdAuthService.Object,
+            new Mock<ILogger<HmrcService>>().Object);
     }
 
     [Test]

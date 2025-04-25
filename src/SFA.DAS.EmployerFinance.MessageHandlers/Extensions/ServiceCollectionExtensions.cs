@@ -31,13 +31,22 @@ public static class ServiceCollectionExtensions
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
                     .UseErrorQueue($"{EndpointName}-errors")
                     .UseInstallers()
-                    .UseOutbox()   
-                    .UseNewMessageConventions()
+                    .UseOutbox()
                     .UseNewtonsoftJsonSerializer()
                     .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
                     .UseServicesBuilder(new UpdateableServiceProvider(services))
-                    .UseUnitOfWork();
+                    .UseMetrics();
+
+                endpointConfiguration.UseUnitOfWork();
+                
+                var recoverability = endpointConfiguration.Recoverability();
+                recoverability.Immediate(immediate => immediate.NumberOfRetries(5));
+                recoverability.Delayed(delayed => 
+                {
+                    delayed.NumberOfRetries(5);
+                    delayed.TimeIncrease(TimeSpan.FromSeconds(5));
+                });
 
                 endpointConfiguration.LimitMessageProcessingConcurrencyTo(1);
                 

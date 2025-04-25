@@ -1,5 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
-using SFA.DAS.EmployerFinance.Validation;
+﻿using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 

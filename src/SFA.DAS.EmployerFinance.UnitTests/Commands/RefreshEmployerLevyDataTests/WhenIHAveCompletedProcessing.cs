@@ -6,9 +6,7 @@ using SFA.DAS.EmployerFinance.Models.HmrcLevy;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
-using SFA.DAS.Encoding;
 using SFA.DAS.NServiceBus.Testing.Services;
-using SFA.DAS.Testing;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.RefreshEmployerLevyDataTests;
 
