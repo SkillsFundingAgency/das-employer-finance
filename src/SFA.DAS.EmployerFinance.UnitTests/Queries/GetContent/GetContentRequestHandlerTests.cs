@@ -34,7 +34,7 @@ public class GetContentRequestHandlerTests
         _mockContentApiClient = new Mock<IContentApiClient>();
         _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
         _mockAssociatedAccountsService = new Mock<IAssociatedAccountsService>();
-        _configuration = new EmployerFinanceWebConfiguration { ApplicationId = "test-app" };
+        _configuration = new EmployerFinanceWebConfiguration { ApplicationId = "das-employerfinance-web" };
 
         _routeValues = new RouteValueDictionary { { "HashedAccountId", HashedAccountId } };
         _httpContext = new DefaultHttpContext();
@@ -42,7 +42,9 @@ public class GetContentRequestHandlerTests
         _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(_httpContext);
 
         _query = new GetContentQuery { ContentType = ContentType };
-        _mockValidator.Setup(x => x.Validate(_query)).Returns(new ValidationResult());
+        _mockValidator
+            .Setup(x => x.ValidateAsync(_query))
+            .ReturnsAsync(new ValidationResult());
 
         _handler = new GetContentRequestHandler(
             _mockValidator.Object,
@@ -59,12 +61,16 @@ public class GetContentRequestHandlerTests
         // Arrange
         var validationResult = new ValidationResult();
         validationResult.AddError("ContentType", "Required");
-        _mockValidator.Setup(x => x.Validate(_query)).Returns(validationResult);
+        _mockValidator
+            .Setup(x => x.ValidateAsync(_query))
+            .ReturnsAsync(validationResult);
 
         // Act & Assert
-        var ex = Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_query, CancellationToken.None));
-        ex.ErrorMessages.Should().ContainKey("ContentType");
-        ex.ErrorMessages["ContentType"].Should().Be("Required");
+        Func<Task> act = async () => await _handler.Handle(_query, CancellationToken.None);
+        act.Should().ThrowAsync<InvalidRequestException>()
+            .WithMessage("Invalid request")
+            .Result.Which.ErrorMessages.Should().ContainKey("ContentType")
+            .And.Subject["ContentType"].Should().Be("Required");
     }
 
     [Test]
@@ -90,7 +96,7 @@ public class GetContentRequestHandlerTests
             { HashedAccountId, new EmployerUserAccountItem { ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy } }
         };
         _mockAssociatedAccountsService.Setup(x => x.GetAccounts(false)).ReturnsAsync(accounts);
-        var expectedApplicationId = $"{_configuration.ApplicationId}-levy";
+        var expectedApplicationId = "das-employerfinance-web-levy";
         _mockContentApiClient.Setup(x => x.Get(ContentType, expectedApplicationId)).ReturnsAsync(ContentResponse);
 
         // Act
@@ -111,7 +117,7 @@ public class GetContentRequestHandlerTests
             { HashedAccountId, new EmployerUserAccountItem { ApprenticeshipEmployerType = ApprenticeshipEmployerType.NonLevy } }
         };
         _mockAssociatedAccountsService.Setup(x => x.GetAccounts(false)).ReturnsAsync(accounts);
-        var expectedApplicationId = $"{_configuration.ApplicationId}-nonlevy";
+        var expectedApplicationId = "das-employerfinance-web-nonlevy";
         _mockContentApiClient.Setup(x => x.Get(ContentType, expectedApplicationId)).ReturnsAsync(ContentResponse);
 
         // Act

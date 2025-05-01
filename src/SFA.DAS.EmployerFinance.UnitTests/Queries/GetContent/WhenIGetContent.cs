@@ -50,7 +50,7 @@ public class WhenIGetContent
         _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(_httpContext);
 
         _query = new GetContentQuery { ContentType = ContentType };
-        _mockValidator.Setup(x => x.Validate(_query)).Returns(new ValidationResult());
+        _mockValidator.Setup(x => x.ValidateAsync(_query)).ReturnsAsync(new ValidationResult());
 
         _mockContentApiClient
             .Setup(cs => cs.Get(ContentType, ClientId))
@@ -99,7 +99,7 @@ public class WhenIGetContent
         // Arrange
         var validationResult = new ValidationResult();
         validationResult.AddError("ContentType", "Required");
-        _mockValidator.Setup(x => x.Validate(_query)).Returns(validationResult);
+        _mockValidator.Setup(x => x.ValidateAsync(_query)).ReturnsAsync(validationResult);
 
         // Act & Assert
         var ex = Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_query, CancellationToken.None));
