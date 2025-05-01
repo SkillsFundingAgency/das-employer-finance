@@ -1,3 +1,5 @@
+using SFA.DAS.Api.Common.Infrastructure;
+using SFA.DAS.Api.Common.Interfaces;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -25,6 +27,7 @@ public static class ApplicationServiceRegistrations
 {
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
         services.AddDateTimeServices(configuration);
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
