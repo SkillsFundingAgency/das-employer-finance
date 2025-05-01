@@ -37,8 +37,6 @@ public static class ApplicationServiceRegistrations
 
         services.AddHttpClient<IOuterApiClient, OuterApiClient>();
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
-        services.AddTransient<IContentApiClient, ContentApiClient>();
-        services.AddTransient<IContentApiClient, ContentApiClientWithCaching>();
 
         services.AddTransient<IDasAccountService, DasAccountService>();
         services.AddTransient<IDasForecastingService, DasForecastingService>();

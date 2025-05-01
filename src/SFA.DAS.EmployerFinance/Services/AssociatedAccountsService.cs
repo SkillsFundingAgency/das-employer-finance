@@ -6,15 +6,29 @@ using SFA.DAS.GovUK.Auth.Employer;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public interface IAccountClaimsService
+public interface IAssociatedAccountsService
 {
-    Task<Dictionary<string, EmployerUserAccountItem>> GetAssociatedAccounts(bool forceRefresh);
+    Task<Dictionary<string, EmployerUserAccountItem>> GetAccounts(bool forceRefresh);
 }
 
-public class AccountClaimsService(IGovAuthEmployerAccountService accountsService, IHttpContextAccessor httpContextAccessor, ILogger<AccountClaimsService> logger) : IAccountClaimsService
+public class AssociatedAccountsService : IAssociatedAccountsService
 {
+    private readonly IGovAuthEmployerAccountService _accountsService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<AssociatedAccountsService> _logger;
+
     // To allow unit testing
-    public int MaxPermittedNumberOfAccountsOnClaim { get; set; } = EmployerFinance.Constants.WebConstants.MaxNumberOfEmployerAccountsAllowedOnClaim;
+    public int MaxPermittedNumberOfAccountsOnClaim { get; set; } = Constants.MaxNumberOfAssociatedAccountsAllowedOnClaim;
+
+    public AssociatedAccountsService(
+        IGovAuthEmployerAccountService accountsService,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<AssociatedAccountsService> logger)
+    {
+        _accountsService = accountsService;
+        _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
+    }
 
     /// <summary>
     /// Retrieves a users associated employer accounts from claims.
@@ -22,9 +36,15 @@ public class AccountClaimsService(IGovAuthEmployerAccountService accountsService
     /// </summary>
     /// <param name="forceRefresh">Forces data to be refreshed from UserAccountsService and persisted to user claims regardless of claims state.</param>
     /// <returns>Dictionary of string, EmployerUserAccountItem</returns>
-    public async Task<Dictionary<string, EmployerUserAccountItem>> GetAssociatedAccounts(bool forceRefresh)
+    public async Task<Dictionary<string, EmployerUserAccountItem>> GetAccounts(bool forceRefresh)
     {
-        var user = httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext.User;
+        
+        if (ClaimsAreEmpty(user))
+        {
+            return null;
+        }
+        
         var employerAccountsClaim = user.FindFirst(c => c.Type.Equals(EmployerClaims.AccountsClaimsTypeIdentifier));
 
         if (!forceRefresh && employerAccountsClaim != null)
@@ -42,7 +62,7 @@ public class AccountClaimsService(IGovAuthEmployerAccountService accountsService
             }
             catch (JsonSerializationException e)
             {
-                logger.LogError(e, "Could not deserialize employer account claim for user");
+                _logger.LogError(e, "Could not deserialize employer account claim for user");
                 throw;
             }
         }
@@ -51,7 +71,7 @@ public class AccountClaimsService(IGovAuthEmployerAccountService accountsService
         var email = user.Claims.FirstOrDefault(c => c.Type.Equals(ClaimTypes.Email))?.Value;
         var userId = userClaim.Value;
 
-        var result = await accountsService.GetUserAccounts(userId, email);
+        var result = await _accountsService.GetUserAccounts(userId, email);
         var associatedAccounts = result.EmployerAccounts.ToDictionary(k => k.AccountId);
 
         if (forceRefresh)
@@ -61,7 +81,7 @@ public class AccountClaimsService(IGovAuthEmployerAccountService accountsService
 
         return associatedAccounts;
     }
-
+    
     private void PersistToClaims(Dictionary<string, EmployerUserAccountItem> associatedAccounts, Claim employerAccountsClaim, Claim userClaim)
     {
         // Some users have 100's of employer accounts. The claims cannot handle that volume of data.
@@ -78,4 +98,19 @@ public class AccountClaimsService(IGovAuthEmployerAccountService accountsService
 
         userClaim.Subject!.AddClaim(associatedAccountsClaim);
     }
+
+    private bool ClaimsAreEmpty(ClaimsPrincipal user)
+    {
+        return user == null || !user.Claims.Any() || !user.HasClaim(c => c.Type.Equals(ClaimTypes.NameIdentifier));
+    }
 }
+
+public static class Constants
+{
+    public const int MaxNumberOfAssociatedAccountsAllowedOnClaim = 100;
+}
+
+public static class EmployerClaims
+{
+    public const string AccountsClaimsTypeIdentifier = "employer_accounts";
+} 

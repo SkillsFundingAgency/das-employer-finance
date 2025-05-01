@@ -5,16 +5,20 @@ namespace SFA.DAS.EmployerFinance.Services;
 
 public class ContentApiClientWithCaching : IContentApiClient
 {
-    private readonly IContentApiClient _contentApiClient;
+    private readonly IContentApiClient _contentService;
     private readonly ICacheStorageService _cacheStorageService;
-    private readonly EmployerFinanceConfiguration _employerFinanceConfiguration;
+    private readonly EmployerFinanceConfiguration _configuration;
 
-    public ContentApiClientWithCaching(IContentApiClient contentApiClient, ICacheStorageService cacheStorageService, EmployerFinanceConfiguration employerFinanceConfiguration)
+    public ContentApiClientWithCaching(
+        IContentApiClient contentService, 
+        ICacheStorageService cacheStorageService, 
+        EmployerFinanceConfiguration configuration)
     {
-        _contentApiClient = contentApiClient;
+        _contentService = contentService;
         _cacheStorageService = cacheStorageService;
-        _employerFinanceConfiguration = employerFinanceConfiguration;
+        _configuration = configuration;
     }
+
     public async Task<string> Get(string type, string applicationId)
     {
         var cacheKey = $"{applicationId}_{type}".ToLowerInvariant();
@@ -26,18 +30,18 @@ public class ContentApiClientWithCaching : IContentApiClient
                 return cachedContentBanner;
             }
 
-            var content = await _contentApiClient.Get(type, applicationId);
+            var content = await _contentService.Get(type, applicationId);
 
             if (content != null)
             {
-                await _cacheStorageService.Save(cacheKey, content, _employerFinanceConfiguration.DefaultCacheExpirationInMinutes);
+                await _cacheStorageService.Save(cacheKey, content, _configuration.DefaultCacheExpirationInMinutes);
             }
 
             return content;
         }
-        catch
+        catch(Exception ex)
         {
-            throw new ArgumentException($"Failed to get content for {cacheKey}");
+            throw new ArgumentException($"Failed to get content for {cacheKey}", ex);
         }
     }
 }

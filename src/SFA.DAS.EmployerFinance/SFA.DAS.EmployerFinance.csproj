@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Scrutor.AspNetCore" Version="3.3.0" />
+    <PackageReference Include="SFA.DAS.Api.Common" Version="1.0.28" />
     <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.141" />
     <PackageReference Include="SFA.DAS.Notifications.Messages" Version="3.0.10" />
     <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />

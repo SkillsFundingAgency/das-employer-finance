@@ -22,6 +22,7 @@ using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.UnitOfWork.Mvc.Extensions;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
+using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web;
 
@@ -66,7 +67,8 @@ public class Startup
         services.AddApplicationServices(_configuration);
 
         services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-        
+
+        services.AddContentApiClient(_configuration);
         services.AddEmployerFinanceApi();
 
         services.AddAuthenticationServices();
@@ -107,6 +109,9 @@ public class Startup
         {
             services.AddDataProtection(_configuration);
         }
+
+        services.AddTransient<IHtmlHelpers, HtmlHelpers>();
+
 #if DEBUG
         services.AddControllersWithViews(o => { })
             .AddRazorRuntimeCompilation();

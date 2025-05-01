@@ -1,82 +1,118 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Queries.GetContent;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.EmployerFinance.Exceptions;
+using SFA.DAS.GovUK.Auth.Employer;
+using EmployerUserAccountItem = SFA.DAS.GovUK.Auth.Employer.EmployerUserAccountItem;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetContent;
 
-public class WhenIGetContent : QueryBaseTest<GetContentRequestHandler, GetContentRequest, GetContentResponse>
+public class WhenIGetContent
 {
-    public override GetContentRequest Query { get; set; }
-    public override GetContentRequestHandler RequestHandler { get; set; }
-    public override Mock<IValidator<GetContentRequest>> RequestValidator { get; set; }
+    private Mock<IValidator<GetContentQuery>> _mockValidator;
+    private Mock<ILogger<GetContentRequestHandler>> _mockLogger;
+    private Mock<IContentApiClient> _mockContentApiClient;
+    private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+    private Mock<IAssociatedAccountsService> _mockAssociatedAccountsService;
+    private EmployerFinanceWebConfiguration _configuration;
+    private GetContentRequestHandler _handler;
+    private GetContentQuery _query;
+    private HttpContext _httpContext;
+    private RouteValueDictionary _routeValues;
 
-    private string _contentType;
-    private string _clientId;
-
-    private string _cacheKey;
-    private string _content;
-    public EmployerFinanceWebConfiguration EmployerFinanceWebConfiguration;
-
-    private Mock<IContentApiClient> _mockContentService;
-    private Mock<ICacheStorageService> _mockCacheStorageService;
+    private const string ContentType = "banner";
+    private const string ClientId = "eas-fin";
+    private const string Content = "<p>Example content</p>";
 
     [SetUp]
     public void Arrange()
     {
-        SetUp();
-        _clientId = "eas-fin";
-        _contentType = "banner";
+        _mockValidator = new Mock<IValidator<GetContentQuery>>();
+        _mockLogger = new Mock<ILogger<GetContentRequestHandler>>();
+        _mockContentApiClient = new Mock<IContentApiClient>();
+        _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        _mockAssociatedAccountsService = new Mock<IAssociatedAccountsService>();
 
-        EmployerFinanceWebConfiguration = new EmployerFinanceWebConfiguration()
+        _configuration = new EmployerFinanceWebConfiguration
         {
-            ApplicationId = "eas-fin",
+            ApplicationId = ClientId,
             DefaultCacheExpirationInMinutes = 1
         };
-        _content = "<p> Example content </p>";
-        _cacheKey = EmployerFinanceWebConfiguration.ApplicationId + "_banner";
 
-        _mockContentService = new Mock<IContentApiClient>();
-        _mockCacheStorageService = new Mock<ICacheStorageService>();
-            
+        _routeValues = new RouteValueDictionary { { "HashedAccountId", "ABC123" } };
+        _httpContext = new DefaultHttpContext();
+        _httpContext.Request.RouteValues = _routeValues;
+        _mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(_httpContext);
 
-        _mockContentService
-            .Setup(cs => cs.Get(_contentType, _clientId))
-            .ReturnsAsync(_content);
+        _query = new GetContentQuery { ContentType = ContentType };
+        _mockValidator.Setup(x => x.Validate(_query)).Returns(new ValidationResult());
 
-        Query = new GetContentRequest
+        _mockContentApiClient
+            .Setup(cs => cs.Get(ContentType, ClientId))
+            .ReturnsAsync(Content);
+
+        _handler = new GetContentRequestHandler(
+            _mockValidator.Object,
+            _mockLogger.Object,
+            _mockContentApiClient.Object,
+            _configuration,
+            _mockHttpContextAccessor.Object,
+            _mockAssociatedAccountsService.Object);
+    }
+
+    [Test]
+    public async Task WhenRequestIsValid_ThenContentApiIsCalled()
+    {
+        // Arrange
+        SetupAccountsService();
+
+        // Act
+        await _handler.Handle(_query, CancellationToken.None);
+
+        // Assert
+        _mockContentApiClient.Verify(x => x.Get(ContentType, $"{ClientId}-levy"), Times.Once);
+    }
+
+    [Test]
+    public async Task WhenRequestIsValid_ThenContentIsReturnedInResponse()
+    {
+        // Arrange
+        SetupAccountsService();
+        _mockContentApiClient.Setup(x => x.Get(ContentType, $"{ClientId}-levy")).ReturnsAsync(Content);
+
+        // Act
+        var result = await _handler.Handle(_query, CancellationToken.None);
+
+        // Assert
+        result.Content.Should().Be(Content);
+        result.HasFailed.Should().BeFalse();
+    }
+
+    [Test]
+    public void WhenValidationFails_ThenThrowsInvalidRequestException()
+    {
+        // Arrange
+        var validationResult = new ValidationResult();
+        validationResult.AddError("ContentType", "Required");
+        _mockValidator.Setup(x => x.Validate(_query)).Returns(validationResult);
+
+        // Act & Assert
+        var ex = Assert.ThrowsAsync<InvalidRequestException>(() => _handler.Handle(_query, CancellationToken.None));
+        ex.ErrorMessages.Should().ContainKey("ContentType");
+        ex.ErrorMessages["ContentType"].Should().Be("Required");
+    }
+
+    private void SetupAccountsService()
+    {
+        var accounts = new Dictionary<string, EmployerUserAccountItem>
         {
-            ContentType = "banner"
+            { "ABC123", new EmployerUserAccountItem { ApprenticeshipEmployerType = GovUK.Auth.Employer.ApprenticeshipEmployerType.Levy } }
         };
-
-        RequestHandler = new GetContentRequestHandler(RequestValidator.Object, Mock.Of<ILogger<GetContentRequestHandler>>(),
-            _mockContentService.Object, EmployerFinanceWebConfiguration);
-    }
-
-    [Test]
-    public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
-    {
-        NotStoredInCacheSetup();
-
-        await RequestHandler.Handle(Query, CancellationToken.None);
-
-        _mockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
-    }
-
-    [Test]
-    public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
-    {
-        NotStoredInCacheSetup();
-
-        await RequestHandler.Handle(Query, CancellationToken.None);
-
-        _mockContentService.Verify(x => x.Get(_contentType, _clientId), Times.Once);
-    }
-
-    private void NotStoredInCacheSetup()
-    {
-        _mockCacheStorageService.Setup(c => c.TryGet(_cacheKey, out _content)).Returns(false);
-        _mockContentService.Setup(c => c.Get("banner", _cacheKey))
-            .ReturnsAsync(_content);
+        _mockAssociatedAccountsService.Setup(x => x.GetAccounts(false)).ReturnsAsync(accounts);
     }
 }
