@@ -68,9 +68,7 @@ public class GetContentRequestHandlerTests
         // Act & Assert
         Func<Task> act = async () => await _handler.Handle(_query, CancellationToken.None);
         act.Should().ThrowAsync<InvalidRequestException>()
-            .WithMessage("Invalid request")
-            .Result.Which.ErrorMessages.Should().ContainKey("ContentType")
-            .And.Subject["ContentType"].Should().Be("Required");
+            .WithMessage("{\"ContentType\": \"Required\"}");
     }
 
     [Test]
