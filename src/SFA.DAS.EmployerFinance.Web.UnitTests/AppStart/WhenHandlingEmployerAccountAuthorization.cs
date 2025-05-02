@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Authorization;
 using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
+using EmployerClaims = SFA.DAS.GovUK.Auth.Employer.EmployerClaims;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 
