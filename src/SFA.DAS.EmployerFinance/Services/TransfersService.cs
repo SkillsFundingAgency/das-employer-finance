@@ -19,9 +19,4 @@ public class TransfersService : ITransfersService
     {
         return await _outerApiClient.Get<GetCountsResponse>(new GetCountsRequest(accountId));
     }
-
-    public async Task<GetFinancialBreakdownResponse> GetFinancialBreakdown(long accountId) 
-    {
-        return await _outerApiClient.Get<GetFinancialBreakdownResponse>(new GetFinancialBreakdownRequest(accountId));
-    }
 }
