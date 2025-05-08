@@ -16,7 +16,6 @@ using SFA.DAS.EmployerFinance.Queries.SendTransferConnectionInvitation;
 using SFA.DAS.EmployerFinance.Web.Attributes;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Extensions;
-using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.EmployerFinance.Web.ViewModels.Transfers;
 using SFA.DAS.Encoding;
 

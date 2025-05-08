@@ -8,21 +8,22 @@
     <PackageReference Include="Azure.Identity" Version="1.13.2" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.4" />
     <PackageReference Include="ClosedXML" Version="0.104.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.11" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.15" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Scrutor.AspNetCore" Version="3.3.0" />
-    <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.134" />
+    <PackageReference Include="SFA.DAS.Api.Common" Version="1.0.28" />
+    <PackageReference Include="SFA.DAS.GovUK.Auth" Version="17.1.141" />
     <PackageReference Include="SFA.DAS.Notifications.Messages" Version="3.0.10" />
     <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Client" Version="2.0.4" />
     <PackageReference Include="HMRC.ESFA.Levy.Api.Types" Version="2.0.4" />
     <PackageReference Include="MediatR" Version="12.4.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.15" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.11" />

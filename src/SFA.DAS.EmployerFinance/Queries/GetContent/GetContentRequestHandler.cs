@@ -1,58 +1,91 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Exceptions;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetContent;
 
-public class GetContentRequestHandler : IRequestHandler<GetContentRequest, GetContentResponse>
+public class GetContentRequestHandler : IRequestHandler<GetContentQuery, GetContentResponse>
 {
-    private readonly IValidator<GetContentRequest> _validator;
+    private readonly IValidator<GetContentQuery> _validator;
     private readonly ILogger<GetContentRequestHandler> _logger;
-    private readonly IContentApiClient _service;
-    private readonly EmployerFinanceWebConfiguration _employerFinanceWebConfiguration;
+    private readonly IContentApiClient _contentApiClient;
+    private readonly EmployerFinanceWebConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAssociatedAccountsService _associatedAccountsService;
 
     public GetContentRequestHandler(
-        IValidator<GetContentRequest> validator,
+        IValidator<GetContentQuery> validator,
         ILogger<GetContentRequestHandler> logger,
-        IContentApiClient service,
-        EmployerFinanceWebConfiguration employerFinanceWebConfiguration
-    )
+        IContentApiClient contentApiClient,
+        EmployerFinanceWebConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor,
+        IAssociatedAccountsService associatedAccountsService)
     {
         _validator = validator;
         _logger = logger;
-        _service = service;
-        _employerFinanceWebConfiguration = employerFinanceWebConfiguration;
+        _contentApiClient = contentApiClient;
+        _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
+        _associatedAccountsService = associatedAccountsService;
     }
 
-    public async Task<GetContentResponse> Handle(GetContentRequest message,CancellationToken cancellationToken)
+    public async Task<GetContentResponse> Handle(GetContentQuery message, CancellationToken cancellationToken)
     {
-        var validationResult = _validator.Validate(message);
+        var validationResult = await _validator.ValidateAsync(message);
 
         if (!validationResult.IsValid())
         {
-            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
+            throw new InvalidRequestException(validationResult.ValidationDictionary);
         }
 
-        var applicationId = message.UseLegacyStyles ? _employerFinanceWebConfiguration.ApplicationId + "-legacy" : _employerFinanceWebConfiguration.ApplicationId;
+        var hashedAccountId = _httpContextAccessor.HttpContext.Request.RouteValues["HashedAccountId"]?.ToString().ToUpper();
+
+        if (string.IsNullOrEmpty(hashedAccountId))
+        {
+            _logger.LogInformation("GetContentRequestHandler HashedAccountId not found on route.");
+            return new GetContentResponse();
+        }
+
+        _logger.LogInformation("GetContentRequestHandler HashedAccountId: {Id}.", hashedAccountId);
+
+        var levyStatus = await GetAccountLevyStatus(hashedAccountId);
+
+        var applicationId = $"{_configuration.ApplicationId}-{levyStatus.ToString().ToLower()}";
+
+        _logger.LogInformation("GetContentRequestHandler Fetching ContentBanner for applicationId: '{ApplicationId}'.", applicationId);
 
         try
         {
-            var content = await _service.Get(message.ContentType, applicationId);
+            var contentBanner = await _contentApiClient.Get(message.ContentType, applicationId);
+
+            _logger.LogInformation("GetContentRequestHandler ContentBanner data: '{ContentBanner}'.", contentBanner);
 
             return new GetContentResponse
             {
-                Content = content
+                Content = contentBanner
             };
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to get Content {message.ContentType} for {applicationId}");
+            _logger.LogError(ex, "GetContentRequestHandler Failed to get Content {ContentType} for {ApplicationId}", message.ContentType, applicationId);
 
             return new GetContentResponse
             {
                 HasFailed = true
             };
         }
+    }
+
+    private async Task<ApprenticeshipEmployerType> GetAccountLevyStatus(string hashedAccountId)
+    {
+        var associatedAccounts = await _associatedAccountsService.GetAccounts(forceRefresh: false);
+
+        var hasEmployerAccountsClaims = associatedAccounts.TryGetValue(hashedAccountId, out var employerAccount);
+
+        return hasEmployerAccountsClaims ? (ApprenticeshipEmployerType)employerAccount.ApprenticeshipEmployerType : ApprenticeshipEmployerType.Unknown;
     }
 }

@@ -9,13 +9,11 @@ using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransact
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
-using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
 using AggregationData = SFA.DAS.EmployerFinance.Models.Transaction.AggregationData;
 using ApprenticeshipEmployerType = SFA.DAS.Common.Domain.Types.ApprenticeshipEmployerType;
-using EmployerClaims = SFA.DAS.EmployerFinance.Infrastructure.EmployerClaims;
 using TransactionItemType = SFA.DAS.EmployerFinance.Models.Transaction.TransactionItemType;
 using TransactionViewModel = SFA.DAS.EmployerFinance.Web.ViewModels.TransactionViewModel;
 
@@ -72,7 +70,7 @@ public class EmployerAccountTransactionsOrchestrator(
             }
         };
 
-        return viewModel;
+         return viewModel;
     }
 
     public async Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(

@@ -2,9 +2,9 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetContent;
 
-public class GetContentRequestValidator : IValidator<GetContentRequest>
+public class GetContentRequestValidator : IValidator<GetContentQuery>
 {
-    public ValidationResult Validate(GetContentRequest item)
+    public ValidationResult Validate(GetContentQuery item)
     {
         var validationResult = new ValidationResult();
 
@@ -15,7 +15,7 @@ public class GetContentRequestValidator : IValidator<GetContentRequest>
         return validationResult;
     }
 
-    public Task<ValidationResult> ValidateAsync(GetContentRequest item)
+    public Task<ValidationResult> ValidateAsync(GetContentQuery item)
     {
         return Task.FromResult(Validate(item));
     }

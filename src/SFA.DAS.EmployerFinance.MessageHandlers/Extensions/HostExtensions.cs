@@ -8,7 +8,6 @@ using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.Notifications.Api.Client.Configuration;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
@@ -30,7 +29,12 @@ public static class HostExtensions
             var connectionString = context.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
             if (!string.IsNullOrEmpty(connectionString))
             {
-                loggingBuilder.AddApplicationInsightsWebJobs(o => o.ConnectionString = connectionString);
+                loggingBuilder.AddApplicationInsightsWebJobs(o => 
+                {
+                    o.ConnectionString = connectionString;
+                    o.EnableDependencyTracking = true;
+                });
+                
                 loggingBuilder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
                 loggingBuilder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
             }

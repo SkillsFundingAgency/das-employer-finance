@@ -1,5 +1,4 @@
 ﻿using NServiceBus;
-using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 
 namespace SFA.DAS.EmployerFinance.Extensions;

@@ -178,6 +178,19 @@
             "metadata": {
                 "description": "Enables alerting on app insights failed requests"
             }
+        },
+        "EnableRouteTableAssociation": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Determines whether to enable route table association on subnet"
+            }
+        },
+        "SharedRouteTableName": {
+            "type": "string",
+            "metadata": {
+                "description": "Determines whether to enable route table association on subnet"
+            }
         }
     },
     "variables": {
@@ -189,7 +202,11 @@
         "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
         "configNames": "SFA.DAS.EmployerFinance.Web,SFA.DAS.Employer.GovSignIn,SFA.DAS.Encoding",
-        "configNamesApi": "SFA.DAS.EmployerFinance,SFA.DAS.Encoding"
+        "configNamesApi": "SFA.DAS.EmployerFinance,SFA.DAS.Encoding",
+        "routeTableId": {
+            "id": "[resourceId(subscription().subscriptionId, parameters('sharedEnvResourceGroup'), 'Microsoft.Network/routeTables', parameters('SharedRouteTableName'))]"
+        },
+        "emptyObject": {}
     },
     "resources": [
         {
@@ -502,6 +519,9 @@
                     },
                     "delegations": {
                         "value": "[parameters('subnetDelegations')]"
+                    },
+                    "routeTable": {
+                        "value": "[if(parameters('enableRouteTableAssociation'), variables('routeTableId') , variables('emptyObject'))]"
                     }
                 }
             }
@@ -604,7 +624,7 @@
                                     "name": "WEBSITE_RUN_FROM_PACKAGE",
                                     "value": "[parameters('websiteRunFromPackage')]"
                                 },
-                                {    
+                                {
                                     "name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
                                     "value": "1"
                                 }
