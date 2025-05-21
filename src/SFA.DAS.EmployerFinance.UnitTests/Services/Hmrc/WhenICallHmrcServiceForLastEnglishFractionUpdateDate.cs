@@ -3,7 +3,6 @@ using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.EmployerFinance.UnitTests.Policies.Hmrc;
 using SFA.DAS.TokenService.Api.Client;
 using SFA.DAS.TokenService.Api.Types;
 
@@ -49,8 +48,7 @@ internal class WhenICallHmrcServiceForLastEnglishFractionUpdateDate
             .Returns(new DateTime());
 
         _hmrcService = new HmrcService(_configuration, _httpClientWrapper.Object,
-            _apprenticeshipLevyApiClient.Object, _tokenService.Object, new NoopExecutionPolicy(),
-            _cacheProvider.Object, null, new Mock<ILogger<HmrcService>>().Object);
+            _apprenticeshipLevyApiClient.Object, _tokenService.Object, _cacheProvider.Object, null, new Mock<ILogger<HmrcService>>().Object);
     }
 
     [Test]

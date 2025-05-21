@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using SFA.DAS.EmployerFinance.Web.Authorization;
-using SFA.DAS.EmployerFinance.Web.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Web.Filters;
 

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Moq.Language.Flow;
-using SFA.DAS.Courses.Data.UnitTests.DatabaseMock;
 using SFA.DAS.EmployerFinance.Data;
 
 namespace SFA.DAS.EmployerFinance.TestCommon.DatabaseMock

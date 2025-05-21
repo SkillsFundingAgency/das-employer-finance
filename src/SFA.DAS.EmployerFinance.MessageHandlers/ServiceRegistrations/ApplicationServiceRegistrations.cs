@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Policies.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
@@ -22,7 +23,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IExpiredFunds, ExpiredFunds>();
         services.AddTransient<IDasAccountService, DasAccountService>();
         services.AddTransient<IPaymentService, PaymentService>();
-        services.AddTransient<ExecutionPolicy, HmrcExecutionPolicy>();
+        services.AddTransient<IHmrcService, HmrcService>();
         services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
         services.AddTransient<IOuterApiClient, OuterApiClient>();
         services.AddSingleton<IEncodingService, EncodingService>();

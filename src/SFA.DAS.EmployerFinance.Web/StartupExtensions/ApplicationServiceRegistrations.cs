@@ -1,3 +1,5 @@
+using SFA.DAS.Api.Common.Infrastructure;
+using SFA.DAS.Api.Common.Interfaces;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -7,9 +9,9 @@ using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Mappings;
-using SFA.DAS.EmployerFinance.Policies.Hmrc;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
@@ -25,6 +27,7 @@ public static class ApplicationServiceRegistrations
 {
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
         services.AddDateTimeServices(configuration);
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
@@ -37,8 +40,6 @@ public static class ApplicationServiceRegistrations
 
         services.AddHttpClient<IOuterApiClient, OuterApiClient>();
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
-        services.AddTransient<IContentApiClient, ContentApiClient>();
-        services.AddTransient<IContentApiClient, ContentApiClientWithCaching>();
 
         services.AddTransient<IDasAccountService, DasAccountService>();
         services.AddTransient<IDasForecastingService, DasForecastingService>();
@@ -57,7 +58,6 @@ public static class ApplicationServiceRegistrations
         services.AddScoped(typeof(ICookieStorageService<>), typeof(CookieStorageService<>));
         services.AddScoped<IUrlActionHelper, UrlActionHelper>();
 
-        services.AddTransient<HmrcExecutionPolicy>();
         services.AddTransient<IHmrcDateService, HmrcDateService>();
         
         services.AddTransient<IPaymentService, PaymentService>();
@@ -75,5 +75,6 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ITransactionFormatter, NonLevyExcelTransactionFormatter>();
         
         services.AddTransient<IAccountClaimsService, AccountClaimsService>();
+        services.AddTransient<IHmrcService, HmrcService>();
     }
 }

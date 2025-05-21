@@ -1,4 +1,9 @@
-﻿using SFA.DAS.EmployerFinance.Policies.Hmrc;
+﻿// This test utility file is intentionally left empty as we are removing the HMRC execution policy
+// and relying on NServiceBus retries instead
+
+using System;
+using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Policies.Hmrc;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Policies.Hmrc;
 

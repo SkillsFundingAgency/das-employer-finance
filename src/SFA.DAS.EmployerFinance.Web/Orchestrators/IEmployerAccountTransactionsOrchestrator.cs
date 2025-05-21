@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Models.Levy;
+﻿using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 
 namespace SFA.DAS.EmployerFinance.Web.Orchestrators;

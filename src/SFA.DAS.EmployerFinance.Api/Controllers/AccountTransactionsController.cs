@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Routing;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
@@ -48,6 +47,25 @@ public class AccountTransactionsController(AccountTransactionsOrchestrator orche
         {
             var previousMonth = new DateTime(result.Year, result.Month, 1).AddMonths(-1);
             result.PreviousMonthUri = linkGenerator.GetPathByName("GetTransactions", new { hashedAccountId, year = previousMonth.Year, month = previousMonth.Month });
+        }
+
+        return Ok(result);
+    }
+
+    [Route("query", Name = "QueryAccountTransactions")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [HttpGet]
+    public async Task<IActionResult> QueryAccountTransactions(string hashedAccountId, DateTime? fromDate, DateTime? toDate)
+    {
+        if (fromDate == null || toDate == null)
+        {
+            return BadRequest();
+        }
+        var result = await orchestrator.QueryAccountTransactions(hashedAccountId, fromDate.Value, toDate.Value);
+
+        if (result == null)
+        {
+            return NotFound();
         }
 
         return Ok(result);

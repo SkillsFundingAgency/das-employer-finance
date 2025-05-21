@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Time;
@@ -18,6 +19,7 @@ public static class ApplicationServiceRegistrations
 
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
         services.AddScoped<ILinkGeneratorWrapper, LinkGeneratorWrapper>();
+        services.AddTransient<IHmrcService, HmrcService>();
 
         return services;
     }

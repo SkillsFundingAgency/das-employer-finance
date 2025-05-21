@@ -3,6 +3,8 @@
 @using SFA.DAS.Employer.Shared.UI.Models
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SFA.DAS.EmployerFinance.Web.Authorization
+@using SFA.DAS.EmployerFinance.Web.Helpers
+@inject IHtmlHelpers HtmlHelpers
 @{
     var tagManagerCode = "GTM-KWQBWGJ";
     string accountId = (string)this.ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId] ?? "";
@@ -61,6 +63,10 @@
     <div class="govuk-width-container">
         @RenderSection("breadcrumb", required: false)
         <main class="govuk-main-wrapper" id="main-content" role="main">
+            @if (User.Identity.IsAuthenticated)
+            {
+                @HtmlHelpers.GetContentByType("banner")
+            }
             @RenderBody()
         </main>
     </div>
