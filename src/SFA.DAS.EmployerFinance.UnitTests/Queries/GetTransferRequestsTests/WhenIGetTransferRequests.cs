@@ -6,7 +6,6 @@ using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetTransferRequests;
 using SFA.DAS.Encoding;
-using SFA.DAS.Testing.EntityFramework;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransferRequestsTests;
 

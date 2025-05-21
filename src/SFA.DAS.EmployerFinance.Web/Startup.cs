@@ -17,12 +17,12 @@ using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.Middleware;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
 using SFA.DAS.GovUK.Auth.AppStart;
-using SFA.DAS.GovUK.Auth.Extensions;
 using SFA.DAS.GovUK.Auth.Models;
 using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.UnitOfWork.Mvc.Extensions;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
+using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web;
 
@@ -67,7 +67,8 @@ public class Startup
         services.AddApplicationServices(_configuration);
 
         services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
-        
+
+        services.AddContentApiClient(_configuration);
         services.AddEmployerFinanceApi();
 
         services.AddAuthenticationServices();
@@ -108,6 +109,9 @@ public class Startup
         {
             services.AddDataProtection(_configuration);
         }
+
+        services.AddTransient<IHtmlHelpers, HtmlHelpers>();
+
 #if DEBUG
         services.AddControllersWithViews(o => { })
             .AddRazorRuntimeCompilation();
@@ -131,7 +135,6 @@ public class Startup
         app.UseUnitOfWork();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapSessionKeepAliveEndpoint();  
             endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

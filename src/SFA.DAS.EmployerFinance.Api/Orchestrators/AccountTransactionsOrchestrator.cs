@@ -19,14 +19,18 @@ public class AccountTransactionsOrchestrator
         _logger = logger;
         _linkGenerator = linkGenerator;
     }
-      
+
     public async Task<Transactions> GetAccountTransactions(string hashedAccountId, int year, int month)
     {
         _logger.LogInformation("Requesting account transactions for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
 
-        var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery {
-            Year = year,
-            Month = month,
+        year =  year == default ? DateTime.Now.Year : year;
+        month = month == default ? DateTime.Now.Month : month;
+
+        var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery
+        {
+            FromDate = new DateTime(year, month, 1),
+            ToDate = new DateTime(year, month, DateTime.DaysInMonth(year, month)),
             HashedAccountId = hashedAccountId
         });
 
@@ -36,9 +40,34 @@ public class AccountTransactionsOrchestrator
             Year = year,
             Month = month
         };
+
         response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x)));
-            
+
         _logger.LogInformation("Received account transactions response for account {HashedAccountId}, year {Year} and month {Month}", hashedAccountId, year, month);
+        return response;
+    }
+
+    public async Task<Transactions> QueryAccountTransactions(string hashedAccountId, DateTime fromDate, DateTime toDate)
+    {
+        _logger.LogInformation("Querying account transactions for account {HashedAccountId}, from {FromDate} to {ToDate}", hashedAccountId, fromDate.ToString(), toDate.ToString());
+
+        var data = await _mediator.Send(new GetEmployerAccountTransactionsQuery
+        {
+            FromDate = fromDate,
+            ToDate = toDate,
+            HashedAccountId = hashedAccountId
+        });
+
+        var response = new Transactions
+        {
+            HasPreviousTransactions = data.AccountHasPreviousTransactions,
+            Year = fromDate.Year,
+            Month = fromDate.Month
+        };
+
+        response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x)));
+
+        _logger.LogInformation("Returning account transactions for account {HashedAccountId}, from {FromDate} to {ToDate}", hashedAccountId, fromDate.ToString(), toDate.ToString());
         return response;
     }
 

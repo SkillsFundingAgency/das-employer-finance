@@ -11,11 +11,13 @@ public class GetAccountProjectionSummaryHandler(
     ILogger<GetAccountProjectionSummaryHandler> logger)
     : IRequestHandler<GetAccountProjectionSummaryQuery, GetAccountProjectionSummaryResult>
 {
+    public const int PreviousMonths = 12;
+    
     public async Task<GetAccountProjectionSummaryResult> Handle(GetAccountProjectionSummaryQuery query, CancellationToken cancellationToken)
     {
         logger.LogInformation("GettingAccountProjectionSummary for accountId {Id}", query.AccountId);
 
-        var declarations = await repository.GetAccountLevyDeclarations(query.AccountId);
+        var declarations = await repository.GetAccountLevyDeclarationsForPreviousMonths(query.AccountId, PreviousMonths);
         var forecastDeclarations = GetForecastDeclarations(declarations);
 
         var fundsIn = forecastDeclarations.Sum(fd => fd.TotalAmount) * 12;
@@ -38,9 +40,9 @@ public class GetAccountProjectionSummaryHandler(
         foreach (var group in groupedDeclarations)
         {
             var forecastDeclaration = group
-                .Where(x => IsRecentDeclaration(x, currentPayrollYear, currentPayrollMonth, previousPayrollYear))
-                .OrderByDescending(x => x.PayrollYear)
-                .ThenByDescending(x => x.PayrollMonth)
+                .Where(levyDeclarationItem => IsRecentDeclaration(levyDeclarationItem, currentPayrollYear, currentPayrollMonth, previousPayrollYear))
+                .OrderByDescending(levyDeclarationItem => levyDeclarationItem.PayrollYear)
+                .ThenByDescending(levyDeclarationItem => levyDeclarationItem.PayrollMonth)
                 .Take(2)
                 .FirstOrDefault();
 

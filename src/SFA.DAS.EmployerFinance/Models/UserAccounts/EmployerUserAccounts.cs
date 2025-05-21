@@ -1,3 +1,4 @@
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 
 namespace SFA.DAS.EmployerFinance.Models.UserAccounts;
@@ -40,6 +41,7 @@ public class EmployerUserAccountItem
     public string AccountId { get; set; }
     public string EmployerName { get; set; }
     public string Role { get; set; }
+    public ApprenticeshipEmployerType ApprenticeshipEmployerType { get; set; }
         
     public static implicit operator EmployerUserAccountItem(EmployerIdentifier source)
     {
@@ -47,7 +49,8 @@ public class EmployerUserAccountItem
         {
             AccountId = source.AccountId,
             EmployerName = source.EmployerName,
-            Role = source.Role
+            Role = source.Role,
+            ApprenticeshipEmployerType = (ApprenticeshipEmployerType)source.ApprenticeshipEmployerType
         };
     }
 }

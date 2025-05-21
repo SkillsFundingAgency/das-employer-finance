@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.GovUK.Auth.Employer;
 using SFA.DAS.Testing.AutoFixture;
+using EmployerClaims = SFA.DAS.EmployerFinance.Services.EmployerClaims;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Services.AccountClaims;
 

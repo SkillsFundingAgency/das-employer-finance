@@ -1,15 +1,12 @@
 using HMRC.ESFA.Levy.Api.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
-using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
-using SFA.DAS.GovUK.Auth.Authentication;
-using SFA.DAS.GovUK.Auth.Services;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.AppStart;
 

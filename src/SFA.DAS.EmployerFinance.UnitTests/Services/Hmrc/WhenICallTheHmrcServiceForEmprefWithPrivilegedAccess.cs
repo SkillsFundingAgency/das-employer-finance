@@ -1,9 +1,9 @@
 using HMRC.ESFA.Levy.Api.Client;
 using HMRC.ESFA.Levy.Api.Types;
+using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
-using SFA.DAS.EmployerFinance.UnitTests.Policies.Hmrc;
 using SFA.DAS.TokenService.Api.Client;
 using SFA.DAS.TokenService.Api.Types;
 
@@ -48,9 +48,9 @@ public class WhenICallTheHmrcServiceForEmprefWithPrivilegedAccess
         _tokenService = new Mock<ITokenServiceApiClient>();
         _tokenService.Setup(x => x.GetPrivilegedAccessTokenAsync()).ReturnsAsync(new PrivilegedAccessToken { AccessCode = ExpectedAuthToken });
 
-
+        var inProcessCache = new Mock<IInProcessCache>();
         _hmrcService = new HmrcService(_configuration, _httpClientWrapper.Object,
-            _apprenticeshipLevyApiClient.Object, _tokenService.Object, new NoopExecutionPolicy(), null, null, new Mock<ILogger<HmrcService>>().Object);
+            _apprenticeshipLevyApiClient.Object, _tokenService.Object, inProcessCache.Object, null, new Mock<ILogger<HmrcService>>().Object);
     }
 
     [Test]

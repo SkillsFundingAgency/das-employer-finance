@@ -12,6 +12,7 @@ using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+using SFA.DAS.EmployerFinance.Queries.GetContent;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
@@ -60,5 +61,6 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<GetAccountFinanceOverviewQuery> , GetAccountFinanceOverviewQueryValidator>();
         services.AddTransient<IValidator<GetEmployerAccountDetailByHashedIdQuery> , GetEmployerAccountDetailByHashedIdValidator>();
         services.AddTransient<IValidator<UpsertRegisteredUserCommand> , UpsertRegisteredUserCommandValidator>();
+        services.AddTransient<IValidator<GetContentQuery>, GetContentRequestValidator>();
     }
 }
