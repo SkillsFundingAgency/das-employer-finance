@@ -17,8 +17,6 @@
     var now = DateTime.UtcNow.ToGmtStandardTime();
 }
 
-
-
 <h1 class="govuk-heading-xl">Finance</h1>
 
 @if (Model.Data.IsLevyEmployer)
@@ -48,31 +46,6 @@
             <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-estimated-future-funding">@expected</div>
             <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-estimated-future-funding">Estimated total funding for the next 12 months (based on funds entering your Apprenticeship service account, including the 10% top up)</p>
         </div>
-        <div class="govuk-grid-column-one-third">
-            @{
-                var estimatedSpending = Model.Data.ProjectedSpend.ToString("C0", culture);
-            }
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-estimated-spending">@estimatedSpending</div>
-            <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-estimated-spending">Estimated planned spending for the next 12 months</p>
-        </div>
-        @if (Model.Data.ExpiringFunds.HasValue && Model.Data.ExpiringFunds > 0 && Model.Data.ExpiryDate.HasValue)
-        {
-            <div class="govuk-grid-column-one-third">
-                @{
-                    var expiringFunds = Model.Data.ExpiringFunds.Value.ToString("C0", culture);
-                }
-                <div class="govuk-body govuk-!-font-size-24 app-finance-figure app-finance-figure--expiring" aria-labelledby="lbl-current-funds-expiring">@expiringFunds</div>
-                @{
-                    var expiryDate = Model.Data.ExpiryDate.Value.ToString("MMM yyyy");
-                }
-                <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-current-funds-expiring">
-                    Estimated funds expiring in @expiryDate<br />
-                    <a title="Find out more about expired funds" href="@UrlHelpers.EmployerProjectionsAction("forecasting/expired-funds-guidance")" class="govuk-link">
-                        Find out more about expired funds
-                    </a>
-                </p>
-            </div>
-        }
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -114,17 +87,6 @@
         </h2>
         <p>Download your financial transactions within a specific date range. </p>
     </div>
-    @if (Model.Data.IsLevyEmployer)
-    {
-        <div class="govuk-grid-column-one-@colummSize">
-            <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
-                <a href="@UrlHelpers.EmployerProjectionsAction("forecasting/projections")" class="govuk-link govuk-link--no-visited-state">
-                    Funding projection
-                </a>
-            </h2>
-            <p>View funding projection to plan your future spending. </p>
-        </div>
-    }
     <div class="govuk-grid-column-one-@colummSize">
         <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
