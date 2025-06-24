@@ -73,11 +73,15 @@
         },
         "databaseSkuName": {
             "type": "string",
-            "defaultValue": "S0"
+            "defaultValue": "GP_S_Gen5_1"
         },
         "databaseTier": {
             "type": "string",
-            "defaultValue": "Standard"
+            "defaultValue": "GeneralPurpose"
+        },
+        "serverlessMinCapacity": {
+            "type": "string",
+            "defaultValue": "0.5"
         },
         "logAnalyticsSubscriptionId": {
             "type": "string",
@@ -790,6 +794,9 @@
                     },
                     "databaseTier": {
                         "value": "[parameters('databaseTier')]"
+                    },
+                    "serverlessMinCapacity": {
+                        "value": "[parameters('serverlessMinCapacity')]"
                     },
                     "logAnalyticsSubscriptionId": {
                         "value": "[parameters('logAnalyticsSubscriptionId')]"
