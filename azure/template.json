@@ -83,6 +83,10 @@
             "type": "string",
             "defaultValue": "0.5"
         },
+        "serverlessAutoPauseDelay": {
+            "type": "string",
+            "defaultValue": "-1"
+        },
         "logAnalyticsSubscriptionId": {
             "type": "string",
             "defaultValue": "[subscription().subscriptionId]"
@@ -797,6 +801,9 @@
                     },
                     "serverlessMinCapacity": {
                         "value": "[parameters('serverlessMinCapacity')]"
+                    },
+                    "serverlessAutoPauseDelay": {
+                        "value": "[parameters('serverlessAutoPauseDelay')]"
                     },
                     "logAnalyticsSubscriptionId": {
                         "value": "[parameters('logAnalyticsSubscriptionId')]"
