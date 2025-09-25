@@ -24,7 +24,7 @@ GO
 CREATE INDEX [IX_TransactionLine_SubmissionId] ON [employer_financial].[TransactionLine] (SubmissionId)
 GO
 
-CREATE INDEX [IX_TransactionLine_AccountId] ON [employer_financial].[TransactionLine] (AccountId) INCLUDE (Ukprn,PeriodEnd,TransactionType)
+CREATE INDEX [IX_TransactionLine_AccountId_Optimized] ON [employer_financial].[TransactionLine] (AccountId) INCLUDE (Ukprn,PeriodEnd,TransactionType,Amount,TransactionDate,SubmissionId,EmpRef)
 GO
 
 CREATE INDEX [IX_TransactionLine_Payment] on [employer_financial].[TransactionLine] (PeriodEnd,AccountId,Ukprn,TransactionDate, DateCreated)
@@ -33,14 +33,12 @@ GO
 CREATE UNIQUE INDEX [IX_TransactionLine_TransactionType_SubmissionId] ON [employer_financial].[TransactionLine] (SubmissionId) WHERE (TransactionType = 1);
 GO
 
-CREATE INDEX [IX_TransactionLine_AccountId_DateCreated] ON [employer_financial].[TransactionLine] (AccountId, DateCreated) WITH (ONLINE = ON)
+CREATE INDEX [IX_TransactionLine_AccountId_DateCreated_Optimized] ON [employer_financial].[TransactionLine] (AccountId, DateCreated) INCLUDE (Amount,TransactionType,TransactionDate,SubmissionId,Ukprn,PeriodEnd,EmpRef) WITH (ONLINE = ON)
 GO
 
-CREATE INDEX [IX_TransactionLine_AccountId_TransactionDate_TransactionType] ON [employer_financial].[TransactionLine] (AccountId, TransactionDate, TransactionType) INCLUDE (Amount) WITH (ONLINE = ON)
+CREATE INDEX [IX_TransactionLine_AccountId_TransactionDate_TransactionType_Optimized] ON [employer_financial].[TransactionLine] (AccountId, TransactionDate, TransactionType) INCLUDE (Amount,SubmissionId,Ukprn,PeriodEnd,EmpRef,TransferSenderAccountId,TransferReceiverAccountId) WITH (ONLINE = ON)
 GO
 
-CREATE INDEX [IX_TransactionLine_Account_TransactionType] ON [employer_financial].[TransactionLine] (AccountId, TransactionType) INCLUDE (DateCreated) WITH (ONLINE = ON)
-GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_AccountId_TransactionType_TransactionDate] ON [employer_financial].[TransactionLine] ([AccountId] ASC, [TransactionType] ASC, [TransactionDate] ASC) WHERE [TransactionType] = /*ExpiredFund*/ 5
 GO
@@ -48,5 +46,20 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_AccountId_TransactionType_Ukprn_PeriodEnd] ON [employer_financial].[TransactionLine] ([AccountId] ASC, [Ukprn] ASC, [PeriodEnd] ASC) WHERE [TransactionType] = /* Payment */ 3 WITH (ONLINE = ON)
 GO
               
-CREATE NONCLUSTERED INDEX [IX_NC_wi_TransactionLine_AccountId_DateCreated] ON [employer_financial].[TransactionLine] ([AccountId], [DateCreated]) INCLUDE ([Amount], [EmpRef], [EnglishFraction], [LevyDeclared], [PeriodEnd], [SubmissionId], [TransactionDate], [TransactionType], [TransferSenderAccountId]) WITH (ONLINE = ON)
+CREATE NONCLUSTERED INDEX [IX_TransactionLine_TransferQueries] 
+ON [employer_financial].[TransactionLine] ([TransferSenderAccountId], [TransferReceiverAccountId], [TransactionDate]) 
+INCLUDE ([AccountId], [Amount], [TransactionType], [PeriodEnd])
+WITH (ONLINE = ON)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_TransactionLine_SubmissionId_TransactionType] 
+ON [employer_financial].[TransactionLine] ([SubmissionId], [TransactionType]) 
+INCLUDE ([AccountId], [Amount], [TransactionDate], [EmpRef])
+WITH (ONLINE = ON)
+GO
+
+CREATE NONCLUSTERED INDEX [IX_TransactionLine_PeriodEnd_AccountId] 
+ON [employer_financial].[TransactionLine] ([PeriodEnd], [AccountId], [TransactionType]) 
+INCLUDE ([Amount], [Ukprn], [TransactionDate])
+WITH (ONLINE = ON)
 GO
