@@ -53,18 +53,4 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
         return Ok(result);
     }
 
-    [HttpGet]
-    [Route("{accountId}/projection-summary")]
-    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccountProjectionSummary(long accountId)
-    {
-        var result = await financeOrchestrator.GetAccountProjectionSummary(accountId);
-
-        if (result == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
-    }
 }

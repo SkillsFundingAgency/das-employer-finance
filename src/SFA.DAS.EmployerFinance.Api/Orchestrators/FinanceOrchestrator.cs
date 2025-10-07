@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
-using SFA.DAS.EmployerFinance.Queries.GetAccountProjectionSummary;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
@@ -148,19 +147,4 @@ public class FinanceOrchestrator
         return result;
     }
 
-     public async Task<AccountProjectionSummary> GetAccountProjectionSummary(long accountId)
-    {
-        _logger.LogInformation("Requesting GetAccountProjectionSummaryFromFinance for the accountId {accountId}", accountId);
-
-        var response = await _mediator.Send(new GetAccountProjectionSummaryQuery
-        {
-            AccountId = accountId
-        });
-
-        var result = _mapper.Map<AccountProjectionSummary>(response);
-
-        _logger.LogInformation("Received response - GetAccountProjectionSummaryFromFinance for the accountId {accountId}", accountId);
-
-        return result;
-    }
 }
