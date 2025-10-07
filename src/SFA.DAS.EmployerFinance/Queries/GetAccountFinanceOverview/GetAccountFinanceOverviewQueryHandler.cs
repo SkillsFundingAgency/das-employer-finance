@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
