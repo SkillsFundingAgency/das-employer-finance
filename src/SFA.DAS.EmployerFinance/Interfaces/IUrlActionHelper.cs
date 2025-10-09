@@ -7,7 +7,6 @@ public interface IUrlActionHelper
     string LevyTransfersMatchingAccountAction(string path, bool withAccountContext = true);
     
     string EmployerFinanceAction(string path);
-    string EmployerProjectionsAction(string path);
     
     string LegacyEasAction(string path);
 }
