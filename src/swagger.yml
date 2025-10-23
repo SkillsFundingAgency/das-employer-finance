@@ -21,7 +21,7 @@ paths:
           description: A health check has failed
           $ref: '#/components/responses/healthCheckResponse'
 
-  /jobs/levy-import-payments/period-ends:
+  /jobs/import-payments/levy-import-payments/period-ends:
     post:
       summary: Endpoint for creating a new levy period end
       requestBody:
@@ -49,7 +49,7 @@ paths:
         '404':
           $ref: '#/components/responses/notFoundResponse'
   
-  /jobs/levy-import-payments/period-ends/{id}:
+  /jobs/import-payments/levy-import-payments/period-ends/{id}:
     get:
       summary: Returns the period end for the id sent across form the consumer when created
       parameters:
@@ -65,6 +65,30 @@ paths:
         '404':
           $ref: '#/components/responses/notFoundResponse'
 
+  /jobs/import-payments/employer-accounts:
+    get:
+      description: Fetched a paged list of employer accounts
+      responses:
+        '200':
+          $ref: '#/components/responses/pagedEmployerAccountsResponse'  
+          
+  /jobs/import-payments/employer-accounts/{id}:
+    get:
+      description: Fetched a specific accounnt
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: The id of the account
+      responses:
+        '200':
+          $ref: '#/components/responses/pagedEmployerAccountsResponse'  
+        '404':
+          $ref: '#/components/responses/notFoundResponse'  
+          
+  
 components:  
   securitySchemes:
     ApiKeyAuth:
@@ -136,7 +160,75 @@ components:
             type: string
             example: Leaner data APIM for the apprenticeship service - Version 3.0.2
 
+    pagedEmployerAccountsResponse:
+      description: A paged employer response
+      headers:
+        Link:
+          description: Pagination links (next, prev)
+          schema:
+            type: string
+            format: url
+          example: '<https://api.example.com/items?page=2>; rel="prev", <https://api.example.com/items?page=5>; rel="next"'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/pagedEmployerAccounts'
+
   schemas:
+
+    pagedEmployerAccounts:
+      type: object
+      properties:
+        training:
+          type: array
+          items:
+              $ref: '#/components/schemas/employerAccount'
+        total:
+          type: integer
+          minimum: 0
+        page: 
+          type: integer
+          minimum: 1
+        pageSize: 
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalPages: 
+          type: integer
+          minimum: 1
+      required:
+        - page
+        - total
+        - pageSize  
+        - totalPages  
+        
+    employerAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        hashedId:
+          type: string
+        publicHashedId:
+          type: string
+        legalEntities:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              pendingAggredmentId: 
+                type: integer
+              signedAgreementId:
+                type: integer
+              signedAgreementVersion:
+                type: integer
+                
     levyPeriodEndRequest:
       type: object
       properties:
