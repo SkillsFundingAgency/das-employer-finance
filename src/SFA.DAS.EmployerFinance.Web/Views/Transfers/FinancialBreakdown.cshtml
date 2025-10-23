@@ -43,7 +43,7 @@
 
 
 <h2 class="govuk-heading-m">
-    Projected funds for financial year @Model.Data.FinancialYearString
+    Current transfer commitments for financial year @Model.Data.FinancialYearString
 </h2>
 
 <div class="govuk-grid-row">
@@ -62,66 +62,24 @@
                 <td class="govuk-table__cell govuk-table__cell--numeric">@Model.Data.TransferConnections.ToString("C0", culture)</td>
             </tr>
             <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">Total estimated spend</th>
-                <td class="govuk-table__cell govuk-table__cell--numeric"><strong>@Model.Data.CurrentYearEstimatedSpend.ToString("C0", culture)</strong></td>
+                <th scope="row" class="govuk-table__header">Total committed spend</th>
+                <td class="govuk-table__cell govuk-table__cell--numeric"><strong>@Model.Data.Commitments.ToString("C0", culture)</strong></td>
             </tr>
         </table>
         <details class="govuk-details" data-module="govuk-details">
-            <summary class="govuk-details__summary"><span class="govuk-details__summary-text">How are my projected funds calculated?</span></summary>
+            <summary class="govuk-details__summary"><span class="govuk-details__summary-text">How is my remaining allowance calculated?</span></summary>
             <div class="govuk-details__text">
-                <p>Your projected funds are calculated by subtracting your <strong>total estimated spend</strong> from your <strong>@Model.Data.StartingTransferAllowance.ToString("C0", culture) transfer allowance</strong>.</p>
+                <p>Your remaining allowance is calculated by subtracting your <strong>total committed spend</strong> from your <strong>@Model.Data.StartingTransferAllowance.ToString("C0", culture) transfer allowance</strong>.</p>
             </div>
         </details>
     </div>
     <div class="govuk-grid-column-one-half">
         <div class="app-finance-figure__wrap">
-            <p class="app-finance-figure__title" id="lbl-transfer-estimated">Total estimated spend for @Model.Data.FinancialYearString</p>
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-estimated">@Model.Data.CurrentYearEstimatedSpend.ToString("C0", culture)</div>
+            <p class="app-finance-figure__title" id="lbl-transfer-committed">Total committed spend for @Model.Data.FinancialYearString</p>
+            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-transfer-committed">@Model.Data.Commitments.ToString("C0", culture)</div>
 
-            <p class="app-finance-figure__title" id="lbl-transfer-estimated-remaining">Estimated remaining allowance for @Model.Data.FinancialYearString</p>
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure app-finance-figure--highlight" aria-labelledby="lbl-transfer-estimated-remaining">@Model.Data.EstimatedRemainingAllowance.ToString("C0", culture)</div>
-        </div>
-    </div>
-</div>
-
-<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-
-        <h2 class="govuk-heading-m">Approved applications and transfer connections in future financial years</h2>
-        <p>These finances show approved applications for your pledges and for transfers where you have connected directly with an employer.</p>
-        <p>This uses an estimated total cost of training and assessment, based on the funding band maximum for these apprenticeships.</p>
-        <p>The yearly estimated costs are based on the planned start date of training and the 20% completion payment. It uses the financial year starting April. For our estimate we assume the completion payment will be made in the month after the planned end date.</p>
-
-        <h2 class="govuk-heading-s">How is my estimated spend calculated?</h2>
-        <p>The amount of your estimated spend can change during the financial year depending on the start and end dates, final agreed costs, and breaks in learning. Therefore these estimates can only be used as a guide.</p>
-
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-third">
-                <div class="app-finance-data">
-                    <dl class="app-finance-data__list">
-                        <dt class="app-finance-data__title">Estimated spend @Model.Data.FinancialYearString</dt>
-                        <dd class="app-finance-data__definition">@Model.Data.CurrentYearEstimatedSpend.ToString("C0", culture)</dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="govuk-grid-column-one-third">
-                <div class="app-finance-data">
-                    <dl class="app-finance-data__list">
-                        <dt class="app-finance-data__title">Estimated spend @Model.Data.NextFinancialYearString</dt>
-                        <dd class="app-finance-data__definition">@Model.Data.NextYearEstimatedSpend.ToString("C0", culture)</dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="govuk-grid-column-one-third">
-                <div class="app-finance-data">
-                    <dl class="app-finance-data__list">
-                        <dt class="app-finance-data__title">Estimated spend @Model.Data.YearAfterNextFinancialYearString</dt>
-                        <dd class="app-finance-data__definition">@Model.Data.YearAfterNextYearEstimatedSpend.ToString("C0", culture)</dd>
-                    </dl>
-                </div>
-            </div>
+            <p class="app-finance-figure__title" id="lbl-transfer-remaining">Remaining allowance for @Model.Data.FinancialYearString</p>
+            <div class="govuk-body govuk-!-font-size-24 app-finance-figure app-finance-figure--highlight" aria-labelledby="lbl-transfer-remaining">@Model.Data.TotalAvailableTransferAllowance.ToString("C0", culture)</div>
         </div>
     </div>
 </div>

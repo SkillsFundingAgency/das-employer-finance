@@ -5,7 +5,6 @@ using SFA.DAS.EmployerFinance.Validation;
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
 public class GetAccountFinanceOverviewQueryHandler(
-    IDasForecastingService dasForecastingService,
     IDasLevyService levyService,
     IValidator<GetAccountFinanceOverviewQuery> validator,
     ILogger<GetAccountFinanceOverviewQueryHandler> logger)
@@ -20,16 +19,14 @@ public class GetAccountFinanceOverviewQueryHandler(
         }
 
         var currentBalance = await GetAccountBalance(query.AccountId);
-        var accountProjectionSummary = await dasForecastingService.GetAccountProjectionSummary(query.AccountId);
-        var projectedCalculations = accountProjectionSummary?.ProjectionCalulation;
         var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
 
         var response = new GetAccountFinanceOverviewResponse
         {
             AccountId = query.AccountId,
             CurrentFunds = currentBalance,
-            FundsIn = projectedCalculations?.FundsIn ?? 0,
-            FundsOut = projectedCalculations?.FundsOut ?? 0,
+            FundsIn = 0,
+            FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear
         };
         
