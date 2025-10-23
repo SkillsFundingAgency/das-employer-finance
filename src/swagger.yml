@@ -33,15 +33,17 @@ paths:
           $ref: '#/components/responses/notFoundResponse'
     get:
       summary: Returns the period ends for levy
-      responses:
       parameters:
         - in: query
           name: orderBy
           schema:
             type: string
-            enum: [ "latest", "earliest" ]
+            enum: 
+            - latest
+            - earliest
           required: false
-          description: The order by which to sort the results
+          description: The order by which to sort the results, default latest
+      responses:
         '200':
           $ref: '#/components/responses/levyPeriodEndsResponse'  
         '404':
