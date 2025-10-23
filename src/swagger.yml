@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: Finance job API's
+  description: 'This API wraps the current direct to database calls that each job performs'
+paths:
+  /info:
+    get:
+      description: information regarding this API. The version will be returned
+      responses:
+        '200':
+          $ref: '#/components/responses/infoResponse'  
+  /health:
+    get:
+      description: The system is fully ready to accept requests and all the dependencies are healthy
+      responses:
+        '200':
+          description: All health checks have passed
+          $ref: '#/components/responses/healthCheckResponse'
+        '503':
+          description: A health check has failed
+          $ref: '#/components/responses/healthCheckResponse'
+
+  /jobs/levy-import-payments/period-ends:
+    post:
+      summary: Endpoint for creating a new levy period end
+      requestBody:
+        $ref: '#/components/requestBodies/createLevyPeriodEndRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/createdResponse'  
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+    get:
+      summary: Returns the period ends for levy
+      responses:
+        '200':
+          $ref: '#/components/responses/levyPeriodEndsResponse'  
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+  
+  /jobs/levy-import-payments/period-ends/{id}:
+    get:
+      summary: Returns the period end for the id sent across form the consumer when created
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The id of the period end
+      responses:
+        '200':
+          $ref: '#/components/responses/levyPeriodEndResponse'  
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+
+components:  
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
+      description: "Enter your API key in the `Ocp-Apim-Subscription-Key` header."
+  
+  requestBodies:
+    createLevyPeriodEndRequest:
+      description: A request to create a period end for levy
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/levyPeriodEndRequest'
+  
+  headers:
+    Location:
+      description: The URL of the newly created resource
+      schema:
+        type: string
+        format: uri
+  
+  responses:
+    notFoundResponse:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            type: string
+    
+    createdResponse:
+      description: common createdResponse
+      headers:
+        Location:
+          $ref: '#/components/headers/Location'
+
+    levyPeriodEndsResponse:
+      description: A response for levy period ends
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/levyPeriodEnd'
+        
+    levyPeriodEndResponse:
+      description: A response for levy period end
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/levyPeriodEnd'
+
+    healthCheckResponse:
+      description: Results of a health check
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/healthcheckResults'
+
+    infoResponse:
+      description: Information response
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Leaner data APIM for the apprenticeship service - Version 3.0.2
+
+  schemas:
+    levyPeriodEndRequest:
+      type: object
+      properties:
+        periodEndId: 
+          type: string
+        month: 
+          type: integer
+        year:
+          type: integer
+        accountValidDate:
+          type: string
+          format: date-time
+        commitmentValidDate:
+          type: string
+          format: date-time
+        completionDate:
+          type: string
+          format: date-time
+        paymentsForPeriod:
+          type: string
+
+    levyPeriodEnd:
+      allOf:
+        - $ref: "#/components/schemas/levyPeriodEndRequest"
+        - type: object
+          properties:
+            id:
+              type: integer
+
+    healthcheckResults:
+      type: array
+      items:
+        $ref: '#/components/schemas/healthcheck' 
+  
+    healthcheck:
+      type: object
+      properties:
+        description: 
+          type: string
+        result: 
+          type: string 
+
+security:
+  - ApiKeyAuth: []  # Apply API Key security globally
