@@ -204,6 +204,12 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
     }
 
+    public async Task<PeriodEnd> GetPeriodEndById(string periodEndId)
+    {
+        return await _db.Value.PeriodEnds
+        .SingleOrDefaultAsync(pe => pe.PeriodEndId == periodEndId);
+    }
+
     public async Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth)
     {
         var parameters = new DynamicParameters();
