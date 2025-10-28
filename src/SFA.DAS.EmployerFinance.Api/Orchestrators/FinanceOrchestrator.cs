@@ -147,4 +147,13 @@ public class FinanceOrchestrator
         return result;
     }
 
+    public async Task GetAccountById(string accountId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task GetAccounts(int pageNumber, int pageSize)
+    {
+        throw new NotImplementedException();
+    }
 }

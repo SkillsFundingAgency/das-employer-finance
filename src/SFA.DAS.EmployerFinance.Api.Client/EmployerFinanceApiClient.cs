@@ -87,6 +87,24 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
         return JsonConvert.DeserializeObject<TransferAllowance>(json);
     }
 
+    public async Task<List<Account>> GetAllEmployerAccounts(int pageNumber, int pageSize = 10)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/accounts";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<Account>>(json);
+    }
+
+    public async Task<Account> GetAccount(string accountId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/accounts{accountId}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<Account>(json);
+    }
+
     private string GetBaseUrl()
     {
         return _configuration.ApiBaseUrl.Trim('/');
