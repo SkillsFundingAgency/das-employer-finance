@@ -52,14 +52,14 @@ public class PeriodEndOrchestrator
 
         var periodEnd = _mapper.Map<Types.PeriodEnd>(response.PeriodEnd);
 
-        _logger.LogInformation($"Received response for period ends by period end id { periodEndId }");
+        _logger.LogInformation("Received response for period ends by period end id {PeriodEndId}", periodEndId);
 
         return periodEnd;
     }
 
     public async Task<Types.PeriodEnd> CreatePeriodEnd(Types.PeriodEnd periodEnd)
     {
-        _logger.LogInformation($"Requesting period end save with period end id {periodEnd.PeriodEndId}");
+        _logger.LogInformation("Requesting period end save with period end id {PeriodEndId}", periodEnd.PeriodEndId);
         var mappedPeriodEnd = _mapper.Map<PeriodEnd>(periodEnd);
 
         await _mediator.Send(new CreateNewPeriodEndCommand { NewPeriodEnd = mappedPeriodEnd });
