@@ -28,14 +28,34 @@ public class WhenIGetPeriodEndByPeriodEndId
     public async Task Then_Returns_Ok_With_A_Valid_PeriodEnd_When_Data_Exists()
     {
         // Arrange
-        var periodEnd = new PeriodEnd() { PeriodEndId = "12345" };
+        var periodEnd = new PeriodEnd { PeriodEndId = "12345" };
 
-        var periodResponse = new GetPeriodEndByPeriodEndIdResponse();
-        periodResponse.PeriodEnd = _mapper.Object.Map<Models.Payments.PeriodEnd>(periodEnd);
+        var responseModel = new Models.Payments.PeriodEnd { PeriodEndId = "12345" };
 
-        _mediator.Setup(x => x.Send(It.Is<GetPeriodEndByPeriodEndIdRequest>(pe => pe.PeriodEndId == It.IsAny<string>()), It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(periodResponse);
+        var periodResponse = new GetPeriodEndByPeriodEndIdResponse
+        {
+            PeriodEnd = responseModel
+        };
 
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<GetPeriodEndByPeriodEndIdRequest>(req => req.PeriodEndId == periodEnd.PeriodEndId),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(periodResponse);
+
+        _mapper
+            .Setup(m => m.Map<PeriodEnd>(It.IsAny<Models.Payments.PeriodEnd>()))
+            .Returns<Models.Payments.PeriodEnd>(src => new PeriodEnd
+            {
+                PeriodEndId = src.PeriodEndId
+            });
+
+        _mapper
+            .Setup(m => m.Map<Models.Payments.PeriodEnd>(It.IsAny<PeriodEnd>()))
+            .Returns<PeriodEnd>(src => new Models.Payments.PeriodEnd
+            {
+                PeriodEndId = src.PeriodEndId
+            });
 
         // Act
         var result = await _periodEndsController.GetByPeriodEndByPeriodEndId(periodEnd.PeriodEndId);
@@ -43,8 +63,14 @@ public class WhenIGetPeriodEndByPeriodEndId
         // Assert
         result.Should().NotBeNull();
         result.Should().BeOfType<OkObjectResult>();
-        var model = ((OkObjectResult)result).Value as PeriodEnd;
+
+        var okResult = result as OkObjectResult;
+        okResult!.StatusCode.Should().Be(200);
+
+        var model = okResult.Value as PeriodEnd;
         model.Should().NotBeNull();
+        model!.PeriodEndId.Should().Be(periodEnd.PeriodEndId);
         model.Should().BeEquivalentTo(periodEnd);
     }
+
 }

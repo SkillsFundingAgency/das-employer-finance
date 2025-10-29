@@ -23,7 +23,7 @@ public class PeriodEndOrchestrator
         _mapper = mapper;
     }
 
-    public async Task<List<PeriodEnd>> GetPeriodEnds()
+    public async Task<List<Types.PeriodEnd>> GetPeriodEnds()
     {
         _logger.LogInformation("Requesting all period ends");
 
@@ -33,14 +33,14 @@ public class PeriodEndOrchestrator
             return null;
         }
 
-        var periodEnds = response.CurrentPeriodEnds.Select(x => _mapper.Map<PeriodEnd>(x)).ToList();
+        var periodEnds = response.CurrentPeriodEnds.Select(x => _mapper.Map<Types.PeriodEnd>(x)).ToList();
 
         _logger.LogInformation("Received response for Get All Period ends");
 
         return periodEnds;
     }
 
-    public async Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId)
+    public async Task<Types.PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId)
     {
         _logger.LogInformation("Requesting period ends by id");
 
@@ -50,7 +50,7 @@ public class PeriodEndOrchestrator
             return null;
         }
 
-        var periodEnd = _mapper.Map<PeriodEnd>(response.PeriodEnd);
+        var periodEnd = _mapper.Map<Types.PeriodEnd>(response.PeriodEnd);
 
         _logger.LogInformation($"Received response for period ends by period end id { periodEndId }");
 

@@ -27,23 +27,44 @@ public class CreatePeriodEnd
     }
 
     [Test]
-    public async Task Then_Returns_Ok_With_No_Error_And_Newly_Created_Period_End()
+    public async Task Then_Returns_Created_With_Newly_Created_Period_End()
     {
         // Arrange
-        var periodEnd = new PeriodEnd() { PeriodEndId = "12345" };
+        var inputPeriodEnd = new PeriodEnd { PeriodEndId = "12345" };
+
+        var mappedPeriodEnd = new Models.Payments.PeriodEnd { PeriodEndId = "12345" };
+
+        _mapper
+            .Setup(m => m.Map<Models.Payments.PeriodEnd>(It.IsAny<PeriodEnd>()))
+            .Returns<PeriodEnd>(src => new Models.Payments.PeriodEnd
+            {
+                PeriodEndId = src.PeriodEndId
+            });
+
+        _mapper
+            .Setup(m => m.Map<PeriodEnd>(It.IsAny<Models.Payments.PeriodEnd>()))
+            .Returns<Models.Payments.PeriodEnd>(src => new PeriodEnd
+            {
+                PeriodEndId = src.PeriodEndId
+            });
 
         _mediator
             .Setup(x => x.Send(It.IsAny<CreateNewPeriodEndCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-
         // Act
-        var result = await _periodEndsController.Create(periodEnd);
+        var result = await _periodEndsController.Create(inputPeriodEnd);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeOfType<OkObjectResult>();
-        var model = ((OkObjectResult)result).Value as List<PeriodEnd>;
+        result.Should().BeOfType<CreatedAtActionResult>();
+
+        var createdResult = result as CreatedAtActionResult;
+        createdResult!.StatusCode.Should().Be(201);
+
+        var model = createdResult.Value as PeriodEnd;
         model.Should().NotBeNull();
+        model!.PeriodEndId.Should().Be(inputPeriodEnd.PeriodEndId);
     }
+
 }

@@ -29,17 +29,24 @@ public class WhenIGetAllPeriodEnds
     public async Task Then_Returns_Ok_With_List_Of_PeriodEnds_When_Data_Exists()
     {
         // Arrange
-        var periodEnds = new List<PeriodEnd>
+        var periodEndModels = new List<Models.Payments.PeriodEnd>
+    {
+        new() { PeriodEndId = "12345" },
+        new() { PeriodEndId = "45652" }
+    };
+
+        var periodResponse = new GetPeriodEndsResponse
         {
-            new() { PeriodEndId = "12345" },
-            new() { PeriodEndId = "45652" }
+            CurrentPeriodEnds = periodEndModels
         };
-        var periodResponse = new GetPeriodEndsResponse();
-        periodResponse.CurrentPeriodEnds = _mapper.Object.Map<List<Models.Payments.PeriodEnd>>(periodEnds);
 
-        _mediator.Setup(x => x.Send(It.IsAny<GetPeriodEndsRequest>(), It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(periodResponse);
+        _mediator
+            .Setup(x => x.Send(It.IsAny<GetPeriodEndsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(periodResponse);
 
+        _mapper
+            .Setup(m => m.Map<PeriodEnd>(It.IsAny<Models.Payments.PeriodEnd>()))
+            .Returns<Models.Payments.PeriodEnd>(x => new PeriodEnd { PeriodEndId = x.PeriodEndId });
 
         // Act
         var result = await _periodEndsController.GetAll();
@@ -47,9 +54,12 @@ public class WhenIGetAllPeriodEnds
         // Assert
         result.Should().NotBeNull();
         result.Should().BeOfType<OkObjectResult>();
+
         var model = ((OkObjectResult)result).Value as List<PeriodEnd>;
         model.Should().NotBeNull();
         model.Count.Should().Be(2);
-        model.Should().BeEquivalentTo(periodEnds);
+        model[0].PeriodEndId.Should().Be("12345");
+        model[1].PeriodEndId.Should().Be("45652");
     }
+
 }
