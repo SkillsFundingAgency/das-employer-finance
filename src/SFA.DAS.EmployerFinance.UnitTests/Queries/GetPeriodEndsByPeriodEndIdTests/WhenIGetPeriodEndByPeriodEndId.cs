@@ -8,56 +8,51 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPeriodEndsByPeriodEndIdTe
 public class WhenIGetPeriodEndByPeriodEndId
 {
     private Mock<IDasLevyRepository> _dasLevyRepositoryMock;
-    private GetPeriodEndQueryHandler _handler;
+    private GetPeriodEndByPeriodEndIdQueryHandler _handler;
 
     [SetUp]
     public void Setup()
     {
         _dasLevyRepositoryMock = new Mock<IDasLevyRepository>();
-        _handler = new GetPeriodEndQueryHandler(_dasLevyRepositoryMock.Object);
+        _handler = new GetPeriodEndByPeriodEndIdQueryHandler(_dasLevyRepositoryMock.Object);
     }
 
     [Test]
-    public async Task Then_The_Repository_Is_Called_To_Get_All_PeriodEnds()
+    public async Task Then_The_Repository_Is_Called_With_The_Correct_Id()
     {
         // Arrange
-        var periodEnds = new List<PeriodEnd>
-        {
-            new() { PeriodEndId = "PE-001" },
-            new() { PeriodEndId = "PE-002" }
-        };
+        var expectedPeriodEnd = new PeriodEnd { PeriodEndId = "PE-001" };
 
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAllPeriodEnds())
-            .Returns(Task.FromResult<IEnumerable<PeriodEnd>>(periodEnds));
+            .Setup(r => r.GetPeriodEndById("PE-001"))
+            .ReturnsAsync(expectedPeriodEnd);
 
-        var request = new GetPeriodEndsRequest();
+        var request = new GetPeriodEndByPeriodEndIdRequest { PeriodEndId = "PE-001" };
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _dasLevyRepositoryMock.Verify(r => r.GetAllPeriodEnds(), Times.Once);
+        _dasLevyRepositoryMock.Verify(r => r.GetPeriodEndById("PE-001"), Times.Once);
         result.Should().NotBeNull();
-        result.CurrentPeriodEnds.Should().BeEquivalentTo(periodEnds);
+        result.PeriodEnd.Should().BeEquivalentTo(expectedPeriodEnd);
     }
 
     [Test]
-    public async Task Then_An_Empty_List_Is_Returned_If_No_PeriodEnds_Found()
+    public async Task Then_Null_Is_Returned_If_The_PeriodEnd_Is_Not_Found()
     {
         // Arrange
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAllPeriodEnds())
-            .ReturnsAsync(new List<PeriodEnd>());
+            .Setup(r => r.GetPeriodEndById("PE-999"))
+            .ReturnsAsync((PeriodEnd)null);
 
-        var request = new GetPeriodEndsRequest();
+        var request = new GetPeriodEndByPeriodEndIdRequest { PeriodEndId = "PE-999" };
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.CurrentPeriodEnds.Should().NotBeNull();
-        result.CurrentPeriodEnds.Should().BeEmpty();
+        result.PeriodEnd.Should().BeNull();
     }
 }
