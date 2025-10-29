@@ -62,4 +62,19 @@ public class WhenIGetAllPeriodEnds
         model[1].PeriodEndId.Should().Be("45652");
     }
 
+    [Test]
+    public async Task Then_Returns_NotFound_When_No_Data_Exists()
+    {
+        // Arrange
+        _mediator
+            .Setup(x => x.Send(It.IsAny<GetPeriodEndsRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((GetPeriodEndsResponse)null);
+
+        // Act
+        var result = await _periodEndsController.GetAll();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<NotFoundResult>();
+    }
 }

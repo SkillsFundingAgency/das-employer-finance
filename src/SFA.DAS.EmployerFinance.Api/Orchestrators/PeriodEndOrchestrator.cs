@@ -28,7 +28,7 @@ public class PeriodEndOrchestrator
         _logger.LogInformation("Requesting all period ends");
 
         var response = await _mediator.Send(new GetPeriodEndsRequest());
-        if (response.CurrentPeriodEnds == null)
+        if (response?.CurrentPeriodEnds == null)
         {
             return null;
         }
@@ -45,7 +45,7 @@ public class PeriodEndOrchestrator
         _logger.LogInformation("Requesting period ends by id");
 
         var response = await _mediator.Send(new GetPeriodEndByPeriodEndIdRequest { PeriodEndId = periodEndId });
-        if (response.PeriodEnd == null)
+        if (response?.PeriodEnd == null)
         {
             return null;
         }

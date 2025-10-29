@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Moq;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
@@ -73,4 +74,19 @@ public class WhenIGetPeriodEndByPeriodEndId
         model.Should().BeEquivalentTo(periodEnd);
     }
 
+    [Test]
+    public async Task Then_Returns_NotFound_When_No_Data_Exists()
+    {
+        // Arrange
+        _mediator
+            .Setup(x => x.Send(It.IsAny<GetPeriodEndByPeriodEndIdRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((GetPeriodEndByPeriodEndIdResponse)null);
+
+        // Act
+        var result = await _periodEndsController.GetByPeriodEndByPeriodEndId("1234");
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<NotFoundResult>();
+    }
 }
