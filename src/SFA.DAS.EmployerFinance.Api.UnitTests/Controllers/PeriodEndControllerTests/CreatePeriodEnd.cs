@@ -13,7 +13,7 @@ public class CreatePeriodEnd
     private PeriodEndController _periodEndsController;
     private Mock<IMediator> _mediator;
     private Mock<ILogger<PeriodEndOrchestrator>> _logger;
-    private Mock<IMapper> _mapper;
+    private Mock<IMapper> _mapper; 
 
     [SetUp]
     public void Arrange()
