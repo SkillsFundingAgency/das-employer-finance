@@ -53,6 +53,13 @@ public class CreatePeriodEnd
             .Setup(x => x.Send(It.IsAny<CreateNewPeriodEndCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
+        _mediator
+            .Setup(x => x.Send(It.Is<GetPeriodEndByPeriodEndIdRequest>(r => r.PeriodEndId == "12345"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetPeriodEndByPeriodEndIdResponse
+            {
+                PeriodEnd = new Models.Payments.PeriodEnd { PeriodEndId = "12345" }
+            });
+
         // Act
         var result = await _periodEndsController.Create(inputPeriodEnd);
 
