@@ -6,11 +6,9 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
-[ExcludeFromCodeCoverage]
 public class DasLevyRepository : IDasLevyRepository
 {
     private readonly EmployerFinanceConfiguration _configuration;
@@ -204,12 +202,6 @@ public class DasLevyRepository : IDasLevyRepository
             param: null,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
-    }
-
-    public async Task<PeriodEnd> GetPeriodEndById(string periodEndId)
-    {
-        return await _db.Value.PeriodEnds
-        .SingleOrDefaultAsync(pe => pe.PeriodEndId == periodEndId);
     }
 
     public async Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth)
