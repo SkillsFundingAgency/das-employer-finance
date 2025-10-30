@@ -42,7 +42,6 @@ public static class ApplicationServiceRegistrations
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
 
         services.AddTransient<IDasAccountService, DasAccountService>();
-        services.AddTransient<IDasForecastingService, DasForecastingService>();
         services.AddTransient<IDasLevyService, DasLevyService>();
 
         //TODO MAC-192 - was services.Decorate

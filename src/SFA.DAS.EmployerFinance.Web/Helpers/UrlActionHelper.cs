@@ -43,12 +43,6 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers
             return AccountAction(baseUrl, path);
         }
 
-        public string EmployerProjectionsAction(string path)
-        {
-            var baseUrl = _configuration.EmployerProjectionsBaseUrl;
-
-            return AccountAction(baseUrl, path);
-        }
 
         
         public string LegacyEasAction(string path)
