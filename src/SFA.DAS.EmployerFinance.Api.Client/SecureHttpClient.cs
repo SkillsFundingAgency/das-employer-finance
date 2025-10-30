@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Client;
 
+[ExcludeFromCodeCoverage]
 public class SecureHttpClient : ISecureHttpClient
 {
     private readonly IEmployerFinanceApiClientConfiguration _configuration;
