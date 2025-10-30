@@ -7,6 +7,6 @@ namespace SFA.DAS.EmployerFinance.Api.Client
     {
         Task<string> GetAsync(string url, CancellationToken cancellationToken = new CancellationToken());
 
-        Task<string> PostAsync(string url, string jsonBody, CancellationToken cancellationToken = default);
+        Task<string> PostAsync(string url, string jsonBody, CancellationToken cancellationToken = default); 
     }
 }
