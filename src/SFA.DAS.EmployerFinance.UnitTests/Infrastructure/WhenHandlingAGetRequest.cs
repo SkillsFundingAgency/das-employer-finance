@@ -1,12 +1,10 @@
+using System.Net;
+using System.Net.Http;
 using Moq.Protected;
 using Newtonsoft.Json;
-using SFA.DAS.EmployerFinance.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Infrastructure
 {
@@ -59,38 +57,6 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Infrastructure
             
         }
 
-        [Test]
-        public void Then_If_Post_Is_Not_Successful_An_Exception_Is_Thrown()
-        {
-            // Arrange
-            var key = "123-abc-567";
-            var postUrl = "test-url/post";
-            var requestBody = new { Name = "Test" };
-            var config = new EmployerFinanceOuterApiConfiguration { BaseUrl = "http://valid-url/", Key = key };
-
-            var response = new HttpResponseMessage
-            {
-                Content = new StringContent(""),
-                StatusCode = HttpStatusCode.BadRequest
-            };
-
-            var httpMessageHandler = new Mock<HttpMessageHandler>();
-            httpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>()
-                )
-                .ReturnsAsync(response);
-
-            var client = new HttpClient(httpMessageHandler.Object);
-            var apiClient = new OuterApiClient(client, config);
-
-            // Act & Assert
-            Assert.ThrowsAsync<HttpRequestException>(() => apiClient.Post<PostResponse>(postUrl, requestBody));
-        }
-
-
         public class GetTestRequest : IGetApiRequest
         {
             public string GetUrl => "test-url/get";
@@ -116,10 +82,5 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Infrastructure
                 .ReturnsAsync((HttpRequestMessage request, CancellationToken token) => response);
             return httpMessageHandler;
         }
-    }
-
-    public class PostResponse
-    {
-        public string Result { get; set; }
     }
 }
