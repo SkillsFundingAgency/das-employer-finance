@@ -27,4 +27,6 @@ public interface IDasLevyService
     Task<string> GetProviderName(long ukprn, long accountId, string periodEnd);
 
     Task<decimal> GetTotalSpendForLastYear(long accountId);
+
+    Task<decimal> GetLatestLevyDeclaration(long accountId);
 }
