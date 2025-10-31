@@ -1,7 +1,9 @@
-using System.Net.Http;
 using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace SFA.DAS.EmployerFinance.Infrastructure;
 
@@ -31,6 +33,26 @@ public class OuterApiClient : IOuterApiClient
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         return JsonConvert.DeserializeObject<TResponse>(json);
     }
+
+    public async Task<TResponse> Post<TResponse>(string url, object body)
+    {
+        var jsonBody = JsonConvert.SerializeObject(body);
+
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json")
+        };
+
+        AddHeaders(httpRequestMessage);
+
+        var response = await _httpClient.SendAsync(httpRequestMessage).ConfigureAwait(false);
+
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return JsonConvert.DeserializeObject<TResponse>(json);
+    }
+
 
     private void AddHeaders(HttpRequestMessage httpRequestMessage)
     {
