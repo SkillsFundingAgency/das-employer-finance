@@ -20,3 +20,7 @@ CREATE UNIQUE INDEX [IX_TransferConnectionInvitation_SenderAccountId_ReceiverAcc
 ON [employer_financial].[TransferConnectionInvitation] (SenderAccountId, ReceiverAccountId)
 WHERE [Status] <> 3
 GO
+
+CREATE INDEX [IX_TransferConnectionInvitation_ReceiverAccountId_Status]
+ON [employer_financial].[TransferConnectionInvitation]([ReceiverAccountId] ASC, [Status] ASC)
+GO
