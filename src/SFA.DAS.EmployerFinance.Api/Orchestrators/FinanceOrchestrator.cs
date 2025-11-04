@@ -188,11 +188,11 @@ public class FinanceOrchestrator
             return null;
         }
 
-        var result = _mapper.Map<List<Account>>(response.Accounts);
+        var accounts = response.Accounts.Select(x => _mapper.Map<Account>(x)).ToList();
 
         _logger.LogInformation("Requesting Get Accounts response with pageNumber {pageNumber} and " +
             "pageSize {pageSize}", pageNumber, pageSize);
 
-        return result;
+        return accounts;
     }
 }

@@ -13,5 +13,9 @@ public class AccountMappings : Profile
 
         CreateMap<Models.Account.AccountBalance, AccountBalance>();
         CreateMap<Models.Transfers.TransferAllowance, TransferAllowance>();
+
+        CreateMap<Models.Account.Account, Account>();
+
+        CreateMap<Account, Models.Account.Account>();
     }
 }
