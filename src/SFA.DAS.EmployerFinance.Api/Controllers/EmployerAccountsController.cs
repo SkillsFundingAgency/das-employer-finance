@@ -69,7 +69,7 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
     [HttpGet("{accountId}")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccountById(string accountId)
+    public async Task<IActionResult> GetAccountById(long accountId)
     {
         var result = await financeOrchestrator.GetAccountById(accountId);
 

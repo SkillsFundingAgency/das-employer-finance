@@ -402,4 +402,19 @@ public class DasLevyRepository : IDasLevyRepository
 
         return currentFractions;
     }
+
+    public async Task<List<Account>> GetAccounts(int pageSize, int pageNumber)
+    {
+        return await _db.Value.Accounts
+            .OrderBy(ac => ac.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<Account> GetAccountById(long accountId)
+    {
+        return await _db.Value.Accounts
+            .SingleOrDefaultAsync(ac => ac.Id == accountId);
+    }
 }
