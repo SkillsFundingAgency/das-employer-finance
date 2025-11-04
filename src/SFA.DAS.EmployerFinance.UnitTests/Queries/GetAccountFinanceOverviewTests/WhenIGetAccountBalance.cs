@@ -29,6 +29,7 @@ public class WhenIGetAccountBalance
         
         _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedCurrentFunds);
         _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
+        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
         _validator.Setup(v => v.ValidateAsync(_query))
             .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
     }
@@ -42,8 +43,10 @@ public class WhenIGetAccountBalance
     }
 
     [Test]
-    public async Task ThenTheFundsInShouldBeZero()
+    public async Task ThenTheFundsInShouldBeZero_WhenNoDeclarations()
     {
+        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
+
         var response = await _handler.Handle(_query, CancellationToken.None);
 
         response.FundsIn.Should().Be(0);
