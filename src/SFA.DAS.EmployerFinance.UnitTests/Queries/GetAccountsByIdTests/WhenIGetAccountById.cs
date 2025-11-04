@@ -70,7 +70,7 @@ public class WhenIGetAccountById
             .Setup(r => r.GetAccountById(It.IsAny<long>()))
             .ReturnsAsync((Account)null);
 
-        var request = new GetAccountByIdRequest { AccountId = 1 };
+        var request = new GetAccountByIdRequest { AccountId = 1 }; 
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
