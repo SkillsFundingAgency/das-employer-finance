@@ -6,9 +6,11 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
+[ExcludeFromCodeCoverage]
 public class DasLevyRepository : IDasLevyRepository
 {
     private readonly EmployerFinanceConfiguration _configuration;
