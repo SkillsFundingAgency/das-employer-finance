@@ -1,6 +1,8 @@
-﻿using System.Data.Common;
+﻿using Azure.Core;
+using Azure.Identity;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Data.SqlClient;
+using System.Data.Common;
 
 namespace SFA.DAS.EmployerFinance.Extensions;
 
@@ -23,12 +25,28 @@ public static class DatabaseExtensions
             return new SqlConnection(connectionString);
         }
 
-        var azureServiceTokenProvider = new AzureServiceTokenProvider();
+        var azureServiceTokenProvider = CreateChainedTokenCredential();
 
         return new SqlConnection
         {
             ConnectionString = connectionString,
-            AccessToken = azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result
+            AccessToken = azureServiceTokenProvider.GetToken(new TokenRequestContext(scopes: [AzureResource])).Token
         };
+    }
+
+    private static ChainedTokenCredential CreateChainedTokenCredential()
+    {
+        #if DEBUG
+                return new ChainedTokenCredential(
+                    new AzureCliCredential(),
+                    new VisualStudioCodeCredential(),
+                    new VisualStudioCredential());
+        #else
+                return new ChainedTokenCredential(
+                   new ManagedIdentityCredential(),
+                   new AzureCliCredential(),
+                   new VisualStudioCodeCredential(),
+                   new VisualStudioCredential());
+        #endif
     }
 }

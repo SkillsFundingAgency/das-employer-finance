@@ -64,6 +64,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TransactionLineEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());
+        modelBuilder.ApplyConfiguration(new PeriodEndConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
         modelBuilder.Ignore<PaymentDetails>();
     }
