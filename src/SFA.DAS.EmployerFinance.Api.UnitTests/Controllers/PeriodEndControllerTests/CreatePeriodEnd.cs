@@ -65,12 +65,12 @@ public class CreatePeriodEnd
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeOfType<CreatedAtActionResult>();
+        result.Should().BeOfType<OkObjectResult>();
 
-        var createdResult = result as CreatedAtActionResult;
-        createdResult!.StatusCode.Should().Be(201);
+        var okResult = result as OkObjectResult;
+        okResult!.StatusCode.Should().Be(200);
 
-        var model = createdResult.Value as PeriodEnd;
+        var model = okResult.Value as PeriodEnd;
         model.Should().NotBeNull();
         model!.PeriodEndId.Should().Be(inputPeriodEnd.PeriodEndId);
     }
