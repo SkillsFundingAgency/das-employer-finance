@@ -37,11 +37,7 @@ public class PeriodEndController(PeriodEndOrchestrator periodEndOrchestrator) : 
         if (createdPeriodEnd == null)
             return StatusCode(StatusCodes.Status500InternalServerError, "Could not create period end");
 
-        return CreatedAtAction(
-            nameof(createdPeriodEnd),
-            new { periodEndId = createdPeriodEnd.PeriodEndId },
-            createdPeriodEnd
-        );
+        return Ok(createdPeriodEnd);
     }
 
 
