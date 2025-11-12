@@ -9,7 +9,7 @@
 		<LangVersion>latestmajor</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
 		<PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.41" />

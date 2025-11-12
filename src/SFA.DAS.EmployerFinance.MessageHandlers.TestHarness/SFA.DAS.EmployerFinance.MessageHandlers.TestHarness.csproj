@@ -6,7 +6,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
     <PackageReference Include="SFA.DAS.Authentication" Version="1.1.2" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />

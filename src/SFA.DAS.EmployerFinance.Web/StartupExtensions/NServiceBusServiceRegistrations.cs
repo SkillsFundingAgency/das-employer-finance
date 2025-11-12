@@ -2,6 +2,7 @@
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
+using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 using SFA.DAS.NServiceBus.Configuration.MicrosoftDependencyInjection;
@@ -27,6 +28,8 @@ public static class NServiceBusServiceRegistrations
         {
             throw new Exception("DatabaseConnectionString configuration value is empty.");
         }
+
+        var sqlConnectionFactory = services.GetRequiredService<ISqlConnectionFactory>();
         
         var endpointConfiguration = new EndpointConfiguration(EndPointName)
             .UseErrorQueue($"{EndPointName}-errors")
@@ -35,7 +38,7 @@ public static class NServiceBusServiceRegistrations
             .UseServicesBuilder(services)
             .UseNewtonsoftJsonSerializer()
             .UseOutbox(true)
-            .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(databaseConnectionString))
+            .UseSqlServerPersistence(() => sqlConnectionFactory.Create(databaseConnectionString))
             .UseUnitOfWork();
 
         if (isDevOrLocal)

@@ -1,6 +1,7 @@
 ﻿using NServiceBus;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Extensions;
+using SFA.DAS.EmployerFinance.Infrastructure;
 using SFA.DAS.NServiceBus.Configuration;
 using SFA.DAS.NServiceBus.Configuration.NewtonsoftJsonSerializer;
 using SFA.DAS.NServiceBus.Hosting;
@@ -19,6 +20,7 @@ public static class ServiceCollectionExtensions
             {
                 var employerFinanceConfiguration = p.GetService<EmployerFinanceConfiguration>();
                 var configuration = p.GetService<IConfiguration>();
+                var sqlConnectionFactory = p.GetRequiredService<ISqlConnectionFactory>();
                 var isLocal = configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
                 
                 var logger = p.GetService<ILogger<Program>>();
@@ -31,7 +33,7 @@ public static class ServiceCollectionExtensions
                     .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
                     .UseNewMessageConventions()
                     .UseNewtonsoftJsonSerializer()
-                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
+                    .UseSqlServerPersistence(() => sqlConnectionFactory.Create(employerFinanceConfiguration.DatabaseConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
                     .UseSendOnly();
 
