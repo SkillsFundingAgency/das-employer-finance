@@ -13,6 +13,7 @@ public interface IDasLevyRepository
     Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef);
     Task<DasDeclaration> GetLastSubmissionForScheme(string empRef);
     Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds();
+    Task<PeriodEnd> GetPeriodEndById(string periodEndId);
     Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth);
     Task<DasDeclaration> GetEffectivePeriod12Declaration(string empRef, string payrollYear, DateTime yearEndAdjustmentCutOff);
     Task<decimal> ProcessDeclarations(long accountId, string empRef);

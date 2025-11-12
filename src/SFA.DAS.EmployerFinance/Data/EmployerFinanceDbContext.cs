@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Azure.Services.AppAuthentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
@@ -13,6 +14,7 @@ using SFA.DAS.EmployerFinance.Models.UserProfile;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
+[ExcludeFromCodeCoverage]
 public class EmployerFinanceDbContext : DbContext
 {
     private readonly EmployerFinanceConfiguration _configuration;
@@ -64,6 +66,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TransactionLineEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());
+        modelBuilder.ApplyConfiguration(new PeriodEndConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
         modelBuilder.Ignore<PaymentDetails>();
     }
