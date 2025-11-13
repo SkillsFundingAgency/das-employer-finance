@@ -21,11 +21,14 @@ public class GetAccountFinanceOverviewQueryHandler(
         var currentBalance = await GetAccountBalance(query.AccountId);
         var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
 
+        var latestMonthly = await levyService.GetLatestLevyDeclaration(query.AccountId);
+        var fundsIn = latestMonthly * 12m;
+
         var response = new GetAccountFinanceOverviewResponse
         {
             AccountId = query.AccountId,
             CurrentFunds = currentBalance,
-            FundsIn = 0,
+            FundsIn = fundsIn,
             FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear
         };
