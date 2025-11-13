@@ -9,12 +9,12 @@ public class TransferConnectionInvitationMappings : Profile
 {
     public TransferConnectionInvitationMappings()
     {
-        CreateMap<TransferConnectionInvitation, TransferConnectionInvitationDto>()
+        CreateMap<Models.TransferConnections.TransferConnectionInvitation, TransferConnectionInvitationDto>()
             .ForMember(m => m.Changes, o => o.MapFrom(i => i.Changes.OrderBy(c => c.CreatedDate)));
 
-        CreateMap<TransferConnectionInvitationChange, TransferConnectionInvitationChangeDto>();
+        CreateMap<Models.TransferConnections.TransferConnectionInvitationChange, TransferConnectionInvitationChangeDto>();
 
-        CreateMap<TransferConnectionInvitation, TransferConnection>()
+        CreateMap<Models.TransferConnections.TransferConnectionInvitation, TransferConnection>()
             .ForMember(m => m.FundingEmployerAccountId, o => o.MapFrom(i => i.SenderAccount.Id))
             .ForMember(m => m.FundingEmployerHashedAccountId, o => o.MapFrom(i => i.SenderAccount.HashedId))
             .ForMember(m => m.FundingEmployerPublicHashedAccountId, o => o.MapFrom(i => i.SenderAccount.PublicHashedId))
@@ -23,5 +23,17 @@ public class TransferConnectionInvitationMappings : Profile
             .ForMember(dest => dest.StatusAssignedOn,
                 opt => opt.MapFrom(src =>
                     src.Changes.Where(s => s.Status == src.Status).Select(s => (DateTime?)s.CreatedDate).FirstOrDefault()));
+
+        CreateMap<Models.TransferConnections.TransferConnectionInvitation, Api.Types.TransferConnectionInvitation>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.SenderAccountId, opt => opt.MapFrom(src => src.SenderAccount.Id))
+            .ForMember(dest => dest.SenderAccountName, opt => opt.MapFrom(src => src.SenderAccount.Name))
+            .ForMember(dest => dest.ReceiverAccountId, opt => opt.MapFrom(src => src.ReceiverAccount.Id))
+            .ForMember(dest => dest.ReceiverAccountName, opt => opt.MapFrom(src => src.ReceiverAccount.Name))
+            .ForMember(dest => dest.Changes, opt => opt.MapFrom(src => src.Changes));
+
+        CreateMap<Models.TransferConnections.TransferConnectionInvitationChange, Api.Types.TransferConnectionInvitationChange>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.FullName));
     }
 }

@@ -24,6 +24,6 @@ namespace SFA.DAS.EmployerFinance.Api.Client
 
         Task<List<Account>> GetAllEmployerAccounts(int pageNumber, int pageSize = 10);
 
-        Task<Account> GetAccount(string accountId);
+        Task<Account> GetAccount(long accountId);
     }
 }
