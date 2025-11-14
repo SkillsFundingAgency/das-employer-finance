@@ -1,14 +1,20 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Identity.Client;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
+using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
+using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
@@ -145,5 +151,71 @@ public class FinanceOrchestrator
         _logger.LogInformation("Received response - GetTransferAllowance for the accountId {accountId}", accountId);
 
         return result;
+    }
+
+    public async Task<Account> GetAccountById(long accountId)
+    {
+        _logger.LogInformation("Requesting Get Accounts for the accountId {accountId}", accountId);
+
+        var response = await _mediator.Send(new GetAccountByIdRequest
+        {
+            AccountId = accountId
+        });
+
+        if (response?.Account == null)
+        {
+            return null;
+        }
+
+        var result = _mapper.Map<Account>(response.Account);
+
+        _logger.LogInformation("Received response - Get Account for the accountId {accountId}", accountId);
+
+        return result;
+    }
+
+    public async Task<List<Account>> GetAccounts(int pageNumber, int pageSize)
+    {
+        _logger.LogInformation("Requesting Get Accounts request with pageNumber {pageNumber} and " +
+            "pageSize {pageSize}", pageNumber, pageSize);
+
+        var response = await _mediator.Send(new GetAccountsRequest
+        {
+            PageSize = pageSize,
+            PageNumber = pageNumber 
+        });
+
+        if (response?.Accounts == null)
+        {
+            return null;
+        }
+
+        var accounts = response.Accounts.Select(x => _mapper.Map<Account>(x)).ToList();
+
+        _logger.LogInformation("Received Get Accounts response with pageNumber {pageNumber} and " +
+            "pageSize {pageSize}", pageNumber, pageSize);
+
+        return accounts;
+    }
+
+    public async Task<List<Guid>> GetAccountPaymentIds(long accountId)
+    {
+        _logger.LogInformation("Requesting Get account payment ids request with accountId {accountId}", accountId);
+
+        var response = await _mediator.Send(new GetAccountPaymentIdsRequest
+        {
+            AccountId = accountId
+        });
+
+        if (response?.PaymentIds == null)
+        {
+            return null;
+        }
+
+        var accounts = response.PaymentIds;
+
+        _logger.LogInformation("Received Get Account Payment Ids response with accountId {accountId}", accountId);
+
+        return accounts;
     }
 }

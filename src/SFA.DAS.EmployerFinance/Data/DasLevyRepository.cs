@@ -6,9 +6,11 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
+[ExcludeFromCodeCoverage]
 public class DasLevyRepository : IDasLevyRepository
 {
     private readonly EmployerFinanceConfiguration _configuration;
@@ -165,6 +167,14 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
 
         return new HashSet<Guid>(result);
+    }
+
+    public async Task<List<Guid>> GetAccountPaymentIdsLinq(long accountId)
+    {
+       return await _db.Value.Payments
+                .Where(p => p.EmployerAccountId == accountId)
+                .Select(p => p.Id)
+                .ToListAsync();
     }
 
     public Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef)
@@ -401,5 +411,20 @@ public class DasLevyRepository : IDasLevyRepository
         }
 
         return currentFractions;
+    }
+
+    public async Task<List<Account>> GetAccounts(int pageSize, int pageNumber)
+    {
+        return await _db.Value.Accounts
+            .OrderBy(ac => ac.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<Account> GetAccountById(long accountId)
+    {
+        return await _db.Value.Accounts
+            .SingleOrDefaultAsync(ac => ac.Id == accountId);
     }
 }

@@ -16,7 +16,7 @@ public class WhenIGetTransferConnections
     private IEnumerable<TransferConnection> _transferConnections;
     private const string HashedAccountId = "GF3XWP";
     private const int AccountId = 123;
-    private const TransferConnectionInvitationStatus PendingStatus = TransferConnectionInvitationStatus.Pending;
+    private const Models.TransferConnections.TransferConnectionInvitationStatus PendingStatus = Models.TransferConnections.TransferConnectionInvitationStatus.Pending;
 
     [SetUp]
     public void Arrange()
