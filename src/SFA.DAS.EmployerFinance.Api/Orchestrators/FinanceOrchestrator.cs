@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Identity.Client;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
@@ -190,8 +192,29 @@ public class FinanceOrchestrator
 
         var accounts = response.Accounts.Select(x => _mapper.Map<Account>(x)).ToList();
 
-        _logger.LogInformation("Requesting Get Accounts response with pageNumber {pageNumber} and " +
+        _logger.LogInformation("Received Get Accounts response with pageNumber {pageNumber} and " +
             "pageSize {pageSize}", pageNumber, pageSize);
+
+        return accounts;
+    }
+
+    public async Task<List<Guid>> GetAccountPaymentIds(long accountId)
+    {
+        _logger.LogInformation("Requesting Get account payment ids request with accountId {accountId}", accountId);
+
+        var response = await _mediator.Send(new GetAccountPaymentIdsRequest
+        {
+            AccountId = accountId
+        });
+
+        if (response?.PaymentIds == null)
+        {
+            return null;
+        }
+
+        var accounts = response.PaymentIds;
+
+        _logger.LogInformation("Received Get Account Payment Ids response with accountId {accountId}", accountId);
 
         return accounts;
     }
