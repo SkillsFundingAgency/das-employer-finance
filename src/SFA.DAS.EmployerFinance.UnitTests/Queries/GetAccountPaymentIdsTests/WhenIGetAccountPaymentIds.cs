@@ -21,14 +21,14 @@ public class WhenIGetAccountPaymentIds
         // Arrange
         var accountId = 12345L;
 
-        var expectedIds = new HashSet<Guid>
+        var expectedIds = new List<Guid>
         {
             Guid.NewGuid(),
             Guid.NewGuid()
         };
 
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIds(accountId))
+            .Setup(r => r.GetAccountPaymentIdsLinq(accountId))
             .ReturnsAsync(expectedIds);
 
         var request = new GetAccountPaymentIdsRequest
@@ -40,7 +40,7 @@ public class WhenIGetAccountPaymentIds
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _dasLevyRepositoryMock.Verify(r => r.GetAccountPaymentIds(accountId), Times.Once);
+        _dasLevyRepositoryMock.Verify(r => r.GetAccountPaymentIdsLinq(accountId), Times.Once);
         result.Should().NotBeNull();
         result.PaymentIds.Should().BeEquivalentTo(expectedIds);
     }
@@ -50,8 +50,8 @@ public class WhenIGetAccountPaymentIds
     {
         // Arrange
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIds(It.IsAny<long>()))
-            .ReturnsAsync(new HashSet<Guid>());
+            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>()))
+            .ReturnsAsync(new List<Guid>());
 
         var request = new GetAccountPaymentIdsRequest
         {
@@ -64,7 +64,7 @@ public class WhenIGetAccountPaymentIds
         // Assert
         result.Should().NotBeNull();
         result.PaymentIds.Should().BeEmpty();
-        _dasLevyRepositoryMock.Verify(r => r.GetAccountPaymentIds(98765L), Times.Once);
+        _dasLevyRepositoryMock.Verify(r => r.GetAccountPaymentIdsLinq(98765L), Times.Once);
     }
 
     [Test]
@@ -72,8 +72,8 @@ public class WhenIGetAccountPaymentIds
     {
         // Arrange
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIds(It.IsAny<long>()))
-            .ReturnsAsync(new HashSet<Guid>());
+            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>()))
+            .ReturnsAsync(new List<Guid>());
 
         var request = new GetAccountPaymentIdsRequest { AccountId = 111 };
 

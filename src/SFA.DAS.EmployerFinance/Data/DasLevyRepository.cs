@@ -169,6 +169,14 @@ public class DasLevyRepository : IDasLevyRepository
         return new HashSet<Guid>(result);
     }
 
+    public async Task<List<Guid>> GetAccountPaymentIdsLinq(long accountId)
+    {
+       return await _db.Value.Payments
+                .Where(p => p.EmployerAccountId == accountId)
+                .Select(p => p.Id)
+                .ToListAsync();
+    }
+
     public Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef)
     {
         var parameters = new DynamicParameters();
