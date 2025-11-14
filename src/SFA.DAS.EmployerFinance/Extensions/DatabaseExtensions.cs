@@ -1,11 +1,12 @@
 ﻿using Azure.Core;
 using Azure.Identity;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Data.SqlClient;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class DatabaseExtensions
 {
     private const string AzureResource = "https://database.windows.net/";
