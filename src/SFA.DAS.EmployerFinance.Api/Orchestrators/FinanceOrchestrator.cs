@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Identity.Client;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
@@ -8,7 +7,6 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
-using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
 using System.Linq;
@@ -16,24 +14,16 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
-public class FinanceOrchestrator
+public class FinanceOrchestrator(
+    IMediator mediator,
+    ILogger<FinanceOrchestrator> logger,
+    IMapper mapper,
+    IEncodingService encodingService)
 {
-    private readonly IMediator _mediator;
-    private readonly ILogger<FinanceOrchestrator> _logger;
-    private readonly IMapper _mapper;
-    private readonly IEncodingService _encodingService;
-
-    public FinanceOrchestrator(
-        IMediator mediator,
-        ILogger<FinanceOrchestrator> logger,
-        IMapper mapper,
-        IEncodingService encodingService)
-    {
-        _mediator = mediator;
-        _logger = logger;
-        _mapper = mapper;
-        _encodingService = encodingService;
-    }
+    private readonly IMediator _mediator = mediator;
+    private readonly ILogger<FinanceOrchestrator> _logger = logger;
+    private readonly IMapper _mapper = mapper;
+    private readonly IEncodingService _encodingService = encodingService;
 
     public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId)
     {
@@ -54,9 +44,17 @@ public class FinanceOrchestrator
 
     public async Task<List<LevyDeclaration>> GetLevy(string hashedAccountId, string payrollYear, short payrollMonth)
     {
-        _logger.LogInformation("Requesting levy declaration for account {HashedAccountId}, year {PayrollYear} and month {PayrollMonth}", hashedAccountId, payrollYear, payrollMonth);
+        _logger.LogInformation(
+            "Requesting levy declaration for account {HashedAccountId}, year {PayrollYear} and month {PayrollMonth}",
+            hashedAccountId, payrollYear, payrollMonth);
 
-        var response = await _mediator.Send(new GetLevyDeclarationsByAccountAndPeriodRequest { HashedAccountId = hashedAccountId, PayrollYear = payrollYear, PayrollMonth = payrollMonth });
+        var response = await _mediator.Send(new GetLevyDeclarationsByAccountAndPeriodRequest
+        {
+            HashedAccountId = hashedAccountId,
+            PayrollYear = payrollYear,
+            PayrollMonth = payrollMonth
+        });
+
         if (response.Declarations == null)
         {
             return null;
@@ -64,7 +62,11 @@ public class FinanceOrchestrator
 
         var levyDeclarations = response.Declarations.Select(x => _mapper.Map<LevyDeclaration>(x)).ToList();
         levyDeclarations.ForEach(x => x.HashedAccountId = hashedAccountId);
-        _logger.LogInformation("Received response for levy declaration for account  {HashedAccountId}, year {PayrollYear} and month {PayrollMonth}", hashedAccountId, payrollYear, payrollMonth);
+
+        _logger.LogInformation(
+            "Received response for levy declaration for account {HashedAccountId}, year {PayrollYear} and month {PayrollMonth}",
+            hashedAccountId, payrollYear, payrollMonth);
+
         return levyDeclarations;
     }
 
@@ -79,7 +81,9 @@ public class FinanceOrchestrator
         }
 
         var dasEnglishFractions = response.FractionDetail.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
+
         _logger.LogInformation("Received response for english fraction history for account {HashedAccountId}, empRef {EmpRef}", hashedAccountId, empRef);
+
         return dasEnglishFractions;
     }
 
@@ -94,7 +98,9 @@ public class FinanceOrchestrator
         }
 
         var dasEnglishFractions = response.Fractions.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
+
         _logger.LogInformation("Received response for current english fractions for account {HashedAccountId}, empRefs {EmpRefs}", hashedAccountId, string.Join(", ", empRefs));
+
         return dasEnglishFractions;
     }
 
@@ -130,6 +136,7 @@ public class FinanceOrchestrator
     public async Task<TransferAllowance> GetTransferAllowance(string hashedAccountId)
     {
         _logger.LogInformation("Requesting GetTransferAllowance for the hashedAccountId {HashedAccountId}", hashedAccountId);
+
         var accountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
         return await GetTransferAllowanceByAccountId(accountId);
@@ -139,10 +146,7 @@ public class FinanceOrchestrator
     {
         _logger.LogInformation("Requesting GetTransferAllowance for the accountId {accountId}", accountId);
 
-        var response = await _mediator.Send(new GetTransferAllowanceQuery
-        {
-            AccountId = accountId
-        });
+        var response = await _mediator.Send(new GetTransferAllowanceQuery { AccountId = accountId });
 
         var result = _mapper.Map<TransferAllowance>(response.TransferAllowance);
 
@@ -155,10 +159,7 @@ public class FinanceOrchestrator
     {
         _logger.LogInformation("Requesting Get Accounts for the accountId {accountId}", accountId);
 
-        var response = await _mediator.Send(new GetAccountByIdRequest
-        {
-            AccountId = accountId
-        });
+        var response = await _mediator.Send(new GetAccountByIdRequest { AccountId = accountId });
 
         if (response?.Account == null)
         {
@@ -174,13 +175,14 @@ public class FinanceOrchestrator
 
     public async Task<List<Account>> GetAccounts(int pageNumber, int pageSize)
     {
-        _logger.LogInformation("Requesting Get Accounts request with pageNumber {pageNumber} and " +
-            "pageSize {pageSize}", pageNumber, pageSize);
+        _logger.LogInformation(
+            "Requesting Get Accounts request with pageNumber {pageNumber} and pageSize {pageSize}",
+            pageNumber, pageSize);
 
         var response = await _mediator.Send(new GetAccountsRequest
         {
             PageSize = pageSize,
-            PageNumber = pageNumber 
+            PageNumber = pageNumber
         });
 
         if (response?.Accounts == null)
@@ -190,8 +192,9 @@ public class FinanceOrchestrator
 
         var accounts = response.Accounts.Select(x => _mapper.Map<Account>(x)).ToList();
 
-        _logger.LogInformation("Requesting Get Accounts response with pageNumber {pageNumber} and " +
-            "pageSize {pageSize}", pageNumber, pageSize);
+        _logger.LogInformation(
+            "Requesting Get Accounts response with pageNumber {pageNumber} and pageSize {pageSize}",
+            pageNumber, pageSize);
 
         return accounts;
     }

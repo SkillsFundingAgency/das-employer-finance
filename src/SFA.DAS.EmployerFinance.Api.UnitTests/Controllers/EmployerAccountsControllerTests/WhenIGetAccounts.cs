@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Mappings;
+using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.Encoding;
 
@@ -41,12 +41,11 @@ public class WhenIGetAccounts
 
         var expectedResponse = new GetAccountsResponse
         {
-            Accounts = new List<Models.Account.Account>
-                {
-                    new Models.Account.Account { HashedId = "1", Name = "Account 1" },
-                    new Models.Account.Account { HashedId = "2", Name = "Account 2" }
-                },
-           // TotalCount = 2
+            Accounts =
+            [
+                new() { HashedId = "1", Name = "Account 1" },
+                new() { HashedId = "2", Name = "Account 2" }
+            ]
         };
 
         _mediator
@@ -62,7 +61,7 @@ public class WhenIGetAccounts
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
 
-        var responseObject = result.Value as List<Account>;
+        var responseObject = result.Value as List<Types.Account>;
         responseObject.Should().NotBeNull();
         responseObject!.Should().HaveCount(2);
     }
