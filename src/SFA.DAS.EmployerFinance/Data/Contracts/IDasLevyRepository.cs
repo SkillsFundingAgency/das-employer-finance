@@ -10,6 +10,7 @@ public interface IDasLevyRepository
     Task CreateNewPeriodEnd(PeriodEnd periodEnd);
     Task CreatePayments(IEnumerable<PaymentDetails> payments);
     Task<ISet<Guid>> GetAccountPaymentIds(long accountId);
+    Task<List<Guid>> GetAccountPaymentIdsLinq(long accountId);
     Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef);
     Task<DasDeclaration> GetLastSubmissionForScheme(string empRef);
     Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds();
@@ -27,4 +28,6 @@ public interface IDasLevyRepository
     Task UpdatePaymentMetadata(PaymentDetails details);
     Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId);
     Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata();
+    Task<List<Account>> GetAccounts(int pageSize, int pageNumber);
+    Task<Account> GetAccountById(long accountId);
 }
