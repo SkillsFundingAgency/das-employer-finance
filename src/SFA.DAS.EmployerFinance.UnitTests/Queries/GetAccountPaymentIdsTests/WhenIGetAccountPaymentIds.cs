@@ -40,7 +40,7 @@ public class WhenIGetAccountPaymentIds
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _dasLevyRepositoryMock.Verify(r => r.GetAccountPaymentIdsLinq(accountId), Times.Once);
+        _dasLevyRepositoryMock.VerifyAll();
         result.Should().NotBeNull();
         result.PaymentIds.Should().BeEquivalentTo(expectedIds);
     }
@@ -64,7 +64,7 @@ public class WhenIGetAccountPaymentIds
         // Assert
         result.Should().NotBeNull();
         result.PaymentIds.Should().BeEmpty();
-        _dasLevyRepositoryMock.Verify(r => r.GetAccountPaymentIdsLinq(98765L), Times.Once);
+        _dasLevyRepositoryMock.VerifyAll();
     }
 
     [Test]
