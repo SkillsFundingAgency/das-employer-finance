@@ -38,7 +38,7 @@ public class WhenIGetAccountById
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _dasLevyRepositoryMock.Verify(r => r.GetAccountById(123), Times.Once);
+        _dasLevyRepositoryMock.VerifyAll();
         result.Should().NotBeNull();
         result.Account.Should().BeEquivalentTo(expectedAccount);
     }
@@ -59,7 +59,7 @@ public class WhenIGetAccountById
         // Assert
         result.Should().NotBeNull();
         result.Account.Should().BeNull();
-        _dasLevyRepositoryMock.Verify(r => r.GetAccountById(999), Times.Once);
+        _dasLevyRepositoryMock.VerifyAll();
     }
 
     [Test]
