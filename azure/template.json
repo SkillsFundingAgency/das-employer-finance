@@ -809,6 +809,7 @@
             "apiVersion": "2022-09-01",
             "name": "[concat('automation-account-finance-db-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
