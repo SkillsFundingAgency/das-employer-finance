@@ -191,7 +191,11 @@
             "metadata": {
                 "description": "Determines whether to enable route table association on subnet"
             }
-        }
+        },
+        "DeployAutomationAccount": {
+            "type": "bool",
+            "defaultValue": false
+        }       
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -805,7 +809,7 @@
             }
         },
         {
-            "condition": "[contains(createArray('at','pp','mo','prd'), parameters('resourceEnvironmentName'))]",
+            "condition": "[equals(parameters('deployAutomationAccount'), true())]",
             "apiVersion": "2022-09-01",
             "name": "[concat('automation-account-finance-db-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
