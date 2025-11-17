@@ -192,19 +192,31 @@
                 "description": "Determines whether to enable route table association on subnet"
             }
         },
-        "DeployAutomationAccount": {
+        "deployAutomationRunbook": {
             "type": "bool",
             "defaultValue": false
-        }       
+        },
+        "publishContentVersion": {
+            "type": "string",
+            "defaultValue": "1.0.0.0"
+        },
+        "publishContentUri": {
+            "type": "string"
+        },
+        "automationRunbookName": {
+            "type": "string"
+        },
+        "automationAccountName":{
+            "type": "string"
+        }
     },
     "variables": {
-        "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+        "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177/templates/",
         "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
         "uiAppServiceName": "[concat(variables('resourceNamePrefix'), 'ui-as')]",
         "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
         "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
         "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
-        "automationAccountName": "[concat(parameters('databaseName'),'-aa')]",
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
         "configNames": "SFA.DAS.EmployerFinance.Web,SFA.DAS.Employer.GovSignIn,SFA.DAS.Encoding",
         "configNamesApi": "SFA.DAS.EmployerFinance,SFA.DAS.Encoding",
@@ -809,20 +821,32 @@
             }
         },
         {
-            "condition": "[equals(parameters('deployAutomationAccount'), true())]",
+            "condition": "[equals(parameters('deployAutomationRunbook'), true())]",
             "apiVersion": "2022-09-01",
-            "name": "[concat('automation-account-finance-db-', parameters('utcValue'))]",
+            "name": "[concat('automation-runbook-finance-db-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(variables('deploymentUrlBase'),'automation-account.json')]",
+                    "uri": "[uri(variables('deploymentUrlBase'),'automation-runbook.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "runbookType": {
+                        "value": "PowerShell"
+                    },
+                    "publishContentLink": {
+                        "value": {
+                            "uri": "[parameters('publishContentUri')]",
+                            "contentVersion": "[parameters('publishContentVersion')]"
+                        }
+                    },
+                    "runbookName": {
+                        "value": "[parameters('automationRunbookName')]"
+                    },
                     "automationAccountName": {
-                        "value": "[variables('automationAccountName')]"
+                        "value": "[parameters('automationAccountName')]"
                     }
                 }
             }
