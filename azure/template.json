@@ -196,11 +196,11 @@
             "type": "bool",
             "defaultValue": false
         },
-        "publishContentVersion": {
+        "automationPublishContentVersion": {
             "type": "string",
             "defaultValue": "1.0.0.0"
         },
-        "publishContentUri": {
+        "automationPublishContentUri": {
             "type": "string"
         },
         "automationRunbookName": {
@@ -838,8 +838,8 @@
                     },
                     "publishContentLink": {
                         "value": {
-                            "uri": "[parameters('publishContentUri')]",
-                            "contentVersion": "[parameters('publishContentVersion')]"
+                            "uri": "[parameters('automationPublishContentUri')]",
+                            "contentVersion": "[parameters('automationPublishContentVersion')]"
                         }
                     },
                     "runbookName": {
