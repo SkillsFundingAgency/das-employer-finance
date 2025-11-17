@@ -805,6 +805,7 @@
             }
         },
         {
+            "condition": "[contains(createArray('at','pp','mo','prd'), parameters('resourceEnvironmentName'))]",
             "apiVersion": "2022-09-01",
             "name": "[concat('automation-account-finance-db-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
