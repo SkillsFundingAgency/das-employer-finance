@@ -836,11 +836,11 @@
                     "runbookType": {
                         "value": "PowerShell"
                     },
-                    "publishContentLink": {
-                        "value": {
-                            "uri": "[parameters('automationPublishContentUri')]",
-                            "contentVersion": "[parameters('automationPublishContentVersion')]"
-                        }
+                    "publishContentUri": {
+                        "value": "[parameters('automationPublishContentUri')]"
+                    },
+                    "publishContentVersion": {
+                        "value": "[parameters('automationPublishContentVersion')]"
                     },
                     "runbookName": {
                         "value": "[parameters('automationRunbookName')]"
