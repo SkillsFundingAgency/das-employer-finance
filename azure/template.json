@@ -200,6 +200,7 @@
         "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
         "workerAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-as')]",
         "workerAppServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
+        "automationAccountName": "[concat(parameters('databaseName'),'-aa')]",
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
         "configNames": "SFA.DAS.EmployerFinance.Web,SFA.DAS.Employer.GovSignIn,SFA.DAS.Encoding",
         "configNamesApi": "SFA.DAS.EmployerFinance,SFA.DAS.Encoding",
@@ -799,6 +800,23 @@
                     },
                     "logAnalyticsWorkspaceName": {
                         "value": "[parameters('logAnalyticsWorkspaceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2022-09-01",
+            "name": "[concat('automation-account-finance-db-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(variables('deploymentUrlBase'),'automation-account.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "automationAccountName": {
+                        "value": "[variables('automationAccountName')]"
                     }
                 }
             }
