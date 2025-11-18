@@ -825,7 +825,7 @@
             "apiVersion": "2022-09-01",
             "name": "[concat('automation-runbook-finance-db-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('resourceGroupName')]",
+            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -834,7 +834,7 @@
                 },
                 "parameters": {
                     "runbookType": {
-                        "value": "PowerShell"
+                        "value": "PowerShell72"
                     },
                     "publishContentUri": {
                         "value": "[parameters('automationPublishContentUri')]"
