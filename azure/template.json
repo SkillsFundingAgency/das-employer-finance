@@ -206,7 +206,7 @@
         "automationRunbookName": {
             "type": "string"
         },
-        "automationAccountName":{
+        "automationAccountName": {
             "type": "string"
         }
     },
