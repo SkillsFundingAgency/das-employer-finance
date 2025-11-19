@@ -52,4 +52,32 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
         return Ok(result);
     }
+
+    [HttpGet]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccounts(int pageNumber = 1, int pageSize = 10000)
+    {
+        var result = await financeOrchestrator.GetAccounts(pageNumber, pageSize);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("{accountId}")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccountById(long accountId)
+    {
+        var result = await financeOrchestrator.GetAccountById(accountId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
 }
