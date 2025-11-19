@@ -55,7 +55,7 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
     [HttpGet]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccounts(int pageNumber, int pageSize = 10)
+    public async Task<IActionResult> GetAccounts(int pageNumber = 1, int pageSize = 10000)
     {
         var result = await financeOrchestrator.GetAccounts(pageNumber, pageSize);
 
