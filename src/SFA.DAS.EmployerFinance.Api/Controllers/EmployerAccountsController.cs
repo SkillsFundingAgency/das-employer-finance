@@ -80,4 +80,18 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
         return Ok(result);
     }
+
+    [HttpGet("{accountId}/payments/ids")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccountPaymentIds(long accountId)
+    {
+        var result = await financeOrchestrator.GetAccountPaymentIds(accountId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
 }

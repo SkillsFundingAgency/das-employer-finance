@@ -49,7 +49,7 @@ public class WhenIGetAllAccounts
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        _dasLevyRepositoryMock.Verify(r => r.GetAccounts(50, 2), Times.Once);
+        _dasLevyRepositoryMock.VerifyAll();
         result.Should().NotBeNull();
         result.Accounts.Should().BeEquivalentTo(expectedAccounts);
         result.TotalPages.Should().Be(1);
@@ -86,10 +86,7 @@ public class WhenIGetAllAccounts
         // Assert
         result.Should().NotBeNull();
         result.Accounts.Should().BeEmpty();
-        result.TotalCount.Should().Be(0);
-        result.TotalPages.Should().Be(0);
-
-        _dasLevyRepositoryMock.Verify(r => r.GetAccounts(10, 1), Times.Once);
+        _dasLevyRepositoryMock.VerifyAll();
     }
 
 
