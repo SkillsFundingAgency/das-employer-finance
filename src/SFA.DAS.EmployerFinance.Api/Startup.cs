@@ -13,11 +13,10 @@ using SFA.DAS.EmployerFinance.Api.Middleware;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.Validation.Mvc.Extensions;
-using AccountMappings = SFA.DAS.EmployerFinance.Api.Mappings.AccountMappings;
+using AccountMappings = SFA.DAS.EmployerFinance.Mappings.AccountMappings;
 
 namespace SFA.DAS.EmployerFinance.Api;
 
