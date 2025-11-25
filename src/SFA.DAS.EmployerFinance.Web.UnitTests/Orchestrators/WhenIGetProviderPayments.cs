@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -54,7 +55,7 @@ internal class WhenIGetProviderPayments
         _orchestrator =
             new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object,
                 _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(),
-                Mock.Of<IEncodingService>(),Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>());
+                Mock.Of<IEncodingService>(),Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>(), Mock.Of<EmployerFinanceWebConfiguration>());
     }
 
     private Expression<Func<IMediator, Task<FindAccountProviderPaymentsResponse>>> AssertExpressionValidation()

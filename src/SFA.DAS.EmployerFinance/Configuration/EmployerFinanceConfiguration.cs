@@ -25,6 +25,7 @@ public class EmployerFinanceWebConfiguration : EmployerFinanceConfiguration
     public string EmployerProjectionsBaseUrl { get; set; }
     public string EmployerRecruitBaseUrl { get; set; }
     public string LevyTransferMatchingBaseUrl { get; set; }
+    public virtual bool ShowLevyTransparency { get; set; }
 }
 
 public class ZenDeskConfiguration

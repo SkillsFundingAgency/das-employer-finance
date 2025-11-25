@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -26,7 +27,8 @@ public class EmployerAccountTransactionsOrchestrator(
     ILogger<EmployerAccountTransactionsOrchestrator> logger,
     IEncodingService encodingService,
     IAuthenticationOrchestrator authenticationOrchestrator,
-    IGovAuthEmployerAccountService accountService)
+    IGovAuthEmployerAccountService accountService,
+    EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
@@ -64,6 +66,7 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalSpendForLastYear = getAccountFinanceOverview.TotalSpendForLastYear,
                 FundingExpected = getAccountFinanceOverview.FundsIn,
                 AvailableFunds = getAccountFinanceOverview.FundsIn - getAccountFinanceOverview.FundsOut,
+                ShowLevyTransparency = configuration.ShowLevyTransparency
             }
         };
 
