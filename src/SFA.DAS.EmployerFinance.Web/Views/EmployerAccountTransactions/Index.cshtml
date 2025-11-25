@@ -17,51 +17,66 @@
     var now = DateTime.UtcNow.ToGmtStandardTime();
 }
 
-<h1 class="govuk-heading-xl">Finance</h1>
+
 
 @if (Model.Data.IsLevyEmployer)
 {
-    <div class="govuk-grid-row govuk-!-margin-bottom-8">
-        <div class="govuk-grid-column-one-third">
-            @{
-                var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
-            }
-            <p class="app-finance-figure__title" id="lbl-current-funds">Current funds</p>
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-funds">@balance</div>
+    @if (Model.Data.ShowLevyTransparency)
+    {
+        <h1 class="govuk-heading-xl">Funding and payments</h1>
+        <div class="govuk-grid-row govuk-!-margin-bottom-8">
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body">The <b>apprenticeship levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. While employers do not own these funds, they can use them to cover apprenticeship costs.</p>
+                <p class="govuk-body">Employers have 24 months to use funds, after which they are returned to support apprenticeship programmes.</p>
+            </div>
         </div>
-        <div class="govuk-grid-column-one-third">
-            @{
-                var currentSpend = Model.Data.TotalSpendForLastYear.ToString("C0", culture);
-            }
-            <p class="app-finance-figure__title" id="lbl-current-spent-funds">Funds spent since @DateTime.Now.AddMonths(-12).ToString("MMM yyyy")</p>
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-spent-funds">@currentSpend</div>
+    }
+    else
+    {
+        <h1 class="govuk-heading-xl">Finance</h1>
+        <div class="govuk-grid-row govuk-!-margin-bottom-8">
+            <div class="govuk-grid-column-one-third">
+                @{
+                    var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
+                }
+                <p class="app-finance-figure__title" id="lbl-current-funds">Current funds</p>
+                <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-funds">@balance</div>
+            </div>
+            <div class="govuk-grid-column-one-third">
+                @{
+                    var currentSpend = Model.Data.TotalSpendForLastYear.ToString("C0", culture);
+                }
+                <p class="app-finance-figure__title" id="lbl-current-spent-funds">Funds spent since @DateTime.Now.AddMonths(-12).ToString("MMM yyyy")</p>
+                <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-spent-funds">@currentSpend</div>
+            </div>
         </div>
-    </div>
-    <h2 class="govuk-heading-s app-finance-figure__title">Estimates</h2>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-third">
-            @{
-                var expected = Model.Data.FundingExpected.ToString("C0", culture);
-            }
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-estimated-future-funding">@expected</div>
-            <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-estimated-future-funding">Estimated total funding for the next 12 months (based on funds entering your Apprenticeship service account, including the 10% top up)</p>
+        <h2 class="govuk-heading-s app-finance-figure__title">Estimates</h2>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+                @{
+                    var expected = Model.Data.FundingExpected.ToString("C0", culture);
+                }
+                <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-estimated-future-funding">@expected</div>
+                <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-estimated-future-funding">Estimated total funding for the next 12 months (based on funds entering your Apprenticeship service account, including the 10% top up)</p>
+            </div>
         </div>
-    </div>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <details id="inform-accurate-estimates" class="govuk-details govuk-!-margin-bottom-0">
-                <summary class="govuk-details__summary">
-                    <span class="govuk-details__summary-text">
-                        How accurate are the estimates?
-                    </span>
-                </summary>
-                <div class="govuk-details__text">
-                    <p>Estimates are based on details we have about your last levy payment and apprenticeship arrangements, which may not be up-to-date.</p>
-                    <p>You should use additional financial information when planning how to spend your funds.</p>
-                </div>
-            </details>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <details id="inform-accurate-estimates" class="govuk-details govuk-!-margin-bottom-0">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            How accurate are the estimates?
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        <p>Estimates are based on details we have about your last levy payment and apprenticeship arrangements, which may not be up-to-date.</p>
+                        <p>You should use additional financial information when planning how to spend your funds.</p>
+                    </div>
+                </details>
+            </div>
         </div>
-    </div>
+    }
+    
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 }
 
