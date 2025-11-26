@@ -14,5 +14,9 @@ public class AccountMappings : Profile
         CreateMap<AccountDetailViewModel, AccountDetailDto>()
             .ForMember(m => m.HashedId, o => o.MapFrom(i => i.HashedAccountId))
             .ForMember(m => m.PublicHashedId, o => o.MapFrom(i => i.PublicHashedAccountId));
+
+        CreateMap<Account, Api.Types.Account>();
+
+        CreateMap<Api.Types.Account, Account>();
     }
 }
