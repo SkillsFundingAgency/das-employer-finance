@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
+using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
@@ -9,8 +12,6 @@ using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
@@ -195,5 +196,26 @@ public class FinanceOrchestrator(
             pageNumber, pageSize);
 
         return response;
+    }
+
+    public async Task<List<Guid>> GetAccountPaymentIds(long accountId)
+    {
+        _logger.LogInformation("Requesting Get account payment ids request with accountId {accountId}", accountId);
+
+        var response = await _mediator.Send(new GetAccountPaymentIdsRequest
+        {
+            AccountId = accountId
+        });
+
+        if (response?.PaymentIds == null)
+        {
+            return null;
+        }
+
+        var accounts = response.PaymentIds;
+
+        _logger.LogInformation("Received Get Account Payment Ids response with accountId {accountId}", accountId);
+
+        return accounts;
     }
 }
