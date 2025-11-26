@@ -21,5 +21,11 @@ namespace SFA.DAS.EmployerFinance.Api.Client
         Task<List<AccountBalance>> GetAccountBalances(List<string> accountIds);
 
         Task<TransferAllowance> GetTransferAllowance(string hashedAccountId);
+
+        Task<List<PeriodEnd>> GetAllPeriodEnds();
+
+        Task<string> CreatePeriodEnd(PeriodEnd periodEnd);
+
+        Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId);
     }
 }
