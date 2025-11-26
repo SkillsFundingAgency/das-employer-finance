@@ -61,9 +61,9 @@ public class WhenIGetAccounts
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
 
-        var responseObject = result.Value as List<Types.Account>;
+        var responseObject = result.Value as GetAccountsResponse;
         responseObject.Should().NotBeNull();
-        responseObject!.Should().HaveCount(2);
+        responseObject.Accounts!.Should().HaveCount(2);
     }
 
     [Test]

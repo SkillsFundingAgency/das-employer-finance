@@ -8,14 +8,15 @@ using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.ErrorHandler;
 using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Filters;
+using SFA.DAS.EmployerFinance.Api.Mappings;
 using SFA.DAS.EmployerFinance.Api.Middleware;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data;
-using SFA.DAS.EmployerFinance.Mappings;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.Validation.Mvc.Extensions;
+using AccountMappings = SFA.DAS.EmployerFinance.Mappings.AccountMappings;
 
 namespace SFA.DAS.EmployerFinance.Api;
 
@@ -69,6 +70,7 @@ public class Startup
         services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(GetPayeSchemeByRefQuery).Assembly));
         services.AddAutoMapper(typeof(Startup).Assembly);
         services.AddAutoMapper(typeof(AccountMappings).Assembly);
+        services.AddAutoMapper(typeof(PeriodEndMappings).Assembly);
 
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 

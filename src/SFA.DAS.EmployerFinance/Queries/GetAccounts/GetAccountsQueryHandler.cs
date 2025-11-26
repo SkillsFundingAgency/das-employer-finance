@@ -15,8 +15,6 @@ public class GetAccountsQueryHandler : IRequestHandler<GetAccountsRequest, GetAc
     {
         var response = new GetAccountsResponse();
 
-        response.Accounts = await _dasLevyRepository.GetAccounts(message.PageSize, message.PageNumber);
-
-        return response;
+        return await _dasLevyRepository.GetAccounts(message.PageSize, message.PageNumber);
     }
 }

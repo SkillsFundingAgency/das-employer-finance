@@ -88,7 +88,7 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
         return JsonConvert.DeserializeObject<TransferAllowance>(json);
     }
 
-    public async Task<List<Account>> GetAllEmployerAccounts(int pageNumber, int pageSize = 10)
+    public async Task<List<Account>> GetAllEmployerAccounts(int pageNumber = 1, int pageSize = 10000)
     {
         var baseUrl = GetBaseUrl();
         var url = $"{baseUrl}/api/accounts";
@@ -105,6 +105,33 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
 
         return JsonConvert.DeserializeObject<Account>(json);
     }
+    
+    public async Task<List<PeriodEnd>> GetAllPeriodEnds()
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<PeriodEnd>>(json);
+    }
+
+    public async Task<string> CreatePeriodEnd(PeriodEnd periodEnd)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends";
+        var json = await _httpClient.PostAsync(url, JsonConvert.SerializeObject(periodEnd));
+
+        return JsonConvert.DeserializeObject<string>(json);
+    }
+
+    public async Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends/{periodEndId}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<PeriodEnd>(json);
+    }
 
     public async Task<List<Guid>> GetAccountPaymentIds(long accountId)
     {
@@ -118,5 +145,5 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
     private string GetBaseUrl()
     {
         return _configuration.ApiBaseUrl.Trim('/');
-    }
+    }   
 }

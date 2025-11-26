@@ -174,7 +174,7 @@ public class FinanceOrchestrator(
         return result;
     }
 
-    public async Task<List<Account>> GetAccounts(int pageNumber, int pageSize)
+    public async Task<GetAccountsResponse> GetAccounts(int pageNumber, int pageSize)
     {
         _logger.LogInformation(
             "Requesting Get Accounts request with pageNumber {pageNumber} and pageSize {pageSize}",
@@ -191,13 +191,11 @@ public class FinanceOrchestrator(
             return null;
         }
 
-        var accounts = response.Accounts.Select(x => _mapper.Map<Account>(x)).ToList();
-
         _logger.LogInformation(
             "Requesting Get Accounts response with pageNumber {pageNumber} and pageSize {pageSize}",
             pageNumber, pageSize);
 
-        return accounts;
+        return response;
     }
 
     public async Task<List<Guid>> GetAccountPaymentIds(long accountId)

@@ -21,14 +21,23 @@ public class WhenIGetAllAccounts
     {
         // Arrange
         var expectedAccounts = new List<Account>
-            {
-                new Account { HashedId = "123", Name = "Account 1" },
-                new Account { HashedId = "456", Name = "Account 2" }
-            };
+    {
+        new Account { HashedId = "123", Name = "Account 1" },
+        new Account { HashedId = "456", Name = "Account 2" }
+    };
+
+        var expectedResponse = new GetAccountsResponse
+        {
+            Accounts = expectedAccounts,
+            TotalCount = 2,
+            TotalPages = 1,
+            PageNumber = 2,
+            PageSize = 50
+        };
 
         _dasLevyRepositoryMock
             .Setup(r => r.GetAccounts(50, 2))
-            .ReturnsAsync(expectedAccounts);
+            .ReturnsAsync(expectedResponse);
 
         var request = new GetAccountsRequest
         {
@@ -43,15 +52,27 @@ public class WhenIGetAllAccounts
         _dasLevyRepositoryMock.VerifyAll();
         result.Should().NotBeNull();
         result.Accounts.Should().BeEquivalentTo(expectedAccounts);
+        result.TotalPages.Should().Be(1);
+        result.TotalCount.Should().Be(2);
     }
+
 
     [Test]
     public async Task Then_An_Empty_List_Is_Returned_If_No_Accounts_Found()
     {
         // Arrange
+        var expectedResponse = new GetAccountsResponse
+        {
+            Accounts = new List<Account>(),
+            TotalCount = 0,
+            TotalPages = 0,
+            PageNumber = 1,
+            PageSize = 10
+        };
+
         _dasLevyRepositoryMock
             .Setup(r => r.GetAccounts(It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync(new List<Account>());
+            .ReturnsAsync(expectedResponse);
 
         var request = new GetAccountsRequest
         {
@@ -66,17 +87,35 @@ public class WhenIGetAllAccounts
         result.Should().NotBeNull();
         result.Accounts.Should().BeEmpty();
         _dasLevyRepositoryMock.VerifyAll();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
+
+        _dasLevyRepositoryMock.Verify(r => r.GetAccounts(10, 1), Times.Once);
     }
+
 
     [Test]
     public async Task Then_The_Response_Object_Is_Not_Null()
     {
         // Arrange
+        var expectedResponse = new GetAccountsResponse
+        {
+            Accounts = new List<Account>(),
+            TotalCount = 0,
+            TotalPages = 0,
+            PageNumber = 1,
+            PageSize = 1
+        };
+
         _dasLevyRepositoryMock
             .Setup(r => r.GetAccounts(It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync(new List<Account>());
+            .ReturnsAsync(expectedResponse);
 
-        var request = new GetAccountsRequest { PageSize = 1, PageNumber = 1 };
+        var request = new GetAccountsRequest
+        {
+            PageSize = 1,
+            PageNumber = 1
+        };
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -84,4 +123,5 @@ public class WhenIGetAllAccounts
         // Assert
         result.Should().NotBeNull();
     }
+
 }

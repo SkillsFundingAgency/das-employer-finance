@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -214,6 +215,12 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
     }
 
+    public async Task<PeriodEnd> GetPeriodEndById(string periodEndId)
+    {
+        return await _db.Value.PeriodEnds
+        .SingleOrDefaultAsync(pe => pe.PeriodEndId == periodEndId);
+    }
+
     public async Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth)
     {
         var parameters = new DynamicParameters();
@@ -413,13 +420,24 @@ public class DasLevyRepository : IDasLevyRepository
         return currentFractions;
     }
 
-    public async Task<List<Account>> GetAccounts(int pageSize, int pageNumber)
+    public async Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber)
     {
-        return await _db.Value.Accounts
+        var totalCount = await _db.Value.Accounts.CountAsync();
+
+        var accounts = await _db.Value.Accounts
             .OrderBy(ac => ac.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
+        return new GetAccountsResponse
+        {
+            Accounts = accounts,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public async Task<Account> GetAccountById(long accountId)
