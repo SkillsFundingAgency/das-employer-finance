@@ -104,9 +104,36 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
 
         return JsonConvert.DeserializeObject<Account>(json);
     }
+    
+    public async Task<List<PeriodEnd>> GetAllPeriodEnds()
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<PeriodEnd>>(json);
+    }
+
+    public async Task<string> CreatePeriodEnd(PeriodEnd periodEnd)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends";
+        var json = await _httpClient.PostAsync(url, JsonConvert.SerializeObject(periodEnd));
+
+        return JsonConvert.DeserializeObject<string>(json);
+    }
+
+    public async Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends/{periodEndId}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<PeriodEnd>(json);
+    }
 
     private string GetBaseUrl()
     {
         return _configuration.ApiBaseUrl.Trim('/');
-    }
+    }   
 }

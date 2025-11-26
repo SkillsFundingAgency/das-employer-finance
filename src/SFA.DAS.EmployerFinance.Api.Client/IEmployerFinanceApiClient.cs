@@ -25,5 +25,11 @@ namespace SFA.DAS.EmployerFinance.Api.Client
         Task<List<Account>> GetAllEmployerAccounts(int pageNumber, int pageSize = 10);
 
         Task<Account> GetAccount(long accountId);
+        
+        Task<List<PeriodEnd>> GetAllPeriodEnds();
+
+        Task<string> CreatePeriodEnd(PeriodEnd periodEnd);
+
+        Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId);
     }
 }
