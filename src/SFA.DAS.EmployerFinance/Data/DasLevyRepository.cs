@@ -6,9 +6,12 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Queries.GetAccounts;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
+[ExcludeFromCodeCoverage]
 public class DasLevyRepository : IDasLevyRepository
 {
     private readonly EmployerFinanceConfiguration _configuration;
@@ -167,6 +170,14 @@ public class DasLevyRepository : IDasLevyRepository
         return new HashSet<Guid>(result);
     }
 
+    public async Task<List<Guid>> GetAccountPaymentIdsLinq(long accountId)
+    {
+       return await _db.Value.Payments
+                .Where(p => p.EmployerAccountId == accountId)
+                .Select(p => p.Id)
+                .ToListAsync();
+    }
+
     public Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef)
     {
         var parameters = new DynamicParameters();
@@ -202,6 +213,12 @@ public class DasLevyRepository : IDasLevyRepository
             param: null,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<PeriodEnd> GetPeriodEndById(string periodEndId)
+    {
+        return await _db.Value.PeriodEnds
+        .SingleOrDefaultAsync(pe => pe.PeriodEndId == periodEndId);
     }
 
     public async Task<DasDeclaration> GetSubmissionByEmprefPayrollYearAndMonth(string empRef, string payrollYear, short payrollMonth)
@@ -401,5 +418,31 @@ public class DasLevyRepository : IDasLevyRepository
         }
 
         return currentFractions;
+    }
+
+    public async Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber)
+    {
+        var totalCount = await _db.Value.Accounts.CountAsync();
+
+        var accounts = await _db.Value.Accounts
+            .OrderBy(ac => ac.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new GetAccountsResponse
+        {
+            Accounts = accounts,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<Account> GetAccountById(long accountId)
+    {
+        return await _db.Value.Accounts
+            .SingleOrDefaultAsync(ac => ac.Id == accountId);
     }
 }

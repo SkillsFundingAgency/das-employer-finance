@@ -16,7 +16,7 @@ public class GetTransferConnectionsQueryHandler(
 
         return new GetTransferConnectionsResponse
         {
-            TransferConnections = mapper.Map<List<TransferConnectionInvitation>, List<TransferConnection>>(transferConnectionInvitations)
+            TransferConnections = mapper.Map<List<Models.TransferConnections.TransferConnectionInvitation>, List<TransferConnection>>(transferConnectionInvitations)
         };
     }
 }

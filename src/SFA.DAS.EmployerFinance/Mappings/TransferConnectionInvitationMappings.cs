@@ -9,12 +9,12 @@ public class TransferConnectionInvitationMappings : Profile
 {
     public TransferConnectionInvitationMappings()
     {
-        CreateMap<TransferConnectionInvitation, TransferConnectionInvitationDto>()
+        CreateMap<Models.TransferConnections.TransferConnectionInvitation, TransferConnectionInvitationDto>()
             .ForMember(m => m.Changes, o => o.MapFrom(i => i.Changes.OrderBy(c => c.CreatedDate)));
 
-        CreateMap<TransferConnectionInvitationChange, TransferConnectionInvitationChangeDto>();
+        CreateMap<Models.TransferConnections.TransferConnectionInvitationChange, TransferConnectionInvitationChangeDto>();
 
-        CreateMap<TransferConnectionInvitation, TransferConnection>()
+        CreateMap<Models.TransferConnections.TransferConnectionInvitation, TransferConnection>()
             .ForMember(m => m.FundingEmployerAccountId, o => o.MapFrom(i => i.SenderAccount.Id))
             .ForMember(m => m.FundingEmployerHashedAccountId, o => o.MapFrom(i => i.SenderAccount.HashedId))
             .ForMember(m => m.FundingEmployerPublicHashedAccountId, o => o.MapFrom(i => i.SenderAccount.PublicHashedId))

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 
 namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations
@@ -10,6 +11,7 @@ namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations
             services.AddTransient<AccountTransactionsOrchestrator>();
             services.AddTransient<FinanceOrchestrator>();
             services.AddTransient<StatisticsOrchestrator>();
+            services.AddTransient<PeriodEndOrchestrator>();
 
             return services;
         }
