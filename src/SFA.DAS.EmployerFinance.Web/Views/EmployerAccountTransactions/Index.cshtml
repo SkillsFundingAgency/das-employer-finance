@@ -9,7 +9,7 @@
 @{
     ViewBag.PageID = "finance";
     ViewBag.Section = "finance";
-    ViewBag.Title = "Finance";
+    ViewBag.Title = Model.Data.ShowLevyTransparency ? "Funding and payments" : "Finance";
     ViewBag.GaData.Vpv = $"/finance/home";
     ViewBag.ZenDeskLabel = "eas-finance";
 
