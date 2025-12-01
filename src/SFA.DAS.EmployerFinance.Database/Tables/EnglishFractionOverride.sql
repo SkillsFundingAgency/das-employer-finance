@@ -8,3 +8,10 @@
 	[DateFrom] DATETIME NOT NULL, 
     [ApprovedBy] NVARCHAR(255) NOT NULL
 )
+GO
+
+CREATE NONCLUSTERED INDEX [IX_EnglishFractionOverride_AccountId_EmpRef_DateFrom] 
+ON [employer_financial].[EnglishFractionOverride] ([AccountId], [EmpRef], [DateFrom] DESC) 
+INCLUDE ([Amount])
+WITH (ONLINE = ON)
+GO

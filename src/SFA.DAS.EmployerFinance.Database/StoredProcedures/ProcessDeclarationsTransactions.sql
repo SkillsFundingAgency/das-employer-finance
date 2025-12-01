@@ -34,11 +34,11 @@ INSERT INTO [employer_financial].LevyDeclarationTopup
 		x.LevyDueYTD is not null and x.EndOfYearAdjustment = 1  AND x.AccountId = @AccountId AND x.EmpRef = @EmpRef
 	AND [employer_financial].[IsInDateLevy](@currentDate, @expiryPeriod, PayrollYear, PayrollMonth) = 1
 	) mainUpdate
-	inner join (
-		select SubmissionId from [employer_financial].LevyDeclaration
-	EXCEPT
-		select SubmissionId from [employer_financial].LevyDeclarationTopup
-	) dervx on dervx.SubmissionId = mainUpdate.SubmissionId
+	WHERE NOT EXISTS (
+		SELECT 1 
+		FROM [employer_financial].LevyDeclarationTopup ldt 
+		WHERE ldt.SubmissionId = mainUpdate.SubmissionId
+	)
 
 
 -- Create Declarations
@@ -98,11 +98,12 @@ select mainUpdate.* from
 		where x.EndOfYearAdjustment = 1  AND x.AccountId = @AccountId AND x.EmpRef = @EmpRef
 		AND [employer_financial].[IsInDateLevy](@currentDate, @expiryPeriod, PayrollYear, PayrollMonth) = 1
 	) mainUpdate
-	inner join (
-		select SubmissionId from [employer_financial].LevyDeclaration
-	EXCEPT
-		select SubmissionId from [employer_financial].TransactionLine where TransactionType = 1
-	) dervx on dervx.SubmissionId = mainUpdate.SubmissionId
+	WHERE NOT EXISTS (
+		SELECT 1 
+		FROM [employer_financial].TransactionLine tl 
+		WHERE tl.SubmissionId = mainUpdate.SubmissionId 
+		AND tl.TransactionType = 1
+	)
 
 	SELECT ISNULL(SUM(Amount), 0)
 	FROM @updatedAccountTransactions
