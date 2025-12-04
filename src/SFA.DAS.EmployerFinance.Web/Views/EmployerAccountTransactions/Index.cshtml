@@ -24,11 +24,40 @@
     @if (Model.Data.ShowLevyTransparency)
     {
         <h1 class="govuk-heading-xl">Funding and payments</h1>
-        <div class="govuk-grid-row govuk-!-margin-bottom-8">
+        <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <p class="govuk-body">The <b>apprenticeship levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. While employers do not own these funds, they can use them to cover apprenticeship costs.</p>
                 <p class="govuk-body">Employers have 24 months to use funds, after which they are returned to support apprenticeship programmes.</p>
             </div>
+        </div>
+        <div class="app-statement">
+            <h2 class="govuk-heading-l">Latest payments</h2>
+            <table class="govuk-table app-statement__table">
+                <tr>
+                    <th class="govuk-table__header" scope="row">
+                        Paid from the levy this month
+                        <div class="govuk-hint">Payments to training providers </div>
+                    </th>
+                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">£6,881</span></td>
+                </tr>
+                <tr>
+                    <th class="govuk-table__header" scope="row">
+                        Levy declared this month
+                        <div class="govuk-hint">Employer PAYE contribution plus 10% government top-up </div>
+                    </th>
+                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">£8,742</span></td>
+                </tr>
+                <tr class="app-statement__total">
+                    <th class="govuk-table__header" scope="row">
+                        Total levy
+                        <div class="govuk-hint">Current funds available for apprenticeship training </div>
+                    </th>
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        <span class="app-statement__figure">£182,592</span>
+                    </td>
+                </tr>
+            </table>
+            <p class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-top-9">Read more about <a href="#" class="govuk-link govuk-link--no-visited-state" target="_blank">how the levy balance can vary (opens in new tab)</a> based on your circumstances.</p>
         </div>
     }
     else
@@ -76,34 +105,27 @@
             </div>
         </div>
     }
-    
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 }
 
-@{
-    var colummSize = Model.Data.IsLevyEmployer ? "quarter" : "third";
-    var headingSize = Model.Data.IsLevyEmployer ? "s" : "m";
-}
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-@colummSize">
-        <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
+<div class="app-highlight-boxes">
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 View transactions
             </a>
         </h2>
         <p>View payments made into and out of your apprenticeship service account. </p>
     </div>
-    <div class="govuk-grid-column-one-@colummSize">
-        <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Download transactions
             </a>
         </h2>
         <p>Download your financial transactions within a specific date range. </p>
     </div>
-    <div class="govuk-grid-column-one-@colummSize">
-        <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Transfers
             </a>
