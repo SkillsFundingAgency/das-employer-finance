@@ -21,7 +21,7 @@
 
 @if (Model.Data.IsLevyEmployer)
 {
-    @if (Model.Data.ShowLevyTransparency)
+    if (Model.Data.ShowLevyTransparency)
     {
         <h1 class="govuk-heading-xl">Funding and payments</h1>
         <div class="govuk-grid-row">
@@ -35,17 +35,17 @@
             <table class="govuk-table app-statement__table">
                 <tr>
                     <th class="govuk-table__header" scope="row">
-                        Paid from the levy this month
+                        Paid from the levy in @Model.Data.DateUsed
                         <div class="govuk-hint">Payments to training providers </div>
                     </th>
-                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">£6,881</span></td>
+                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">@Model.Data.LastMonthPayments.ToString("C0", culture)</span></td>
                 </tr>
                 <tr>
                     <th class="govuk-table__header" scope="row">
-                        Levy declared this month
+                        Levy declared in @Model.Data.DateUsed
                         <div class="govuk-hint">Employer PAYE contribution plus 10% government top-up </div>
                     </th>
-                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">£8,742</span></td>
+                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">@Model.Data.LastMonthLevyDeclaration.ToString("C0", culture)</span></td>
                 </tr>
                 <tr class="app-statement__total">
                     <th class="govuk-table__header" scope="row">
@@ -53,11 +53,11 @@
                         <div class="govuk-hint">Current funds available for apprenticeship training </div>
                     </th>
                     <td class="govuk-table__cell govuk-table__cell--numeric">
-                        <span class="app-statement__figure">£182,592</span>
+                        <span class="app-statement__figure">@Model.Data.CurrentLevyFunds.ToString("C0", culture)</span>
                     </td>
                 </tr>
             </table>
-            <p class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-top-9">Read more about <a href="#" class="govuk-link govuk-link--no-visited-state" target="_blank">how the levy balance can vary (opens in new tab)</a> based on your circumstances.</p>
+            <p class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-top-9">Read more about <a href="https://www.gov.uk/government/publications/apprenticeship-funding/apprenticeship-funding" class="govuk-link govuk-link--no-visited-state" target="_blank">how the levy works (opens in new tab).</a></p>
         </div>
     }
     else
@@ -108,7 +108,7 @@
 }
 
 <div class="app-highlight-boxes">
-    <div class="app-highlight-boxes__box">
+    <div class="@(Model.Data.ShowLevyTransparency ? "app-highlight-boxes__box" :"")">
         <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 View transactions
@@ -116,7 +116,7 @@
         </h2>
         <p>View payments made into and out of your apprenticeship service account. </p>
     </div>
-    <div class="app-highlight-boxes__box">
+    <div class="@(Model.Data.ShowLevyTransparency ? "app-highlight-boxes__box" :"")">
         <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Download transactions
@@ -124,7 +124,7 @@
         </h2>
         <p>Download your financial transactions within a specific date range. </p>
     </div>
-    <div class="app-highlight-boxes__box">
+    <div class="@(Model.Data.ShowLevyTransparency ? "app-highlight-boxes__box" :"")">
         <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Transfers

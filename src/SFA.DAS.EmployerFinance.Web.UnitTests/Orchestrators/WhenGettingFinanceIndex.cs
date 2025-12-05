@@ -37,7 +37,7 @@ public class WhenGettingFinanceIndex
         _mediator = new Mock<IMediator>();
         _currentTime = new Mock<ICurrentDateTime>();
         _encodingService = new Mock<IEncodingService>();
-
+        _currentTime.Setup(x=>x.Now).Returns(new DateTime(2014, 10, 31));
         _response = new GetEmployerAccountResponse
         {
             Account = new Account
@@ -119,15 +119,24 @@ public class WhenGettingFinanceIndex
     }
 
     [Test]
-    public async Task Then_Sets_LevyTransparencyFlag()
+    public async Task Then_Sets_LevyTransparencyFlag_And_New_Totals()
     {
+        _currentTime.Setup(x=>x.Now).Returns(new DateTime(2018,1,13));
         _accountApiClient.Setup(c => c.GetAccount(AccountId))
             .ReturnsAsync(new AccountDetailViewModel
             {
                 ApprenticeshipEmployerType = "Levy"
             });
-        _mediator.Setup(m => m.Send(It.IsAny<GetAccountFinanceOverviewQuery>(), CancellationToken.None))
-            .ReturnsAsync(new GetAccountFinanceOverviewResponse());
+        _mediator.Setup(m => m.Send(It.Is<GetAccountFinanceOverviewQuery>(c=>
+                c.AccountId == AccountId
+                && c.FromDate == new DateTime(2017,12,1)
+                && c.ToDate == new DateTime(2018,1,1)
+                ), CancellationToken.None))
+            .ReturnsAsync(new GetAccountFinanceOverviewResponse
+            {
+                LastMonthLevyDeclaration = 10,
+                LastMonthPayments = 20
+            });
         _configuration.Setup(x => x.ShowLevyTransparency).Returns(true);
         
         var response = await _orchestrator.Index(HashedAccountId, new ClaimsIdentity(new List<Claim>
@@ -137,6 +146,9 @@ public class WhenGettingFinanceIndex
         }));
         
         response.Data.ShowLevyTransparency.Should().BeTrue();
+        response.Data.LastMonthLevyDeclaration.Should().Be(10);
+        response.Data.LastMonthPayments.Should().Be(20);
+        response.Data.DateUsed.Should().Be("December 2017");
     }
     
 }

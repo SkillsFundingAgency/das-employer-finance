@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
@@ -48,9 +49,16 @@ public class EmployerAccountTransactionsOrchestrator(
         var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
         
         logger.LogInformation("After GetAccount call");
+        
+        var fromDate = currentTime.Now.AddMonths(-1);
+        fromDate = new DateTime(fromDate.Year, fromDate.Month, 1);
+        var toDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1);
+        
         var getAccountFinanceOverview = await mediator.Send(new GetAccountFinanceOverviewQuery
         {
-            AccountId = accountId
+            AccountId = accountId,
+            FromDate = fromDate,
+            ToDate = toDate
         });
 
         logger.LogInformation("account : {HashedAccountId}  getAccountFinanceOverview: {GetAccountFinanceOverview} ", hashedAccountId, getAccountFinanceOverview);
@@ -66,7 +74,10 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalSpendForLastYear = getAccountFinanceOverview.TotalSpendForLastYear,
                 FundingExpected = getAccountFinanceOverview.FundsIn,
                 AvailableFunds = getAccountFinanceOverview.FundsIn - getAccountFinanceOverview.FundsOut,
-                ShowLevyTransparency = configuration.ShowLevyTransparency
+                ShowLevyTransparency = configuration.ShowLevyTransparency,
+                LastMonthLevyDeclaration = getAccountFinanceOverview.LastMonthLevyDeclaration,
+                LastMonthPayments =  getAccountFinanceOverview.LastMonthPayments,
+                DateUsed = fromDate.ToString("MMMM yyyy")
             }
         };
 
