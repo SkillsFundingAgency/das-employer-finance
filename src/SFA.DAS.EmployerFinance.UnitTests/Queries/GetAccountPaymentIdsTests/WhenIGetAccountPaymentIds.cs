@@ -32,7 +32,7 @@ public class WhenIGetAccountPaymentIds
         };
 
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(r => r.GetAccountPaymentIdsLinq(accountId, It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(expectedResponse);
 
         var request = new GetAccountPaymentIdsRequest

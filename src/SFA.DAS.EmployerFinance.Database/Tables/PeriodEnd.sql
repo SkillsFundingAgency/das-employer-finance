@@ -12,10 +12,5 @@
 
 GO
 
-CREATE INDEX [IX_PeriodEnd_PeriodEndId] ON [employer_financial].[PeriodEnd] ([PeriodEndId])
-GO
-
-ALTER TABLE [employer_financial].[PeriodEnd]
-ADD CONSTRAINT uq_PeriodEnd_PeriodEndId UNIQUE (PeriodEndId);
-
+CREATE UNIQUE INDEX [IX_PeriodEnd_PeriodEndId] ON [employer_financial].[PeriodEnd] ([PeriodEndId])
 GO
