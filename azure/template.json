@@ -191,6 +191,23 @@
             "metadata": {
                 "description": "Determines whether to enable route table association on subnet"
             }
+        },
+        "deployAutomationRunbook": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "automationPublishContentVersion": {
+            "type": "string",
+            "defaultValue": "1.0.0.0"
+        },
+        "automationPublishContentUri": {
+            "type": "string"
+        },
+        "automationRunbookName": {
+            "type": "string"
+        },
+        "automationAccountName": {
+            "type": "string"
         }
     },
     "variables": {
@@ -799,6 +816,37 @@
                     },
                     "logAnalyticsWorkspaceName": {
                         "value": "[parameters('logAnalyticsWorkspaceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('deployAutomationRunbook'), true())]",
+            "apiVersion": "2022-09-01",
+            "name": "[concat('automation-runbook-finance-db-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(variables('deploymentUrlBase'),'automation-runbook.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "runbookType": {
+                        "value": "PowerShell72"
+                    },
+                    "publishContentUri": {
+                        "value": "[parameters('automationPublishContentUri')]"
+                    },
+                    "publishContentVersion": {
+                        "value": "[parameters('automationPublishContentVersion')]"
+                    },
+                    "runbookName": {
+                        "value": "[parameters('automationRunbookName')]"
+                    },
+                    "automationAccountName": {
+                        "value": "[parameters('automationAccountName')]"
                     }
                 }
             }
