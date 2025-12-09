@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 
 namespace SFA.DAS.EmployerFinance.Data.Contracts;
@@ -11,7 +12,7 @@ public interface IDasLevyRepository
     Task CreateNewPeriodEnd(PeriodEnd periodEnd);
     Task CreatePayments(IEnumerable<PaymentDetails> payments);
     Task<ISet<Guid>> GetAccountPaymentIds(long accountId);
-    Task<List<Guid>> GetAccountPaymentIdsLinq(long accountId);
+    Task<GetAccountPaymentIdsResponse> GetAccountPaymentIdsLinq(long accountId, int PageSize, int PageNumber);
     Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef);
     Task<DasDeclaration> GetLastSubmissionForScheme(string empRef);
     Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds();

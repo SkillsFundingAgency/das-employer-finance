@@ -20,7 +20,6 @@ public class GetAccountPaymentIdsQueryHandler : IRequestHandler<GetAccountPaymen
     public async Task<GetAccountPaymentIdsResponse> Handle(GetAccountPaymentIdsRequest message, CancellationToken cancellationToken)
     {
         var response = new GetAccountPaymentIdsResponse();
-        response.PaymentIds = (await _dasLevyRepository.GetAccountPaymentIdsLinq(message.AccountId)).ToList();
-        return response;
+        return await _dasLevyRepository.GetAccountPaymentIdsLinq(message.AccountId, message.PageSize, message.PageNumber);
     }
 }

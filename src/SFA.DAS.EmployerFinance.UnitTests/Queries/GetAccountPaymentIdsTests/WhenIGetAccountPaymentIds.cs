@@ -26,10 +26,14 @@ public class WhenIGetAccountPaymentIds
             Guid.NewGuid(),
             Guid.NewGuid()
         };
+        var expectedResponse = new GetAccountPaymentIdsResponse
+        {
+            PaymentIds = expectedIds
+        };
 
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIdsLinq(accountId))
-            .ReturnsAsync(expectedIds);
+            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(expectedResponse);
 
         var request = new GetAccountPaymentIdsRequest
         {
@@ -50,8 +54,11 @@ public class WhenIGetAccountPaymentIds
     {
         // Arrange
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>()))
-            .ReturnsAsync(new List<Guid>());
+            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(new GetAccountPaymentIdsResponse
+            {
+                PaymentIds = new List<Guid>()
+            });
 
         var request = new GetAccountPaymentIdsRequest
         {
@@ -67,13 +74,14 @@ public class WhenIGetAccountPaymentIds
         _dasLevyRepositoryMock.VerifyAll();
     }
 
+
     [Test]
     public async Task Then_The_Response_Object_Is_Not_Null()
     {
         // Arrange
         _dasLevyRepositoryMock
-            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>()))
-            .ReturnsAsync(new List<Guid>());
+            .Setup(r => r.GetAccountPaymentIdsLinq(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync(new GetAccountPaymentIdsResponse());
 
         var request = new GetAccountPaymentIdsRequest { AccountId = 111 };
 

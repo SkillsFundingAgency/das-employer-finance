@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -6,6 +7,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using System.Diagnostics.CodeAnalysis;
 
@@ -170,12 +172,28 @@ public class DasLevyRepository : IDasLevyRepository
         return new HashSet<Guid>(result);
     }
 
-    public async Task<List<Guid>> GetAccountPaymentIdsLinq(long accountId)
+    public async Task<GetAccountPaymentIdsResponse> GetAccountPaymentIdsLinq(long accountId, int pageSize, int pageNumber)
     {
-       return await _db.Value.Payments
-                .Where(p => p.EmployerAccountId == accountId)
-                .Select(p => p.Id)
-                .ToListAsync();
+        var totalCount = await _db.Value.Payments
+         .Where(p => p.EmployerAccountId == accountId)
+         .CountAsync();
+
+        var paymentIds = await _db.Value.Payments
+            .Where(p => p.EmployerAccountId == accountId)
+            .OrderBy(p => p.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => p.Id)
+            .ToListAsync();
+
+        return new GetAccountPaymentIdsResponse
+        {
+            PaymentIds = paymentIds,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef)
