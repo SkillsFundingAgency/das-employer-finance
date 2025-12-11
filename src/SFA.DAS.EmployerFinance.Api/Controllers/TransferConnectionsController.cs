@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
+using SFA.DAS.EmployerFinance.Queries.GetTransfersbyPeriodEnd;
 using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
@@ -32,5 +33,18 @@ public class TransferConnectionsController(IMediator mediator, IEncodingService 
         });
 
         return Ok(response.TransferConnections);
+    }
+
+    [HttpGet]
+    [Route("{accountId}/transfers/connectionss")]
+    public async Task<IActionResult> GetTransfersByPeriodEnd(long accountId, [FromQuery] string periodEnd)
+    {
+        var response = await mediator.Send(new GetTransfersByPeriodEndRequest
+        {
+            AccountId = accountId,
+            PeriodEnd = periodEnd
+        });
+
+        return Ok(response);
     }
 }

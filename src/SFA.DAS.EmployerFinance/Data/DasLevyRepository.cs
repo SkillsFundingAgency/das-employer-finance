@@ -7,6 +7,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using System.Diagnostics.CodeAnalysis;
@@ -231,6 +232,11 @@ public class DasLevyRepository : IDasLevyRepository
             param: null,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<IEnumerable<AccountTransfer>> GetTransfersByPeriodEnd(long accountId, string periodEnd) 
+    {
+        return await _db.Value.AccountTransfers.Where(x => x.SenderAccountId == accountId && x.PeriodEnd == periodEnd).ToListAsync();
     }
 
     public async Task<PeriodEnd> GetPeriodEndById(string periodEndId)
