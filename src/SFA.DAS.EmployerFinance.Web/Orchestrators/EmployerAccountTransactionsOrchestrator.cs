@@ -49,8 +49,8 @@ public class EmployerAccountTransactionsOrchestrator(
         var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
         
         logger.LogInformation("After GetAccount call");
-        
-        var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(-1);
+
+        var fromDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1).AddMonths(-1);
         var toDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1);
         
         var getAccountFinanceOverview = await mediator.Send(new GetAccountFinanceOverviewQuery
