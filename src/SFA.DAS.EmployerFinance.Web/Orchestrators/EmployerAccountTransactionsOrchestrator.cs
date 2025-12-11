@@ -50,8 +50,7 @@ public class EmployerAccountTransactionsOrchestrator(
         
         logger.LogInformation("After GetAccount call");
         
-        var fromDate = currentTime.Now.AddMonths(-1);
-        fromDate = new DateTime(fromDate.Year, fromDate.Month, 1);
+        var fromDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(-1);
         var toDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1);
         
         var getAccountFinanceOverview = await mediator.Send(new GetAccountFinanceOverviewQuery
