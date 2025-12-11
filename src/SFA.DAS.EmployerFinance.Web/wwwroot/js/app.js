@@ -7,9 +7,12 @@ Array.prototype.forEach.call(limitCharsInNumberFields, function forElement(field
 });
 
 
-let createTransfersPledgeButton = document.getElementById("CreateTransfersPledgeButton");
-createTransfersPledgeButton.addEventListener("click", function (event) {
-    if (createTransfersPledgeButton.classList.contains("govuk-button--disabled")) {
-        event.preventDefault();
-    }
-});
+const createTransfersPledgeButton = document.getElementById("CreateTransfersPledgeButton");
+
+if (createTransfersPledgeButton) {
+    createTransfersPledgeButton.addEventListener("click", function (event) {
+        if (createTransfersPledgeButton.classList.contains("govuk-button--disabled")) {
+            event.preventDefault();
+        }
+    });
+}

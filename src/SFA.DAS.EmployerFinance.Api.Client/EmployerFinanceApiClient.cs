@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Api.Types;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -87,8 +88,62 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
         return JsonConvert.DeserializeObject<TransferAllowance>(json);
     }
 
+    public async Task<List<Account>> GetAllEmployerAccounts(int pageNumber = 1, int pageSize = 10000)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/accounts";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<Account>>(json);
+    }
+
+    public async Task<Account> GetAccount(long accountId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/accounts{accountId}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<Account>(json);
+    }
+    
+    public async Task<List<PeriodEnd>> GetAllPeriodEnds()
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<PeriodEnd>>(json);
+    }
+
+    public async Task<string> CreatePeriodEnd(PeriodEnd periodEnd)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends";
+        var json = await _httpClient.PostAsync(url, JsonConvert.SerializeObject(periodEnd));
+
+        return JsonConvert.DeserializeObject<string>(json);
+    }
+
+    public async Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/period-ends/{periodEndId}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<PeriodEnd>(json);
+    }
+
+    public async Task<List<Guid>> GetAccountPaymentIds(long accountId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/api/accounts{accountId}/payments/ids";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<Guid>>(json);
+    }
+
     private string GetBaseUrl()
     {
         return _configuration.ApiBaseUrl.Trim('/');
-    }
+    }   
 }

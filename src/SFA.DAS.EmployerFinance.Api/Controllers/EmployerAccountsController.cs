@@ -54,11 +54,38 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
     }
 
     [HttpGet]
-    [Route("{accountId}/projection-summary")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccountProjectionSummary(long accountId)
+    public async Task<IActionResult> GetAccounts(int pageNumber = 1, int pageSize = 10000)
     {
-        var result = await financeOrchestrator.GetAccountProjectionSummary(accountId);
+        var result = await financeOrchestrator.GetAccounts(pageNumber, pageSize);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("{accountId}")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccountById(long accountId)
+    {
+        var result = await financeOrchestrator.GetAccountById(accountId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("{accountId}/payments/ids")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccountPaymentIds(long accountId)
+    {
+        var result = await financeOrchestrator.GetAccountPaymentIds(accountId);
 
         if (result == null)
         {
