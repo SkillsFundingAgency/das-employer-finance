@@ -10,7 +10,7 @@ public static class DatabaseServiceRegistrations
     {
         services.AddDbContext<EmployerFinanceDbContext>((sp, options) =>
         {
-            var dbConnection = DatabaseExtensions.GetSqlConnection(sp.GetService<EmployerFinanceConfiguration>().DatabaseConnectionString);
+            var dbConnection = DatabaseExtensions.GetSqlConnection(sp.GetService<EmployerFinanceConfiguration>().SqlConnectionString);
             options.UseSqlServer(dbConnection);
         }, ServiceLifetime.Transient);
 

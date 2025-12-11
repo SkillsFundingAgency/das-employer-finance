@@ -16,19 +16,18 @@ public static class EntityFrameworkStartup
         return services.AddScoped(p =>
         {
             var unitOfWorkContext = p.GetService<IUnitOfWorkContext>();
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
             EmployerFinanceDbContext dbContext;
             try
             {                    
                 var synchronizedStorageSession = unitOfWorkContext.Get<SynchronizedStorageSession>();
                 var sqlStorageSession = synchronizedStorageSession.GetSqlStorageSession();
                 var optionsBuilder = new DbContextOptionsBuilder<EmployerFinanceDbContext>().UseSqlServer(sqlStorageSession.Connection);                    
-                dbContext = new EmployerFinanceDbContext(sqlStorageSession.Connection, config, optionsBuilder.Options, azureServiceTokenProvider);
+                dbContext = new EmployerFinanceDbContext(sqlStorageSession.Connection, config, optionsBuilder.Options);
                 dbContext.Database.UseTransaction(sqlStorageSession.Transaction);
             }
             catch (KeyNotFoundException)
             {
-                var connection = DatabaseExtensions.GetSqlConnection(config.DatabaseConnectionString);
+                var connection = DatabaseExtensions.GetSqlConnection(config.SqlConnectionString);
                 var optionsBuilder = new DbContextOptionsBuilder<EmployerFinanceDbContext>().UseSqlServer(connection);
                 dbContext = new EmployerFinanceDbContext(optionsBuilder.Options);
             }
