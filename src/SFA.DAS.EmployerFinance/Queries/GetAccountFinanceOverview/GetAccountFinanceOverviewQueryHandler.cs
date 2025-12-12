@@ -24,12 +24,11 @@ public class GetAccountFinanceOverviewQueryHandler(
         var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
         var latestMonthly = await levyService.GetLatestLevyDeclaration(query.AccountId);
 
-        var transactionLines = await levyService.GetAccountLevyTransactionsByDateRange<LevyDeclarationTransactionLine>
-            (query.AccountId, query.FromDate, query.ToDate);
+        var transactionLines = await levyService.GetAccountTransactionsByDateRange(query.AccountId, query.FromDate, query.ToDate);
 
         var totalPayments = transactionLines
             .Where(c=>c.TransactionType is TransactionItemType.Payment or TransactionItemType.Transfer)
-            .Sum(c => c.LineAmount);
+            .Sum(c => c.Amount);
         
         var fundsIn = latestMonthly * 12m;
 
@@ -41,7 +40,7 @@ public class GetAccountFinanceOverviewQueryHandler(
             FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear,
             LastMonthLevyDeclaration = latestMonthly,
-            LastMonthPayments = totalPayments
+            LastMonthPayments = totalPayments * -1
         };
         
         return response;

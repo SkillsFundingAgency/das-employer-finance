@@ -11,8 +11,8 @@ public class WhenIGetAccountBalance
     private const long ExpectedAccountId = 20;
     private const decimal ExpectedCurrentFunds = 2345.67M;
     private const decimal ExpectedTotalSpendForLastYear = 1000.00M;
-    private const decimal TransferTotal = 50m;
-    private const decimal PaymentTotal = 50m;
+    private const decimal TransferTotal = -50m;
+    private const decimal PaymentTotal = -50m;
 
     private GetAccountFinanceOverviewQueryHandler _handler;
     private Mock<ILogger<GetAccountFinanceOverviewQueryHandler>> _logger;
@@ -40,23 +40,23 @@ public class WhenIGetAccountBalance
         _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
         _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
         _levyService.Setup(s =>
-                s.GetAccountLevyTransactionsByDateRange<LevyDeclarationTransactionLine>(ExpectedAccountId,
+                s.GetAccountTransactionsByDateRange(ExpectedAccountId,
                     _expectedFromDate, _expectedToDate))
             .ReturnsAsync([
-                new LevyDeclarationTransactionLine
+                new TransactionLine
                 {
                     TransactionType = TransactionItemType.Payment,
-                    LineAmount = PaymentTotal
+                    Amount = PaymentTotal
                 },
-                new LevyDeclarationTransactionLine
+                new TransactionLine
                 {
                     TransactionType = TransactionItemType.Transfer,
-                    LineAmount = TransferTotal
+                    Amount = TransferTotal
                 },
-                new LevyDeclarationTransactionLine
+                new TransactionLine
                 {
                     TransactionType = TransactionItemType.Declaration,
-                    LineAmount = 100m
+                    Amount = 100m
                 }
             ]);
         _validator.Setup(v => v.ValidateAsync(_query))
@@ -114,6 +114,6 @@ public class WhenIGetAccountBalance
     {
         var response = await _handler.Handle(_query, CancellationToken.None);
 
-        response.LastMonthPayments.Should().Be(TransferTotal + PaymentTotal);
+        response.LastMonthPayments.Should().Be((TransferTotal + PaymentTotal) * -1);
     }
 }
