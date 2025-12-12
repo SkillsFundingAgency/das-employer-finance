@@ -20,7 +20,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance.Api\SFA.DAS.EmployerFinance.Api.csproj" />
-		<ProjectReference Include="..\SFA.DAS.EmployerFinance.Web\SFA.DAS.EmployerFinance.Web.csproj" />
 		<ProjectReference Include="..\SFA.DAS.EmployerFinance\SFA.DAS.EmployerFinance.csproj" />
 	</ItemGroup>
 	<ItemGroup>
