@@ -8,6 +8,8 @@ public class Account : Entity
     public virtual long Id { get; set; }
     public virtual ICollection<AccountLegalEntity> AccountLegalEntities { get; set; } = new List<AccountLegalEntity>();
     public virtual string Name { get; set; }
+    public string HashedId { get; set; }
+    public string PublicHashedId { get; set; }
     public virtual ICollection<TransferConnectionInvitation> ReceivedTransferConnectionInvitations { get; set; } = new List<TransferConnectionInvitation>();
     public virtual ICollection<TransferConnectionInvitation> SentTransferConnectionInvitations { get; set; } = new List<TransferConnectionInvitation>();
 

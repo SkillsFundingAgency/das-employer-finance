@@ -449,7 +449,11 @@ public class DasLevyRepository : IDasLevyRepository
 
         return new GetAccountsResponse
         {
-            Accounts = accounts,
+            Accounts = accounts.Select(a => new Api.Types.Account
+            {
+                Id = a.Id,
+                Name = a.Name
+            }).ToList(),
             TotalCount = totalCount,
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
             PageNumber = pageNumber,

@@ -20,10 +20,10 @@ public class WhenIGetAllAccounts
     public async Task Then_The_Repository_Is_Called_With_The_Correct_Parameters()
     {
         // Arrange
-        var expectedAccounts = new List<Account>
+        var expectedAccounts = new List<Api.Types.Account>
     {
-        new Account { HashedId = "123", Name = "Account 1" },
-        new Account { HashedId = "456", Name = "Account 2" }
+        new Api.Types.Account { Name = "Account 1" },
+        new Api.Types.Account { Name = "Account 2" }
     };
 
         var expectedResponse = new GetAccountsResponse
@@ -63,7 +63,7 @@ public class WhenIGetAllAccounts
         // Arrange
         var expectedResponse = new GetAccountsResponse
         {
-            Accounts = new List<Account>(),
+            Accounts = new List<Api.Types.Account>(),
             TotalCount = 0,
             TotalPages = 0,
             PageNumber = 1,
@@ -100,7 +100,7 @@ public class WhenIGetAllAccounts
         // Arrange
         var expectedResponse = new GetAccountsResponse
         {
-            Accounts = new List<Account>(),
+            Accounts = new List<Api.Types.Account>(),
             TotalCount = 0,
             TotalPages = 0,
             PageNumber = 1,
