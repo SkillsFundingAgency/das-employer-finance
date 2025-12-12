@@ -1,24 +1,50 @@
 ﻿CREATE VIEW [employer_financial].[GetLevyDeclarationAndTopUp]
 AS
 
-SELECT *,
-	   (decPlusLevy.LevyDeclaredInMonth * decPlusLevy.EnglishFraction) + decPlusLevy.TopUp as TotalAmount
-FROM
-	(SELECT *,
-		   (dec.LevyDeclaredInMonth * dec.EnglishFraction) * dec.TopUpPercentage as TopUp
-	FROM
-		(SELECT 
-			ld.*,
-			ld.LevyDueYTD - ISNULL(y.LevyDueYTD, 0) AS LevyDeclaredInMonth
-		FROM [employer_financial].[GetLevyDeclaration] ld
-		outer apply
-		(
-			SELECT TOP 1 LevyDueYTD
-			FROM [employer_financial].[GetLevyDeclaration] y
-			WHERE y.EmpRef = ld.EmpRef AND y.PayrollYear = ld.PayrollYear AND y.LastSubmission = 1 AND y.PayrollMonth < ld.PayrollMonth AND y.LevyDueYTD IS NOT NULL
-			ORDER BY y.PayrollMonth DESC
-		) y
-	) dec
-) decPlusLevy
+WITH LatestSubmissionCTE AS
+(
+    SELECT 
+        xld.EmpRef,
+        xld.PayrollYear,
+        xld.PayrollMonth,
+        MAX(xld.SubmissionId) AS MaxSubmissionId
+    FROM [employer_financial].LevyDeclaration xld
+    WHERE xld.EndOfYearAdjustment = 0
+        AND xld.SubmissionDate < [employer_financial].[CalculateSubmissionCutoffDate](xld.PayrollMonth, xld.PayrollYear)
+        AND xld.SubmissionDate IN (
+            SELECT MAX(ld2.SubmissionDate)
+            FROM [employer_financial].LevyDeclaration ld2
+            WHERE ld2.EmpRef = xld.EmpRef
+                AND ld2.PayrollYear = xld.PayrollYear
+                AND ld2.PayrollMonth = xld.PayrollMonth
+                AND ld2.EndOfYearAdjustment = 0
+                AND ld2.SubmissionDate < [employer_financial].[CalculateSubmissionCutoffDate](ld2.PayrollMonth, ld2.PayrollYear)
+            GROUP BY ld2.EmpRef, ld2.PayrollYear, ld2.PayrollMonth
+        )
+    GROUP BY xld.EmpRef, xld.PayrollYear, xld.PayrollMonth
+)
+SELECT 
+    ld.*,
+    ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0) AS LevyDeclaredInMonth,
+    (ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0)) * ld.EnglishFraction * ISNULL(ld.TopUpPercentage, 0) AS TopUp,
+    ((ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0)) * ld.EnglishFraction) + 
+    ((ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0)) * ld.EnglishFraction * ISNULL(ld.TopUpPercentage, 0)) AS TotalAmount
+FROM [employer_financial].[GetLevyDeclaration] ld
+OUTER APPLY
+(
+    SELECT TOP 1 yld.LevyDueYTD
+    FROM [employer_financial].LevyDeclaration yld
+    INNER JOIN LatestSubmissionCTE yls
+        ON yls.EmpRef = yld.EmpRef
+        AND yls.PayrollYear = yld.PayrollYear
+        AND yls.PayrollMonth = yld.PayrollMonth
+        AND yls.MaxSubmissionId = yld.SubmissionId
+    WHERE yld.EmpRef = ld.EmpRef
+        AND yld.PayrollYear = ld.PayrollYear
+        AND yld.PayrollMonth < ld.PayrollMonth
+        AND yld.LevyDueYTD IS NOT NULL
+        AND yld.EndOfYearAdjustment = 0
+    ORDER BY yld.PayrollMonth DESC
+) prevMonth
 
 GO
