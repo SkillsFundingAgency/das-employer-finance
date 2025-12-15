@@ -1,4 +1,4 @@
-﻿CREATE VIEW [employer_financial].[GetLevyDeclarationAndTopUp]
+CREATE VIEW [employer_financial].[GetLevyDeclarationAndTopUp]
 AS
 
 WITH LatestSubmissionCTE AS
@@ -24,7 +24,26 @@ WITH LatestSubmissionCTE AS
     GROUP BY xld.EmpRef, xld.PayrollYear, xld.PayrollMonth
 )
 SELECT 
-    ld.*,
+    ld.Id,
+    ld.AccountId,
+    ld.EmpRef,
+    ld.SubmissionDate,
+    ld.SubmissionId,
+    ld.LevyDueYTD,
+    ld.EnglishFraction,
+    ld.TopUpPercentage,
+    ld.PayrollYear,
+    ld.PayrollMonth,
+    ld.LastSubmission,
+    ld.CreatedDate,
+    ld.EndOfYearAdjustment,
+    ld.EndOfYearAdjustmentAmount,
+    ld.LevyAllowanceForYear,
+    ld.DateCeased,
+    ld.InactiveFrom,
+    ld.InactiveTo,
+    ld.HmrcSubmissionId,
+    ld.NoPaymentForPeriod,
     ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0) AS LevyDeclaredInMonth,
     (ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0)) * ld.EnglishFraction * ISNULL(ld.TopUpPercentage, 0) AS TopUp,
     ((ld.LevyDueYTD - ISNULL(prevMonth.LevyDueYTD, 0)) * ld.EnglishFraction) + 
