@@ -4,10 +4,6 @@ namespace SFA.DAS.EmployerFinance.Api.Types;
 
 public class Account
 {
-    public long Id { get; protected set; }
-    public string Name { get; protected set; }
-    public string HashedId { get; protected set; }
-    public string PublicHashedId { get; protected set; }
-    public string AccountType { get; protected set; }
-    public DateTime CreatedDate { get; protected set; }
+    public long Id { get; set; }
+    public string Name { get; set; }
 }

@@ -43,8 +43,8 @@ public class WhenIGetAccounts
         {
             Accounts =
             [
-                new() { HashedId = "1", Name = "Account 1" },
-                new() { HashedId = "2", Name = "Account 2" }
+                new() { Name = "Account 1" },
+                new() { Name = "Account 2" }
             ]
         };
 

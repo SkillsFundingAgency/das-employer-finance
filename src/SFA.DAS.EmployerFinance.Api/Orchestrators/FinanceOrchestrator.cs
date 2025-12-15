@@ -176,10 +176,6 @@ public class FinanceOrchestrator(
 
     public async Task<GetAccountsResponse> GetAccounts(int pageNumber, int pageSize)
     {
-        _logger.LogInformation(
-            "Requesting Get Accounts request with pageNumber {pageNumber} and pageSize {pageSize}",
-            pageNumber, pageSize);
-
         var response = await _mediator.Send(new GetAccountsRequest
         {
             PageSize = pageSize,
@@ -191,20 +187,16 @@ public class FinanceOrchestrator(
             return null;
         }
 
-        _logger.LogInformation(
-            "Requesting Get Accounts response with pageNumber {pageNumber} and pageSize {pageSize}",
-            pageNumber, pageSize);
-
         return response;
     }
 
-    public async Task<List<Guid>> GetAccountPaymentIds(long accountId)
+    public async Task<GetAccountPaymentIdsResponse> GetAccountPaymentIds(long accountId, int pageNumber = 1, int pageSize = 10000)
     {
-        _logger.LogInformation("Requesting Get account payment ids request with accountId {accountId}", accountId);
-
         var response = await _mediator.Send(new GetAccountPaymentIdsRequest
         {
-            AccountId = accountId
+            AccountId = accountId,
+            PageNumber = pageNumber,
+            PageSize = pageSize
         });
 
         if (response?.PaymentIds == null)
@@ -212,10 +204,6 @@ public class FinanceOrchestrator(
             return null;
         }
 
-        var accounts = response.PaymentIds;
-
-        _logger.LogInformation("Received Get Account Payment Ids response with accountId {accountId}", accountId);
-
-        return accounts;
+        return response;
     }
 }

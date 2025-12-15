@@ -61,11 +61,12 @@ public class WhenIGetAccountPaymentIds
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
 
-        var responseObject = result.Value as List<Guid>;
+        var responseObject = result.Value as GetAccountPaymentIdsResponse;
         responseObject.Should().NotBeNull();
-        responseObject!.Should().HaveCount(3);
-        responseObject.Should().BeEquivalentTo(expectedIds);
+        responseObject!.PaymentIds.Should().HaveCount(3);
+        responseObject.PaymentIds.Should().BeEquivalentTo(expectedIds);
     }
+
 
     [Test]
     public async Task ThenReturnNotFoundIfResultIsNull()
