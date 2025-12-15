@@ -13,7 +13,7 @@ public interface IDasLevyRepository
     Task CreateNewPeriodEnd(PeriodEnd periodEnd);
     Task CreatePayments(IEnumerable<PaymentDetails> payments);
     Task<ISet<Guid>> GetAccountPaymentIds(long accountId);
-    Task<GetAccountPaymentIdsResponse> GetAccountPaymentIdsLinq(long accountId, int PageSize, int PageNumber);
+    Task<GetAccountPaymentIdsResponse> GetAccountPaymentIdsLinq(long accountId, int pageSize, int pageNumber);
     Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef);
     Task<DasDeclaration> GetLastSubmissionForScheme(string empRef);
     Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds();

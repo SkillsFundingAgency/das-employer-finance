@@ -12,4 +12,5 @@
 
 GO
 
-CREATE INDEX [IX_PeriodEnd_PeriodEndId] ON [employer_financial].[PeriodEnd] ([PeriodEndId])
+CREATE UNIQUE INDEX [IX_PeriodEnd_PeriodEndId] ON [employer_financial].[PeriodEnd] ([PeriodEndId])
+GO
