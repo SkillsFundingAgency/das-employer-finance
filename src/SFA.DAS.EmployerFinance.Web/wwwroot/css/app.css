@@ -197,12 +197,13 @@
     padding: 15px;
     background: #f3f2f1;
     margin-top: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 @media (min-width: 40.0625em) {
     .app-statement {
         padding: 30px;
+        margin-bottom: 50px;
     }
 }
 
@@ -230,7 +231,7 @@
 @media (min-width: 40.0625em) {
     .app-highlight-boxes {
         flex-direction: row;
-        gap: 30px;
+        gap: 50px;
     }
 }
 
@@ -238,6 +239,8 @@
 .app-highlight-boxes__box {
     background: #f3f2f1;
     padding: 15px;
+    border-radius: 5px;
+    flex: 1;
 }
 
 @media (min-width: 40.0625em) {
