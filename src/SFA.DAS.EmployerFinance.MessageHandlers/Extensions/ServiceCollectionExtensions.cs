@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
                 var isLocal = configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
 
                 var logger = p.GetService<ILogger<Program>>();
-                logger.LogInformation(employerFinanceConfiguration.DatabaseConnectionString);
+                logger.LogInformation(employerFinanceConfiguration.SqlConnectionString);
                 logger.LogInformation(employerFinanceConfiguration.ServiceBusConnectionString);
 
                 var endpointConfiguration = new EndpointConfiguration(EndpointName)
@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
                     .UseInstallers()
                     .UseOutbox()
                     .UseNewtonsoftJsonSerializer()
-                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
+                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.SqlConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal)
                     .UseServicesBuilder(new UpdateableServiceProvider(services))
                     .UseMetrics();

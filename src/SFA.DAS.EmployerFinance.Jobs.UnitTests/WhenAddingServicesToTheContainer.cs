@@ -52,7 +52,7 @@ public class WhenAddingServicesToTheContainer
         {
             InitialData = new List<KeyValuePair<string, string>>
             {
-                new("EmployerFinanceJobsConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
+                new("EmployerFinanceJobsConfiguration:SqlConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("PaymentsEventsApi:ApiBaseUrl", "test"),
                 new("PaymentsEventsApi:IdentifierUri", "test"),
                 new("EmployerFinanceJobsConfiguration:ServiceBusConnectionString", "test"),

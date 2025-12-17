@@ -9,7 +9,7 @@
 @{
     ViewBag.PageID = "finance";
     ViewBag.Section = "finance";
-    ViewBag.Title = "Finance";
+    ViewBag.Title = Model.Data.ShowLevyTransparency ? "Funding and payments" : "Finance";
     ViewBag.GaData.Vpv = $"/finance/home";
     ViewBag.ZenDeskLabel = "eas-finance";
 
@@ -17,83 +17,131 @@
     var now = DateTime.UtcNow.ToGmtStandardTime();
 }
 
-<h1 class="govuk-heading-xl">Finance</h1>
+
 
 @if (Model.Data.IsLevyEmployer)
 {
-    <div class="govuk-grid-row govuk-!-margin-bottom-8">
-        <div class="govuk-grid-column-one-third">
-            @{
-                var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
-            }
-            <p class="app-finance-figure__title" id="lbl-current-funds">Current funds</p>
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-funds">@balance</div>
+    if (Model.Data.ShowLevyTransparency)
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body">The <b>apprenticeship levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. While employers do not own these funds, they can use them to cover apprenticeship costs.</p>
+                <p class="govuk-body">Employers have 24 months to use funds, after which they are returned to support apprenticeship programmes.</p>
+            </div>
         </div>
-        <div class="govuk-grid-column-one-third">
-            @{
-                var currentSpend = Model.Data.TotalSpendForLastYear.ToString("C0", culture);
-            }
-            <p class="app-finance-figure__title" id="lbl-current-spent-funds">Funds spent since @DateTime.Now.AddMonths(-12).ToString("MMM yyyy")</p>
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-spent-funds">@currentSpend</div>
+        <div class="app-statement">
+            <h2 class="govuk-heading-l">Latest payments</h2>
+            <table class="govuk-table app-statement__table">
+                <tr>
+                    <th class="govuk-table__header" scope="row">
+                        Paid from the levy in @Model.Data.DateUsed
+                        <div class="govuk-hint">Payments to training providers </div>
+                    </th>
+                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">@Model.Data.LastMonthPayments.ToString("C0", culture)</span></td>
+                </tr>
+                <tr>
+                    <th class="govuk-table__header" scope="row">
+                        Levy declared in @Model.Data.DateUsed
+                        <div class="govuk-hint">Employer PAYE contribution plus 10% government top-up </div>
+                    </th>
+                    <td class="govuk-table__cell govuk-table__cell--numeric"><span class="app-statement__figure">@Model.Data.LastMonthLevyDeclaration.ToString("C0", culture)</span></td>
+                </tr>
+                <tr class="app-statement__total">
+                    <th class="govuk-table__header" scope="row">
+                        Total levy
+                        <div class="govuk-hint">Current funds available for apprenticeship training </div>
+                    </th>
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                        <span class="app-statement__figure">@Model.Data.CurrentLevyFunds.ToString("C0", culture)</span>
+                    </td>
+                </tr>
+            </table>
+            <p class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-margin-top-9">Read more about <a href="https://www.gov.uk/government/publications/apprenticeship-funding/apprenticeship-funding" class="govuk-link govuk-link--no-visited-state" target="_blank">how the levy works (opens in new tab).</a></p>
         </div>
-    </div>
-    <h2 class="govuk-heading-s app-finance-figure__title">Estimates</h2>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-third">
-            @{
-                var expected = Model.Data.FundingExpected.ToString("C0", culture);
-            }
-            <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-estimated-future-funding">@expected</div>
-            <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-estimated-future-funding">Estimated total funding for the next 12 months (based on funds entering your Apprenticeship service account, including the 10% top up)</p>
+    }
+    else
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Finance</h1>
+        <div class="govuk-grid-row govuk-!-margin-bottom-8">
+            <div class="govuk-grid-column-one-third">
+                @{
+                    var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
+                }
+                <p class="app-finance-figure__title" id="lbl-current-funds">Current funds</p>
+                <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-funds">@balance</div>
+            </div>
+            <div class="govuk-grid-column-one-third">
+                @{
+                    var currentSpend = Model.Data.TotalSpendForLastYear.ToString("C0", culture);
+                }
+                <p class="app-finance-figure__title" id="lbl-current-spent-funds">Funds spent since @DateTime.Now.AddMonths(-12).ToString("MMM yyyy")</p>
+                <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-spent-funds">@currentSpend</div>
+            </div>
         </div>
-    </div>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <details id="inform-accurate-estimates" class="govuk-details govuk-!-margin-bottom-0">
-                <summary class="govuk-details__summary">
-                    <span class="govuk-details__summary-text">
-                        How accurate are the estimates?
-                    </span>
-                </summary>
-                <div class="govuk-details__text">
-                    <p>Estimates are based on details we have about your last levy payment and apprenticeship arrangements, which may not be up-to-date.</p>
-                    <p>You should use additional financial information when planning how to spend your funds.</p>
-                </div>
-            </details>
+        <h2 class="govuk-heading-s app-finance-figure__title">Estimates</h2>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+                @{
+                    var expected = Model.Data.FundingExpected.ToString("C0", culture);
+                }
+                <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-estimated-future-funding">@expected</div>
+                <p class="govuk-body govuk-!-font-size-16 app-finance-figure__label" id="lbl-estimated-future-funding">Estimated total funding for the next 12 months (based on funds entering your Apprenticeship service account, including the 10% top up)</p>
+            </div>
         </div>
-    </div>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <details id="inform-accurate-estimates" class="govuk-details govuk-!-margin-bottom-0">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            How accurate are the estimates?
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        <p>Estimates are based on details we have about your last levy payment and apprenticeship arrangements, which may not be up-to-date.</p>
+                        <p>You should use additional financial information when planning how to spend your funds.</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    }
+}
+else
+{
+    if (Model.Data.ShowLevyTransparency)
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+    }
+    else
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Finance</h1>
+    }
 }
 
-@{
-    var colummSize = Model.Data.IsLevyEmployer ? "quarter" : "third";
-    var headingSize = Model.Data.IsLevyEmployer ? "s" : "m";
-}
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-@colummSize">
-        <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
+<div class="app-highlight-boxes">
+    <div class="@(Model.Data.ShowLevyTransparency ? "app-highlight-boxes__box" :"")">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 View transactions
             </a>
         </h2>
-        <p>View payments made into and out of your apprenticeship service account. </p>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">View payments made into and out of your apprenticeship service account. </p>
     </div>
-    <div class="govuk-grid-column-one-@colummSize">
-        <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
+    <div class="@(Model.Data.ShowLevyTransparency ? "app-highlight-boxes__box" :"")">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Download transactions
             </a>
         </h2>
-        <p>Download your financial transactions within a specific date range. </p>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">Download your financial transactions within a specific date range. </p>
     </div>
-    <div class="govuk-grid-column-one-@colummSize">
-        <h2 class="govuk-heading-@headingSize govuk-!-margin-bottom-2">
+    <div class="@(Model.Data.ShowLevyTransparency ? "app-highlight-boxes__box" :"")">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
             <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
                 Transfers
             </a>
         </h2>
-        <p>Connect with other employers and @(Model.Data.IsLevyEmployer ? "send or" : "") receive transfer funds. </p>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">Connect with other employers and @(Model.Data.IsLevyEmployer ? "send or" : "") receive transfer funds. </p>
     </div>
 </div>
 
