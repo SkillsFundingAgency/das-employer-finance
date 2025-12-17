@@ -34,7 +34,7 @@
             <h2 class="govuk-heading-l">Latest payments</h2>
             <table class="govuk-table app-statement__table">
                 <tr>
-                    <th class="govuk-table__header" scope="row">
+                    <th class="govuk-table__header" scope="row" id="lbl-last-month-payments-label">
                         Paid from the levy in @Model.Data.DateUsed
                         <div class="govuk-hint">Payments to training providers </div>
                     </th>
@@ -43,7 +43,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th class="govuk-table__header" scope="row">
+                    <th class="govuk-table__header" scope="row" id="lbl-last-month-levy-label">
                         Levy declared in @Model.Data.DateUsed
                         <div class="govuk-hint">Employer PAYE contribution plus 10% government top-up </div>
                     </th>
@@ -52,7 +52,7 @@
                     </td>
                 </tr>
                 <tr class="app-statement__total">
-                    <th class="govuk-table__header" scope="row">
+                    <th class="govuk-table__header" scope="row" id="lbl-total-levy-funds-label">
                         Total levy
                         <div class="govuk-hint">Current funds available for apprenticeship training </div>
                     </th>
