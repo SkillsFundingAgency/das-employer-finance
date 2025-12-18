@@ -114,6 +114,6 @@ public class WhenIGetAccountBalance
     {
         var response = await _handler.Handle(_query, CancellationToken.None);
 
-        response.LastMonthPayments.Should().Be((TransferTotal + PaymentTotal) * -1);
+        response.LastMonthPayments.Should().Be(TransferTotal + PaymentTotal);
     }
 }

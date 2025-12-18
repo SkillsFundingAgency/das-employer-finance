@@ -40,7 +40,7 @@ public class GetAccountFinanceOverviewQueryHandler(
             FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear,
             LastMonthLevyDeclaration = latestMonthly,
-            LastMonthPayments = totalPayments * -1
+            LastMonthPayments = totalPayments
         };
         
         return response;
