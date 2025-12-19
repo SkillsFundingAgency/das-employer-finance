@@ -4,8 +4,6 @@ namespace SFA.DAS.EmployerFinance.Api.Types;
 
 public class PeriodEnd
 {
-    public int Id { get; set; }
-
     public string PeriodEndId { get; set; }
 
     public int CalendarPeriodMonth { get; set; }

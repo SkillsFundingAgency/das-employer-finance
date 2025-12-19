@@ -83,9 +83,9 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
     [HttpGet("{accountId}/payments/ids")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccountPaymentIds(long accountId)
+    public async Task<IActionResult> GetAccountPaymentIds(long accountId, int pageNumber = 1, int pageSize = 10000)
     {
-        var result = await financeOrchestrator.GetAccountPaymentIds(accountId);
+        var result = await financeOrchestrator.GetAccountPaymentIds(accountId, pageNumber, pageSize);
 
         if (result == null)
         {

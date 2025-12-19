@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
                     .UseLicense(employerFinanceConfiguration.NServiceBusLicense)
                     .UseNewMessageConventions()
                     .UseNewtonsoftJsonSerializer()
-                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.DatabaseConnectionString))
+                    .UseSqlServerPersistence(() => DatabaseExtensions.GetSqlConnection(employerFinanceConfiguration.SqlConnectionString))
                     .UseAzureServiceBusTransport(() => employerFinanceConfiguration.ServiceBusConnectionString, isLocal);
 
                 var endpoint = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();

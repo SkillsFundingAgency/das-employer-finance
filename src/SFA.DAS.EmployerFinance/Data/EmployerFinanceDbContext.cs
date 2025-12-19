@@ -34,10 +34,9 @@ public class EmployerFinanceDbContext : DbContext
 
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
 
-    public EmployerFinanceDbContext(IDbConnection connection, EmployerFinanceConfiguration configuration, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider) : base(options)
+    public EmployerFinanceDbContext(IDbConnection connection, EmployerFinanceConfiguration configuration, DbContextOptions options) : base(options)
     {
         _configuration = configuration;
-        _azureServiceTokenProvider = azureServiceTokenProvider;
         _connection = connection;
     }
 
