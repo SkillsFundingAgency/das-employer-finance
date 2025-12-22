@@ -36,32 +36,4 @@ public class TransferConnectionsController(IMediator mediator, IEncodingService 
         return Ok(response.TransferConnections);
     }
 
-    [HttpGet]
-    [Route("{accountId}/transfers/connectionss")]
-    public async Task<IActionResult> GetTransfersByPeriodEnd(long accountId,[FromQuery] string periodEnd)
-    {
-        if (string.IsNullOrWhiteSpace(periodEnd))
-        {
-            return BadRequest("periodEnd query parameter is required.");
-        }
-
-        if (!DateTime.TryParse(periodEnd, out var parsedPeriodEnd))
-        {
-            return BadRequest("Invalid periodEnd format.");
-        }
-
-        var response = await mediator.Send(new GetTransfersByPeriodEndRequest
-        {
-            AccountId = accountId,
-            PeriodEnd = periodEnd
-        });
-
-        if (response.AccountTransfers == null || !response.AccountTransfers.Any())
-        {
-            return NotFound($"No transfers found for account {accountId} and period {periodEnd}.");
-        }
-
-        return Ok(response);
-    }
-
 }
