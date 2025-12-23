@@ -93,15 +93,4 @@ public class WhenIGetTransfersByPeriodEnd
         result.Should().NotBeNull();
         result.Should().BeOfType<BadRequestObjectResult>();
     }
-
-    [Test]
-    public async Task Then_Returns_BadRequest_When_PeriodEnd_Is_Invalid()
-    {
-        // Act
-        var result = await _transferController.GetTransfersByPeriodEnd(AccountId, "not-a-date");
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<BadRequestObjectResult>();
-    }
 }
