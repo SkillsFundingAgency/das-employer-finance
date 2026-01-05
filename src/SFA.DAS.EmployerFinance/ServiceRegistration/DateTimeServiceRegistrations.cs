@@ -6,18 +6,17 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration;
 
 public static class DateTimeServiceRegistrations
 {
-    public static IServiceCollection AddDateTimeServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddDateTimeServices(this IServiceCollection services, IConfiguration configuration)
     {
         var cloudCurrentTime = configuration.GetValue<string>("CurrentTime");
 
-        if(!DateTime.TryParse(cloudCurrentTime, out var currentTime))
+        if(DateTime.TryParse(cloudCurrentTime, out var currentTime))
         {
-            currentTime= DateTime.Now;
+            services.AddScoped<ICurrentDateTime>(_ => new CurrentDateTime(currentTime));
         }
-
-        services.AddSingleton<ICurrentDateTime>(_ => new CurrentDateTime(currentTime));
-
-        return services;
+        else
+        {
+            services.AddScoped<ICurrentDateTime>(_ => new CurrentDateTime());
+        }
     }
-
 }
