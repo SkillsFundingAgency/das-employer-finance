@@ -8,4 +8,8 @@ public class FinanceDashboardViewModel
     public decimal AvailableFunds { get; set; }
     public decimal FundingExpected { get; set; }
     public bool IsLevyEmployer { get; set; }
+    public bool ShowLevyTransparency { get; set; }
+    public decimal LastMonthLevyDeclaration { get; set; }
+    public decimal LastMonthPayments { get; set; }
+    public string DateUsed { get; set; }
 }

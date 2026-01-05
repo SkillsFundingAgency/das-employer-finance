@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -38,7 +39,7 @@ public class WhenGettingCoursePaymentSummary
             _accountApiMock.Object, 
             _mediatorMock.Object, 
             _currentTimeMock.Object,
-            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>(), Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>());
+            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>(), Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>(), Mock.Of<EmployerFinanceWebConfiguration>());
     }
 
     [Test]

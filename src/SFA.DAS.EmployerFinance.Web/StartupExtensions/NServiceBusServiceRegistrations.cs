@@ -21,7 +21,7 @@ public static class NServiceBusServiceRegistrations
     {
         var employerFinanceConfiguration = configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
 
-        var databaseConnectionString = employerFinanceConfiguration.DatabaseConnectionString;
+        var databaseConnectionString = employerFinanceConfiguration.SqlConnectionString;
 
         if (string.IsNullOrWhiteSpace(databaseConnectionString))
         {

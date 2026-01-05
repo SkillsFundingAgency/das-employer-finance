@@ -2,7 +2,6 @@
 
 public class EmployerFinanceConfiguration
 {
-    public string DatabaseConnectionString { get; set; }
     public int DefaultCacheExpirationInMinutes { get; set; }
     public decimal TransferAllowancePercentage { get; set; }
     public string NServiceBusLicense { get; set; }
@@ -10,6 +9,7 @@ public class EmployerFinanceConfiguration
     public string RedisConnectionString { get; set; }
     public virtual int FundsExpiryPeriod { get; set; }
     public string EmployerFinanceBaseUrl { get; set; }
+    public string SqlConnectionString { get; set; }
 }
 
 public class EmployerFinanceJobsConfiguration : EmployerFinanceConfiguration { }
@@ -25,6 +25,7 @@ public class EmployerFinanceWebConfiguration : EmployerFinanceConfiguration
     public string EmployerProjectionsBaseUrl { get; set; }
     public string EmployerRecruitBaseUrl { get; set; }
     public string LevyTransferMatchingBaseUrl { get; set; }
+    public virtual bool ShowLevyTransparency { get; set; }
 }
 
 public class ZenDeskConfiguration

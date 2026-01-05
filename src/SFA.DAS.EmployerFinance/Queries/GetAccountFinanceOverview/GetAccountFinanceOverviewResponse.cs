@@ -7,4 +7,6 @@ public class GetAccountFinanceOverviewResponse
     public decimal TotalSpendForLastYear { get; set; }
     public decimal FundsIn { get; set; }
     public decimal FundsOut { get; set; }
+    public decimal LastMonthLevyDeclaration { get; set; }
+    public decimal LastMonthPayments { get; set; }
 }
