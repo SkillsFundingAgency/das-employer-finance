@@ -4,6 +4,7 @@ using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -27,6 +28,7 @@ public class WhenGettingFinanceIndex
     private Mock<IEncodingService> _encodingService;
     private Mock<IAuthenticationOrchestrator> _authenticationService;
     private Mock<IGovAuthEmployerAccountService> _userAccountService;
+    private Mock<EmployerFinanceWebConfiguration> _configuration;
 
     [SetUp]
     public void Arrange()
@@ -35,7 +37,7 @@ public class WhenGettingFinanceIndex
         _mediator = new Mock<IMediator>();
         _currentTime = new Mock<ICurrentDateTime>();
         _encodingService = new Mock<IEncodingService>();
-
+        _currentTime.Setup(x=>x.Now).Returns(new DateTime(2014, 10, 31));
         _response = new GetEmployerAccountResponse
         {
             Account = new Account
@@ -59,8 +61,9 @@ public class WhenGettingFinanceIndex
             FirstName = FirstName,
             LastName = LastName,
         });
+        _configuration = new Mock<EmployerFinanceWebConfiguration>();
 
-        _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), _encodingService.Object, _authenticationService.Object, _userAccountService.Object);
+        _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), _encodingService.Object, _authenticationService.Object, _userAccountService.Object, _configuration.Object);
     }
 
     [TestCase("0", false, TestName = "Non-Levy Employer returned")]
@@ -114,4 +117,38 @@ public class WhenGettingFinanceIndex
         response.Data.IsLevyEmployer.Should().Be(isLevy);
         _authenticationService.VerifyNoOtherCalls();
     }
+
+    [Test]
+    public async Task Then_Sets_LevyTransparencyFlag_And_New_Totals()
+    {
+        _currentTime.Setup(x=>x.Now).Returns(new DateTime(2018,1,13));
+        _accountApiClient.Setup(c => c.GetAccount(AccountId))
+            .ReturnsAsync(new AccountDetailViewModel
+            {
+                ApprenticeshipEmployerType = "Levy"
+            });
+        _mediator.Setup(m => m.Send(It.Is<GetAccountFinanceOverviewQuery>(c=>
+                c.AccountId == AccountId
+                && c.FromDate == new DateTime(2017,12,1)
+                && c.ToDate == new DateTime(2018,1,1)
+                ), CancellationToken.None))
+            .ReturnsAsync(new GetAccountFinanceOverviewResponse
+            {
+                LastMonthLevyDeclaration = 10,
+                LastMonthPayments = 20
+            });
+        _configuration.Setup(x => x.ShowLevyTransparency).Returns(true);
+        
+        var response = await _orchestrator.Index(HashedAccountId, new ClaimsIdentity(new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, "UserId"),
+            new(ClaimTypes.Email, "UserEmail")
+        }));
+        
+        response.Data.ShowLevyTransparency.Should().BeTrue();
+        response.Data.LastMonthLevyDeclaration.Should().Be(10);
+        response.Data.LastMonthPayments.Should().Be(20);
+        response.Data.DateUsed.Should().Be("December 2017");
+    }
+    
 }

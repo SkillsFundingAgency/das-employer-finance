@@ -1,4 +1,7 @@
-﻿using SFA.DAS.EmployerFinance.Models.Account;
+﻿
+
+using SFA.DAS.EmployerFinance.Api.Types;
+
 namespace SFA.DAS.EmployerFinance.Queries.GetAccounts;
 
 public class GetAccountsResponse

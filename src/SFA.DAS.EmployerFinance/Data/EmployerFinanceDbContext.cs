@@ -18,7 +18,6 @@ namespace SFA.DAS.EmployerFinance.Data;
 public class EmployerFinanceDbContext : DbContext
 {
     private readonly EmployerFinanceConfiguration _configuration;
-    private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
     private readonly IDbConnection _connection;
     public virtual DbSet<Account> Accounts { get; set; }
     public virtual DbSet<AccountTransfer> AccountTransfers { get; set; }
@@ -34,16 +33,15 @@ public class EmployerFinanceDbContext : DbContext
 
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
 
-    public EmployerFinanceDbContext(IDbConnection connection, EmployerFinanceConfiguration configuration, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider) : base(options)
+    public EmployerFinanceDbContext(IDbConnection connection, EmployerFinanceConfiguration configuration, DbContextOptions options) : base(options)
     {
         _configuration = configuration;
-        _azureServiceTokenProvider = azureServiceTokenProvider;
         _connection = connection;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (_configuration == null || _azureServiceTokenProvider == null)
+        if (_configuration == null)
         {
             optionsBuilder.UseSqlServer().UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             return;

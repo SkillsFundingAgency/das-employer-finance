@@ -81,7 +81,7 @@ public class WhenAddingServicesToTheContainer
                 new("AccountApiConfiguration:ApiBaseUrl", "https://test1.com/"),
                 new("EmployerFinanceOuterApiConfiguration:BaseUrl", "https://test.com/"),
                 new("EmployerFinanceOuterApiConfiguration:Key", "123edc"),
-                new("EmployerFinanceConfiguration:DatabaseConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
+                new("EmployerFinanceConfiguration:SqlConnectionString", "Data Source=.;Initial Catalog=SFA.DAS.EmployerFinance;Integrated Security=True;Pooling=False;Connect Timeout=30"),
                 new("EnvironmentName", "test"),
                 new("SFA.DAS.Encoding", "{'Encodings':[{'EncodingType':'AccountId','Salt':'test','MinHashLength':6,'Alphabet':'46789BCDFGHJKLMNPRSTVWXY'}]}")
             }

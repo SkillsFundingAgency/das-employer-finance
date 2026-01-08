@@ -1,4 +1,6 @@
 ﻿using SFA.DAS.EAS.Account.Api.Client;
+using SFA.DAS.EAS.Account.Api.Types;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -26,7 +28,8 @@ public class EmployerAccountTransactionsOrchestrator(
     ILogger<EmployerAccountTransactionsOrchestrator> logger,
     IEncodingService encodingService,
     IAuthenticationOrchestrator authenticationOrchestrator,
-    IGovAuthEmployerAccountService accountService)
+    IGovAuthEmployerAccountService accountService,
+    EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
@@ -46,9 +49,15 @@ public class EmployerAccountTransactionsOrchestrator(
         var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
         
         logger.LogInformation("After GetAccount call");
+
+        var fromDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1).AddMonths(-1);
+        var toDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1);
+        
         var getAccountFinanceOverview = await mediator.Send(new GetAccountFinanceOverviewQuery
         {
-            AccountId = accountId
+            AccountId = accountId,
+            FromDate = fromDate,
+            ToDate = toDate
         });
 
         logger.LogInformation("account : {HashedAccountId}  getAccountFinanceOverview: {GetAccountFinanceOverview} ", hashedAccountId, getAccountFinanceOverview);
@@ -64,6 +73,10 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalSpendForLastYear = getAccountFinanceOverview.TotalSpendForLastYear,
                 FundingExpected = getAccountFinanceOverview.FundsIn,
                 AvailableFunds = getAccountFinanceOverview.FundsIn - getAccountFinanceOverview.FundsOut,
+                ShowLevyTransparency = configuration.ShowLevyTransparency,
+                LastMonthLevyDeclaration = getAccountFinanceOverview.LastMonthLevyDeclaration,
+                LastMonthPayments =  getAccountFinanceOverview.LastMonthPayments,
+                DateUsed = fromDate.ToString("MMMM yyyy")
             }
         };
 
