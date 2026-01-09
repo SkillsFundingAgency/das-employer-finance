@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [employer_financial].[UpdatePaymentMetadata]
+CREATE PROCEDURE [employer_financial].[UpdatePaymentMetadata]
 (
     @ProviderName VARCHAR(MAX),
     @ApprenticeName VARCHAR(MAX),
@@ -20,7 +20,7 @@ SET
     ,ApprenticeshipCourseLevel = @CourseLevel
     ,ApprenticeshipCourseStartDate = @CourseStartDate
     ,PathwayName = @PathwayName
-WHERE [Id] = @PaymentMetadataId
+WHERE [Id] = @PaymentMetaDataId
 
 UPDATE at
 SET at.CourseName = @CourseName,

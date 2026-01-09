@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [employer_financial].[GetPaymentForPaymentDetails]
+CREATE PROCEDURE [employer_financial].[GetPaymentForPaymentDetails]
 (
     @PaymentId uniqueidentifier    
 )
 AS
 SELECT
     p.PaymentId AS Id
-    ,p.PaymentMetadataId
+    ,p.PaymentMetaDataId
     ,p.ApprenticeshipId
     ,p.Ukprn
     ,pmd.StandardCode
@@ -15,5 +15,5 @@ SELECT
     ,pmd.ApprenticeName
     ,pmd.ProviderName
 FROM [employer_financial].[Payment] p
-JOIN [employer_financial].[PaymentMetaData] pmd ON p.PaymentMetadataId = pmd.Id
+JOIN [employer_financial].[PaymentMetaData] pmd ON p.PaymentMetaDataId = pmd.Id
 WHERE p.PaymentId = @paymentId    

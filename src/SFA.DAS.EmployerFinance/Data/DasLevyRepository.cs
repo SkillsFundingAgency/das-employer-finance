@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -326,6 +326,7 @@ public class DasLevyRepository : IDasLevyRepository
         var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
             sql: "[employer_financial].[GetLevyDeclarations_ByAccountId]",
             param: parameters,
+            commandTimeout: 60,
             transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
