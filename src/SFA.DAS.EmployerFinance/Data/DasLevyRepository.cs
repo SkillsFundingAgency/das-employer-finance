@@ -156,6 +156,22 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
     }
 
+    public async Task<bool> UpdatePaymentMetadata(long paymentMetaDataId, PaymentMetaData updatedMetaData)
+    {
+        var metadata = await _db.Value.PaymentMetaData
+            .FirstOrDefaultAsync(m => m.Id == paymentMetaDataId);
+
+        if (metadata == null)
+            return false;
+
+        _db.Value.Entry(metadata).CurrentValues.SetValues(updatedMetaData);
+
+        await _db.Value.SaveChangesAsync();
+
+        return true;
+    }
+
+
     public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
     {
         var parameters = new DynamicParameters();
