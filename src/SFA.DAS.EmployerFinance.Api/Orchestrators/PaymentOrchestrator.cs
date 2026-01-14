@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using System.Threading.Tasks;
@@ -22,17 +21,12 @@ public class PaymentOrchestrator
         _mapper = mapper;
     }
 
-    public async Task<bool> UpdatePaymentMetadata(PaymentMetaData paymentMetadata)
+    public async Task<bool> UpdatePaymentMetadata(Guid paymentId, PaymentMetaData paymentMetadata)
     {
-        if (paymentMetadata.Id <= 0)
-        {
-            _logger.LogError("Payment metadata is null for payment {PaymentId}", paymentMetadata?.Id);
-            return false;
-        }
-
         await _mediator.Send(new UpdatePaymentMetadataCommand
         {
-            PaymentMetadata = paymentMetadata
+            PaymentMetadata = paymentMetadata,
+            PaymentId = paymentId
         });
 
         return true;

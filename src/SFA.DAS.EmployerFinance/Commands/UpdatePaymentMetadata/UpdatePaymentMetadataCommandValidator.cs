@@ -1,35 +1,44 @@
 ﻿using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
 using SFA.DAS.EmployerFinance.Validation;
 using StructureMap.Diagnostics;
+using System.Text.RegularExpressions;
 
 public class UpdatePaymentMetadataCommandValidator
     : IValidator<UpdatePaymentMetadataCommand>
 {
     public ValidationResult Validate(UpdatePaymentMetadataCommand item)
     {
-        var errors = new List<ValidationError>();
+        var validationResult = new ValidationResult();
 
         if (item.PaymentMetadata.Id<= 0)
-            errors.Add(new ValidationError(nameof(item.PaymentId), "PaymentId is required"));
+            validationResult.AddError(nameof(item.PaymentMetadata.Id), "PaymentId is required");
 
-        if (string.IsNullOrWhiteSpace(item.PaymentMetadata?.Provider))
-            errors.Add(new ValidationError("Provider", "Provider is required"));
+        if (string.IsNullOrWhiteSpace(item.PaymentMetadata?.ProviderName))
+            validationResult.AddError("Provider", "Provider is required");
 
-        if (!IsValidNiNumber(item.PaymentMetadata?.NationalInsuranceNumber))
-            errors.Add(new ValidationError("NationalInsuranceNumber", "Invalid NI format"));
+        if (!IsValidNiNumber(item.PaymentMetadata.ApprenticeNINumber))
+            validationResult.AddError("NationalInsuranceNumber", "Invalid NI format");
 
-        if (item.PaymentMetadata?.StartDate < new DateTime(1900, 1, 1))
-            errors.Add(new ValidationError("StartDate", "StartDate must be after 1900-01-01"));
+        if (item.PaymentMetadata?.ApprenticeshipCourseStartDate < new DateTime(1900, 1, 1))
+            validationResult.AddError("StartDate", "StartDate must be after 1900-01-01");
 
-        return new ValidationResult(errors);
+        return validationResult;
     }
 
     public Task<ValidationResult> ValidateAsync(UpdatePaymentMetadataCommand item)
         => Task.FromResult(Validate(item));
 
+    private static readonly Regex NiRegex = new(
+      @"^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)[A-CEGHJ-PR-TW-Z]{2}\d{6}[A-D]$",
+      RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     private bool IsValidNiNumber(string ni)
     {
-        // simple example – replace with real regex
-        return !string.IsNullOrWhiteSpace(ni) && ni.Length >= 8;
+        if (string.IsNullOrWhiteSpace(ni))
+            return false;
+
+        var normalized = ni.Replace(" ", "").ToUpperInvariant();
+
+        return NiRegex.IsMatch(normalized);
     }
 }

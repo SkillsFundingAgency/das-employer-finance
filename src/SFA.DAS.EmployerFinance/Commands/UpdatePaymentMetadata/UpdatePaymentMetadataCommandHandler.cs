@@ -24,6 +24,6 @@ public class UpdatePaymentMetadataCommandHandler : IRequestHandler<UpdatePayment
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        await _dasLevyRepository.UpdatePaymentMetadata(request.PaymentMetadata.Id, request.PaymentMetadata); ;
+        await _dasLevyRepository.UpdatePaymentMetadata(request.PaymentId, request.PaymentMetadata);
     }
 }

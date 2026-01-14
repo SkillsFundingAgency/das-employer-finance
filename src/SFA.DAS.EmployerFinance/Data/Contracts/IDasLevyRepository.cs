@@ -29,7 +29,7 @@ public interface IDasLevyRepository
     Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds);
     Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef);
     Task UpdatePaymentMetadata(PaymentDetails details);
-    Task<bool> UpdatePaymentMetadata(long paymentMetaDataId, PaymentMetaData updatedMetaData);
+    Task<bool> UpdatePaymentMetadata(Guid paymentId, PaymentMetaData updatedMetaData);
     Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId);
     Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata();
     Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber);

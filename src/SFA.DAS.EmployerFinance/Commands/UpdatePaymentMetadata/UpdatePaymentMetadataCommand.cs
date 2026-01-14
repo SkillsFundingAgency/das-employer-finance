@@ -5,4 +5,6 @@ namespace SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
 public class UpdatePaymentMetadataCommand : IRequest
 {
     public PaymentMetaData PaymentMetadata { get; set; }
+
+    public Guid PaymentId { get; set; }
 }
