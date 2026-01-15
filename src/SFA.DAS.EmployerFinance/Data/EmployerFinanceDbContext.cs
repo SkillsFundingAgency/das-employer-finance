@@ -61,6 +61,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AccountTransferConfiguration());
         modelBuilder.ApplyConfiguration(new HealthCheckConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMetadataConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionLineEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());

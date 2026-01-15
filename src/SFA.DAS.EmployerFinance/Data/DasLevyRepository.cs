@@ -159,7 +159,6 @@ public class DasLevyRepository : IDasLevyRepository
     public async Task<bool> UpdatePaymentMetadata(Guid paymentId, PaymentMetaData updatedMetaData)
     {
         var payment = await _db.Value.Payments
-            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == paymentId);
 
         var metadata = await _db.Value.PaymentMetaData
@@ -168,7 +167,18 @@ public class DasLevyRepository : IDasLevyRepository
         if (metadata == null)
             return false;
 
-        _db.Value.Entry(metadata).CurrentValues.SetValues(updatedMetaData);
+        metadata.ProviderName = updatedMetaData.ProviderName;
+        //metadata.StandardCode = updatedMetaData.StandardCode;
+        //metadata.FrameworkCode = updatedMetaData.FrameworkCode;
+        //metadata.ProgrammeType = updatedMetaData.ProgrammeType;
+        //metadata.PathwayCode = updatedMetaData.PathwayCode;
+        //metadata.PathwayName = updatedMetaData.PathwayName;
+        //metadata.ApprenticeshipCourseName = updatedMetaData.ApprenticeshipCourseName;
+        //metadata.ApprenticeshipCourseStartDate = updatedMetaData.ApprenticeshipCourseStartDate;
+        //metadata.ApprenticeshipCourseLevel = updatedMetaData.ApprenticeshipCourseLevel;
+        //metadata.ApprenticeName = updatedMetaData.ApprenticeName;
+        //metadata.ApprenticeNINumber = updatedMetaData.ApprenticeNINumber;
+        //metadata.IsHistoricProviderName = updatedMetaData.IsHistoricProviderName;
 
         await _db.Value.SaveChangesAsync();
 

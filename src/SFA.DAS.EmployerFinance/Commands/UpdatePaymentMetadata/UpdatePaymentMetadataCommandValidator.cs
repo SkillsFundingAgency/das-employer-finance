@@ -10,9 +10,6 @@ public class UpdatePaymentMetadataCommandValidator
     {
         var validationResult = new ValidationResult();
 
-        if (item.PaymentMetadata.Id<= 0)
-            validationResult.AddError(nameof(item.PaymentMetadata.Id), "PaymentId is required");
-
         if (string.IsNullOrWhiteSpace(item.PaymentMetadata?.ProviderName))
             validationResult.AddError("Provider", "Provider is required");
 

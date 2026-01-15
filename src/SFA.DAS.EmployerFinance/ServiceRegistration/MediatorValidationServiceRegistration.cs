@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
+using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
@@ -40,9 +41,9 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<FindAccountProviderPaymentsQuery>, FindAccountProviderPaymentsQueryValidator>();
         services.AddTransient<IValidator<GetHMRCLevyDeclarationQuery>, GetHMRCLevyDeclarationQueryValidator>();
         services.AddTransient<IValidator<GetLastLevyDeclarationQuery>, GetLastLevyDeclarationValidator>();
-
         services.AddTransient<IValidator<CreateEnglishFractionCalculationDateCommand>, CreateEnglishFractionCalculationDateCommandValidator>();
         services.AddTransient<IValidator<CreateNewPeriodEndCommand>, CreateNewPeriodEndCommandValidator>();
+        services.AddTransient<IValidator<UpdatePaymentMetadataCommand>, UpdatePaymentMetadataCommandValidator>();
         services.AddTransient<IValidator<CreateTransferTransactionsCommand>, CreateTransferTransactionsCommandValidator>();
         services.AddTransient<IValidator<RefreshAccountTransfersCommand>, RefreshAccountTransfersCommandValidator>();
         services.AddTransient<IValidator<RefreshEmployerLevyDataCommand>, RefreshEmployerLevyDataCommandValidator>();
