@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Queries.GetTransferConnections;
+using SFA.DAS.EmployerFinance.Queries.GetTransfersbyPeriodEnd;
 using SFA.DAS.Encoding;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
@@ -33,4 +35,5 @@ public class TransferConnectionsController(IMediator mediator, IEncodingService 
 
         return Ok(response.TransferConnections);
     }
+
 }
