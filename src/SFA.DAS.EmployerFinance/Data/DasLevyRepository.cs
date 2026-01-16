@@ -168,17 +168,17 @@ public class DasLevyRepository : IDasLevyRepository
             return false;
 
         metadata.ProviderName = updatedMetaData.ProviderName;
-        //metadata.StandardCode = updatedMetaData.StandardCode;
-        //metadata.FrameworkCode = updatedMetaData.FrameworkCode;
-        //metadata.ProgrammeType = updatedMetaData.ProgrammeType;
-        //metadata.PathwayCode = updatedMetaData.PathwayCode;
-        //metadata.PathwayName = updatedMetaData.PathwayName;
-        //metadata.ApprenticeshipCourseName = updatedMetaData.ApprenticeshipCourseName;
-        //metadata.ApprenticeshipCourseStartDate = updatedMetaData.ApprenticeshipCourseStartDate;
-        //metadata.ApprenticeshipCourseLevel = updatedMetaData.ApprenticeshipCourseLevel;
-        //metadata.ApprenticeName = updatedMetaData.ApprenticeName;
-        //metadata.ApprenticeNINumber = updatedMetaData.ApprenticeNINumber;
-        //metadata.IsHistoricProviderName = updatedMetaData.IsHistoricProviderName;
+        metadata.StandardCode = updatedMetaData.StandardCode;
+        metadata.FrameworkCode = updatedMetaData.FrameworkCode;
+        metadata.ProgrammeType = updatedMetaData.ProgrammeType;
+        metadata.PathwayCode = updatedMetaData.PathwayCode;
+        metadata.PathwayName = updatedMetaData.PathwayName;
+        metadata.ApprenticeshipCourseName = updatedMetaData.ApprenticeshipCourseName;
+        metadata.ApprenticeshipCourseStartDate = updatedMetaData.ApprenticeshipCourseStartDate;
+        metadata.ApprenticeshipCourseLevel = updatedMetaData.ApprenticeshipCourseLevel;
+        metadata.ApprenticeName = updatedMetaData.ApprenticeName;
+        metadata.ApprenticeNINumber = updatedMetaData.ApprenticeNINumber;
+        metadata.IsHistoricProviderName = updatedMetaData.IsHistoricProviderName;
 
         await _db.Value.SaveChangesAsync();
 
