@@ -163,6 +163,7 @@ public class DasLevyRepository : IDasLevyRepository
             .FirstOrDefaultAsync(p => p.Id == paymentId);
 
         var metadata = await _db.Value.PaymentMetaData
+            .AsTracking()
             .FirstOrDefaultAsync(m => m.Id == payment.PaymentMetaDataId);
 
         if (metadata == null)
