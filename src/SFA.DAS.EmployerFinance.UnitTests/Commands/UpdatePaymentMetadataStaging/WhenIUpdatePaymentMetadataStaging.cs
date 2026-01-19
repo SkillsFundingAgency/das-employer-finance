@@ -1,16 +1,16 @@
-﻿using global::SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
-using global::SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using global::SFA.DAS.EmployerFinance.Data.Contracts;
 using global::SFA.DAS.EmployerFinance.Models.Payments;
 using global::SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
 using System.ComponentModel.DataAnnotations;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
 {
-    public class WhenIUpdatePaymentMetadata
+    public class WhenIUpdatePaymentMetadataStaging
     {
-        private UpdatePaymentMetadataCommandHandler _handler;
-        private Mock<IValidator<UpdatePaymentMetadataCommand>> _validator;
+        private UpdatePaymentMetadataStagingCommandHandler _handler;
+        private Mock<IValidator<UpdatePaymentMetadataStagingCommand>> _validator;
         private Mock<IDasLevyRepository> _repository;
 
         [SetUp]
@@ -18,15 +18,15 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         {
             _repository = new Mock<IDasLevyRepository>();
 
-            _validator = new Mock<IValidator<UpdatePaymentMetadataCommand>>();
+            _validator = new Mock<IValidator<UpdatePaymentMetadataStagingCommand>>();
             _validator
-                .Setup(x => x.Validate(It.IsAny<UpdatePaymentMetadataCommand>()))
+                .Setup(x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()))
                 .Returns(new ValidationResult
                 {
                     ValidationDictionary = new Dictionary<string, string>()
                 });
 
-            _handler = new UpdatePaymentMetadataCommandHandler(
+            _handler = new UpdatePaymentMetadataStagingCommandHandler(
                 _validator.Object,
                 _repository.Object);
         }
@@ -35,11 +35,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         public async Task ThenTheCommandIsValidated()
         {
             // Act
-            await _handler.Handle(new UpdatePaymentMetadataCommand(), CancellationToken.None);
+            await _handler.Handle(new UpdatePaymentMetadataStagingCommand(), CancellationToken.None);
 
             // Assert
             _validator.Verify(
-                x => x.Validate(It.IsAny<UpdatePaymentMetadataCommand>()),
+                x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()),
                 Times.Once);
         }
 
@@ -48,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         {
             // Arrange
             _validator
-                .Setup(x => x.Validate(It.IsAny<UpdatePaymentMetadataCommand>()))
+                .Setup(x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()))
                 .Returns(new ValidationResult
                 {
                     ValidationDictionary = new Dictionary<string, string> { { "", "" } }
@@ -56,17 +56,17 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
 
             // Assert
             Assert.ThrowsAsync<ValidationException>(async () =>
-                await _handler.Handle(new UpdatePaymentMetadataCommand(), CancellationToken.None));
+                await _handler.Handle(new UpdatePaymentMetadataStagingCommand(), CancellationToken.None));
         }
 
         [Test]
         public async Task ThenTheRepositoryIsCalledWhenTheMessageIsValid()
         {
             // Arrange
-            var command = new UpdatePaymentMetadataCommand
+            var command = new UpdatePaymentMetadataStagingCommand
             {
                 PaymentId = Guid.NewGuid(),
-                PaymentMetadata = new PaymentMetaData()
+                PaymentMetadataStaging = new PaymentMetaDataStaging()
             };
 
             // Act
@@ -74,9 +74,9 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
 
             // Assert
             _repository.Verify(x =>
-                x.UpdatePaymentMetadata(
+                x.UpdatePaymentMetadataStaging(
                     command.PaymentId,
-                    command.PaymentMetadata),
+                    command.PaymentMetadataStaging),
                 Times.Once);
         }
     }

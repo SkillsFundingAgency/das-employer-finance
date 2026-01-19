@@ -1,28 +1,27 @@
-﻿using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
+﻿using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
 using SFA.DAS.EmployerFinance.Validation;
-using StructureMap.Diagnostics;
 using System.Text.RegularExpressions;
 
-public class UpdatePaymentMetadataCommandValidator
-    : IValidator<UpdatePaymentMetadataCommand>
+public class UpdatePaymentMetadataStagingCommandValidatorStaging
+    : IValidator<UpdatePaymentMetadataStagingCommand>
 {
-    public ValidationResult Validate(UpdatePaymentMetadataCommand item)
+    public ValidationResult Validate(UpdatePaymentMetadataStagingCommand item)
     {
         var validationResult = new ValidationResult();
 
-        if (string.IsNullOrWhiteSpace(item.PaymentMetadata?.ProviderName))
+        if (string.IsNullOrWhiteSpace(item.PaymentMetadataStaging?.ProviderName))
             validationResult.AddError("Provider", "Provider is required");
 
-        if (!IsValidNiNumber(item.PaymentMetadata.ApprenticeNINumber))
+        if (!IsValidNiNumber(item.PaymentMetadataStaging.ApprenticeNINumber))
             validationResult.AddError("NationalInsuranceNumber", "Invalid NI format");
 
-        if (item.PaymentMetadata?.ApprenticeshipCourseStartDate < new DateTime(1900, 1, 1))
+        if (item.PaymentMetadataStaging?.ApprenticeshipCourseStartDate < new DateTime(1900, 1, 1))
             validationResult.AddError("StartDate", "StartDate must be after 1900-01-01");
 
         return validationResult;
     }
 
-    public Task<ValidationResult> ValidateAsync(UpdatePaymentMetadataCommand item)
+    public Task<ValidationResult> ValidateAsync(UpdatePaymentMetadataStagingCommand item)
         => Task.FromResult(Validate(item));
 
     private static readonly Regex NiRegex = new(

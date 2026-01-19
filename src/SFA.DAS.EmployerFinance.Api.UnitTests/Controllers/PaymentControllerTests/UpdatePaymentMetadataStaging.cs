@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadata;
+using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
 using SFA.DAS.EmployerFinance.Models.Payments;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.PaymentControllerTests;
@@ -10,18 +10,14 @@ public class UpdatePaymentMetadata
 {
     private PaymentController _controller;
     private Mock<IMediator> _mediator;
-    private Mock<ILogger<PaymentOrchestrator>> _logger;
 
     [SetUp]
     public void Arrange()
     {
         _mediator = new Mock<IMediator>();
-        _logger = new Mock<ILogger<PaymentOrchestrator>>();
 
         var orchestrator = new PaymentOrchestrator(
-            _mediator.Object,
-            _logger.Object,
-            mapper: null);
+            _mediator.Object);
 
         _controller = new PaymentController(orchestrator);
     }
@@ -31,14 +27,20 @@ public class UpdatePaymentMetadata
     {
         // Arrange
         var paymentId = Guid.NewGuid();
-        var metadata = new PaymentMetaData();
+        var metadata = new PaymentMetaDataStaging();
+
+        var response = new PaymentMetaDataResponse
+        {
+            Upserted = true,
+            MetadataId = 1
+        };
 
         _mediator
-            .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataCommand>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(response);
 
         // Act
-        var result = await _controller.PaymentMetadata(paymentId, metadata);
+        var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
 
         // Assert
         result.Should().NotBeNull();
@@ -46,7 +48,11 @@ public class UpdatePaymentMetadata
 
         var okResult = result as OkObjectResult;
         okResult!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        okResult.Value.Should().Be(true);
+
+        var model = okResult.Value as PaymentMetaDataResponse;
+        model.Should().NotBeNull();
+        model!.Upserted.Should().BeTrue();
+        model.MetadataId.Should().Be(1);
     }
 
 
@@ -54,7 +60,7 @@ public class UpdatePaymentMetadata
     public async Task PaymentMetadata_When_Request_Is_Null_Returns_BadRequest()
     {
         // Act
-        var result = await _controller.PaymentMetadata(Guid.NewGuid(), null);
+        var result = await _controller.PaymentMetaDataStaging(Guid.NewGuid(), null);
 
         // Assert
         result.Should().BeOfType<BadRequestResult>();
@@ -67,10 +73,10 @@ public class UpdatePaymentMetadata
     public async Task PaymentMetadata_When_PaymentId_Is_Empty_Returns_BadRequest()
     {
         // Arrange
-        var metadata = new PaymentMetaData();
+        var metadata = new PaymentMetaDataStaging();
 
         // Act
-        var result = await _controller.PaymentMetadata(Guid.Empty, metadata);
+        var result = await _controller.PaymentMetaDataStaging(Guid.Empty, metadata);
 
         // Assert
         result.Should().BeOfType<BadRequestResult>();
@@ -84,20 +90,20 @@ public class UpdatePaymentMetadata
     {
         // Arrange
         var paymentId = Guid.NewGuid();
-        var metadata = new PaymentMetaData();
+        var metadata = new PaymentMetaDataStaging();
 
         _mediator
-            .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Update failed"));
 
         // Act
-        var result = await _controller.PaymentMetadata(paymentId, metadata);
+        var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
 
         // Assert
-        result.Should().BeOfType<ObjectResult>();
+        result.Should().BeOfType<BadRequestObjectResult>();
 
-        var objectResult = result as ObjectResult;
-        objectResult!.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
-        objectResult.Value.Should().Be("Could not update Payment Metadata");
+        var objectResult = result as BadRequestObjectResult;
+        objectResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        objectResult.Value.Should().Be("Could not update Payment Metadata Staging");
     }
 }
