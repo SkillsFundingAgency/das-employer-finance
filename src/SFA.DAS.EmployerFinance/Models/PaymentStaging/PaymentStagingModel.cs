@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Models.PaymentStaging
 {
-    public class PaymentStagingModel
+    public class PaymentStagingModel : Entity
     {
         public Guid PaymentId { get; set; }
         public long AccountId { get; set; }
