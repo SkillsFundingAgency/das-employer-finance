@@ -24,4 +24,15 @@ public class TransferOrchestrator
     {
         return await _mediator.Send(new GetTransfersByPeriodEndRequest { AccountId = accountId, PeriodEnd = periodEndId });
     }
+
+    public async Task<BulkTransferStagingResponse> StageTransfers(BulkTransferStagingRequest request)
+    {
+        _logger.LogInformation("Staging {Count} transfers", request.Transfers?.Count ?? 0);
+
+        var command = _mapper.Map<StageTransfersCommand>(request);
+        var result = await _mediator.Send(command);
+
+        var response = _mapper.Map<BulkTransferStagingResponse>(result);
+        return response;
+    }
 }
