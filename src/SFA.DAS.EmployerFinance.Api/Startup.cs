@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.OpenApi.Models;
@@ -58,7 +58,7 @@ public class Startup
         });
 
         services.AddApplicationServices();
-        services.AddDasDistributedMemoryCache(employerFinanceConfiguration, _environment.IsDevelopment());
+        services.AddCachesRegistrations(employerFinanceConfiguration?.RedisConnectionString ?? "", _environment.IsDevelopment());
 
         services.AddOrchestrators();
 

@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 
@@ -10,7 +10,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCaching
         private string _clientId;
 
         private Mock<IContentApiClient> MockContentApiClient;
-        private Mock<ICacheStorageService> MockCacheStorageService;
+        private Mock<ICacheService> MockCacheService;
 
         private string CacheKey;
         private string ContentFromCache;
@@ -35,9 +35,9 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCaching
             CacheKey = $"{EmployerFinanceWebConfig.ApplicationId}_{_contentType}".ToLowerInvariant();
 
             MockContentApiClient = new Mock<IContentApiClient>();
-            MockCacheStorageService = new Mock<ICacheStorageService>();
+            MockCacheService = new Mock<ICacheService>();
 
-            ContentApiClientWithCaching = new ContentApiClientWithCaching(MockContentApiClient.Object, MockCacheStorageService.Object, EmployerFinanceWebConfig);
+            ContentApiClientWithCaching = new ContentApiClientWithCaching(MockContentApiClient.Object, MockCacheService.Object, EmployerFinanceWebConfig);
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCaching
             var result = await ContentApiClientWithCaching.Get(_contentType, EmployerFinanceWebConfig.ApplicationId);
 
             result.Should().Be(ContentFromCache);
-            MockCacheStorageService.Verify(c => c.TryGet(CacheKey, out ContentFromCache), Times.Once);
+            MockCacheService.Verify(c => c.TryGetAsync<string>(CacheKey, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCaching
         {
             StoredInCacheSetup();
 
-            var result = await ContentApiClientWithCaching.Get(_contentType, EmployerFinanceWebConfig.ApplicationId);
+            await ContentApiClientWithCaching.Get(_contentType, EmployerFinanceWebConfig.ApplicationId);
 
             MockContentApiClient.Verify(c => c.Get(_contentType, _clientId), Times.Never);
         }
@@ -84,7 +84,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCaching
 
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage($"Failed to get content for {CacheKey}*")
-                .Where(e => e.InnerException.Message == "API Error");
+                .Where(e => e.InnerException != null && e.InnerException.Message == "API Error");
         }
 
         [Test]
@@ -96,18 +96,19 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Services.ContentApiClientWithCaching
 
             await ContentApiClientWithCaching.Get(_contentType, EmployerFinanceWebConfig.ApplicationId);
 
-            MockCacheStorageService.Verify(c => c.Save(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Never);
+            MockCacheService.Verify(c => c.SetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         private void StoredInCacheSetup()
         {
-            MockCacheStorageService.Setup(c => c.TryGet(CacheKey, out ContentFromCache)).Returns(true);
-            MockContentApiClient.Setup(c => c.Get("banner", CacheKey));
+            MockCacheService.Setup(c => c.TryGetAsync<string>(CacheKey, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((true, ContentFromCache));
         }
 
         private void NotStoredInCacheSetup()
         {
-            MockCacheStorageService.Setup(c => c.TryGet(CacheKey, out ContentFromCache)).Returns(false);
+            MockCacheService.Setup(c => c.TryGetAsync<string>(CacheKey, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((false, (string?)null));
             MockContentApiClient.Setup(c => c.Get(_contentType, EmployerFinanceWebConfig.ApplicationId))
                 .ReturnsAsync(ContentFromApi);
         }

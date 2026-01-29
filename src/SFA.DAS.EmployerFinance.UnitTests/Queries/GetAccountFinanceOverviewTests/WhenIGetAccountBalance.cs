@@ -1,7 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetAccountFinanceOverviewTests;
@@ -15,8 +13,7 @@ public class WhenIGetAccountBalance
     private const decimal PaymentTotal = -50m;
 
     private GetAccountFinanceOverviewQueryHandler _handler;
-    private Mock<ILogger<GetAccountFinanceOverviewQueryHandler>> _logger;
-    private Mock<IDasLevyService> _levyService;
+    private Mock<IFinanceDashboardRepository> _repository;
     private Mock<IValidator<GetAccountFinanceOverviewQuery>> _validator;
     private GetAccountFinanceOverviewQuery _query;
 
@@ -28,37 +25,18 @@ public class WhenIGetAccountBalance
     {
         _expectedToDate = new DateTime(2000, 1, 1);
         _expectedFromDate = new DateTime(2000, 10, 1);
-        _logger = new Mock<ILogger<GetAccountFinanceOverviewQueryHandler>>();
-        _levyService = new Mock<IDasLevyService>();
+        _repository = new Mock<IFinanceDashboardRepository>();
         _validator = new Mock<IValidator<GetAccountFinanceOverviewQuery>>();
 
         _query = new GetAccountFinanceOverviewQuery { AccountId = ExpectedAccountId, FromDate = _expectedFromDate, ToDate = _expectedToDate};
 
-        _handler = new GetAccountFinanceOverviewQueryHandler(_levyService.Object, _validator.Object, _logger.Object);
-        
-        _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedCurrentFunds);
-        _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
-        _levyService.Setup(s =>
-                s.GetAccountTransactionsByDateRange(ExpectedAccountId,
-                    _expectedFromDate, _expectedToDate))
-            .ReturnsAsync([
-                new TransactionLine
-                {
-                    TransactionType = TransactionItemType.Payment,
-                    Amount = PaymentTotal
-                },
-                new TransactionLine
-                {
-                    TransactionType = TransactionItemType.Transfer,
-                    Amount = TransferTotal
-                },
-                new TransactionLine
-                {
-                    TransactionType = TransactionItemType.Declaration,
-                    Amount = 100m
-                }
-            ]);
+        _handler = new GetAccountFinanceOverviewQueryHandler(_repository.Object, _validator.Object);
+
+        _repository.Setup(s => s.GetAccountBalanceAsync(ExpectedAccountId)).ReturnsAsync(ExpectedCurrentFunds);
+        _repository.Setup(s => s.GetTotalSpendForLastYearAsync(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
+        _repository.Setup(s => s.GetLatestLevyDeclarationTotalAsync(ExpectedAccountId)).ReturnsAsync(0);
+        _repository.Setup(s => s.GetLastMonthPaymentsAndTransfersAsync(ExpectedAccountId, _expectedFromDate, _expectedToDate))
+            .ReturnsAsync(PaymentTotal + TransferTotal);
         _validator.Setup(v => v.ValidateAsync(_query))
             .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
     }
@@ -74,7 +52,7 @@ public class WhenIGetAccountBalance
     [Test]
     public async Task ThenTheFundsInShouldBeZero_WhenNoDeclarations()
     {
-        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
+        _repository.Setup(s => s.GetLatestLevyDeclarationTotalAsync(ExpectedAccountId)).ReturnsAsync(0);
 
         var response = await _handler.Handle(_query, CancellationToken.None);
 
@@ -98,17 +76,15 @@ public class WhenIGetAccountBalance
     }
 
     [Test]
-    public void ThenIfExceptionOccursGettingBalanceItShouldBeLogged()
+    public void ThenIfExceptionOccursGettingBalanceItShouldBePropagated()
     {
         var expectedException = new Exception("Test error");
 
-        _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).Throws(expectedException);
+        _repository.Setup(s => s.GetAccountBalanceAsync(ExpectedAccountId)).Throws(expectedException);
 
         Assert.ThrowsAsync<Exception>(() => _handler.Handle(_query, CancellationToken.None));
-
-        _logger.VerifyLogging($"Failed to get account's current balance for account ID: {_query.AccountId}", LogLevel.Error, Times.Once());
     }
-    
+
     [Test]
     public async Task ThenTheTotalMonthlySpendAnd()
     {

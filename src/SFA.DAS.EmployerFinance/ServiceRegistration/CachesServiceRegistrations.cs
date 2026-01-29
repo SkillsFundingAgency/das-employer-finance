@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Caches;
-using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services;
 
@@ -7,19 +6,22 @@ namespace SFA.DAS.EmployerFinance.ServiceRegistration;
 
 public static class CachesServiceRegistrations
 {
-    public static IServiceCollection AddCachesRegistrations(this IServiceCollection services, bool isLocal)
+    public static IServiceCollection AddCachesRegistrations(
+        this IServiceCollection services,
+        string redisConnectionString,
+        bool isLocal)
     {
-        services.AddSingleton<ICacheStorageService, CacheStorageService>();
+        services.AddSingleton<ICacheService, CacheService>();
         services.AddSingleton<IInProcessCache, InProcessCache>();
 
-        services.AddSingleton(s =>
+        if (isLocal)
         {
-            var config = s.GetService<EmployerFinanceConfiguration>();
-
-            return isLocal
-                ? new LocalDevCache() as IDistributedCache
-                : new RedisCache(config.RedisConnectionString);
-        });
+            services.AddDistributedMemoryCache();
+        }
+        else
+        {
+            services.AddStackExchangeRedisCache(o => o.Configuration = redisConnectionString);
+        }
 
         return services;
     }

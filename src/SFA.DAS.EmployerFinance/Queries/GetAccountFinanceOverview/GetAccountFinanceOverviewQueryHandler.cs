@@ -1,15 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.EmployerFinance.Models.Transaction;
-using SFA.DAS.EmployerFinance.Services.Contracts;
+using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 
 public class GetAccountFinanceOverviewQueryHandler(
-    IDasLevyService levyService,
-    IValidator<GetAccountFinanceOverviewQuery> validator,
-    ILogger<GetAccountFinanceOverviewQueryHandler> logger)
+    IFinanceDashboardRepository repository,
+    IValidator<GetAccountFinanceOverviewQuery> validator)
     : IRequestHandler<GetAccountFinanceOverviewQuery, GetAccountFinanceOverviewResponse>
 {
     public async Task<GetAccountFinanceOverviewResponse> Handle(GetAccountFinanceOverviewQuery query, CancellationToken cancellationToken)
@@ -20,15 +17,11 @@ public class GetAccountFinanceOverviewQueryHandler(
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var currentBalance = await GetAccountBalance(query.AccountId);
-        var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
-        var latestMonthly = await levyService.GetLatestLevyDeclaration(query.AccountId);
-
-        var transactionLines = await levyService.GetAccountTransactionsByDateRange(query.AccountId, query.FromDate, query.ToDate);
-
-        var totalPayments = transactionLines
-            .Where(c=>c.TransactionType is TransactionItemType.Payment or TransactionItemType.Transfer)
-            .Sum(c => c.Amount);
+        var currentBalance = await repository.GetAccountBalanceAsync(query.AccountId);
+        var totalSpendForLastYear = await repository.GetTotalSpendForLastYearAsync(query.AccountId);
+        var latestMonthly = await repository.GetLatestLevyDeclarationTotalAsync(query.AccountId);
+        var lastMonthPayments = await repository.GetLastMonthPaymentsAndTransfersAsync(
+            query.AccountId, query.FromDate, query.ToDate);
         
         var fundsIn = latestMonthly * 12m;
 
@@ -40,30 +33,9 @@ public class GetAccountFinanceOverviewQueryHandler(
             FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear,
             LastMonthLevyDeclaration = latestMonthly,
-            LastMonthPayments = totalPayments
+            LastMonthPayments = lastMonthPayments
         };
         
         return response;
-    }
-    
-    private async Task<decimal> GetAccountBalance(long accountId)
-    {
-        try
-        {
-            logger.LogInformation("Getting current funds balance for account ID: {AccountId}", accountId);
-
-            return await levyService.GetAccountBalance(accountId);
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Failed to get account's current balance for account ID: {AccountId}", accountId);
-
-            throw;
-        }
-    }
-
-    private Task<decimal> GetTotalSpendForLastYear(long accountId)
-    {
-        return levyService.GetTotalSpendForLastYear(accountId);
     }
 }

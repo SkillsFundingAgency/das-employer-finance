@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Azure.Services.AppAuthentication;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -41,14 +41,19 @@ public class EmployerFinanceDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (_configuration == null)
+        if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer().UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            return;
+            if (_configuration == null)
+            {
+                optionsBuilder.UseSqlServer().UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                return;
+            }
+            optionsBuilder.UseSqlServer(_connection as DbConnection);
         }
-
-        optionsBuilder.UseSqlServer(_connection as DbConnection);
-
+        else
+        {
+            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        }
     }
     public virtual Task<List<T>> SqlQueryAsync<T>(string query, params object[] parameters)
     {

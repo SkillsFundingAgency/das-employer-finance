@@ -62,7 +62,7 @@ public class WhenAddingServicesToTheContainer
         services.AddSingleton(Mock.Of<IWebHostEnvironment>());
         services.AddSingleton(Mock.Of<IConfiguration>());
         services.AddConfigurationOptions(configuration);
-        services.AddDistributedMemoryCache();
+        services.AddCachesRegistrations("", true);
         services.AddApplicationServices(configuration);
         services.AddAuthenticationServices();
         services.AddDatabaseRegistration();
