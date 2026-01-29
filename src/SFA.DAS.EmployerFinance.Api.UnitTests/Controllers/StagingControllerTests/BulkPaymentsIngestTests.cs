@@ -9,7 +9,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.StagingControllerTes
 
 public class BulkPaymentsIngestTests
 {
-    private StagingController _stagingController;
+    private PaymentsController _stagingController;
     private Mock<IMediator> _mediator;
     private Mock<ILogger<StagingOrchestrator>> _logger;
     private Mock<IMapper> _mapper;
@@ -22,7 +22,7 @@ public class BulkPaymentsIngestTests
         _mapper = new Mock<IMapper>();
 
         var orchestrator = new StagingOrchestrator(_mediator.Object, _logger.Object);
-        _stagingController = new StagingController(orchestrator);
+        _stagingController = new PaymentsController(orchestrator);
     }
 
     [Test]

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
 [Route("api/payments")]
-public class StagingController(StagingOrchestrator orchestrator)
+public class PaymentsController(StagingOrchestrator orchestrator)
     : ControllerBase
 {
     [Route("staging", Name = "BulkPaymentsIngest")]

@@ -8,7 +8,6 @@
         public long Uln { get; set; }
         public long ApprenticeshipId { get; set; }
 
-        // Format: "RXX-YYYY"
         public string CollectionPeriodId { get; set; } = string.Empty;
 
         public int DeliveryPeriodMonth { get; set; }
