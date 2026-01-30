@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
 
 [Route("api/payments")]
-public class PaymentController(PaymentOrchestrator paymentOrchestrator) : ControllerBase
+public class PaymentMetaDataController(PaymentMetaDataOrchestrator paymentOrchestrator) : ControllerBase
 {
     [Authorize]
     [HttpPut("{paymentId}/metadata/staging")]

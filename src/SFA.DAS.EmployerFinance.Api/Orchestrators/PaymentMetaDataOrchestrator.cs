@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
-public class PaymentOrchestrator
+public class PaymentMetaDataOrchestrator
 {
     private readonly IMediator _mediator;
 
-    public PaymentOrchestrator(
+    public PaymentMetaDataOrchestrator(
         IMediator mediator)
     {
         _mediator = mediator;

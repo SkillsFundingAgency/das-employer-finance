@@ -8,7 +8,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.PaymentControllerTes
 
 public class UpdatePaymentMetadata
 {
-    private PaymentController _controller;
+    private PaymentMetaDataController _controller;
     private Mock<IMediator> _mediator;
 
     [SetUp]
@@ -16,10 +16,10 @@ public class UpdatePaymentMetadata
     {
         _mediator = new Mock<IMediator>();
 
-        var orchestrator = new PaymentOrchestrator(
+        var orchestrator = new PaymentMetaDataOrchestrator(
             _mediator.Object);
 
-        _controller = new PaymentController(orchestrator);
+        _controller = new PaymentMetaDataController(orchestrator);
     }
 
     [Test]
