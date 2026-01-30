@@ -109,44 +109,45 @@ public class FinanceDashboardRepositoryEf(
         try
         {
             logger.LogInformation("GetLatestLevyDeclarationTotalAsync (EF) called for AccountId {AccountId}", accountId);
-            
-            var fourMonthsAgo = DateTime.UtcNow.AddMonths(-4);
 
-            var latestPerScheme = await dbContext.Database
-                .SqlQueryRaw<LevyDeclarationSummary>(
-                    @"WITH LatestDeclarations AS (
-                        SELECT 
-                            EmpRef,
-                            TotalAmount,
-                            ROW_NUMBER() OVER (
-                                PARTITION BY EmpRef 
-                                ORDER BY PayrollYear DESC, PayrollMonth DESC
-                            ) AS RowNum
-                        FROM [employer_financial].[GetLevyDeclarationAndTopUp]
-                        WHERE AccountId = {0}
-                            AND SubmissionDate >= {1}
-                            AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
+            var threeMonthsAgo = DateTime.UtcNow.AddMonths(-3).Date;
+
+            var resultRow = await dbContext.Database
+                .SqlQueryRaw<LevyDeclarationMonthlyTotal>(
+                    @"WITH LatestPerPaye AS (
+                        SELECT ld.AccountId, ld.EmpRef, ld.SubmissionDate, ld.PayrollYear, ld.PayrollMonth, ld.SubmissionId,
+                            ROW_NUMBER() OVER (PARTITION BY ld.EmpRef ORDER BY ld.PayrollYear DESC, ld.PayrollMonth DESC) AS rn
+                        FROM [employer_financial].[LevyDeclaration] ld
+                        WHERE ld.AccountId = {0}
                     )
-                    SELECT EmpRef, TotalAmount
-                    FROM LatestDeclarations
-                    WHERE RowNum = 1",
-                    accountId, fourMonthsAgo)
-                .ToListAsync();
-            
-            var result = latestPerScheme.Sum(x => x.TotalAmount);
-            
+                    SELECT ISNULL(SUM(CASE WHEN l.SubmissionDate >= {1} THEN ISNULL(v.TotalAmount, 0) ELSE 0 END), 0) AS MonthlyTotal
+                    FROM LatestPerPaye l
+                    LEFT JOIN [employer_financial].[GetLevyDeclarationAndTopUp] v
+                        ON v.AccountId = l.AccountId AND v.EmpRef = l.EmpRef AND v.PayrollYear = l.PayrollYear AND v.PayrollMonth = l.PayrollMonth AND v.SubmissionId = l.SubmissionId
+                    WHERE l.rn = 1",
+                    accountId, threeMonthsAgo)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            var result = resultRow?.MonthlyTotal ?? 0;
+
             logger.LogInformation(
-                "GetLatestLevyDeclarationTotalAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}, Schemes: {SchemeCount}",
-                stopwatch.ElapsedMilliseconds, accountId, result, latestPerScheme.Count);
-            
+                "GetLatestLevyDeclarationTotalAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}",
+                stopwatch.ElapsedMilliseconds, accountId, result);
+
             return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, 
+            logger.LogError(ex,
                 "GetLatestLevyDeclarationTotalAsync (EF) failed for AccountId {AccountId} after {ElapsedMs}ms",
                 accountId, stopwatch.ElapsedMilliseconds);
             throw;
         }
+    }
+    
+    private class LevyDeclarationMonthlyTotal
+    {
+        public decimal MonthlyTotal { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Azure.Services.AppAuthentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;

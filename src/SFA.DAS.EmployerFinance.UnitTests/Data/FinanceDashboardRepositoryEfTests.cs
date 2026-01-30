@@ -203,7 +203,7 @@ public class FinanceDashboardRepositoryEfTests
     [Test]
     public void GetLatestLevyDeclarationTotalAsync_ThrowsWhenUsingInMemoryDatabase()
     {
-        // Arrange
+        // Arrange - in-memory provider does not support SqlQueryRaw (relational-only)
         var options = new DbContextOptionsBuilder<EmployerFinanceDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -215,6 +215,6 @@ public class FinanceDashboardRepositoryEfTests
         var act = () => sut.GetLatestLevyDeclarationTotalAsync(AccountId);
 
         // Assert
-        act.Should().ThrowAsync<Exception>();
+        act.Should().ThrowAsync<InvalidOperationException>();
     }
 }
