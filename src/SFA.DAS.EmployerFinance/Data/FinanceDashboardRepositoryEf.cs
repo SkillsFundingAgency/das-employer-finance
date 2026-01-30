@@ -112,7 +112,7 @@ public class FinanceDashboardRepositoryEf(
 
             var threeMonthsAgo = DateTime.UtcNow.AddMonths(-3).Date;
 
-            var resultRow = await dbContext.Database
+            var resultRows = await dbContext.Database
                 .SqlQueryRaw<LevyDeclarationMonthlyTotal>(
                     @"WITH LatestPerPaye AS (
                         SELECT ld.AccountId, ld.EmpRef, ld.SubmissionDate, ld.PayrollYear, ld.PayrollMonth, ld.SubmissionId,
@@ -126,10 +126,9 @@ public class FinanceDashboardRepositoryEf(
                         ON v.AccountId = l.AccountId AND v.EmpRef = l.EmpRef AND v.PayrollYear = l.PayrollYear AND v.PayrollMonth = l.PayrollMonth AND v.SubmissionId = l.SubmissionId
                     WHERE l.rn = 1",
                     accountId, threeMonthsAgo)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            var result = resultRow?.MonthlyTotal ?? 0;
+            var result = resultRows.FirstOrDefault()?.MonthlyTotal ?? 0;
 
             logger.LogInformation(
                 "GetLatestLevyDeclarationTotalAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}",
