@@ -1,6 +1,12 @@
-﻿namespace SFA.DAS.EmployerFinance.Models.Transfers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class TransferStaging
+namespace SFA.DAS.EmployerFinance.Dtos;
+
+public class TransferStagingDto
 {
     public long TransferId { get; set; }
     public long SenderAccountId { get; set; }
@@ -8,14 +14,9 @@ public class TransferStaging
     public string ReceiverAccountName { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public DateTime TransferDate { get; set; }
-
     public string PeriodEnd { get; set; } = string.Empty;
-    public int CollectionPeriodMonth { get; set; }
-    public int CollectionPeriodYear { get; set; }
-
+    public short CollectionPeriodMonth { get; set; }
+    public short CollectionPeriodYear { get; set; }
     public long Ukprn { get; set; }
-    public string? CourseName { get; set; }
-
-    public string CreatedBy { get; set; } = string.Empty;
-    public string? CorrelationId { get; set; }
+    public string CourseName { get; set; } = string.Empty;
 }

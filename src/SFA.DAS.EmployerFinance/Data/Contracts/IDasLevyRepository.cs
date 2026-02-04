@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Models.Account;
+﻿using SFA.DAS.EmployerFinance.Dtos;
+using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transfers;
