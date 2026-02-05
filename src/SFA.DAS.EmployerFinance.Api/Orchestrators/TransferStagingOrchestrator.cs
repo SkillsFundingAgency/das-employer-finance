@@ -20,14 +20,10 @@ public class TransferStagingOrchestrator
         _mapper = mapper;
     }
 
-    public async Task<BulkTransferStagingResponse> StageTransfers(BulkTransferStagingRequest request)
+    public async Task<StageTransfersResponse> StageTransfers(StageTransfersRequest request)
     {
         _logger.LogInformation("Staging {Count} transfers", request.Transfers?.Count ?? 0);
 
-        var result = await _mediator.Send(new StageTransfersCommand { Transfers = request.Transfers });
-
-        var response = _mapper.Map<BulkTransferStagingResponse>(result);
-
-        return response;
+        return await _mediator.Send(new StageTransfersCommand { Transfers = request.Transfers });
     }
 }

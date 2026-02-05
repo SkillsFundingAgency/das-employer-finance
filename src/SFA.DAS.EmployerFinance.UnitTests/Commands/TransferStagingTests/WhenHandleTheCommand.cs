@@ -34,14 +34,25 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.StagingTransfersTests
         [Test]
         public async Task ThenTheCommandIsValidated()
         {
+            // Arrange
+            var command = new StageTransfersCommand
+            {
+                Transfers = new List<TransferStaging>()
+            };
+
+            _repository
+                .Setup(x => x.GetExistingTransferIds(It.IsAny<List<long>>()))
+                .ReturnsAsync(new List<long>());
+
             // Act
-            await _handler.Handle(new StageTransfersCommand(), CancellationToken.None);
+            await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             _validator.Verify(
                 x => x.Validate(It.IsAny<StageTransfersCommand>()),
                 Times.Once);
         }
+
 
         [Test]
         public void ThenAnInvalidRequestExceptionIsThrownWhenTheMessageIsNotValid()

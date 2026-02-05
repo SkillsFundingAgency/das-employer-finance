@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.EmployerFinance.Commands.StagingTransfers;
 
-public class StageTransfersCommandHandler : IRequestHandler<StageTransfersCommand, StageTransfersResult>
+public class StageTransfersCommandHandler : IRequestHandler<StageTransfersCommand, StageTransfersResponse>
 {
     private readonly ITransferStagingRepository _transferStagingRepository;
     private readonly IValidator<StageTransfersCommand> _validator;
@@ -15,7 +15,7 @@ public class StageTransfersCommandHandler : IRequestHandler<StageTransfersComman
         _transferStagingRepository = transferStagingRepository;
     }
 
-    public async Task<StageTransfersResult> Handle(StageTransfersCommand request, CancellationToken cancellationToken)
+    public async Task<StageTransfersResponse> Handle(StageTransfersCommand request, CancellationToken cancellationToken)
     {
         var validationResult = _validator.Validate(request);
 
@@ -28,7 +28,7 @@ public class StageTransfersCommandHandler : IRequestHandler<StageTransfersComman
 
         if (existingIds.Any())
         {
-            return new StageTransfersResult
+            return new StageTransfersResponse
             {
                 ConflictingTransferIds = existingIds
             };
@@ -36,7 +36,7 @@ public class StageTransfersCommandHandler : IRequestHandler<StageTransfersComman
 
         await _transferStagingRepository.BulkInsertTransfers(request.Transfers);
 
-        return new StageTransfersResult
+        return new StageTransfersResponse
         {
             IsSuccess = true,
             InsertedTransferIds = request.Transfers.Select(x => x.TransferId).ToList()

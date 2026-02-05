@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Commands.StagingTransfers;
@@ -6,16 +7,27 @@ using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.TransferStagingControllerTests;
 
+[TestFixture]
 public class StageTransfersTests
 {
-    private Mock<TransferStagingOrchestrator> _orchestrator;
     private TransferStagingController _controller;
+    private Mock<IMediator> _mediator;
+    private Mock<ILogger<TransferStagingOrchestrator>> _logger;
+    private Mock<IMapper> _mapper;
 
     [SetUp]
     public void Arrange()
     {
-        _orchestrator = new Mock<TransferStagingOrchestrator>();
-        _controller = new TransferStagingController(_orchestrator.Object);
+        _mediator = new Mock<IMediator>();
+        _logger = new Mock<ILogger<TransferStagingOrchestrator>>();
+        _mapper = new Mock<IMapper>();
+
+        var orchestrator = new TransferStagingOrchestrator(
+            _mediator.Object,
+            _logger.Object,
+            _mapper.Object);
+
+        _controller = new TransferStagingController(orchestrator);
     }
 
     [Test]
@@ -33,7 +45,7 @@ public class StageTransfersTests
     [Test]
     public async Task StageTransfers_WhenTransfersCollectionIsEmpty_ReturnsBadRequest()
     {
-        var request = new BulkTransferStagingRequest
+        var request = new StageTransfersRequest
         {
             Transfers = new List<TransferStaging>()
         };
@@ -50,19 +62,19 @@ public class StageTransfersTests
     [Test]
     public async Task StageTransfers_WhenValidationErrorsExist_ReturnsBadRequest()
     {
-        var request = new BulkTransferStagingRequest
+        var request = new StageTransfersRequest
         {
             Transfers = new List<TransferStaging> { new() }
         };
 
-        var response = new BulkTransferStagingResponse
+        var response = new StageTransfersResponse
         {
             HasValidationErrors = true,
             ValidationErrors = new List<string> { "Invalid transfer" }
         };
 
-        _orchestrator
-            .Setup(x => x.StageTransfers(It.IsAny<BulkTransferStagingRequest>()))
+        _mediator
+            .Setup(x => x.Send(It.IsAny<StageTransfersCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         var result = await _controller.StageTransfers(request);
@@ -77,19 +89,19 @@ public class StageTransfersTests
     [Test]
     public async Task StageTransfers_WhenConflictsExist_ReturnsConflict()
     {
-        var request = new BulkTransferStagingRequest
+        var request = new StageTransfersRequest
         {
             Transfers = new List<TransferStaging> { new() }
         };
 
-        var response = new BulkTransferStagingResponse
+        var response = new StageTransfersResponse
         {
             HasConflicts = true,
             ConflictingTransferIds = new List<long> { 123, 456 }
         };
 
-        _orchestrator
-            .Setup(x => x.StageTransfers(It.IsAny<BulkTransferStagingRequest>()))
+        _mediator
+            .Setup(x => x.Send(It.IsAny<StageTransfersCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         var result = await _controller.StageTransfers(request);
@@ -107,19 +119,21 @@ public class StageTransfersTests
     [Test]
     public async Task StageTransfers_WhenSuccessful_ReturnsCreated()
     {
-        var request = new BulkTransferStagingRequest
+        var request = new StageTransfersRequest
         {
             Transfers = new List<TransferStaging> { new(), new() }
         };
 
-        var response = new BulkTransferStagingResponse
+        var response = new StageTransfersResponse
         {
-            InsertedCount = 2,
-            TransferIds = new List<long> { 1, 2 }
+            InsertedTransferIds = new List<long> { 1, 2 },
+            IsSuccess = true
         };
 
-        _orchestrator
-            .Setup(x => x.StageTransfers(It.IsAny<BulkTransferStagingRequest>()))
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<StageTransfersCommand>(c => c.Transfers.Count == 2),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         var result = await _controller.StageTransfers(request);
@@ -130,8 +144,10 @@ public class StageTransfersTests
         created.StatusCode.Should().Be(StatusCodes.Status201Created);
         created.Value.Should().BeEquivalentTo(new
         {
-            insertedCount = 2,
-            transferIds = new List<long> { 1, 2 }
+            insertedCount = request.Transfers.Count,
+            transferIds = response.InsertedTransferIds
         });
     }
+
+
 }

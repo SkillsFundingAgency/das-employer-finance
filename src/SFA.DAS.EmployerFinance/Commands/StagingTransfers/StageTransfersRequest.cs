@@ -3,7 +3,7 @@ using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Commands.StagingTransfers;
 
-public class BulkTransferStagingRequest
+public class StageTransfersRequest
 {
     public List<TransferStaging> Transfers { get; set; } = new();
 }

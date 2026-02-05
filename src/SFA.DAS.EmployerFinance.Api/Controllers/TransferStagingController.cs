@@ -13,7 +13,7 @@ public class TransferStagingController(TransferStagingOrchestrator orchestrator)
 {
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpPost("staging")]
-    public async Task<IActionResult> StageTransfers([FromBody] BulkTransferStagingRequest request)
+    public async Task<IActionResult> StageTransfers([FromBody] StageTransfersRequest request)
     {
         if (request == null || request.Transfers == null || request.Transfers.Count == 0)
         {
@@ -40,8 +40,8 @@ public class TransferStagingController(TransferStagingOrchestrator orchestrator)
 
         return StatusCode(StatusCodes.Status201Created, new
         {
-            insertedCount = response.InsertedCount,
-            transferIds = response.TransferIds
+            insertedCount = response.InsertedTransferIds.Count,
+            transferIds = response.InsertedTransferIds
         });
     }
 }

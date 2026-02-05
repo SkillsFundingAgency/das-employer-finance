@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Commands.StagingTransfers;
 
-public class StageTransfersCommand : IRequest<StageTransfersResult>
+public class StageTransfersCommand : IRequest<StageTransfersResponse>
 {
     public List<TransferStaging> Transfers { get; set; }
 

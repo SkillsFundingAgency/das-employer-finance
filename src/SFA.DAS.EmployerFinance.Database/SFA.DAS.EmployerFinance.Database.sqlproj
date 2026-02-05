@@ -204,6 +204,7 @@
     <Build Include="Tables\TransferConnectionInvitationChange.sql" />
     <Build Include="Tables\User.sql" />
     <Build Include="StoredProcedures\UpsertUser.sql" />
+    <Build Include="Tables\TransferStaging.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />
