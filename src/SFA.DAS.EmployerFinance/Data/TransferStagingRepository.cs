@@ -20,8 +20,7 @@ public class TransferStagingRepository : ITransferStagingRepository
         _db = db;
     }
 
-    public async Task<BulkTransferIngestResult> BulkInsertTransfers(
-        List<TransferStaging> transfers)
+    public async Task BulkInsertTransfers(List<TransferStaging> transfers)
     {
         var connection = _db.Value.Database.GetDbConnection() as SqlConnection;
 
@@ -29,8 +28,6 @@ public class TransferStagingRepository : ITransferStagingRepository
         {
             await connection.OpenAsync();
         }
-
-        var transferIds = transfers.Select(t => t.TransferId).ToList();
 
         using var transaction = connection.BeginTransaction();
 
@@ -64,24 +61,6 @@ public class TransferStagingRepository : ITransferStagingRepository
             await bulkCopy.WriteToServerAsync(dataTable);
 
             transaction.Commit();
-
-            return new BulkTransferIngestResult
-            {
-                IsSuccess = true,
-                InsertedCount = transfers.Count,
-                TransferIds = transferIds
-            };
-        }
-        catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
-        {
-            transaction.Rollback();
-
-            return new BulkTransferIngestResult
-            {
-                IsSuccess = false,
-                InsertedCount = 0,
-                Message = "Idempotency violation: One or more TransferIds already exist."
-            };
         }
         catch
         {
@@ -89,6 +68,7 @@ public class TransferStagingRepository : ITransferStagingRepository
             throw;
         }
     }
+
 
     public async Task<List<long>> GetExistingTransferIds(List<long> transferIds)
     {

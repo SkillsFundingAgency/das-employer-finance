@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Authorization;
+using SFA.DAS.EmployerFinance.Api.Orchestrators;
+using SFA.DAS.EmployerFinance.Commands.StagingTransfers;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
@@ -9,7 +11,7 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 [Route("api/transfers")]
 public class TransferStagingController(TransferStagingOrchestrator orchestrator) : ControllerBase
 {
-    [Authorize(Policy = ApiRoles.WriteEmployerAccountBalances)]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpPost("staging")]
     public async Task<IActionResult> StageTransfers([FromBody] BulkTransferStagingRequest request)
     {

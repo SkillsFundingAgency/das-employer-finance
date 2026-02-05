@@ -8,7 +8,7 @@ public class BulkTransferStagingResponse
     public List<string>? ValidationErrors { get; set; }
     public List<long>? ConflictingTransferIds { get; set; }
 
-    public bool HasValidationErrors => ValidationErrors?.Any() == true;
-    public bool HasConflicts => ConflictingTransferIds?.Any() == true;
+    public bool HasValidationErrors { get; set; }
+    public bool HasConflicts { get; set; }
     public bool IsSuccess => !HasValidationErrors && !HasConflicts;
 }

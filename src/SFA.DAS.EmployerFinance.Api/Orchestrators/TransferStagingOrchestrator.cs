@@ -24,11 +24,10 @@ public class TransferStagingOrchestrator
     {
         _logger.LogInformation("Staging {Count} transfers", request.Transfers?.Count ?? 0);
 
-        var command = _mapper.Map<StageTransfersCommand>(request);
-
-        var result = await _mediator.Send(command);
+        var result = await _mediator.Send(new StageTransfersCommand { Transfers = request.Transfers });
 
         var response = _mapper.Map<BulkTransferStagingResponse>(result);
+
         return response;
     }
 }
