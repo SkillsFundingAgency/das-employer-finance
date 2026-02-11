@@ -11,105 +11,69 @@ public class FinanceDashboardRepositoryEf(
 {
     public async Task<decimal> GetAccountBalanceAsync(long accountId)
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            logger.LogInformation("GetAccountBalanceAsync (EF) called for AccountId {AccountId}", accountId);
-            
-            var result = await dbContext.Transactions
-                .Where(t => t.AccountId == accountId 
+            return await dbContext.Transactions
+                .Where(t => t.AccountId == accountId
                     && (t.TransactionType == TransactionItemType.Declaration
                         || t.TransactionType == TransactionItemType.TopUp
                         || t.TransactionType == TransactionItemType.Payment
                         || t.TransactionType == TransactionItemType.Transfer
                         || t.TransactionType == TransactionItemType.ExpiredFund))
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
-            
-            logger.LogInformation(
-                "GetAccountBalanceAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}",
-                stopwatch.ElapsedMilliseconds, accountId, result);
-            
-            return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, 
-                "GetAccountBalanceAsync (EF) failed for AccountId {AccountId} after {ElapsedMs}ms",
-                accountId, stopwatch.ElapsedMilliseconds);
+            logger.LogError(ex, "GetAccountBalanceAsync (EF) failed for AccountId {AccountId}", accountId);
             throw;
         }
     }
-    
+
     public async Task<decimal> GetTotalSpendForLastYearAsync(long accountId)
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            logger.LogInformation("GetTotalSpendForLastYearAsync (EF) called for AccountId {AccountId}", accountId);
-            
             var oneYearAgo = DateTime.UtcNow.AddYears(-1).Date;
-            var result = await dbContext.Transactions
+            return await dbContext.Transactions
                 .Where(t => t.AccountId == accountId
                     && t.TransactionDate >= oneYearAgo
                     && (t.TransactionType == TransactionItemType.Payment
                         || t.TransactionType == TransactionItemType.Transfer))
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
-            
-            logger.LogInformation(
-                "GetTotalSpendForLastYearAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}",
-                stopwatch.ElapsedMilliseconds, accountId, result);
-            
-            return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, 
-                "GetTotalSpendForLastYearAsync (EF) failed for AccountId {AccountId} after {ElapsedMs}ms",
-                accountId, stopwatch.ElapsedMilliseconds);
+            logger.LogError(ex, "GetTotalSpendForLastYearAsync (EF) failed for AccountId {AccountId}", accountId);
             throw;
         }
     }
-    
+
     public async Task<decimal> GetLastMonthPaymentsAndTransfersAsync(
         long accountId, DateTime fromDate, DateTime toDate)
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            logger.LogInformation(
-                "GetLastMonthPaymentsAndTransfersAsync (EF) called for AccountId {AccountId}, FromDate: {FromDate}, ToDate: {ToDate}",
-                accountId, fromDate, toDate);
-
-            var result = await dbContext.Transactions
+            return await dbContext.Transactions
                 .Where(t => t.AccountId == accountId
                     && t.DateCreated >= fromDate
                     && t.DateCreated <= toDate
                     && (t.TransactionType == TransactionItemType.Payment
                         || t.TransactionType == TransactionItemType.Transfer))
                 .SumAsync(t => (decimal?)t.Amount) ?? 0;
-            
-            logger.LogInformation(
-                "GetLastMonthPaymentsAndTransfersAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}",
-                stopwatch.ElapsedMilliseconds, accountId, result);
-            
-            return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, 
-                "GetLastMonthPaymentsAndTransfersAsync (EF) failed for AccountId {AccountId} after {ElapsedMs}ms",
-                accountId, stopwatch.ElapsedMilliseconds);
+            logger.LogError(ex,
+                "GetLastMonthPaymentsAndTransfersAsync (EF) failed for AccountId {AccountId}",
+                accountId);
             throw;
         }
     }
-    
+
     public async Task<decimal> GetLatestLevyDeclarationTotalAsync(long accountId)
     {
-        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            logger.LogInformation("GetLatestLevyDeclarationTotalAsync (EF) called for AccountId {AccountId}", accountId);
-
             var threeMonthsAgo = DateTime.UtcNow.AddMonths(-3).Date;
 
             var resultRows = await dbContext.Database
@@ -128,23 +92,40 @@ public class FinanceDashboardRepositoryEf(
                     accountId, threeMonthsAgo)
                 .ToListAsync();
 
-            var result = resultRows.FirstOrDefault()?.MonthlyTotal ?? 0;
+            return resultRows.FirstOrDefault()?.MonthlyTotal ?? 0;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "GetLatestLevyDeclarationTotalAsync (EF) failed for AccountId {AccountId}",
+                accountId);
+            throw;
+        }
+    }
 
-            logger.LogInformation(
-                "GetLatestLevyDeclarationTotalAsync (EF) completed in {ElapsedMs}ms for AccountId {AccountId}, Result: {Result}",
-                stopwatch.ElapsedMilliseconds, accountId, result);
+    public async Task<decimal> GetLevyDeclarationTotalForMonthAsync(long accountId, string payrollYear, int payrollMonth)
+    {
+        try
+        {
+            var result = await dbContext.LevyDeclarationAndTopUp
+                .AsNoTracking()
+                .Where(x => x.AccountId == accountId
+                    && x.PayrollYear == payrollYear
+                    && x.PayrollMonth == payrollMonth
+                    && (x.LastSubmission == 1 || x.EndOfYearAdjustment))
+                .SumAsync(x => x.TotalAmount);
 
             return result;
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
-                "GetLatestLevyDeclarationTotalAsync (EF) failed for AccountId {AccountId} after {ElapsedMs}ms",
-                accountId, stopwatch.ElapsedMilliseconds);
+                "GetLevyDeclarationTotalForMonthAsync (EF) failed for AccountId {AccountId}",
+                accountId);
             throw;
         }
     }
-    
+
     private class LevyDeclarationMonthlyTotal
     {
         public decimal MonthlyTotal { get; set; }

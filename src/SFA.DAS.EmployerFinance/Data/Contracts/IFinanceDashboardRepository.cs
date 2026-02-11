@@ -6,4 +6,5 @@ public interface IFinanceDashboardRepository
     Task<decimal> GetTotalSpendForLastYearAsync(long accountId);
     Task<decimal> GetLastMonthPaymentsAndTransfersAsync(long accountId, DateTime fromDate, DateTime toDate);
     Task<decimal> GetLatestLevyDeclarationTotalAsync(long accountId);
+    Task<decimal> GetLevyDeclarationTotalForMonthAsync(long accountId, string payrollYear, int payrollMonth);
 }

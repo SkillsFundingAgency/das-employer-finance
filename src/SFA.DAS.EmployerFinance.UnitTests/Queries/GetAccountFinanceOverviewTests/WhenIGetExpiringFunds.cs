@@ -29,7 +29,7 @@ public class WhenIGetExpiringFunds
 
         _repository.Setup(s => s.GetAccountBalanceAsync(ExpectedAccountId)).ReturnsAsync(ExpectedBalance);
         _repository.Setup(s => s.GetTotalSpendForLastYearAsync(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _repository.Setup(s => s.GetLatestLevyDeclarationTotalAsync(ExpectedAccountId)).ReturnsAsync(0);
+        _repository.Setup(s => s.GetLevyDeclarationTotalForMonthAsync(ExpectedAccountId, It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(0);
         _repository.Setup(s => s.GetLastMonthPaymentsAndTransfersAsync(ExpectedAccountId, It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(0m);
         _validator.Setup(v => v.ValidateAsync(_query))
             .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });

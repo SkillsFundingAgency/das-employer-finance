@@ -1,5 +1,6 @@
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 
@@ -13,6 +14,7 @@ public class FinanceDashboardRepositoryLegacyTests
 
     private Mock<ITransactionRepository> _transactionRepository;
     private Mock<IDasLevyService> _levyService;
+    private Mock<IDasLevyRepository> _dasLevyRepository;
     private Mock<ILogger<FinanceDashboardRepositoryLegacy>> _logger;
     private FinanceDashboardRepositoryLegacy _sut;
 
@@ -21,10 +23,12 @@ public class FinanceDashboardRepositoryLegacyTests
     {
         _transactionRepository = new Mock<ITransactionRepository>();
         _levyService = new Mock<IDasLevyService>();
+        _dasLevyRepository = new Mock<IDasLevyRepository>();
         _logger = new Mock<ILogger<FinanceDashboardRepositoryLegacy>>();
         _sut = new FinanceDashboardRepositoryLegacy(
             _transactionRepository.Object,
             _levyService.Object,
+            _dasLevyRepository.Object,
             _logger.Object);
     }
 
@@ -184,5 +188,28 @@ public class FinanceDashboardRepositoryLegacyTests
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Test]
+    public async Task GetLevyDeclarationTotalForMonthAsync_ReturnsSumOfTotalAmountForMonth()
+    {
+        // Arrange
+        const string payrollYear = "24-25";
+        const int payrollMonth = 7;
+        var declarations = new List<LevyDeclarationItem>
+        {
+            new() { TotalAmount = 100m },
+            new() { TotalAmount = 250m }
+        };
+        _dasLevyRepository
+            .Setup(x => x.GetAccountLevyDeclarations(AccountId, payrollYear, (short)payrollMonth))
+            .ReturnsAsync(declarations);
+
+        // Act
+        var result = await _sut.GetLevyDeclarationTotalForMonthAsync(AccountId, payrollYear, payrollMonth);
+
+        // Assert
+        result.Should().Be(350m);
+        _dasLevyRepository.Verify(x => x.GetAccountLevyDeclarations(AccountId, payrollYear, (short)payrollMonth), Times.Once);
     }
 }

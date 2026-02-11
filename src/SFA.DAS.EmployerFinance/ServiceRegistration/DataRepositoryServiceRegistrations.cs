@@ -38,8 +38,7 @@ public static class DataRepositoryServiceRegistrations
             // var inner = sp.GetRequiredService<FinanceDashboardRepositoryLegacy>();
             return new FinanceDashboardRepositoryWithCache(
                 inner,
-                sp.GetRequiredService<ICacheService>(),
-                sp.GetRequiredService<ILogger<FinanceDashboardRepositoryWithCache>>());
+                sp.GetRequiredService<ICacheService>());
         });
 
         return services;

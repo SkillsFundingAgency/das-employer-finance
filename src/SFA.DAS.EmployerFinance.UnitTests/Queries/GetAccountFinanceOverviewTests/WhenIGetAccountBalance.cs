@@ -1,4 +1,4 @@
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Validation;
 
@@ -34,7 +34,7 @@ public class WhenIGetAccountBalance
 
         _repository.Setup(s => s.GetAccountBalanceAsync(ExpectedAccountId)).ReturnsAsync(ExpectedCurrentFunds);
         _repository.Setup(s => s.GetTotalSpendForLastYearAsync(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _repository.Setup(s => s.GetLatestLevyDeclarationTotalAsync(ExpectedAccountId)).ReturnsAsync(0);
+        _repository.Setup(s => s.GetLevyDeclarationTotalForMonthAsync(ExpectedAccountId, "00-01", 7)).ReturnsAsync(0);
         _repository.Setup(s => s.GetLastMonthPaymentsAndTransfersAsync(ExpectedAccountId, _expectedFromDate, _expectedToDate))
             .ReturnsAsync(PaymentTotal + TransferTotal);
         _validator.Setup(v => v.ValidateAsync(_query))
@@ -52,7 +52,7 @@ public class WhenIGetAccountBalance
     [Test]
     public async Task ThenTheFundsInShouldBeZero_WhenNoDeclarations()
     {
-        _repository.Setup(s => s.GetLatestLevyDeclarationTotalAsync(ExpectedAccountId)).ReturnsAsync(0);
+        _repository.Setup(s => s.GetLevyDeclarationTotalForMonthAsync(ExpectedAccountId, "00-01", 7)).ReturnsAsync(0);
 
         var response = await _handler.Handle(_query, CancellationToken.None);
 

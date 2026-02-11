@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
@@ -19,11 +20,15 @@ public class GetAccountFinanceOverviewQueryHandler(
 
         var currentBalance = await repository.GetAccountBalanceAsync(query.AccountId);
         var totalSpendForLastYear = await repository.GetTotalSpendForLastYearAsync(query.AccountId);
-        var latestMonthly = await repository.GetLatestLevyDeclarationTotalAsync(query.AccountId);
+
+        var payrollYear = query.FromDate.ToPayrollYearString();
+        var payrollMonth = query.FromDate.Month >= 4 ? query.FromDate.Month - 3 : query.FromDate.Month + 9;
+        var levyDeclaredForMonth = await repository.GetLevyDeclarationTotalForMonthAsync(query.AccountId, payrollYear, payrollMonth);
+
         var lastMonthPayments = await repository.GetLastMonthPaymentsAndTransfersAsync(
             query.AccountId, query.FromDate, query.ToDate);
-        
-        var fundsIn = latestMonthly * 12m;
+
+        var fundsIn = levyDeclaredForMonth * 12m;
 
         var response = new GetAccountFinanceOverviewResponse
         {
@@ -32,7 +37,7 @@ public class GetAccountFinanceOverviewQueryHandler(
             FundsIn = fundsIn,
             FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear,
-            LastMonthLevyDeclaration = latestMonthly,
+            LastMonthLevyDeclaration = levyDeclaredForMonth,
             LastMonthPayments = lastMonthPayments
         };
         

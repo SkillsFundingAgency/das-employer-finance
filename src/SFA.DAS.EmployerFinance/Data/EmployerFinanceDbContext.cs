@@ -4,6 +4,7 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Account;
+using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
@@ -27,6 +28,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<TransferConnectionInvitation> TransferConnectionInvitations { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<PaymentMetaData> PaymentMetaData{ get; set; }
+    public virtual DbSet<LevyDeclarationAndTopUpView> LevyDeclarationAndTopUp { get; set; }
 
     public EmployerFinanceDbContext() { }   
 
@@ -70,6 +72,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());
         modelBuilder.ApplyConfiguration(new PeriodEndConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
+        modelBuilder.ApplyConfiguration(new LevyDeclarationAndTopUpViewConfiguration());
         modelBuilder.Ignore<PaymentDetails>();
     }
 }
