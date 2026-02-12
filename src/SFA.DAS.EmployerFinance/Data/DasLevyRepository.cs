@@ -157,6 +157,69 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
     }
 
+    public async Task<long> UpdatePaymentMetadataStaging(
+        Guid paymentId,
+        PaymentMetaDataStaging updatedMetaData)
+    {
+        var payment = await _db.Value.Payments
+            .FirstOrDefaultAsync(p => p.Id == paymentId);
+
+        if (payment == null)
+            throw new KeyNotFoundException($"Payment {paymentId} not found");
+
+        var metadata = await _db.Value.PaymentMetaDataStaging
+            .AsTracking()
+            .FirstOrDefaultAsync(m => m.Id == payment.PaymentMetaDataId);
+
+
+        if (metadata == null)
+        {
+            metadata = new PaymentMetaDataStaging
+            {
+                ProviderName = updatedMetaData.ProviderName,
+                StandardCode = updatedMetaData.StandardCode,
+                FrameworkCode = updatedMetaData.FrameworkCode,
+                ProgrammeType = updatedMetaData.ProgrammeType,
+                PathwayCode = updatedMetaData.PathwayCode,
+                PathwayName = updatedMetaData.PathwayName,
+                ApprenticeshipCourseName = updatedMetaData.ApprenticeshipCourseName,
+                ApprenticeshipCourseStartDate = updatedMetaData.ApprenticeshipCourseStartDate,
+                ApprenticeshipCourseLevel = updatedMetaData.ApprenticeshipCourseLevel,
+                ApprenticeName = updatedMetaData.ApprenticeName,
+                ApprenticeNINumber = updatedMetaData.ApprenticeNINumber,
+                IsHistoricProviderName = updatedMetaData.IsHistoricProviderName,
+                CreatedBy = updatedMetaData.CreatedBy,
+                CorrelationId = updatedMetaData.CorrelationId,
+            };
+
+            _db.Value.PaymentMetaDataStaging.Add(metadata);
+            await _db.Value.SaveChangesAsync();
+
+            return metadata.Id;
+        }
+
+        metadata.ProviderName = updatedMetaData.ProviderName;
+        metadata.StandardCode = updatedMetaData.StandardCode;
+        metadata.FrameworkCode = updatedMetaData.FrameworkCode;
+        metadata.ProgrammeType = updatedMetaData.ProgrammeType;
+        metadata.PathwayCode = updatedMetaData.PathwayCode;
+        metadata.PathwayName = updatedMetaData.PathwayName;
+        metadata.ApprenticeshipCourseName = updatedMetaData.ApprenticeshipCourseName;
+        metadata.ApprenticeshipCourseStartDate = updatedMetaData.ApprenticeshipCourseStartDate;
+        metadata.ApprenticeshipCourseLevel = updatedMetaData.ApprenticeshipCourseLevel;
+        metadata.ApprenticeName = updatedMetaData.ApprenticeName;
+        metadata.ApprenticeNINumber = updatedMetaData.ApprenticeNINumber;
+        metadata.IsHistoricProviderName = updatedMetaData.IsHistoricProviderName;
+        metadata.CreatedBy = updatedMetaData.CreatedBy;
+        metadata.CorrelationId = updatedMetaData.CorrelationId;
+
+        await _db.Value.SaveChangesAsync();
+
+        return metadata.Id;
+    }
+
+
+
     public async Task<ISet<Guid>> GetAccountPaymentIds(long accountId)
     {
         var parameters = new DynamicParameters();

@@ -207,6 +207,7 @@
     <Build Include="Tables\TransferStaging.sql" />
     <Build Include="Tables\PaymentStaging.sql" />
     <Build Include="StoredProcedures\MergeStagingTables.sql" />
+    <Build Include="Tables\PaymentMetaDataStaging.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

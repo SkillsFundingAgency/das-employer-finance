@@ -29,6 +29,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<PaymentMetaData> PaymentMetaData{ get; set; }
     public virtual DbSet<TransferStaging> TransferStaging { get; set; }
+    public virtual DbSet<PaymentMetaDataStaging> PaymentMetaDataStaging{ get; set; }
 
     public EmployerFinanceDbContext() { }   
 
@@ -62,6 +63,8 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AccountTransferConfiguration());
         modelBuilder.ApplyConfiguration(new HealthCheckConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMetadataConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMetadataStagingConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionLineEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());

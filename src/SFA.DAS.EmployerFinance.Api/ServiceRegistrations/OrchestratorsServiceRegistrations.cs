@@ -13,6 +13,7 @@ namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations
             services.AddTransient<StatisticsOrchestrator>();
             services.AddTransient<PeriodEndOrchestrator>();
             services.AddTransient<StagingOrchestrator>();
+            services.AddTransient<PaymentMetaDataOrchestrator>();
             services.AddTransient<TransferOrchestrator>();
             services.AddTransient<TransferStagingOrchestrator>();
 
