@@ -18,7 +18,7 @@
     [ApprenticeshipVersion] VARCHAR(25) NOT NULL, 
     [ProcessingStatus] VARCHAR(50) NULL, 
     [TimeStamps] DATETIME NULL, 
-    [MetaDataJson] JSON NULL
+    [MetaDataJson] NVARCHAR(MAX) NULL
 )
  
 GO
