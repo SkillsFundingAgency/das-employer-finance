@@ -10,12 +10,12 @@ BEGIN
         BEGIN TRANSACTION;
 
         ---------------------------------------------------------------------
-        -- 1. Insert PaymentMetaData 
+        -- 1. Insert PaymentMetaData
         ---------------------------------------------------------------------
 
         DECLARE @PaymentMetaDataMap TABLE
         (
-            StagingPaymentMetaDataId BIGINT,
+            StagingPaymentMetaDataId     BIGINT,
             OperationalPaymentMetaDataId BIGINT
         );
 
@@ -63,7 +63,7 @@ BEGIN
         );
 
         ---------------------------------------------------------------------
-        -- 2. Insert Payments 
+        -- 2. Insert Payments
         ---------------------------------------------------------------------
 
         MERGE employer_financial.Payment AS target
@@ -86,14 +86,12 @@ BEGIN
                 ps.FundingSource,
                 ps.TransactionType,
                 ps.Amount,
-                ps.PeriodEnd,
-                map.OperationalPaymentMetaDataId AS PaymentMetaDataId,
-                ps.DateImported
+                map.OperationalPaymentMetaDataId AS PaymentMetaDataId
             FROM employer_financial.PaymentStaging ps
             INNER JOIN @PaymentMetaDataMap map
                 ON ps.PaymentMetaDataId = map.StagingPaymentMetaDataId
             WHERE ps.AccountId = @accountId
-              AND ps.PeriodEnd = @periodEndRef
+              AND ps.CollectionPeriodId = @periodEndRef
         ) AS source
             ON 1 = 0 -- insert-only
         WHEN NOT MATCHED THEN
@@ -115,9 +113,7 @@ BEGIN
                 FundingSource,
                 TransactionType,
                 Amount,
-                PeriodEnd,
-                PaymentMetaDataId,
-                DateImported
+                PaymentMetaDataId
             )
             VALUES
             (
@@ -137,9 +133,7 @@ BEGIN
                 source.FundingSource,
                 source.TransactionType,
                 source.Amount,
-                source.PeriodEnd,
-                source.PaymentMetaDataId,
-                source.DateImported
+                source.PaymentMetaDataId
             );
 
         COMMIT TRANSACTION;
