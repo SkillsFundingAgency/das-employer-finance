@@ -206,7 +206,7 @@
     <Build Include="StoredProcedures\UpsertUser.sql" />
     <Build Include="Tables\TransferStaging.sql" />
     <Build Include="Tables\PaymentStaging.sql" />
-    <Build Include="StoredProcedures\MergeStagingTables.sql" />
+    <Build Include="StoredProcedures\TransferStagedToOperational.sql" />
     <Build Include="Tables\PaymentMetaDataStaging.sql" />
   </ItemGroup>
   <ItemGroup>
