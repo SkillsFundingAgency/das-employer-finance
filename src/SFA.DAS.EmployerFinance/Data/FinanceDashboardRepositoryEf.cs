@@ -107,15 +107,16 @@ public class FinanceDashboardRepositoryEf(
     {
         try
         {
-            var result = await dbContext.LevyDeclarationAndTopUp
-                .AsNoTracking()
-                .Where(x => x.AccountId == accountId
-                    && x.PayrollYear == payrollYear
-                    && x.PayrollMonth == payrollMonth
-                    && (x.LastSubmission == 1 || x.EndOfYearAdjustment))
-                .SumAsync(x => x.TotalAmount);
+            var resultRows = await dbContext.Database
+                .SqlQueryRaw<LevyDeclarationMonthlyTotal>(
+                    @"SELECT ISNULL(SUM(TotalAmount), 0) AS MonthlyTotal
+                      FROM [employer_financial].[GetLevyDeclarationAndTopUp]
+                      WHERE AccountId = {0} AND PayrollYear = {1} AND PayrollMonth = {2}
+                        AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)",
+                    accountId, payrollYear, payrollMonth)
+                .ToListAsync();
 
-            return result;
+            return resultRows.FirstOrDefault()?.MonthlyTotal ?? 0;
         }
         catch (Exception ex)
         {
