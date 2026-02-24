@@ -88,8 +88,10 @@ BEGIN
                 ps.Amount,
                 map.OperationalPaymentMetaDataId AS PaymentMetaDataId
             FROM employer_financial.PaymentStaging ps
+            INNER JOIN employer_financial.PaymentMetaDataStaging pms
+                ON ps.PaymentId = pms.PaymentId
             INNER JOIN @PaymentMetaDataMap map
-                ON ps.PaymentMetaDataId = map.StagingPaymentMetaDataId
+                ON pms.Id = map.StagingPaymentMetaDataId
             WHERE ps.AccountId = @accountId
               AND ps.CollectionPeriodId = @periodEndRef
         ) AS source
