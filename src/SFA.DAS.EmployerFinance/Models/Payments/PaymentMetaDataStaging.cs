@@ -18,4 +18,6 @@ public class PaymentMetaDataStaging
     public string CreatedBy { get; set; }
 
     public Guid? CorrelationId { get; set; }
+
+    public Guid PaymentId { get; set; }
 }

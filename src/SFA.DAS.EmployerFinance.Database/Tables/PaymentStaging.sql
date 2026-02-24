@@ -1,7 +1,6 @@
 ﻿CREATE TABLE [employer_financial].[PaymentStaging]
 (
-	[PaymentId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY, 
-    PaymentMetaDataId BIGINT NOT NULL,
+	[PaymentId] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
     [Ukprn] BIGINT NOT NULL, 
     [Uln] BIGINT NOT NULL, 
     [AccountId] BIGINT NOT NULL, 

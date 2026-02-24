@@ -190,6 +190,7 @@ public class DasLevyRepository : IDasLevyRepository
                 IsHistoricProviderName = updatedMetaData.IsHistoricProviderName,
                 CreatedBy = updatedMetaData.CreatedBy,
                 CorrelationId = updatedMetaData.CorrelationId,
+                PaymentId = paymentId,
             };
 
             _db.Value.PaymentMetaDataStaging.Add(metadata);
@@ -212,6 +213,7 @@ public class DasLevyRepository : IDasLevyRepository
         metadata.IsHistoricProviderName = updatedMetaData.IsHistoricProviderName;
         metadata.CreatedBy = updatedMetaData.CreatedBy;
         metadata.CorrelationId = updatedMetaData.CorrelationId;
+        metadata.PaymentId = paymentId;
 
         await _db.Value.SaveChangesAsync();
 
