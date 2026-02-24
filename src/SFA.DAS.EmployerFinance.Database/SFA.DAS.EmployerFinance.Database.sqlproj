@@ -222,6 +222,7 @@
     <None Include="Scripts\Manual\GenerateTestData\DataGenFramework\ExampleScenario.sql" />
     <None Include="Scripts\Manual\GenerateTestData\ReadMe.md" />
     <Build Include="Tables\AccountLegalEntity.sql" />
+    <None Include="Scripts\PostDeployment\PaymentMetDataStagingConstraint.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="SFA.DAS.EAS.Levy.Database.refactorlog" />
