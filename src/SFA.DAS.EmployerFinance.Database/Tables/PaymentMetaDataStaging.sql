@@ -23,6 +23,6 @@
 )
 GO
 
-CREATE NONCLUSTERED INDEX [IX_PaymentMetaDataStaging_PaymentId]
+CREATE UNIQUE NONCLUSTERED INDEX [UX_PaymentMetaDataStaging_PaymentId]
 ON [employer_financial].[PaymentMetaDataStaging] ([PaymentId])
 GO
