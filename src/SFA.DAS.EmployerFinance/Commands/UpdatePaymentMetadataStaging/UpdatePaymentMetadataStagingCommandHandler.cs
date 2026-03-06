@@ -25,7 +25,19 @@ public class UpdatePaymentMetadataStagingCommandHandler : IRequestHandler<Update
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var metadataId = await _dasLevyRepository.UpdatePaymentMetadataStaging(request.PaymentId, request.PaymentMetadataStaging);
-        return new PaymentMetaDataResponse { MetadataId = metadataId, Upserted = metadataId != 0 };
+        var metadataId = await _dasLevyRepository.UpdatePaymentMetadataStaging(
+            request.PaymentId,
+            request.PaymentMetadataStaging);
+
+        if (metadataId == 0)
+        {
+            throw new KeyNotFoundException($"Payment {request.PaymentId} not found");
+        }
+
+        return new PaymentMetaDataResponse
+        {
+            MetadataId = metadataId,
+            Upserted = true
+        };
     }
 }

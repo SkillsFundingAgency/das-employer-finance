@@ -24,6 +24,20 @@ public class StageTransfersCommandHandler : IRequestHandler<StageTransfersComman
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
+        var duplicateIds = request.Transfers
+        .GroupBy(x => x.TransferId)
+        .Where(g => g.Count() > 1)
+        .Select(g => g.Key)
+        .ToList();
+
+        if (duplicateIds.Any())
+        {
+            return new StageTransfersResponse
+            {
+                ConflictingTransferIds = duplicateIds
+            };
+        }
+
         var existingIds = await _transferStagingRepository.GetExistingTransferIds(request.Transfers.Select(x => x.TransferId).ToList());
 
         if (existingIds.Any())

@@ -15,8 +15,12 @@ public class UpdatePaymentMetadataStagingCommandValidatorStaging
         if (!IsValidNiNumber(item.PaymentMetadataStaging.ApprenticeNINumber))
             validationResult.AddError("NationalInsuranceNumber", "Invalid NI format");
 
-        if (item.PaymentMetadataStaging?.ApprenticeshipCourseStartDate < new DateTime(1900, 1, 1))
+        var startDate = item.PaymentMetadataStaging?.ApprenticeshipCourseStartDate;
+
+        if (startDate == null || startDate <= new DateTime(1900, 1, 1))
+        {
             validationResult.AddError("StartDate", "StartDate must be after 1900-01-01");
+        }
 
         return validationResult;
     }

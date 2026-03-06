@@ -19,6 +19,9 @@ public class StageTransfersCommandValidator : IValidator<StageTransfersCommand>
             if (t.TransferId == 0)
                 result.AddError(nameof(t.TransferId), "TransferId is required");
 
+            if (t.TransferId <= 0)
+                result.AddError(nameof(t.TransferId), "TransferId must be greater than 0");
+
             if (t.Amount <= 0)
                 result.AddError(nameof(t.Amount), "Amount must be greater than 0");
 
@@ -28,20 +31,11 @@ public class StageTransfersCommandValidator : IValidator<StageTransfersCommand>
             if (t.ReceiverAccountId == 0)
                 result.AddError(nameof(t.ReceiverAccountId), "ReceiverAccountId is required");
 
+            if (t.ReceiverAccountId <= 0)
+                result.AddError(nameof(t.ReceiverAccountId), "ReceiverAccountId must be greater than 0");
+
             if (string.IsNullOrWhiteSpace(t.PeriodEnd))
                 result.AddError(nameof(t.PeriodEnd), "PeriodEnd is required");
-        }
-
-        // Check for duplicate TransferIds in payload
-        var duplicateIds = command.Transfers
-            .GroupBy(x => x.TransferId)
-            .Where(g => g.Count() > 1)
-            .Select(g => g.Key)
-            .ToList();
-
-        if (duplicateIds.Any())
-        {
-            result.AddError(nameof(command.Transfers), $"Duplicate TransferIds in payload: {string.Join(",", duplicateIds)}");
         }
 
         return result;

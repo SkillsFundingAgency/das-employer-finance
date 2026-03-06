@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.Validation.Exceptions;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
@@ -19,18 +20,21 @@ public class PaymentMetaDataController(PaymentMetaDataOrchestrator paymentOrches
 
         try
         {
-            var updatePaymentMetadataStaging =
-                await paymentOrchestrator.UpdatePaymentMetaDataStaging(paymentId, request);
+            var result = await paymentOrchestrator.UpdatePaymentMetaDataStaging(paymentId, request);
 
-            if (updatePaymentMetadataStaging == null)
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Could not update Payment Metadata Staging");
-
-            return Ok(updatePaymentMetadataStaging);
+            return Ok(result);
         }
-        catch (Exception ex)
+        catch (ValidationException ex)
         {
-            return BadRequest("Could not update Payment Metadata Staging");
+            return BadRequest(ex.Message);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
         }
     }
 }
