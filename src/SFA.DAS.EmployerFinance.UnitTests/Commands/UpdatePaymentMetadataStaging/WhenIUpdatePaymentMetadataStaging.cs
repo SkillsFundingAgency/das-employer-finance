@@ -34,12 +34,32 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         [Test]
         public async Task ThenTheCommandIsValidated()
         {
+            // Arrange
+            var testPaymentId = Guid.NewGuid();
+
+            _repository.Setup(x => x.UpdatePaymentMetadataStaging(
+                testPaymentId,
+                It.IsAny<PaymentMetaDataStaging>()))
+                .ReturnsAsync(123);
+
+            var command = new UpdatePaymentMetadataStagingCommand
+            {
+                PaymentId = testPaymentId,
+                PaymentMetadataStaging = new PaymentMetaDataStaging()
+            };
+
             // Act
-            await _handler.Handle(new UpdatePaymentMetadataStagingCommand(), CancellationToken.None);
+            await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             _validator.Verify(
                 x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()),
+                Times.Once);
+
+            _repository.Verify(x =>
+                x.UpdatePaymentMetadataStaging(
+                    testPaymentId,
+                    command.PaymentMetadataStaging),
                 Times.Once);
         }
 
@@ -63,21 +83,32 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         public async Task ThenTheRepositoryIsCalledWhenTheMessageIsValid()
         {
             // Arrange
+            var testPaymentId = Guid.NewGuid();
+            var testMetadataId = 123;
+
+            _repository.Setup(x => x.UpdatePaymentMetadataStaging(
+                testPaymentId,
+                It.IsAny<PaymentMetaDataStaging>()))
+                .ReturnsAsync(testMetadataId);
+
             var command = new UpdatePaymentMetadataStagingCommand
             {
-                PaymentId = Guid.NewGuid(),
+                PaymentId = testPaymentId,
                 PaymentMetadataStaging = new PaymentMetaDataStaging()
             };
 
             // Act
-            await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             _repository.Verify(x =>
                 x.UpdatePaymentMetadataStaging(
-                    command.PaymentId,
+                    testPaymentId,
                     command.PaymentMetadataStaging),
                 Times.Once);
+
+            Assert.That(result.MetadataId, Is.EqualTo(testMetadataId));
+            Assert.That(result.Upserted, Is.True);
         }
     }
 }

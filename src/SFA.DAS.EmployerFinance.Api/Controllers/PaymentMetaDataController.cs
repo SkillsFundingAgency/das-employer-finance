@@ -36,5 +36,9 @@ public class PaymentMetaDataController(PaymentMetaDataOrchestrator paymentOrches
         {
             return Conflict(ex.Message);
         }
+        catch (Exception)
+        {
+            return BadRequest("Could not update Payment Metadata Staging");
+        }
     }
 }
