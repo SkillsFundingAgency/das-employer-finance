@@ -21,7 +21,13 @@ public class StageTransfersCommandHandler : IRequestHandler<StageTransfersComman
 
         if (!validationResult.IsValid())
         {
-            throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
+            return new StageTransfersResponse
+            {
+                HasValidationErrors = true,
+                ValidationErrors = validationResult.ValidationDictionary
+                .Select(e => e.Value)
+                .ToList()
+                };
         }
 
         var duplicateIds = request.Transfers

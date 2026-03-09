@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Commands.StagingTransfers;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
@@ -27,7 +28,7 @@ public class TransferStagingController(TransferStagingOrchestrator orchestrator)
             return BadRequest(response.ValidationErrors);
         }
 
-        if (response.HasConflicts)
+        if (response.ConflictingTransferIds.Any())
         {
             return Conflict(new { transferIds = response.ConflictingTransferIds });
         }
