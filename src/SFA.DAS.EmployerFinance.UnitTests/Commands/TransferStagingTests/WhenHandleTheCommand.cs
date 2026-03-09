@@ -55,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.StagingTransfersTests
 
 
         [Test]
-        public void ThenAnInvalidRequestExceptionIsThrownWhenTheMessageIsNotValid()
+        public async Task ThenValidationErrorsAreReturnedWhenTheMessageIsNotValid()
         {
             // Arrange
             _validator
@@ -64,13 +64,17 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.StagingTransfersTests
                 {
                     ValidationDictionary = new Dictionary<string, string>
                     {
-                        { "", "" }
+                { "Error", "Some validation error" }
                     }
                 });
 
+            // Act
+            var result = await _handler.Handle(new StageTransfersCommand(), CancellationToken.None);
+
             // Assert
-            Assert.ThrowsAsync<ValidationException>(async () =>
-                await _handler.Handle(new StageTransfersCommand(), CancellationToken.None));
+            Assert.That(result.HasValidationErrors, Is.True);
+            Assert.That(result.ValidationErrors, Is.Not.Empty);
+            Assert.That(result.ValidationErrors, Contains.Item("Some validation error"));
         }
 
         [Test]
