@@ -1,7 +1,11 @@
-﻿namespace SFA.DAS.EmployerFinance.Models.Transfers;
+﻿using System.Text.Json.Serialization;
+
+namespace SFA.DAS.EmployerFinance.Models.Transfers;
 
 public class TransferStaging
 {
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+
     public long TransferId { get; set; }
     public long SenderAccountId { get; set; }
     public long ReceiverAccountId { get; set; }
