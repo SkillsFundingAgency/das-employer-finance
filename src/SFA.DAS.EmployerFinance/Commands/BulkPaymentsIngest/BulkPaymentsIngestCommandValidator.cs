@@ -27,12 +27,6 @@ namespace SFA.DAS.EmployerFinance.Commands.BulkPaymentsIngest
                 var item = command.Payments[i];
                 string prefix = $"Payments[{i}]";
 
-   
-                if (item.PaymentId != Guid.Empty && !seenPaymentIds.Add(item.PaymentId))
-                {
-                    result.AddError($"{prefix}.PaymentId", $"Duplicate PaymentId '{item.PaymentId}' detected within this batch.");
-                }
-
                 if (item.PaymentId == Guid.Empty) result.AddError($"{prefix}.PaymentId", "PaymentId is mandatory.");
                 if (item.AccountId <= 0) result.AddError($"{prefix}.AccountId", "AccountId is mandatory and must be > 0.");
                 if (item.Ukprn <= 0) result.AddError($"{prefix}.Ukprn", "Ukprn is mandatory and must be > 0.");
