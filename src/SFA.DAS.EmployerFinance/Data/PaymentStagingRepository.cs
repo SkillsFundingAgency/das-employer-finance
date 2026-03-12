@@ -88,4 +88,12 @@ public class PaymentStagingRepository : IPaymentStagingRepository
         }
     }
 
+    public async Task<List<Guid>> GetExistingPaymentIds(List<Guid> paymentIds)
+    {
+        return await _db.Value.PaymentStaging
+            .Where(p => paymentIds.Contains(p.PaymentId))
+            .Select(p => p.PaymentId)
+            .ToListAsync();
+    }
+
 }

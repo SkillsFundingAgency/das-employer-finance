@@ -26,7 +26,7 @@ public class BulkPaymentsIngestTests
     }
 
     [Test]
-    public async Task BulkPaymentsIngest_ReturnsOk_WhenOrchestratorSucceeds()
+    public async Task BulkPaymentsIngest_ReturnsCreated_WhenOrchestratorSucceeds()
     {
         // Arrange
         var payments = new List<PaymentStagingModel>
@@ -47,23 +47,31 @@ public class BulkPaymentsIngestTests
             }
         };
 
-        var response = new BulkPaymentsIngestResponse();
-        response.IsSuccess = true;
-        response.PaymentIds = payments.Select(p => p.PaymentId).ToList();
+        var request = new BulkPaymentsRequest
+        {
+            Payments = payments
+        };
+
+        var response = new BulkPaymentsIngestResponse
+        {
+            IsSuccess = true,
+            InsertedCount = 1,
+            PaymentIds = payments.Select(p => p.PaymentId).ToList()
+        };
 
         _mediator
             .Setup(m => m.Send(It.IsAny<BulkPaymentsIngestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         // Act
-        var result = await _stagingController.BulkPaymentsIngest(payments);
+        var result = await _stagingController.BulkPaymentsIngest(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<CreatedResult>();
-        (result as CreatedResult)!.StatusCode.Should().Be(StatusCodes.Status201Created);
-    }
+        result.Should().BeOfType<ObjectResult>();
 
+        var objectResult = result as ObjectResult;
+        objectResult!.StatusCode.Should().Be(StatusCodes.Status201Created);
+    }
 
     [Test]
     public async Task BulkPaymentsIngest_ReturnsBadRequest_WhenPaymentsIsNull()
@@ -73,7 +81,9 @@ public class BulkPaymentsIngestTests
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
-        (result as BadRequestObjectResult)!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+
+        var badRequest = result as BadRequestObjectResult;
+        badRequest!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
     }
 
     [Test]
@@ -81,38 +91,44 @@ public class BulkPaymentsIngestTests
     {
         // Arrange
         var payments = new List<PaymentStagingModel>
-    {
-        new PaymentStagingModel
         {
-            PaymentId = Guid.NewGuid(),
-            Amount = 100,
-            AccountId = 123,
-            Ukprn = 45678901,
-            Uln = 9876543210,
-            ApprenticeshipId = 12345,
-            CollectionPeriodId = "R01",
-            DeliveryPeriodMonth = 1,
-            DeliveryPeriodYear = 2026,
-            CollectionPeriodMonth = 1,
-            CollectionPeriodYear = 2026
-        }
-    };
+            new PaymentStagingModel
+            {
+                PaymentId = Guid.NewGuid(),
+                Amount = 100,
+                AccountId = 123,
+                Ukprn = 45678901,
+                Uln = 9876543210,
+                ApprenticeshipId = 12345,
+                CollectionPeriodId = "R01",
+                DeliveryPeriodMonth = 1,
+                DeliveryPeriodYear = 2026,
+                CollectionPeriodMonth = 1,
+                CollectionPeriodYear = 2026
+            }
+        };
 
-        var response = new BulkPaymentsIngestResponse();
-        response.IsSuccess = false;
+        var request = new BulkPaymentsRequest
+        {
+            Payments = payments
+        };
+
+        var response = new BulkPaymentsIngestResponse
+        {
+            IsSuccess = false
+        };
 
         _mediator
             .Setup(m => m.Send(It.IsAny<BulkPaymentsIngestCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         // Act
-        var result = await _stagingController.BulkPaymentsIngest(payments);
+        var result = await _stagingController.BulkPaymentsIngest(request);
 
         // Assert
-        result.Should().BeOfType<BadRequestObjectResult>();
-        var objectResult = (BadRequestObjectResult)result;
-        objectResult.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        result.Should().BeOfType<ObjectResult>();
+
+        var objectResult = (ObjectResult)result;
+        objectResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
     }
-
-
 }

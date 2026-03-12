@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
+﻿using SFA.DAS.EmployerFinance.Commands.BulkPaymentsIngest;
+using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
 using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
@@ -53,6 +54,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<RefreshPaymentDataCommand>, RefreshPaymentDataCommandValidator>();
         services.AddTransient<IValidator<UpdatePayeInformationCommand>, UpdatePayeInformationValidator>();
         services.AddTransient<IValidator<RefreshPaymentMetadataCommand>, RefreshPaymentMetadataCommandValidator>();
+        services.AddTransient<IValidator<BulkPaymentsIngestCommand>, BulkPaymentsIngestCommandValidator>();
     }
 
     public static void AddWebMediatorValidators(this IServiceCollection services)

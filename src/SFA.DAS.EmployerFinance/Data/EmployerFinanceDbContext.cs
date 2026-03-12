@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Models.PaymentStaging;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -29,6 +30,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<PaymentMetaData> PaymentMetaData{ get; set; }
     public virtual DbSet<TransferStaging> TransferStaging { get; set; }
+    public virtual DbSet<PaymentStagingModel> PaymentStaging { get; set; }
     public virtual DbSet<PaymentMetaDataStaging> PaymentMetaDataStaging{ get; set; }
 
     public EmployerFinanceDbContext() { }   
@@ -69,6 +71,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());
         modelBuilder.ApplyConfiguration(new PeriodEndConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentStagingConfiguration());
         modelBuilder.ApplyConfiguration(new TransferStagingConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
         modelBuilder.Ignore<PaymentDetails>();
