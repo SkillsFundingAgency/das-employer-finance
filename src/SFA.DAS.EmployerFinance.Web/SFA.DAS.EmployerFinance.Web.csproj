@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <OutputPath>bin\</OutputPath>
     <LangVersion>latestmajor</LangVersion>
+    <UserSecretsId>466cc7ef-186f-41cb-85db-909da6d15f66</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SFA.DAS.EmployerUsers.WebClientComponents" Version="1.1.338" />
