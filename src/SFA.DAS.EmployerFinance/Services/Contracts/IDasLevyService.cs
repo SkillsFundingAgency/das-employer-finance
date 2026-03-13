@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Models.Transaction;
 
 namespace SFA.DAS.EmployerFinance.Services.Contracts;
 
@@ -27,6 +27,7 @@ public interface IDasLevyService
     Task<string> GetProviderName(long ukprn, long accountId, string periodEnd);
 
     Task<decimal> GetTotalSpendForLastYear(long accountId);
+    Task<decimal> GetPaymentAndTransferTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate);
 
     Task<decimal> GetLatestLevyDeclaration(long accountId);
 }

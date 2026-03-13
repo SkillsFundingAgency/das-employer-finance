@@ -1,5 +1,3 @@
-﻿using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
@@ -39,26 +37,8 @@ public class WhenIGetAccountBalance
         _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedCurrentFunds);
         _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
         _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
-        _levyService.Setup(s =>
-                s.GetAccountTransactionsByDateRange(ExpectedAccountId,
-                    _expectedFromDate, _expectedToDate))
-            .ReturnsAsync([
-                new TransactionLine
-                {
-                    TransactionType = TransactionItemType.Payment,
-                    Amount = PaymentTotal
-                },
-                new TransactionLine
-                {
-                    TransactionType = TransactionItemType.Transfer,
-                    Amount = TransferTotal
-                },
-                new TransactionLine
-                {
-                    TransactionType = TransactionItemType.Declaration,
-                    Amount = 100m
-                }
-            ]);
+        _levyService.Setup(s => s.GetPaymentAndTransferTotalByDateRange(ExpectedAccountId, _expectedFromDate, _expectedToDate))
+            .ReturnsAsync(TransferTotal + PaymentTotal);
         _validator.Setup(v => v.ValidateAsync(_query))
             .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
     }

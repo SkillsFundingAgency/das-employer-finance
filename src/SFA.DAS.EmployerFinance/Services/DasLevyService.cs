@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -100,6 +100,11 @@ public class DasLevyService(
     public Task<decimal> GetTotalSpendForLastYear(long accountId)
     {
         return transactionRepository.GetTotalSpendForLastYear(accountId);
+    }
+
+    public Task<decimal> GetPaymentAndTransferTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate)
+    {
+        return transactionRepository.GetPaymentAndTransferTotalByDateRange(accountId, fromDate, toDate);
     }
 
     public async Task<decimal> GetLatestLevyDeclaration(long accountId)

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using SFA.DAS.EmployerFinance.Models.Levy;
-using SFA.DAS.EmployerFinance.Models.Transaction;
+using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 
@@ -24,12 +22,8 @@ public class GetAccountFinanceOverviewQueryHandler(
         var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
         var latestMonthly = await levyService.GetLatestLevyDeclaration(query.AccountId);
 
-        var transactionLines = await levyService.GetAccountTransactionsByDateRange(query.AccountId, query.FromDate, query.ToDate);
+        var totalPayments = await levyService.GetPaymentAndTransferTotalByDateRange(query.AccountId, query.FromDate, query.ToDate);
 
-        var totalPayments = transactionLines
-            .Where(c=>c.TransactionType is TransactionItemType.Payment or TransactionItemType.Transfer)
-            .Sum(c => c.Amount);
-        
         var fundsIn = latestMonthly * 12m;
 
         var response = new GetAccountFinanceOverviewResponse

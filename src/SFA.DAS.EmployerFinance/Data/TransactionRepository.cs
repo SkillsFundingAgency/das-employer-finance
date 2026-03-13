@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -79,6 +79,21 @@ public class TransactionRepository : ITransactionRepository
             commandType: CommandType.StoredProcedure);
 
         return MapTransactions(result);
+    }
+
+    public async Task<decimal> GetPaymentAndTransferTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate)
+    {
+        var from = new DateTime(fromDate.Year, fromDate.Month, fromDate.Day);
+        var to = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
+
+        var sum = await _db.Value.Transactions
+            .Where(t => t.AccountId == accountId
+                && t.DateCreated >= from
+                && t.DateCreated <= to
+                && (t.TransactionType == TransactionItemType.Payment || t.TransactionType == TransactionItemType.Transfer))
+            .SumAsync(t => t.Amount);
+
+        return sum;
     }
 
     private static DataTable CreateTransferTransactionDataTable(IEnumerable<TransferTransactionLine> transactions)
