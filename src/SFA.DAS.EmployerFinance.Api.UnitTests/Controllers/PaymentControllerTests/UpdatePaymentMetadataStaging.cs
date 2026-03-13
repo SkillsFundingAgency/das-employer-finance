@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentAssertions;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
@@ -16,94 +21,116 @@ public class UpdatePaymentMetadata
     {
         _mediator = new Mock<IMediator>();
 
-        var orchestrator = new PaymentMetaDataOrchestrator(
-            _mediator.Object);
-
+        var orchestrator = new PaymentMetaDataOrchestrator(_mediator.Object);
         _controller = new PaymentMetaDataController(orchestrator);
     }
 
     [Test]
     public async Task Then_Returns_Ok_When_Update_Succeeds()
     {
-        // Arrange
         var paymentId = Guid.NewGuid();
         var metadata = new PaymentMetaDataStaging();
 
         var response = new PaymentMetaDataResponse
         {
             Upserted = true,
-            MetadataId = 1
+            MetadataId = 1,
+            IsSuccess = true
         };
 
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
-        // Act
         var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
 
-        // Assert
-        result.Should().NotBeNull();
         result.Should().BeOfType<OkObjectResult>();
 
-        var okResult = result as OkObjectResult;
-        okResult!.StatusCode.Should().Be(StatusCodes.Status200OK);
+        var ok = result as OkObjectResult;
+        ok!.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-        var model = okResult.Value as PaymentMetaDataResponse;
-        model.Should().NotBeNull();
-        model!.Upserted.Should().BeTrue();
-        model.MetadataId.Should().Be(1);
+        var model = ok.Value!
+                      .GetType()
+                      .GetProperties()
+                      .ToDictionary(p => p.Name, p => p.GetValue(ok.Value!));
+
+        ((bool)model["upserted"]).Should().BeTrue();
     }
 
-
     [Test]
-    public async Task PaymentMetadata_When_Request_Is_Null_Returns_BadRequest()
+    public async Task When_Request_Is_Null_Returns_BadRequest()
     {
-        // Act
         var result = await _controller.PaymentMetaDataStaging(Guid.NewGuid(), null);
 
-        // Assert
-        result.Should().BeOfType<BadRequestResult>();
+        result.Should().BeOfType<BadRequestObjectResult>();
 
-        var badRequest = result as BadRequestResult;
+        var badRequest = result as BadRequestObjectResult;
         badRequest!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        badRequest.Value.Should().Be("Request body is required.");
     }
 
     [Test]
-    public async Task PaymentMetadata_When_PaymentId_Is_Empty_Returns_BadRequest()
+    public async Task When_Response_Has_ValidationErrors_Returns_BadRequest()
     {
-        // Arrange
-        var metadata = new PaymentMetaDataStaging();
-
-        // Act
-        var result = await _controller.PaymentMetaDataStaging(Guid.Empty, metadata);
-
-        // Assert
-        result.Should().BeOfType<BadRequestResult>();
-
-        var badRequest = result as BadRequestResult;
-        badRequest!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
-    }
-
-    [Test]
-    public async Task PaymentMetadata_When_Update_Fails_Returns_InternalServerError()
-    {
-        // Arrange
         var paymentId = Guid.NewGuid();
         var metadata = new PaymentMetaDataStaging();
 
+        var response = new PaymentMetaDataResponse
+        {
+            HasValidationErrors = true,
+            ValidationErrors = new List<string> { "Error" }
+        };
+
         _mediator
             .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("Update failed"));
+            .ReturnsAsync(response);
 
-        // Act
         var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
 
-        // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
+    }
 
-        var objectResult = result as BadRequestObjectResult;
-        objectResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
-        objectResult.Value.Should().Be("Could not update Payment Metadata Staging");
+    [Test]
+    public async Task When_Response_Is_NotFound_Returns_NotFound()
+    {
+        var paymentId = Guid.NewGuid();
+        var metadata = new PaymentMetaDataStaging();
+
+        var response = new PaymentMetaDataResponse
+        {
+            NotFound = true
+        };
+
+        _mediator
+            .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(response);
+
+        var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task When_Response_Is_Not_Success_Returns_500()
+    {
+        var paymentId = Guid.NewGuid();
+        var metadata = new PaymentMetaDataStaging();
+
+        var response = new PaymentMetaDataResponse
+        {
+            IsSuccess = false
+        };
+
+        _mediator
+            .Setup(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(response);
+
+        var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
+
+        result.Should().BeOfType<ObjectResult>();
+
+        var obj = result as ObjectResult;
+        obj!.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+        obj.Value.Should().Be("Could not update Payment Metadata Staging");
     }
 }

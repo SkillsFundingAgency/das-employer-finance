@@ -1,9 +1,14 @@
-﻿using global::SFA.DAS.EmployerFinance.Data.Contracts;
-using global::SFA.DAS.EmployerFinance.Models.Payments;
-using global::SFA.DAS.EmployerFinance.Validation;
+﻿using Moq;
+using NUnit.Framework;
 using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
-using System.ComponentModel.DataAnnotations;
-using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
+using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Validation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
 {
@@ -17,10 +22,11 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         public void Arrange()
         {
             _repository = new Mock<IDasLevyRepository>();
-
             _validator = new Mock<IValidator<UpdatePaymentMetadataStagingCommand>>();
+
+            // default: valid request
             _validator
-                .Setup(x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()))
+                .Setup(v => v.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()))
                 .Returns(new ValidationResult
                 {
                     ValidationDictionary = new Dictionary<string, string>()
@@ -34,66 +40,41 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
         [Test]
         public async Task ThenTheCommandIsValidated()
         {
-            // Arrange
-            var testPaymentId = Guid.NewGuid();
-
-            _repository.Setup(x => x.UpdatePaymentMetadataStaging(
-                testPaymentId,
-                It.IsAny<PaymentMetaDataStaging>()))
-                .ReturnsAsync(123);
-
+            var paymentId = Guid.NewGuid();
             var command = new UpdatePaymentMetadataStagingCommand
             {
-                PaymentId = testPaymentId,
+                PaymentId = paymentId,
                 PaymentMetadataStaging = new PaymentMetaDataStaging()
             };
 
-            // Act
-            await _handler.Handle(command, CancellationToken.None);
+            _repository.Setup(r => r.PaymentStagingExists(paymentId))
+                       .ReturnsAsync(true);
+            _repository.Setup(r => r.UpdatePaymentMetadataStaging(paymentId, command.PaymentMetadataStaging))
+                       .ReturnsAsync(123);
 
-            // Assert
-            _validator.Verify(
-                x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()),
-                Times.Once);
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-            _repository.Verify(x =>
-                x.UpdatePaymentMetadataStaging(
-                    testPaymentId,
-                    command.PaymentMetadataStaging),
-                Times.Once);
+            _validator.Verify(v => v.Validate(command), Times.Once);
+            _repository.Verify(r => r.UpdatePaymentMetadataStaging(paymentId, command.PaymentMetadataStaging), Times.Once);
+
+            Assert.That(result.Upserted, Is.True);
+            Assert.That(result.MetadataId, Is.EqualTo(123));
         }
 
         [Test]
-        public void ThenAnInvalidRequestionExceptionIsThrownWhenTheMessageIsNotValid()
+        public async Task ThenReturnsValidationErrors_WhenCommandIsInvalid()
         {
-            // Arrange
+            // Arrange: make validator return errors
             _validator
-                .Setup(x => x.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()))
+                .Setup(v => v.Validate(It.IsAny<UpdatePaymentMetadataStagingCommand>()))
                 .Returns(new ValidationResult
                 {
-                    ValidationDictionary = new Dictionary<string, string> { { "", "" } }
+                    ValidationDictionary = new Dictionary<string, string> { { "field", "error" } }
                 });
-
-            // Assert
-            Assert.ThrowsAsync<ValidationException>(async () =>
-                await _handler.Handle(new UpdatePaymentMetadataStagingCommand(), CancellationToken.None));
-        }
-
-        [Test]
-        public async Task ThenTheRepositoryIsCalledWhenTheMessageIsValid()
-        {
-            // Arrange
-            var testPaymentId = Guid.NewGuid();
-            var testMetadataId = 123;
-
-            _repository.Setup(x => x.UpdatePaymentMetadataStaging(
-                testPaymentId,
-                It.IsAny<PaymentMetaDataStaging>()))
-                .ReturnsAsync(testMetadataId);
 
             var command = new UpdatePaymentMetadataStagingCommand
             {
-                PaymentId = testPaymentId,
+                PaymentId = Guid.NewGuid(),
                 PaymentMetadataStaging = new PaymentMetaDataStaging()
             };
 
@@ -101,14 +82,46 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _repository.Verify(x =>
-                x.UpdatePaymentMetadataStaging(
-                    testPaymentId,
-                    command.PaymentMetadataStaging),
-                Times.Once);
+            Assert.That(result.HasValidationErrors, Is.True);
+            Assert.That(result.ValidationErrors.Count, Is.EqualTo(1));
+            Assert.That(result.ValidationErrors.First(), Is.EqualTo("error"));
+        }
 
-            Assert.That(result.MetadataId, Is.EqualTo(testMetadataId));
+        [Test]
+        public async Task ThenReturnsNotFound_WhenPaymentDoesNotExist()
+        {
+            var paymentId = Guid.NewGuid();
+            var command = new UpdatePaymentMetadataStagingCommand
+            {
+                PaymentId = paymentId,
+                PaymentMetadataStaging = new PaymentMetaDataStaging()
+            };
+
+            _repository.Setup(r => r.PaymentStagingExists(paymentId)).ReturnsAsync(false);
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            Assert.That(result.NotFound, Is.True);
+        }
+
+        [Test]
+        public async Task ThenReturnsSuccess_WhenMessageIsValidAndExists()
+        {
+            var paymentId = Guid.NewGuid();
+            var command = new UpdatePaymentMetadataStagingCommand
+            {
+                PaymentId = paymentId,
+                PaymentMetadataStaging = new PaymentMetaDataStaging()
+            };
+
+            _repository.Setup(r => r.PaymentStagingExists(paymentId)).ReturnsAsync(true);
+            _repository.Setup(r => r.UpdatePaymentMetadataStaging(paymentId, command.PaymentMetadataStaging)).ReturnsAsync(123);
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Upserted, Is.True);
+            Assert.That(result.MetadataId, Is.EqualTo(123));
         }
     }
 }
