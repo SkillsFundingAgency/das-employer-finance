@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.Validation.Exceptions;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
-
 
 [Route("api/payments")]
 public class PaymentMetaDataController(PaymentMetaDataOrchestrator paymentOrchestrator) : ControllerBase
@@ -15,30 +13,24 @@ public class PaymentMetaDataController(PaymentMetaDataOrchestrator paymentOrches
     [HttpPut("{paymentId}/metadata/staging")]
     public async Task<IActionResult> PaymentMetaDataStaging(Guid paymentId, [FromBody] PaymentMetaDataStaging request)
     {
-        if (request is null || paymentId == Guid.Empty)
-            return BadRequest();
+        if (request == null)
+            return BadRequest("Request body is required.");
 
-        try
-        {
-            var result = await paymentOrchestrator.UpdatePaymentMetaDataStaging(paymentId, request);
+        var response = await paymentOrchestrator.UpdatePaymentMetaDataStaging(paymentId, request);
 
-            return Ok(result);
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
+        if (response.HasValidationErrors)
+            return BadRequest(response.ValidationErrors);
+
+        if (response.NotFound)
             return NotFound();
-        }
-        catch (InvalidOperationException ex)
+
+        if (!response.IsSuccess)
+            return StatusCode(500, "Could not update Payment Metadata Staging");
+
+        return Ok(new
         {
-            return Conflict(ex.Message);
-        }
-        catch (Exception)
-        {
-            return BadRequest("Could not update Payment Metadata Staging");
-        }
+            upserted = response.Upserted,
+            metadataId = response.MetadataId
+        });
     }
 }

@@ -161,15 +161,15 @@ public class DasLevyRepository : IDasLevyRepository
         Guid paymentId,
         PaymentMetaDataStaging updatedMetaData)
     {
-        var payment = await _db.Value.Payments
-            .FirstOrDefaultAsync(p => p.Id == paymentId);
+        var payment = await _db.Value.PaymentStaging
+            .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
 
         if (payment == null)
             throw new KeyNotFoundException($"Payment {paymentId} not found");
 
         var metadata = await _db.Value.PaymentMetaDataStaging
             .AsTracking()
-            .FirstOrDefaultAsync(m => m.PaymentId == payment.Id);
+            .FirstOrDefaultAsync(m => m.PaymentId == payment.PaymentId);
 
 
         if (metadata == null)
@@ -530,6 +530,12 @@ public class DasLevyRepository : IDasLevyRepository
             PageNumber = pageNumber,
             PageSize = pageSize
         };
+    }
+
+    public async Task<bool> PaymentStagingExists(Guid paymentId)
+    {
+        return await _db.Value.PaymentStaging
+            .AnyAsync(p => p.PaymentId == paymentId);
     }
 
     public async Task<Account> GetAccountById(long accountId)

@@ -47,7 +47,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<CreateEnglishFractionCalculationDateCommand>, CreateEnglishFractionCalculationDateCommandValidator>();
         services.AddTransient<IValidator<CreateNewPeriodEndCommand>, CreateNewPeriodEndCommandValidator>();
         services.AddTransient<IValidator<StageTransfersCommand>, StageTransfersCommandValidator>();
-        services.AddTransient<IValidator<UpdatePaymentMetadataStagingCommand>, UpdatePaymentMetadataStagingCommandValidatorStaging>();
+        services.AddTransient<IValidator<UpdatePaymentMetadataStagingCommand>, UpdatePaymentMetadataStagingCommandValidator>();
         services.AddTransient<IValidator<CreateTransferTransactionsCommand>, CreateTransferTransactionsCommandValidator>();
         services.AddTransient<IValidator<RefreshAccountTransfersCommand>, RefreshAccountTransfersCommandValidator>();
         services.AddTransient<IValidator<RefreshEmployerLevyDataCommand>, RefreshEmployerLevyDataCommandValidator>();

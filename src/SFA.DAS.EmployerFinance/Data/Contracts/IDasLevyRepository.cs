@@ -37,4 +37,6 @@ public interface IDasLevyRepository
     Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata();
     Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber);
     Task<Account> GetAccountById(long accountId);
+
+    Task<bool> PaymentStagingExists(Guid paymentId);
 }
