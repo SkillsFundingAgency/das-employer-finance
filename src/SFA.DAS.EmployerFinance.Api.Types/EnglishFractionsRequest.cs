@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace SFA.DAS.EmployerFinance.Api.Types;
 
 public class EnglishFractionsRequest
