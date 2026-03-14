@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Models.Levy;
+using SFA.DAS.EmployerFinance.Models.Paye;
 
 namespace SFA.DAS.EmployerFinance.Api.Mappings;
 
@@ -17,5 +18,7 @@ public class AccountMappings : Profile
         CreateMap<Models.Account.Account, Account>();
 
         CreateMap<Account, Models.Account.Account>();
+
+        CreateMap<Paye, PayeScheme>();
     }
 }
