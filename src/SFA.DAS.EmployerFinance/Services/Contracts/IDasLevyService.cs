@@ -28,6 +28,6 @@ public interface IDasLevyService
 
     Task<decimal> GetTotalSpendForLastYear(long accountId);
     Task<decimal> GetPaymentAndTransferTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate);
-
+    Task<decimal> GetLevyDeclarationTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate);
     Task<decimal> GetLatestLevyDeclaration(long accountId);
 }

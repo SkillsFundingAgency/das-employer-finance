@@ -31,8 +31,10 @@ public class WhenIGetExpiringFunds
         
         _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedBalance);
         _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
-        _levyService.Setup(s => s.GetPaymentAndTransferTotalByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(0m);
+        _levyService.Setup(s => s.GetLevyDeclarationTotalByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(0m);
+        _levyService.Setup(s => s.GetPaymentAndTransferTotalByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(0m);
         _validator.Setup(v => v.ValidateAsync(_query))
             .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
     }

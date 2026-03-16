@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -389,6 +389,29 @@ public class DasLevyRepository : IDasLevyRepository
             commandType: CommandType.StoredProcedure);
 
         return result.ToList();
+    }
+
+    public async Task<decimal> GetLevyDeclarationTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@fromDate", fromDate, DbType.DateTime);
+        parameters.Add("@toDate", toDate, DbType.DateTime);
+
+        const string sqlQuery = @"
+SELECT ISNULL(SUM(x.TotalAmount), 0)
+FROM [employer_financial].[GetLevyDeclarationAndTopUp] x
+WHERE x.AccountId = @AccountId
+  AND (x.LastSubmission = 1 OR x.EndOfYearAdjustment = 1)
+  AND x.SubmissionDate >= @FromDate
+  AND x.SubmissionDate < @ToDate";
+
+        return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<decimal>(
+            sql: sqlQuery,
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.Text);
     }
 
     public async Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds)

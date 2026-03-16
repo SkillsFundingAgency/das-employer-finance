@@ -20,11 +20,9 @@ public class GetAccountFinanceOverviewQueryHandler(
 
         var currentBalance = await GetAccountBalance(query.AccountId);
         var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
-        var latestMonthly = await levyService.GetLatestLevyDeclaration(query.AccountId);
-
+        var lastMonthLevy = await levyService.GetLevyDeclarationTotalByDateRange(query.AccountId, query.FromDate, query.ToDate);
         var totalPayments = await levyService.GetPaymentAndTransferTotalByDateRange(query.AccountId, query.FromDate, query.ToDate);
-
-        var fundsIn = latestMonthly * 12m;
+        var fundsIn = lastMonthLevy * 12m;
 
         var response = new GetAccountFinanceOverviewResponse
         {
@@ -33,7 +31,7 @@ public class GetAccountFinanceOverviewQueryHandler(
             FundsIn = fundsIn,
             FundsOut = 0,
             TotalSpendForLastYear = totalSpendForLastYear,
-            LastMonthLevyDeclaration = latestMonthly,
+            LastMonthLevyDeclaration = lastMonthLevy,
             LastMonthPayments = totalPayments
         };
         

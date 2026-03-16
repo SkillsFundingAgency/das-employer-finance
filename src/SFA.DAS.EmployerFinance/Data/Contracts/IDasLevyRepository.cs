@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Models.Account;
+using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -27,6 +27,7 @@ public interface IDasLevyRepository
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth);
+    Task<decimal> GetLevyDeclarationTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate);
     Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(long accountId, string[] empRefs);
     Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds);
     Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef);
