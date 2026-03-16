@@ -1,37 +1,36 @@
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 
-namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySchemesByEmployerIdTests
+namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySchemesByEmployerIdTests;
+
+public class WhenIValidateTheQuery
 {
-    public class WhenIValidateTheQuery
+    private GetPayeSchemesByEmployerIdValidator _validator;
+
+    [SetUp]
+    public void Arrange()
     {
-        private GetPayeSchemesByEmployerIdValidator _validator;
+        _validator = new GetPayeSchemesByEmployerIdValidator();
+    }
 
-        [SetUp]
-        public void Arrange()
-        {
-            _validator = new GetPayeSchemesByEmployerIdValidator();
-        }
+    [Test]
+    public void ThenFalseIsReturnedWhenTheAccountIdIsNotSupplied()
+    {
+        //Act
+        var actual = _validator.Validate(new GetPayeSchemesByEmployerIdQuery { AccountId = 0 });
 
-        [Test]
-        public void ThenFalseIsReturnedWhenTheAccountIdIsNotSupplied()
-        {
-            //Act
-            var actual = _validator.Validate(new GetPayeSchemesByEmployerIdQuery { AccountId = 0 });
+        //Assert
+        actual.Should().NotBeNull();
+        actual.IsValid().Should().BeFalse();
+        actual.ValidationDictionary.Should().Contain(new KeyValuePair<string, string>("AccountId", "AccountId has not been supplied"));
+    }
 
-            //Assert
-            actual.Should().NotBeNull();
-            actual.IsValid().Should().BeFalse();
-            actual.ValidationDictionary.Should().Contain(new KeyValuePair<string, string>("AccountId", "AccountId has not been supplied"));
-        }
+    [Test]
+    public void ThenTrueIsReturnedWhenTheAccountIdIsPopulated()
+    {
+        //Act
+        var actual = _validator.Validate(new GetPayeSchemesByEmployerIdQuery { AccountId = 12345 });
 
-        [Test]
-        public void ThenTrueIsReturnedWhenTheAccountIdIsPopulated()
-        {
-            //Act
-            var actual = _validator.Validate(new GetPayeSchemesByEmployerIdQuery { AccountId = 12345 });
-
-            //Assert
-            actual.IsValid().Should().BeTrue();
-        }
+        //Assert
+        actual.IsValid().Should().BeTrue();
     }
 }
