@@ -8,8 +8,6 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 [Route("api/accounts")]
 public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator) : ControllerBase
 {
-    private const string GovernmentGatewaySource = "government-gateway";
-
     [Route("balances")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpPost]
@@ -99,14 +97,8 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
     [HttpGet("{accountId}/paye-schemes")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetPayeSchemes(long accountId, string source = null)
+    public async Task<IActionResult> GetPayeSchemes(long accountId, [FromQuery] string? source = null)
     {
-        if (!string.IsNullOrWhiteSpace(source) &&
-            !string.Equals(source, GovernmentGatewaySource, StringComparison.OrdinalIgnoreCase))
-        {
-            return BadRequest();
-        }
-
         var result = await financeOrchestrator.GetPayeSchemesByEmployerId(accountId, source);
 
         if (result == null)

@@ -208,7 +208,7 @@ public class FinanceOrchestrator(
         return response;
     }
 
-    public async Task<List<PayeScheme>> GetPayeSchemesByEmployerId(long accountId, string source)
+    public async Task<List<PayeScheme>> GetPayeSchemesByEmployerId(long accountId, string? source)
     {
         _logger.LogInformation("Requesting PAYE schemes for accountId {AccountId} and source {Source}", accountId, source);
 

@@ -144,10 +144,31 @@ public class WhenIGetGovernmentGatewayPayeSchemes
     }
 
     [Test]
-    public async Task ThenReturnBadRequestWhenSourceIsInvalid()
+    public async Task ThenReturnOkWithAllSchemesWhenSourceIsNotRecognised()
     {
-        var result = await _employerAccountsController.GetPayeSchemes(12345L, "invalid");
+        var accountId = 12345L;
+        var expectedResponse = new GetPayeSchemesByEmployerIdResponse
+        {
+            Schemes = new List<Paye>
+            {
+                new() { EmpRef = "123/AB123" },
+                new() { EmpRef = "456/CD456" }
+            }
+        };
 
-        result.Should().BeOfType<BadRequestResult>();
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<GetPayeSchemesByEmployerIdQuery>(q => q.AccountId == accountId && q.Source == "invalid"),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        var result = await _employerAccountsController.GetPayeSchemes(accountId, "invalid") as OkObjectResult;
+
+        result.Should().NotBeNull();
+        result!.StatusCode.Should().Be(200);
+
+        var responseObject = result.Value as List<PayeScheme>;
+        responseObject.Should().NotBeNull();
+        responseObject!.Select(x => x.EmpRef).Should().BeEquivalentTo(new[] { "123/AB123", "456/CD456" });
     }
 }
