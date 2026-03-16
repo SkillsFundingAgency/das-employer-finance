@@ -99,14 +99,15 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
     [HttpGet("{accountId}/paye-schemes")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetGovernmentGatewayOnlyPayeSchemes(long accountId, string source)
+    public async Task<IActionResult> GetPayeSchemes(long accountId, string source = null)
     {
-        if (!string.Equals(source, GovernmentGatewaySource, StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(source) &&
+            !string.Equals(source, GovernmentGatewaySource, StringComparison.OrdinalIgnoreCase))
         {
             return BadRequest();
         }
 
-        var result = await financeOrchestrator.GetGovernmentGatewayOnlySchemesByEmployerId(accountId);
+        var result = await financeOrchestrator.GetPayeSchemesByEmployerId(accountId, source);
 
         if (result == null)
         {

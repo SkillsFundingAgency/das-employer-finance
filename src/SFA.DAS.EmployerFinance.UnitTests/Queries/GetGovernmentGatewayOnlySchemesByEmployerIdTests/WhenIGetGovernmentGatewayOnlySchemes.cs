@@ -1,19 +1,19 @@
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Paye;
-using SFA.DAS.EmployerFinance.Queries.GetGovernmentGatewayOnlySchemesByEmployerId;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Validation;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySchemesByEmployerIdTests
 {
-    public class WhenIGetGovernmentGatewayOnlySchemes : QueryBaseTest<GetGovernmentGatewayOnlySchemesByEmployerIdHandler, GetGovernmentGatewayOnlySchemesByEmployerIdQuery, GetGovernmentGatewayOnlySchemesByEmployerIdResponse>
+    public class WhenIGetGovernmentGatewayOnlySchemes : QueryBaseTest<GetPayeSchemesByEmployerIdHandler, GetPayeSchemesByEmployerIdQuery, GetPayeSchemesByEmployerIdResponse>
     {
         private Mock<IPayeRepository> _payeRepository;
         private Mock<IEmployerAccountRepository> _employerAccountRepository;
 
-        public override GetGovernmentGatewayOnlySchemesByEmployerIdQuery Query { get; set; }
-        public override GetGovernmentGatewayOnlySchemesByEmployerIdHandler RequestHandler { get; set; }
-        public override Mock<IValidator<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>> RequestValidator { get; set; }
+        public override GetPayeSchemesByEmployerIdQuery Query { get; set; }
+        public override GetPayeSchemesByEmployerIdHandler RequestHandler { get; set; }
+        public override Mock<IValidator<GetPayeSchemesByEmployerIdQuery>> RequestValidator { get; set; }
 
         private const long ExpectedAccountId = 12345;
         private List<Paye> _expectedSchemes;
@@ -23,15 +23,16 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySche
         {
             SetUp();
 
-            Query = new GetGovernmentGatewayOnlySchemesByEmployerIdQuery
+            Query = new GetPayeSchemesByEmployerIdQuery
             {
-                AccountId = ExpectedAccountId
+                AccountId = ExpectedAccountId,
+                Source = "government-gateway"
             };
 
             _expectedSchemes = new List<Paye>
             {
-                new() { EmpRef = "123/AB123", AccountId = ExpectedAccountId, Name = "Scheme 1", Aorn = "A1" },
-                new() { EmpRef = "456/CD456", AccountId = ExpectedAccountId, Name = "Scheme 2", Aorn = "A2" }
+                new() { EmpRef = "123/AB123", AccountId = ExpectedAccountId, Name = "Scheme 1", Aorn = null },
+                new() { EmpRef = "456/CD456", AccountId = ExpectedAccountId, Name = "Scheme 2", Aorn = null }
             };
 
             _payeRepository = new Mock<IPayeRepository>();
@@ -44,7 +45,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySche
                 .Setup(x => x.Get(ExpectedAccountId))
                 .ReturnsAsync(new Account { Id = ExpectedAccountId, Name = "Test Account" });
 
-            RequestHandler = new GetGovernmentGatewayOnlySchemesByEmployerIdHandler(
+            RequestHandler = new GetPayeSchemesByEmployerIdHandler(
                 RequestValidator.Object,
                 _payeRepository.Object,
                 _employerAccountRepository.Object);
@@ -54,7 +55,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySche
         public override async Task ThenIfTheMessageIsValidTheRepositoryIsCalled()
         {
             //Arrange
-            RequestValidator.Setup(x => x.Validate(It.IsAny<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>()))
+            RequestValidator.Setup(x => x.Validate(It.IsAny<GetPayeSchemesByEmployerIdQuery>()))
                 .Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
 
             //Act
@@ -69,7 +70,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySche
         public override async Task ThenIfTheMessageIsValidTheValueIsReturnedInTheResponse()
         {
             //Arrange
-            RequestValidator.Setup(x => x.Validate(It.IsAny<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>()))
+            RequestValidator.Setup(x => x.Validate(It.IsAny<GetPayeSchemesByEmployerIdQuery>()))
                 .Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
 
             //Act
@@ -87,7 +88,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySche
                 .Setup(x => x.Get(ExpectedAccountId))
                 .ReturnsAsync((Account)null);
 
-            RequestValidator.Setup(x => x.Validate(It.IsAny<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>()))
+            RequestValidator.Setup(x => x.Validate(It.IsAny<GetPayeSchemesByEmployerIdQuery>()))
                 .Returns(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
 
             //Act

@@ -1,22 +1,22 @@
-using SFA.DAS.EmployerFinance.Queries.GetGovernmentGatewayOnlySchemesByEmployerId;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySchemesByEmployerIdTests
 {
     public class WhenIValidateTheQuery
     {
-        private GetGovernmentGatewayOnlySchemesByEmployerIdValidator _validator;
+        private GetPayeSchemesByEmployerIdValidator _validator;
 
         [SetUp]
         public void Arrange()
         {
-            _validator = new GetGovernmentGatewayOnlySchemesByEmployerIdValidator();
+            _validator = new GetPayeSchemesByEmployerIdValidator();
         }
 
         [Test]
         public void ThenFalseIsReturnedWhenTheAccountIdIsNotSupplied()
         {
             //Act
-            var actual = _validator.Validate(new GetGovernmentGatewayOnlySchemesByEmployerIdQuery { AccountId = 0 });
+            var actual = _validator.Validate(new GetPayeSchemesByEmployerIdQuery { AccountId = 0 });
 
             //Assert
             actual.Should().NotBeNull();
@@ -28,7 +28,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetGovernmentGatewayOnlySche
         public void ThenTrueIsReturnedWhenTheAccountIdIsPopulated()
         {
             //Act
-            var actual = _validator.Validate(new GetGovernmentGatewayOnlySchemesByEmployerIdQuery { AccountId = 12345 });
+            var actual = _validator.Validate(new GetPayeSchemesByEmployerIdQuery { AccountId = 12345 });
 
             //Assert
             actual.IsValid().Should().BeTrue();

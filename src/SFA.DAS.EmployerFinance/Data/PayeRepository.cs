@@ -56,6 +56,18 @@ public class PayeRepository : IPayeRepository
         return result.SingleOrDefault();
     }
 
+    public async Task<PayeSchemes> GetSchemesByEmployerId(long employerId)
+    {
+        var result = await _db.Value.AccountPayes
+            .Where(p => p.AccountId == employerId)
+            .ToListAsync();
+
+        return new PayeSchemes
+        {
+            SchemesList = result
+        };
+    }
+
     public async Task<PayeSchemes> GetGovernmentGatewayOnlySchemesByEmployerId(long employerId)
     {
         var result = await _db.Value.AccountPayes

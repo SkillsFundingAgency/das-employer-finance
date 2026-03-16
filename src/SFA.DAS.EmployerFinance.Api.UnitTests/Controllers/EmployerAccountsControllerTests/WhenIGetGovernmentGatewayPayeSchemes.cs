@@ -1,10 +1,10 @@
 using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Controllers;
+using SFA.DAS.EmployerFinance.Api.Mappings;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
-using SFA.DAS.EmployerFinance.Api.Mappings;
 using SFA.DAS.EmployerFinance.Models.Paye;
-using SFA.DAS.EmployerFinance.Queries.GetGovernmentGatewayOnlySchemesByEmployerId;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsControllerTests;
@@ -39,32 +39,27 @@ public class WhenIGetGovernmentGatewayPayeSchemes
     }
 
     [Test]
-    public async Task ThenReturnOkWithPayeSchemes()
+    public async Task ThenReturnOkWithAllSchemesWhenSourceIsNotSupplied()
     {
-        // Arrange
         var accountId = 12345L;
 
-        var schemes = new List<Paye>
+        var expectedResponse = new GetPayeSchemesByEmployerIdResponse
         {
-            new() { EmpRef = "123/AB123" },
-            new() { EmpRef = "456/CD456" }
-        };
-
-        var expectedResponse = new GetGovernmentGatewayOnlySchemesByEmployerIdResponse
-        {
-            Schemes = schemes
+            Schemes = new List<Paye>
+            {
+                new() { EmpRef = "123/AB123" },
+                new() { EmpRef = "456/CD456" }
+            }
         };
 
         _mediator
             .Setup(x => x.Send(
-                It.Is<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>(q => q.AccountId == accountId),
+                It.Is<GetPayeSchemesByEmployerIdQuery>(q => q.AccountId == accountId && q.Source == null),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        // Act
-        var result = await _employerAccountsController.GetGovernmentGatewayOnlyPayeSchemes(accountId, "government-gateway") as OkObjectResult;
+        var result = await _employerAccountsController.GetPayeSchemes(accountId) as OkObjectResult;
 
-        // Assert
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
 
@@ -74,26 +69,56 @@ public class WhenIGetGovernmentGatewayPayeSchemes
     }
 
     [Test]
-    public async Task ThenReturnOkWithEmptyListWhenNoSchemes()
+    public async Task ThenReturnOkWithGovernmentGatewaySchemesWhenSourceIsGovernmentGateway()
     {
-        // Arrange
         var accountId = 12345L;
 
-        var expectedResponse = new GetGovernmentGatewayOnlySchemesByEmployerIdResponse
+        var expectedResponse = new GetPayeSchemesByEmployerIdResponse
+        {
+            Schemes = new List<Paye>
+            {
+                new() { EmpRef = "123/AB123" }
+            }
+        };
+
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<GetPayeSchemesByEmployerIdQuery>(q =>
+                    q.AccountId == accountId &&
+                    q.Source == "government-gateway"),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResponse);
+
+        var result = await _employerAccountsController.GetPayeSchemes(accountId, "government-gateway") as OkObjectResult;
+
+        result.Should().NotBeNull();
+        result!.StatusCode.Should().Be(200);
+
+        var responseObject = result.Value as List<PayeScheme>;
+        responseObject.Should().NotBeNull();
+        responseObject!.Select(x => x.EmpRef).Should().BeEquivalentTo(new[] { "123/AB123" });
+    }
+
+    [Test]
+    public async Task ThenReturnOkWithEmptyListWhenNoSchemesExist()
+    {
+        var accountId = 12345L;
+
+        var expectedResponse = new GetPayeSchemesByEmployerIdResponse
         {
             Schemes = new List<Paye>()
         };
 
         _mediator
             .Setup(x => x.Send(
-                It.Is<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>(q => q.AccountId == accountId),
+                It.Is<GetPayeSchemesByEmployerIdQuery>(q =>
+                    q.AccountId == accountId &&
+                    q.Source == "government-gateway"),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
-        // Act
-        var result = await _employerAccountsController.GetGovernmentGatewayOnlyPayeSchemes(accountId, "government-gateway") as OkObjectResult;
+        var result = await _employerAccountsController.GetPayeSchemes(accountId, "government-gateway") as OkObjectResult;
 
-        // Assert
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
 
@@ -105,19 +130,24 @@ public class WhenIGetGovernmentGatewayPayeSchemes
     [Test]
     public async Task ThenReturnNotFoundWhenAccountDoesNotExist()
     {
-        // Arrange
         var accountId = 999L;
 
         _mediator
             .Setup(x => x.Send(
-                It.Is<GetGovernmentGatewayOnlySchemesByEmployerIdQuery>(q => q.AccountId == accountId),
+                It.Is<GetPayeSchemesByEmployerIdQuery>(q => q.AccountId == accountId),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((GetGovernmentGatewayOnlySchemesByEmployerIdResponse)null!);
+            .ReturnsAsync((GetPayeSchemesByEmployerIdResponse)null!);
 
-        // Act
-        var result = await _employerAccountsController.GetGovernmentGatewayOnlyPayeSchemes(accountId, "government-gateway");
+        var result = await _employerAccountsController.GetPayeSchemes(accountId);
 
-        // Assert
         result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task ThenReturnBadRequestWhenSourceIsInvalid()
+    {
+        var result = await _employerAccountsController.GetPayeSchemes(12345L, "invalid");
+
+        result.Should().BeOfType<BadRequestResult>();
     }
 }

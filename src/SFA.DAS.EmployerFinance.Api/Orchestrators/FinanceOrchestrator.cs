@@ -8,9 +8,9 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
-using SFA.DAS.EmployerFinance.Queries.GetGovernmentGatewayOnlySchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
 
@@ -208,13 +208,14 @@ public class FinanceOrchestrator(
         return response;
     }
 
-    public async Task<List<PayeScheme>> GetGovernmentGatewayOnlySchemesByEmployerId(long accountId)
+    public async Task<List<PayeScheme>> GetPayeSchemesByEmployerId(long accountId, string source)
     {
-        _logger.LogInformation("Requesting Government Gateway PAYE schemes for accountId {AccountId}", accountId);
+        _logger.LogInformation("Requesting PAYE schemes for accountId {AccountId} and source {Source}", accountId, source);
 
-        var response = await _mediator.Send(new GetGovernmentGatewayOnlySchemesByEmployerIdQuery
+        var response = await _mediator.Send(new GetPayeSchemesByEmployerIdQuery
         {
-            AccountId = accountId
+            AccountId = accountId,
+            Source = source
         });
 
         if (response?.Schemes == null)
@@ -224,7 +225,7 @@ public class FinanceOrchestrator(
 
         var result = response.Schemes.Select(x => _mapper.Map<PayeScheme>(x)).ToList();
 
-        _logger.LogInformation("Received response - Government Gateway PAYE schemes for accountId {AccountId}: {Count}", accountId, result.Count);
+        _logger.LogInformation("Received response - PAYE schemes for accountId {AccountId}: {Count}", accountId, result.Count);
 
         return result;
     }
