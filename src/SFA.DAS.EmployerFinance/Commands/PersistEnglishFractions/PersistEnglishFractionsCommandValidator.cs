@@ -18,9 +18,9 @@ public class PersistEnglishFractionsCommandValidator : IValidator<PersistEnglish
             validationResult.AddError(nameof(item.DateCalculated), "DateCalculated has not been supplied");
         }
 
-        if (item.Fractions == null)
+        if (item.Fractions == null || item.Fractions.Count == 0)
         {
-            validationResult.AddError(nameof(item.Fractions), "Fractions has not been supplied");
+            validationResult.AddError(nameof(item.Fractions), "Fractions payload is required.");
         }
 
         return validationResult;
@@ -28,6 +28,6 @@ public class PersistEnglishFractionsCommandValidator : IValidator<PersistEnglish
 
     public Task<ValidationResult> ValidateAsync(PersistEnglishFractionsCommand item)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(Validate(item));
     }
 }

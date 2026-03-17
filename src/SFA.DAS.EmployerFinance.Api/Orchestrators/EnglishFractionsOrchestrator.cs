@@ -1,6 +1,5 @@
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.PersistEnglishFractions;
-using ModelsDasEnglishFraction = SFA.DAS.EmployerFinance.Models.Levy.DasEnglishFraction;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,13 +15,13 @@ public class EnglishFractionsOrchestrator(IMediator mediator, ILogger<EnglishFra
         _logger.LogInformation("Persisting english fractions for empRef {EmpRef}", request.EmpRef);
 
         var fractions = request.Fractions?
-            .Select(f => new ModelsDasEnglishFraction
+            .Select(f => new Models.Levy.DasEnglishFraction
             {
                 EmpRef = request.EmpRef,
                 DateCalculated = f.DateCalculated,
                 Amount = f.Amount
             })
-            .ToList() ?? new List<ModelsDasEnglishFraction>();
+            .ToList() ?? new List<Models.Levy.DasEnglishFraction>();
 
         var response = await _mediator.Send(new PersistEnglishFractionsCommand
         {

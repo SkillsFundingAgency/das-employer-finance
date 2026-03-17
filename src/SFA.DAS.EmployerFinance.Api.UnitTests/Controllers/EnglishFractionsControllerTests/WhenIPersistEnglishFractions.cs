@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
@@ -93,6 +94,74 @@ public class WhenIPersistEnglishFractions
         var result = await _controller.Persist(null);
 
         // Assert
-        result.Should().BeOfType<BadRequestResult>();
+        result.Should().BeOfType<BadRequestObjectResult>();
+        ((BadRequestObjectResult)result).Value.Should().Be("Request payload is required.");
+    }
+
+    [Test]
+    public async Task ThenItReturnsBadRequestWithValidationErrors_WhenFractionsAreEmpty()
+    {
+        var request = new EnglishFractionsRequest
+        {
+            EmpRef = "123/AB456",
+            UpdateRequired = true,
+            DateCalculated = new DateTime(2025, 01, 01),
+            Fractions = new List<EnglishFractionItem>()
+        };
+
+        var validationResult = new System.ComponentModel.DataAnnotations.ValidationResult(
+            "Validation failed",
+            new[]
+            {
+                "Fractions|Fractions payload is required."
+            });
+
+        _mediator
+            .Setup(x => x.Send(It.IsAny<PersistEnglishFractionsCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException(validationResult, null, null));
+
+        var result = await _controller.Persist(request);
+
+        result.Should().BeOfType<BadRequestObjectResult>();
+
+        var response = ((BadRequestObjectResult)result).Value as Dictionary<string, string>;
+        response.Should().NotBeNull();
+        response!.Should().ContainKey("Fractions");
+        response["Fractions"].Should().Be("Fractions payload is required.");
+    }
+
+    [Test]
+    public async Task ThenItReturnsBadRequestWithValidationErrors_WhenValidationFails()
+    {
+        var request = new EnglishFractionsRequest
+        {
+            EmpRef = string.Empty,
+            UpdateRequired = true,
+            DateCalculated = new DateTime(2025, 01, 01),
+            Fractions = new List<EnglishFractionItem>
+            {
+                new() { DateCalculated = new DateTime(2025, 01, 01), Amount = 0.6m }
+            }
+        };
+
+        var validationResult = new System.ComponentModel.DataAnnotations.ValidationResult(
+            "Validation failed",
+            new[]
+            {
+                "EmployerReference|EmployerReference has not been supplied"
+            });
+
+        _mediator
+            .Setup(x => x.Send(It.IsAny<PersistEnglishFractionsCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException(validationResult, null, null));
+
+        var result = await _controller.Persist(request);
+
+        result.Should().BeOfType<BadRequestObjectResult>();
+
+        var response = ((BadRequestObjectResult)result).Value as Dictionary<string, string>;
+        response.Should().NotBeNull();
+        response!.Should().ContainKey("EmployerReference");
+        response["EmployerReference"].Should().Be("EmployerReference has not been supplied");
     }
 }

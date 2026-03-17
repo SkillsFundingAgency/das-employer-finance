@@ -31,6 +31,26 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.PersistEnglishFractionsTest
         }
 
         [Test]
+        public void ThenItThrowsValidationException_WhenTheCommandIsInvalid()
+        {
+            _validator.Setup(x => x.Validate(It.IsAny<PersistEnglishFractionsCommand>()))
+                .Returns(new ValidationResult
+                {
+                    ValidationDictionary = new Dictionary<string, string>
+                    {
+                        { "EmployerReference", "EmployerReference has not been supplied" }
+                    }
+                });
+
+            var request = new PersistEnglishFractionsCommand();
+
+            Func<Task> act = async () => await _handler.Handle(request, CancellationToken.None);
+
+            act.Should().ThrowAsync<System.ComponentModel.DataAnnotations.ValidationException>();
+            _englishFractionRepository.Verify(x => x.GetAllEmployerFractions(It.IsAny<string>()), Times.Never);
+        }
+
+        [Test]
         public async Task ThenItStoresNewFractions_WhenUpdateIsRequired()
         {
             // Arrange
