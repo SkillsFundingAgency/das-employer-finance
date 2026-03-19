@@ -25,13 +25,18 @@ public class WhenIGetExpiringFunds
         _levyService = new Mock<IDasLevyService>();
         _validator = new Mock<IValidator<GetAccountFinanceOverviewQuery>>();
 
-        _query = new GetAccountFinanceOverviewQuery { AccountId = ExpectedAccountId };
+        _query = new GetAccountFinanceOverviewQuery
+        {
+            AccountId = ExpectedAccountId,
+            FromDate = new DateTime(2026, 2, 1),
+            ToDate = new DateTime(2026, 3, 1)
+        };
 
         _handler = new GetAccountFinanceOverviewQueryHandler(_levyService.Object, _validator.Object, _logger.Object);
         
         _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedBalance);
         _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _levyService.Setup(s => s.GetLevyDeclarationTotalByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+        _levyService.Setup(s => s.GetLevyDeclarationTotalByPayrollPeriod(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<short>()))
             .ReturnsAsync(0m);
         _levyService.Setup(s => s.GetPaymentAndTransferTotalByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(0m);

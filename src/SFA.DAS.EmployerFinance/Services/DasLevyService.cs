@@ -107,9 +107,9 @@ public class DasLevyService(
         return transactionRepository.GetPaymentAndTransferTotalByDateRange(accountId, fromDate, toDate);
     }
 
-    public Task<decimal> GetLevyDeclarationTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate)
+    public Task<decimal> GetLevyDeclarationTotalByPayrollPeriod(long accountId, string payrollYear, short payrollMonth)
     {
-        return dasLevyRepository.GetLevyDeclarationTotalByDateRange(accountId, fromDate, toDate);
+        return dasLevyRepository.GetLevyDeclarationTotalByPayrollPeriod(accountId, payrollYear, payrollMonth);
     }
 
     public async Task<decimal> GetLatestLevyDeclaration(long accountId)

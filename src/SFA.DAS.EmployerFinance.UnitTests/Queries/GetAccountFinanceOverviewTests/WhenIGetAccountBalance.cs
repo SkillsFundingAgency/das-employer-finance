@@ -36,7 +36,7 @@ public class WhenIGetAccountBalance
         
         _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedCurrentFunds);
         _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _levyService.Setup(s => s.GetLevyDeclarationTotalByDateRange(ExpectedAccountId, _expectedFromDate, _expectedToDate))
+        _levyService.Setup(s => s.GetLevyDeclarationTotalByPayrollPeriod(ExpectedAccountId, It.IsAny<string>(), It.IsAny<short>()))
             .ReturnsAsync(0);
         _levyService.Setup(s => s.GetPaymentAndTransferTotalByDateRange(ExpectedAccountId, _expectedFromDate, _expectedToDate))
             .ReturnsAsync(TransferTotal + PaymentTotal);
@@ -55,8 +55,6 @@ public class WhenIGetAccountBalance
     [Test]
     public async Task ThenTheFundsInShouldBeZero_WhenNoDeclarations()
     {
-        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
-
         var response = await _handler.Handle(_query, CancellationToken.None);
 
         response.FundsIn.Should().Be(0);
@@ -96,5 +94,22 @@ public class WhenIGetAccountBalance
         var response = await _handler.Handle(_query, CancellationToken.None);
 
         response.LastMonthPayments.Should().Be(TransferTotal + PaymentTotal);
+    }
+
+    [Test]
+    public async Task ThenLevyDeclarationUsesPayrollPeriodForCalendarMonthBeforeFromDate()
+    {
+        var query = new GetAccountFinanceOverviewQuery
+        {
+            AccountId = ExpectedAccountId,
+            FromDate = new DateTime(2026, 2, 1),
+            ToDate = new DateTime(2026, 3, 1)
+        };
+        _validator.Setup(v => v.ValidateAsync(query))
+            .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
+
+        await _handler.Handle(query, CancellationToken.None);
+
+        _levyService.Verify(s => s.GetLevyDeclarationTotalByPayrollPeriod(ExpectedAccountId, "25-26", 10), Times.Once);
     }
 }

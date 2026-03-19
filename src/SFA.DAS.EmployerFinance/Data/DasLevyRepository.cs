@@ -391,21 +391,21 @@ public class DasLevyRepository : IDasLevyRepository
         return result.ToList();
     }
 
-    public async Task<decimal> GetLevyDeclarationTotalByDateRange(long accountId, DateTime fromDate, DateTime toDate)
+    public async Task<decimal> GetLevyDeclarationTotalByPayrollPeriod(long accountId, string payrollYear, short payrollMonth)
     {
         var parameters = new DynamicParameters();
 
         parameters.Add("@accountId", accountId, DbType.Int64);
-        parameters.Add("@fromDate", fromDate, DbType.DateTime);
-        parameters.Add("@toDate", toDate, DbType.DateTime);
+        parameters.Add("@payrollYear", payrollYear, DbType.String);
+        parameters.Add("@payrollMonth", payrollMonth, DbType.Int16);
 
         const string sqlQuery = @"
 SELECT ISNULL(SUM(x.TotalAmount), 0)
 FROM [employer_financial].[GetLevyDeclarationAndTopUp] x
 WHERE x.AccountId = @AccountId
   AND (x.LastSubmission = 1 OR x.EndOfYearAdjustment = 1)
-  AND x.SubmissionDate >= @FromDate
-  AND x.SubmissionDate < @ToDate";
+  AND x.PayrollYear = @PayrollYear
+  AND x.PayrollMonth = @PayrollMonth";
 
         return await _db.Value.Database.GetDbConnection().ExecuteScalarAsync<decimal>(
             sql: sqlQuery,

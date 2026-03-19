@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Extensions;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 
@@ -18,9 +19,13 @@ public class GetAccountFinanceOverviewQueryHandler(
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
+        var levyMonth = query.FromDate.AddMonths(-1);
+        var payrollYear = levyMonth.ToPayrollYearString();
+        var payrollMonth = GetPayrollMonth(levyMonth);
+
         var currentBalance = await GetAccountBalance(query.AccountId);
         var totalSpendForLastYear = await GetTotalSpendForLastYear(query.AccountId);
-        var lastMonthLevy = await levyService.GetLevyDeclarationTotalByDateRange(query.AccountId, query.FromDate, query.ToDate);
+        var lastMonthLevy = await levyService.GetLevyDeclarationTotalByPayrollPeriod(query.AccountId, payrollYear, payrollMonth);
         var totalPayments = await levyService.GetPaymentAndTransferTotalByDateRange(query.AccountId, query.FromDate, query.ToDate);
         var fundsIn = lastMonthLevy * 12m;
 
@@ -57,5 +62,11 @@ public class GetAccountFinanceOverviewQueryHandler(
     private Task<decimal> GetTotalSpendForLastYear(long accountId)
     {
         return levyService.GetTotalSpendForLastYear(accountId);
+    }
+
+    private static short GetPayrollMonth(DateTime calendarMonth)
+    {
+        var month = calendarMonth.Month;
+        return (short)(month >= 4 ? month - 3 : month + 9);
     }
 }
