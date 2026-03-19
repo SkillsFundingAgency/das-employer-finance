@@ -24,7 +24,14 @@ else
         <hr class="govuk-section-break govuk-section-break--visible">
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">Date received </dt>
+                @if (Model.IsCurrentAccountSender)
+                {
+                    <dt class="govuk-summary-list__key">Date paid </dt>
+                }
+                else
+                {
+                    <dt class="govuk-summary-list__key">Date received </dt>
+                }
                 <dd class="govuk-summary-list__value">@Model.DateCreated.ToGdsFormatFull()</dd>
             </div>
             <div class="govuk-summary-list__row">
