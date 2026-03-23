@@ -60,4 +60,20 @@ public class WhenICreateAuditJob
 
         response.Should().BeOfType<BadRequestObjectResult>();
     }
+
+    [Test]
+    public async Task Then_Returns_Bad_Request_When_Model_State_Is_Invalid()
+    {
+        _controller.ModelState.AddModelError("id", "required");
+
+        var response = await _controller.CreateJob(new CreateAuditJobRequest
+        {
+            Id = "job-1",
+            Description = "Import Payments",
+            DateStarted = DateTime.UtcNow,
+            NumRecords = 1
+        });
+
+        response.Should().BeOfType<BadRequestObjectResult>();
+    }
 }

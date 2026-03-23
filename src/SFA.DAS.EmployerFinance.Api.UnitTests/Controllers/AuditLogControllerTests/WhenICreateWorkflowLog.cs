@@ -68,4 +68,37 @@ public class WhenICreateWorkflowLog
 
         response.Should().BeOfType<BadRequestObjectResult>();
     }
+
+    [Test]
+    public async Task Then_Returns_Bad_Request_When_Model_State_Is_Invalid()
+    {
+        _controller.ModelState.AddModelError("sequence", "required");
+
+        var response = await _controller.CreateWorkflowLog("job-1", "workflow-1", new CreateWorkflowLogRequest
+        {
+            Sequence = 1,
+            SpanId = "12345",
+            Stage = "Start",
+            Description = "Started import for account 12345",
+            Status = "started"
+        });
+
+        response.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Test]
+    public async Task Then_Returns_Bad_Request_When_Data_Is_Not_An_Object()
+    {
+        var response = await _controller.CreateWorkflowLog("job-1", "workflow-1", new CreateWorkflowLogRequest
+        {
+            Sequence = 1,
+            SpanId = "12345",
+            Stage = "Start",
+            Description = "Started import for account 12345",
+            Status = "started",
+            Data = JsonDocument.Parse("[1,2,3]").RootElement.Clone()
+        });
+
+        response.Should().BeOfType<BadRequestObjectResult>();
+    }
 }
