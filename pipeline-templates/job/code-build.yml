@@ -53,6 +53,7 @@ jobs:
       inputs:
         Contents: |
           azure/**
+          src/SFA.DAS.EmployerFinance.Api/openapi/**
         TargetFolder: $(build.artifactstagingdirectory)/publish
   
     - task: PublishPipelineArtifact@1

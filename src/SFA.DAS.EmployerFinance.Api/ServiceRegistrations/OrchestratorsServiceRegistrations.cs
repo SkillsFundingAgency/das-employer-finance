@@ -9,6 +9,7 @@ namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations
         public static IServiceCollection AddOrchestrators(this IServiceCollection services)
         {
             services.AddTransient<AccountTransactionsOrchestrator>();
+            services.AddTransient<AuditLogOrchestrator>();
             services.AddTransient<FinanceOrchestrator>();
             services.AddTransient<StatisticsOrchestrator>();
             services.AddTransient<PeriodEndOrchestrator>();

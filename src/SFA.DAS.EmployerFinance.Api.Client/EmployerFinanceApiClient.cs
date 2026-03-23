@@ -142,6 +142,60 @@ public class EmployerFinanceApiClient : IEmployerFinanceApiClient
         return JsonConvert.DeserializeObject<List<Guid>>(json);
     }
 
+    public async Task<CreateResourceResponse> CreateAuditJob(CreateAuditJobRequest request)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/jobs";
+        var json = await _httpClient.PostAsync(url, JsonConvert.SerializeObject(request));
+
+        return JsonConvert.DeserializeObject<CreateResourceResponse>(json);
+    }
+
+    public async Task<CreateResourceResponse> CreateWorkflowLog(string jobId, string workflowId, CreateWorkflowLogRequest request)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/jobs/{jobId}/workflows/{workflowId}/logs";
+        var json = await _httpClient.PostAsync(url, JsonConvert.SerializeObject(request));
+
+        return JsonConvert.DeserializeObject<CreateResourceResponse>(json);
+    }
+
+    public async Task<List<AuditJobSummary>> GetAuditJobs(int page = 1, int pageSize = 20)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/jobs?page={page}&pagesize={pageSize}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<AuditJobSummary>>(json);
+    }
+
+    public async Task<AuditJobSummary> GetAuditJob(string jobId)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/jobs/{jobId}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<AuditJobSummary>(json);
+    }
+
+    public async Task<List<WorkflowLogEntry>> GetAuditJobLogs(string jobId, int page = 1, int pageSize = 20)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/jobs/{jobId}/logs?page={page}&pagesize={pageSize}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<WorkflowLogEntry>>(json);
+    }
+
+    public async Task<List<WorkflowLogEntry>> GetAuditWorkflowLogs(string jobId, string workflowId, int page = 1, int pageSize = 20)
+    {
+        var baseUrl = GetBaseUrl();
+        var url = $"{baseUrl}/jobs/{jobId}/workflows/{workflowId}/logs?page={page}&pagesize={pageSize}";
+        var json = await _httpClient.GetAsync(url);
+
+        return JsonConvert.DeserializeObject<List<WorkflowLogEntry>>(json);
+    }
+
     private string GetBaseUrl()
     {
         return _configuration.ApiBaseUrl.Trim('/');
