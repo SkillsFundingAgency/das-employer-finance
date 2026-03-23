@@ -24,4 +24,6 @@ public class StandardResponse
 
     [JsonProperty("maxFunding")]
     public int MaxFunding { get; set; }
+    [JsonProperty("learningType")]
+    public string LearningType { get; set; }
 }
