@@ -17,9 +17,7 @@ public class AuditLogOrchestratorTests
         var logger = new Mock<ILogger<AuditLogOrchestrator>>();
         var orchestrator = new AuditLogOrchestrator(mediator.Object, logger.Object);
 
-        CreateAuditWorkflowLogCommand capturedCommand = null;
         mediator.Setup(x => x.Send(It.IsAny<CreateAuditWorkflowLogCommand>(), It.IsAny<CancellationToken>()))
-            .Callback<IRequest<CreateAuditWorkflowLogCommandResult>, CancellationToken>((request, _) => capturedCommand = request as CreateAuditWorkflowLogCommand)
             .ReturnsAsync(new CreateAuditWorkflowLogCommandResult
             {
                 Succeeded = true,
@@ -41,10 +39,20 @@ public class AuditLogOrchestratorTests
             }
         });
 
-        capturedCommand.Should().NotBeNull();
-        capturedCommand!.DataJson.Should().Be("{\"accountId\":12345}");
-        capturedCommand.ErrorCode.Should().Be("ERR");
-        capturedCommand.ErrorMessage.Should().Be("Failure");
+        mediator.Verify(x => x.Send(
+            It.Is<CreateAuditWorkflowLogCommand>(command =>
+                command.JobId == "job-1" &&
+                command.WorkflowId == "workflow-1" &&
+                command.Sequence == 1 &&
+                command.SpanId == "12345" &&
+                command.Stage == "Start" &&
+                command.Description == "Started import" &&
+                command.Status == "started" &&
+                command.DataJson == "{\"accountId\":12345}" &&
+                command.ErrorCode == "ERR" &&
+                command.ErrorMessage == "Failure"),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Test]
