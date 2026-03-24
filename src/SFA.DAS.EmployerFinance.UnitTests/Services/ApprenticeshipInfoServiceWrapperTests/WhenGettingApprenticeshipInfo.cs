@@ -55,7 +55,6 @@ public class WhenGettingApprenticeshipInfo
         returnData.Standards.ToList().First().Should().BeEquivalentTo(apiResponse.Standards.First(), options => options
             .Excluding(c => c.Title)
             .Excluding(c => c.Id)
-            .Excluding(c => c.LearningType)
         );
     }
 
