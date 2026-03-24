@@ -2,6 +2,7 @@
 using AutoMapper;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ApprenticeshipCourse;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -125,6 +126,7 @@ public class PaymentService(
 
             payment.CourseName = standard?.CourseName;
             payment.CourseLevel = standard?.Level;
+            payment.LearningType = Enum.TryParse(standard?.LearningType, out LearningType learningType) ? learningType : LearningType.Apprenticeship;
         }
         else if (payment.FrameworkCode.HasValue && payment.FrameworkCode > 0)
         {

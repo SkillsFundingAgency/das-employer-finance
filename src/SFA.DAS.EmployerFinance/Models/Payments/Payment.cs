@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Provider.Events.Api.Types;
+﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.Provider.Events.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.Models.Payments;
 
@@ -26,7 +27,7 @@ public class Payment
     public int? PathwayCode { get; set; }
     public string PathwayName { get; set; }
     public long PaymentMetaDataId { get; set; }
-
+    public LearningType LearningType { get; set; }
     public override bool Equals(object obj)
     {
         var payment = obj as Payment;
