@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -19,7 +20,10 @@ public class TransactionMappings : Profile
             .ForMember(d => d.PaymentId, o => o.Ignore())
             .ForMember(d => d.Description, o => o.Ignore())
             .ForMember(d => d.SubTransactions, o => o.Ignore())
-            .ForMember(d => d.PayrollDate, o => o.Ignore());
+            .ForMember(d => d.PayrollDate, o => o.Ignore())
+            .ForMember(d => d.LearningType, 
+                o => 
+                    o.MapFrom(c => c.LearningType != null ? Enum.Parse<LearningType>(c.LearningType) : LearningType.Apprenticeship));
 
         CreateMap<TransactionEntity, LevyDeclarationTransactionLine>()
             .ForMember(d => d.PayeSchemeName, o => o.Ignore())

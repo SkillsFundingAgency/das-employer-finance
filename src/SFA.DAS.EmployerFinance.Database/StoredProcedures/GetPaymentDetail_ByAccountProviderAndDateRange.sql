@@ -13,6 +13,7 @@ AS
 		pm.ApprenticeshipCourseLevel AS CourseLevel,
 		pm.PathwayName,
 		pm.PathwayCode,
+		pm.LearningType,
 		MAX(pm.ApprenticeshipCourseStartDate) AS CourseStartDate,
 		MAX(pm.ProviderName) AS ProviderName,
 		MIN(t.DateCreated) AS DateCreated,
