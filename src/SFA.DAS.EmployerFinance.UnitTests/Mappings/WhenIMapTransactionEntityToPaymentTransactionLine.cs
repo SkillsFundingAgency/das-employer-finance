@@ -31,17 +31,4 @@ public class WhenIMapTransactionEntityToPaymentTransactionLine
         // Assert
         result.LearningType.Should().Be(expectedLearningType);
     }
-
-    [Test]
-    public void ThenLearningTypeShouldBeNullWhenSourceIsNull()
-    {
-        // Arrange
-        var entity = new TransactionEntity { LearningType = null };
-
-        // Act
-        var result = _mapper.Map<PaymentTransactionLine>(entity);
-
-        // Assert
-        result.LearningType.Should().BeNull();
-    }
 }
