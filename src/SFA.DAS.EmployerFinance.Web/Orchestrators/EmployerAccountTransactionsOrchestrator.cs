@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EAS.Account.Api.Client;
+﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -105,7 +106,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 };
             }
                 
-            var courseGroups = data.Transactions.GroupBy(x => new { x.CourseName, x.CourseLevel, x.CourseStartDate });
+            var courseGroups = data.Transactions
+                .Where(c=>c.LearningType is not LearningType.ApprenticeshipUnit).GroupBy(x => new { x.CourseName, x.CourseLevel, x.CourseStartDate });
 
             var coursePaymentGroups = courseGroups.Select(x => new ApprenticeshipPaymentGroup
             {
@@ -114,7 +116,17 @@ public class EmployerAccountTransactionsOrchestrator(
                 CourseStartDate = x.Key.CourseStartDate,
                 Payments = x.ToList()
             }).ToList();
+            
+            var apprenticeshipUnitGroups = data.Transactions
+                .Where(c=>c.LearningType is LearningType.ApprenticeshipUnit).GroupBy(x => new { x.CourseName, x.CourseLevel, x.CourseStartDate });
 
+            var apprenticeshipUnitPaymentGroups = apprenticeshipUnitGroups.Select(x => new ApprenticeshipPaymentGroup
+            {
+                ApprenticeCourseName = x.Key.CourseName,
+                CourseLevel = x.Key.CourseLevel,
+                CourseStartDate = x.Key.CourseStartDate,
+                Payments = x.ToList()
+            }).ToList();
 
             return new OrchestratorResponse<PaymentTransactionViewModel>
             {
@@ -126,7 +138,8 @@ public class EmployerAccountTransactionsOrchestrator(
                     TransactionDate = data.TransactionDate,
                     Amount = data.Total,
                     SubTransactions = data.Transactions,
-                    CoursePaymentGroups = coursePaymentGroups
+                    CoursePaymentGroups = coursePaymentGroups,
+                    ApprenticeshipUnitPaymentGroups = apprenticeshipUnitPaymentGroups
                 }
             };
         }
@@ -176,9 +189,29 @@ public class EmployerAccountTransactionsOrchestrator(
                 
             var providerPaymentsResponse = getProviderPaymentsTask.Result;
 
-            var courseGroups = providerPaymentsResponse.Transactions.GroupBy(x => new { x.CourseName, x.CourseLevel, x.PathwayName, x.CourseStartDate });
+            var courseGroups = providerPaymentsResponse.Transactions.Where(c=>c.LearningType is not LearningType.ApprenticeshipUnit)
+                .GroupBy(x => new { x.CourseName, x.CourseLevel, x.PathwayName, x.CourseStartDate });
 
             var coursePaymentSummaries = courseGroups.Select(x =>
+            {
+                var levyPayments = x.Where(p => p.TransactionType == TransactionItemType.Payment).ToList();
+
+                return new CoursePaymentSummaryViewModel
+                {
+                    CourseName = x.Key.CourseName,
+                    CourseLevel = x.Key.CourseLevel,
+                    PathwayName = x.Key.PathwayName,
+                    PathwayCode = levyPayments.Max(p => p.PathwayCode),
+                    CourseStartDate = x.Key.CourseStartDate,
+                    LevyPaymentAmount = levyPayments.Sum(p => p.LineAmount),
+                    EmployerCoInvestmentAmount = levyPayments.Sum(p => p.EmployerCoInvestmentAmount),
+                    SFACoInvestmentAmount = levyPayments.Sum(p => p.SfaCoInvestmentAmount)
+                };
+            }).ToList();
+            
+            var apprenticeshipUnitGroups = providerPaymentsResponse.Transactions.Where(c=>c.LearningType is LearningType.ApprenticeshipUnit).GroupBy(x => new { x.CourseName, x.CourseLevel, x.PathwayName, x.CourseStartDate });
+
+            var apprenticeshipUnitGroupSummaries = apprenticeshipUnitGroups.Select(x =>
             {
                 var levyPayments = x.Where(p => p.TransactionType == TransactionItemType.Payment).ToList();
 
@@ -210,10 +243,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     FromDate = fromDate,
                     ToDate = toDate,
                     CoursePayments = coursePaymentSummaries,
-                    LevyPaymentsTotal = coursePaymentSummaries.Sum(p => p.LevyPaymentAmount),
-                    SFACoInvestmentsTotal = coursePaymentSummaries.Sum(p => p.SFACoInvestmentAmount),
-                    EmployerCoInvestmentsTotal = coursePaymentSummaries.Sum(p => p.EmployerCoInvestmentAmount),
-                    PaymentsTotal = coursePaymentSummaries.Sum(p => p.TotalAmount)
+                    ApprenticeshipUnitGroupSummaries = apprenticeshipUnitGroupSummaries
                 }
             };
         }
