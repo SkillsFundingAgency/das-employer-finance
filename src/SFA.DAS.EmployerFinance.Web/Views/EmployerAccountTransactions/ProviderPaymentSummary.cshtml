@@ -52,34 +52,76 @@
                 </tr>
             </thead>
             <tbody class="govuk-table__body">
-                @foreach (var coursePaymentSummary in Model.Data.CoursePayments)
+            <tr class="govuk-table__row app-table__row--highlight">
+                <td class="govuk-table__cell app-table__header-row-cell" colspan="@(Model.Data.ShowNonCoInvesmentPaymentsTotal ? "6" : "5")">Apprenticeship</td>
+            </tr>
+            @foreach (var coursePaymentSummary in Model.Data.CoursePayments)
+            {
+                var coursePaymentsSummaryPartialViewModel = new CoursePaymentsSummaryPartialViewModel(coursePaymentSummary, Model.Data.HashedAccountId, Model.Data.UkPrn, Model.Data.FromDate, Model.Data.ToDate, Model.Data.ShowNonCoInvesmentPaymentsTotal);
+
+                <partial name="_TransactionPaymentLine" model="coursePaymentsSummaryPartialViewModel"/>
+
+                //TODO add the totals
+            }
+
+            <tr class="govuk-table__row">
+                <td data-label="Totals" class="app-table__cell--transparent"> </td>
+                @if (Model.Data.ShowNonCoInvesmentPaymentsTotal)
                 {
-                    var coursePaymentsSummaryPartialViewModel = new CoursePaymentsSummaryPartialViewModel(coursePaymentSummary, Model.Data.HashedAccountId, Model.Data.UkPrn, Model.Data.FromDate, Model.Data.ToDate, Model.Data.ShowNonCoInvesmentPaymentsTotal);
-                    
-                    <partial name="_TransactionPaymentLine" model="coursePaymentsSummaryPartialViewModel"/>
-                    
-                    //TODO add the totals
+                    <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.LevyPaymentsTotal.ToString("C2", culture)</td>
                 }
-                @foreach (var apprenticeshipUnitGroupSummary in Model.Data.ApprenticeshipUnitGroupSummaries)
+                <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.Data.SFACoInvestmentsTotal.ToString("C2", culture)</td>
+                <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.Data.EmployerCoInvestmentsTotal.ToString("C2", culture)</td>
+                <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.PaymentsTotal.ToString("C2", culture)</td>
+                <td></td>
+            </tr>
+
+            <tr class="govuk-table__row app-table__row--spacer" aria-hidden="true">
+                <td class="app-table__cell--transparent" colspan="@(Model.Data.ShowNonCoInvesmentPaymentsTotal ? "2" : "1")">&nbsp;</td>
+                <td class="app-table__cell--transparent app-table__cell--highlight" colspan="2">&nbsp;</td>
+                <td class="app-table__cell--transparent" colspan="2">&nbsp;</td>
+            </tr>
+
+            <tr class="govuk-table__row app-table__row--highlight">
+                <td class="govuk-table__cell app-table__header-row-cell" colspan="@(Model.Data.ShowNonCoInvesmentPaymentsTotal ? "6" : "5")">Apprenticeship unit</td>
+            </tr>
+
+            @foreach (var apprenticeshipUnitGroupSummary in Model.Data.ApprenticeshipUnitGroupSummaries)
+            {
+                var coursePaymentsSummaryPartialViewModel = new CoursePaymentsSummaryPartialViewModel(apprenticeshipUnitGroupSummary, Model.Data.HashedAccountId, Model.Data.UkPrn, Model.Data.FromDate, Model.Data.ToDate, Model.Data.ShowNonCoInvesmentPaymentsTotal);
+
+                <partial name="_TransactionPaymentLine" model="coursePaymentsSummaryPartialViewModel"/>
+
+                //TODO add the totals
+            }
+
+            <tr class="govuk-table__row">
+                <td data-label="Totals" class="app-table__cell--transparent"> </td>
+                @if (Model.Data.ShowNonCoInvesmentPaymentsTotal)
                 {
-                    var coursePaymentsSummaryPartialViewModel = new CoursePaymentsSummaryPartialViewModel(apprenticeshipUnitGroupSummary, Model.Data.HashedAccountId, Model.Data.UkPrn, Model.Data.FromDate, Model.Data.ToDate, Model.Data.ShowNonCoInvesmentPaymentsTotal);
-                    
-                    <partial name="_TransactionPaymentLine" model="coursePaymentsSummaryPartialViewModel"/>
-                    
-                    //TODO add the totals
+                    <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.LevyPaymentsTotal.ToString("C2", culture)</td>
                 }
-         
-                <tr class="govuk-table__row">
-                    <td data-label="Totals" class="app-table__cell--transparent"> </td>
-                    @if (Model.Data.ShowNonCoInvesmentPaymentsTotal)
-                    {
-                        <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.LevyPaymentsTotal.ToString("C2", culture)</td>
-                    }
-                    <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.Data.SFACoInvestmentsTotal.ToString("C2", culture)</td>
-                    <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.Data.EmployerCoInvestmentsTotal.ToString("C2", culture)</td>
-                    <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.PaymentsTotal.ToString("C2", culture)</td>
-                    <td></td>
-                </tr>
+                <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.Data.SFACoInvestmentsTotal.ToString("C2", culture)</td>
+                <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.Data.EmployerCoInvestmentsTotal.ToString("C2", culture)</td>
+                <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.PaymentsTotal.ToString("C2", culture)</td>
+                <td></td>
+            </tr>
+
+            <tr class="govuk-table__row app-table__row--spacer" aria-hidden="true">
+                <td class="app-table__cell--transparent" colspan="@(Model.Data.ShowNonCoInvesmentPaymentsTotal ? "2" : "1")">&nbsp;</td>
+                <td class="app-table__cell--transparent app-table__cell--highlight" colspan="2">&nbsp;</td>
+                <td class="app-table__cell--transparent" colspan="2">&nbsp;</td>
+            </tr>
+
+            <tr class="govuk-table__row app-table__row--total">
+                <td data-label="Totals" class="govuk-table__cell app-table__cell--total">Total</td>
+                <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">1</td>
+                <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">2</td>
+                <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">3</td>
+                <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">4</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">&nbsp;</td>
+            </tr>
+
             </tbody>
         </table>
         <div class="govuk-inset-text">
