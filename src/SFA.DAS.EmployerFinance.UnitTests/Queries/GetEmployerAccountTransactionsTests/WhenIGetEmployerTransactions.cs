@@ -273,7 +273,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        actualTransaction.Description.Should().Be("Levy");
+        actualTransaction.Description.Should().Be("Levy declared this month");
         actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
@@ -528,7 +528,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             Amount = 2035.20M
         };
 
-        var expectedDescription = "Expired levy";
+        var expectedDescription = "Expired levy this month";
 
         _dasLevyService.Setup(x =>
                 x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
