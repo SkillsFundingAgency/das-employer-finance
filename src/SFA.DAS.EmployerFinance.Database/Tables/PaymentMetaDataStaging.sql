@@ -1,9 +1,7 @@
 ﻿CREATE TABLE [employer_financial].[PaymentMetaDataStaging]
 (
     [Id] BIGINT IDENTITY(1,1) NOT NULL,
-    [PaymentId] UNIQUEIDENTIFIER NOT NULL
-        CONSTRAINT [DF_PaymentMetaDataStaging_PaymentId] 
-        DEFAULT ('00000000-0000-0000-0000-000000000000'),
+    [PaymentId] UNIQUEIDENTIFIER NOT NULL,
 
     [ProviderName] VARCHAR(MAX) NULL,
     [StandardCode] BIGINT NULL, 
