@@ -4,6 +4,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
+using SFA.DAS.EmployerFinance.Models.AuditLogs;
 using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Paye;
@@ -37,6 +38,8 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<TransferStaging> TransferStaging { get; set; }
     public virtual DbSet<PaymentStagingModel> PaymentStaging { get; set; }
     public virtual DbSet<PaymentMetaDataStaging> PaymentMetaDataStaging{ get; set; }
+    public virtual DbSet<JobRun> JobRuns { get; set; }
+    public virtual DbSet<WorkflowLog> WorkflowLogs { get; set; }
 
     public EmployerFinanceDbContext() { }   
 
@@ -72,6 +75,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PayeConfiguration());
         modelBuilder.ApplyConfiguration(new EnglishFractionEntityConfiguration());
         modelBuilder.ApplyConfiguration(new EnglishFractionCalculationDateConfiguration());
+        modelBuilder.ApplyConfiguration(new JobRunConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentMetadataConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentMetadataStagingConfiguration());
@@ -82,6 +86,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PaymentStagingConfiguration());
         modelBuilder.ApplyConfiguration(new TransferStagingConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
+        modelBuilder.ApplyConfiguration(new WorkflowLogConfiguration());
         modelBuilder.Ignore<PaymentDetails>();
     }
 }

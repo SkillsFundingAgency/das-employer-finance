@@ -11,6 +11,7 @@ namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations
             services.AddTransient<AccountTransactionsOrchestrator>();
             services.AddTransient<EnglishFractionCalculationDateOrchestrator>();
             services.AddTransient<EnglishFractionsOrchestrator>();
+            services.AddTransient<AuditLogOrchestrator>();
             services.AddTransient<FinanceOrchestrator>();
             services.AddTransient<StatisticsOrchestrator>();
             services.AddTransient<PeriodEndOrchestrator>();

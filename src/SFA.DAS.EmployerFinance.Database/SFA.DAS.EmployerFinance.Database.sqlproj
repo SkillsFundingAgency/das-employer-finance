@@ -208,6 +208,8 @@
     <Build Include="Tables\PaymentStaging.sql" />
     <Build Include="StoredProcedures\TransferStagedToOperational.sql" />
     <Build Include="Tables\PaymentMetaDataStaging.sql" />
+    <Build Include="Tables\JobRun.sql" />
+    <Build Include="Tables\WorkflowLog.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />
@@ -215,6 +217,7 @@
     <None Include="Scripts\Manual\AML-2502-DeleteFullyFundedPayments.sql" />
     <None Include="Scripts\PreDeployment\AML-2505-PopulateNullProviderNames.sql" />
     <None Include="Scripts\PreDeployment\AML-2873_TransferPaymentDate.sql" />
+    <None Include="Scripts\PreDeployment\DeleteDuplicatePaymentMetaDataStagingRows.sql" />
     <None Include="Scripts\Manual\GenerateTestData\Notes.txt" />
     <None Include="Scripts\Manual\GenerateTestData\DataGenFramework\FrameworkCreatePayments.sql" />
     <None Include="Scripts\Manual\GenerateTestData\DataGenFramework\FrameworkCreateTransferPayments.sql" />
