@@ -96,5 +96,12 @@ else
 </table>
 
 @section breadcrumb {
-    <a class="govuk-back-link" href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new { year = Model.DateCreated.Year, month = Model.DateCreated.Month })">Back to transactions</a>
+    @if (Model.IsCurrentAccountSender)
+    {
+        <a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.SenderAccountPublicHashedId" asp-route-year="@Model.DateCreated.Year" asp-route-month="@Model.DateCreated.Month" class="govuk-back-link">Back to transactions</a>    
+    }
+    else
+    {
+        <a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.ReceiverAccountPublicHashedId" asp-route-year="@Model.DateCreated.Year" asp-route-month="@Model.DateCreated.Month" class="govuk-back-link">Back to transactions</a>
+    }
 }
