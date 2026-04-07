@@ -5,6 +5,7 @@ using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Account;
+using SFA.DAS.EmployerFinance.Models.Paye;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.PaymentStaging;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -25,6 +26,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<HealthCheck> HealthChecks { get; set; }
     public virtual DbSet<PeriodEnd> PeriodEnds { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<Paye> AccountPayes { get; set; }
     public virtual DbSet<TransactionLineEntity> Transactions { get; set; }
     public virtual DbSet<TransferConnectionInvitation> TransferConnectionInvitations { get; set; }
     public virtual DbSet<User> Users { get; set; }
@@ -64,6 +66,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AccountConfiguration());
         modelBuilder.ApplyConfiguration(new AccountTransferConfiguration());
         modelBuilder.ApplyConfiguration(new HealthCheckConfiguration());
+        modelBuilder.ApplyConfiguration(new PayeConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentMetadataConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentMetadataStagingConfiguration());

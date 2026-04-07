@@ -24,6 +24,7 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Validation;
 
@@ -34,6 +35,7 @@ public static class MediatorValidationServiceRegistration
     public static void AddMediatorValidators(this IServiceCollection services)
     {
         services.AddTransient<IValidator<GetPayeSchemeByRefQuery>, GetPayeSchemeByRefValidator>();
+        services.AddTransient<IValidator<GetPayeSchemesByEmployerIdQuery>, GetPayeSchemesByEmployerIdValidator>();
         services.AddTransient<IValidator<GetEmployerAccountDetailByHashedIdQuery>, GetEmployerAccountDetailByHashedIdValidator>();
         services.AddTransient<IValidator<FindAccountCoursePaymentsQuery>, FindAccountCoursePaymentsQueryValidator>();
         services.AddTransient<IValidator<GetAccountBalancesRequest>, GetAccountBalancesValidator>();
