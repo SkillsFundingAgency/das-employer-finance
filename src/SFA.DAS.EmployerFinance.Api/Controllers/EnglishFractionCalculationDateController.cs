@@ -1,19 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
-[Route("api/english-fractions")]
-public class EnglishFractionsController(EnglishFractionsOrchestrator orchestrator) : ControllerBase
+[Route("api/english-fraction-calculation-date")]
+public class EnglishFractionCalculationDateController(EnglishFractionCalculationDateOrchestrator orchestrator) : ControllerBase
 {
     [HttpPost]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> Persist([FromBody] EnglishFractionsRequest? request)
+    public async Task<IActionResult> Persist([FromBody] EnglishFractionCalculationDateRequest? request)
     {
         if (request is null)
         {
@@ -22,15 +22,15 @@ public class EnglishFractionsController(EnglishFractionsOrchestrator orchestrato
 
         try
         {
-            var result = await orchestrator.PersistEnglishFractions(request);
-
-            return Ok(result);
+            await orchestrator.PersistCalculationDate(request);
+            return Ok();
         }
         catch (ValidationException ex)
         {
             return BadRequest(GetValidationErrors(ex));
         }
     }
+
     private static Dictionary<string, string> GetValidationErrors(ValidationException ex)
     {
         return ex.ValidationResult?.MemberNames
