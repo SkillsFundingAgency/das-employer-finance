@@ -4,6 +4,7 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels;
 
 public class TransferTransactionDetailsViewModel
 {
+    public string HashedAccountId { get; set; }
     public string SenderAccountName { get; set; }
     public string SenderAccountPublicHashedId { get; set; }
     public string ReceiverAccountName { get; set; }

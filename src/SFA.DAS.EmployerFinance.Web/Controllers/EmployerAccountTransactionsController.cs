@@ -109,7 +109,6 @@ public class EmployerAccountTransactionsController : Controller
         return View(transactionViewResult);
     }
 
-
     [Route("finance/levyDeclaration/details")]
     public async Task<IActionResult> LevyDeclarationDetail([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
     {
@@ -141,9 +140,9 @@ public class EmployerAccountTransactionsController : Controller
     {
         query.AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
         var response = await _mediator.Send(query);
+        response.HashedAccountId = hashedAccountId;
 
         var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);
         return View(ControllerConstants.TransferDetailsViewName, model);
     }
-
 }
