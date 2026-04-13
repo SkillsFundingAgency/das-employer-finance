@@ -59,6 +59,7 @@ public class Payment
         if (ProgrammeType != payment.ProgrammeType) return false;
         if (PathwayCode != payment.PathwayCode) return false;
         if (PathwayName != payment.PathwayName) return false;
+        if (LearningType != payment.LearningType) return false;
 
         return true;
     }
