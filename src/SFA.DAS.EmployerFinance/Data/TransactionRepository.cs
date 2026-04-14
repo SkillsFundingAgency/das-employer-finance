@@ -277,18 +277,32 @@ public class TransactionRepository : ITransactionRepository
     }
     public async Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType)
     {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("@AccountId", accountId, DbType.Int64);
-        parameters.Add("@PeriodEnd", periodEnd, DbType.String);
-        parameters.Add("@TransactionType", transactionType, DbType.Int32);
-
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
-            sql: "[employer_financial].[GetExistingTransactionLines]",
-            param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.StoredProcedure);
-
-        return MapTransactions(result);
+        var query = _db.Value.Transactions.Where(t => t.AccountId == accountId
+                                                   && t.PeriodEnd == periodEnd
+                                                   && t.TransactionType == (TransactionItemType)transactionType);
+        var transactionLines = await query.ToListAsync();
+        return MapTransactionLines(transactionLines);
+    }
+    private TransactionLine[] MapTransactionLines(IEnumerable<TransactionLineEntity> transactionLineEntities)
+    {
+        return transactionLineEntities.Select(entity =>
+        {
+            switch (entity.TransactionType)
+            {
+                case TransactionItemType.Declaration:
+                case TransactionItemType.TopUp:
+                    return _mapper.Map<LevyDeclarationTransactionLine>(entity);
+                case TransactionItemType.Payment:
+                    return _mapper.Map<PaymentTransactionLine>(entity);
+                case TransactionItemType.Transfer:
+                    return _mapper.Map<TransferTransactionLine>(entity);
+                case TransactionItemType.ExpiredFund:
+                    return _mapper.Map<ExpiredFundTransactionLine>(entity);
+                case TransactionItemType.Unknown:
+                    return _mapper.Map<TransactionLine>(entity);
+                default:
+                    throw new InvalidOperationException($"Unable to map from {entity.TransactionType}.");
+            }
+        }).ToArray();
     }
 }
