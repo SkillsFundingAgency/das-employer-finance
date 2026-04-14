@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
-[Route("api/transactions")]
+[Route("api/transaction-lines")]
 public class TransactionsController(TransactionLineStagingOrchestrator orchestrator) : ControllerBase
 {
-    [Route("/payments/staging", Name = "BulkTransactionLineStagingIngest")]
+    [Route("staging", Name = "BulkTransactionLineStagingIngest")]
     [HttpPost]
     public async Task<IActionResult> BulkTransactionLineStagingIngest([FromBody] TransactionLineStagingRequest request)
     {
