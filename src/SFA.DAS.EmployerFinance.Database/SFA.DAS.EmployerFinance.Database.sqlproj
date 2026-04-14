@@ -210,6 +210,8 @@
     <Build Include="Tables\PaymentMetaDataStaging.sql" />
     <Build Include="Tables\JobRun.sql" />
     <Build Include="Tables\WorkflowLog.sql" />
+    <Build Include="StoredProcedures\GetExistingTransactionLines.sql" />
+    <Build Include="Tables\TransactionLineStaging.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

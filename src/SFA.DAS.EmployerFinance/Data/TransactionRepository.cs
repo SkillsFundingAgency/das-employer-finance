@@ -275,4 +275,20 @@ public class TransactionRepository : ITransactionRepository
 
         return result.ToList();
     }
+    public async Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@AccountId", accountId, DbType.Int64);
+        parameters.Add("@PeriodEnd", periodEnd, DbType.String);
+        parameters.Add("@TransactionType", transactionType, DbType.Int32);
+
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
+            sql: "[employer_financial].[GetExistingTransactionLines]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return MapTransactions(result);
+    }
 }
