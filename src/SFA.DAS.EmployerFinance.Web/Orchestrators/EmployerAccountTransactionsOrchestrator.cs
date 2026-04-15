@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -319,6 +319,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     ProviderName = accountCoursePaymentsResponse.ProviderName,
                     CourseName = accountCoursePaymentsResponse.CourseName,
                     CourseLevel = accountCoursePaymentsResponse.CourseLevel,
+                    LearningType = accountCoursePaymentsResponse.LearningType ?? LearningType.Apprenticeship,
                     PathwayName = accountCoursePaymentsResponse.PathwayName,
                     PaymentDate = accountCoursePaymentsResponse.DateCreated,
                     LevyPaymentsTotal = apprenticePayments.Sum(p => p.LevyPaymentAmount),
