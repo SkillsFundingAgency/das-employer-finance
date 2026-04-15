@@ -17,4 +17,5 @@ public interface ITransactionRepository
     Task<decimal> GetTotalSpendForLastYear(long accountId);
 
     Task<List<Api.Types.TransactionSummary>> GetAccountTransactionSummary(long accountId);
+    Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType);
 }
