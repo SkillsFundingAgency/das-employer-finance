@@ -326,7 +326,10 @@ public class EmployerAccountTransactionsOrchestrator(
                     SFACoInvestmentTotal = apprenticePayments.Sum(p => p.SFACoInvestmentAmount),
                     EmployerCoInvestmentTotal = apprenticePayments.Sum(p => p.EmployerCoInvestmentAmount),
                     ApprenticePayments = apprenticePayments,
-                    HashedAccountId = hashedAccountId
+                    HashedAccountId = hashedAccountId,
+                    FromDate = fromDate,
+                    ToDate = toDate,
+                    Ukprn = ukprn
                 }
             };
         }

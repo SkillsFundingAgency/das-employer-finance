@@ -23,4 +23,8 @@ public class CoursePaymentDetailsViewModel
 
     public bool ShowNonCoInvesmentPaymentsTotal => LevyPaymentsTotal != 0 
                                                    || ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy;
+
+    public DateTime FromDate { get; set; }
+    public DateTime ToDate { get; set; }
+    public long Ukprn { get; set; }
 }

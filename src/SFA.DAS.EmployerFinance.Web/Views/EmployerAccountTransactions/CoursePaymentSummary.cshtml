@@ -22,7 +22,7 @@
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Date</dt>
-                <dd class="govuk-summary-list__value">@Model.PaymentDate.ToString("dd MMMM yyyy")</dd>
+                <dd class="govuk-summary-list__value">@Model.PaymentDate.ToGdsFormatFull()</dd>
             </div>
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Payment to</dt>
@@ -66,7 +66,7 @@
                     <th class="govuk-table__header" colspan="2"></th>
                 </tr>
                 <tr class="govuk-table__row">
-                    <th scope="col" class="govuk-table__header das-table-cell-width-20">Apprentice</th>
+                    <th scope="col" class="govuk-table__header das-table-cell-width-20">Learner</th>
                     @if (Model.ShowNonCoInvesmentPaymentsTotal)
                     {
                         <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">@(Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy ? "Paid from levy" : "Transferred funds")</th>
@@ -111,9 +111,13 @@
             </tbody>
         </table>
 
-        <div class="govuk-inset-text">
-            <p>It's up to you and your training provider to decide when your contribution is paid.</p>
-        </div>
+        @if (Model.EmployerCoInvestmentTotal > 0m)
+        {
+            <div class="govuk-inset-text">
+                <p>Talk to your training provider and agree when to pay your contribution.</p>
+            </div>    
+        }
+
 
         @if (Model.PaymentDate.Equals(new DateTime(2017, 09, 14)))
         {
@@ -145,8 +149,9 @@
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
             <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction($"accounts/{@Model.HashedAccountId}/teams")" class="govuk-breadcrumbs__link">Home</a></li>
-            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions")" class="govuk-breadcrumbs__link">Your transactions</a></li>
-            <li class="govuk-breadcrumbs__list-item">Debit details</li>
+            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions", new {hashedAccountId = Model.HashedAccountId})" class="govuk-breadcrumbs__link">Your transactions</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {hashedAccountId = Model.HashedAccountId, ukprn = Model.Ukprn, fromDate = Model.FromDate, toDate = Model.ToDate})" class="govuk-breadcrumbs__link">Debit details</a></li>
+            <li class="govuk-breadcrumbs__list-item">Learner details</li>
         </ol>
     </div>
 }
