@@ -149,7 +149,7 @@
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
             <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction($"accounts/{@Model.HashedAccountId}/teams")" class="govuk-breadcrumbs__link">Home</a></li>
-            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions", new {hashedAccountId = Model.HashedAccountId})" class="govuk-breadcrumbs__link">Your transactions</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-year="@Model.FromDate.Year" asp-route-month="@Model.FromDate.Month" class="govuk-breadcrumbs__link">Your transactions</a></li>
             <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {hashedAccountId = Model.HashedAccountId, ukprn = Model.Ukprn, fromDate = Model.FromDate, toDate = Model.ToDate})" class="govuk-breadcrumbs__link">Debit details</a></li>
             <li class="govuk-breadcrumbs__list-item">Learner details</li>
         </ol>

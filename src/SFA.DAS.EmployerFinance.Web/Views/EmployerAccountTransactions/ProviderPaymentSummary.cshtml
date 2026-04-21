@@ -166,7 +166,7 @@
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
             <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction($"accounts/{@Model.Data.HashedAccountId}/teams")" class="govuk-breadcrumbs__link">Home</a></li>
-            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions", new {hashedAccountId = Model.Data.HashedAccountId})" class="govuk-breadcrumbs__link">Your transactions</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.Data.HashedAccountId" asp-route-year="@Model.Data.FromDate.Year" asp-route-month="@Model.Data.FromDate.Month" class="govuk-breadcrumbs__link">Your transactions</a></li>
             <li class="govuk-breadcrumbs__list-item">Debit details</li>
         </ol>
     </div>
