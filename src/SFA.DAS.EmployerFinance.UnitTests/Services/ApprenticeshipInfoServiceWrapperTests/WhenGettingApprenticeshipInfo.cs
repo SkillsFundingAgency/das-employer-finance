@@ -34,7 +34,8 @@ public class WhenGettingApprenticeshipInfo
             {
                 new StandardResponse
                 {
-                    Id = 1
+                    Id = 1,
+                    LearningType = "ApprenticeshipUnit"
                 }
             }
         };
@@ -50,6 +51,7 @@ public class WhenGettingApprenticeshipInfo
         //Assert
         _apiClient.Verify(x => x.Get<GetStandardsResponse>(It.IsAny<GetStandardsRequest>()), Times.Once);
         returnData.Standards.Count.Should().Be(apiResponse.Standards.Count);
+        returnData.Standards.First().LearningType.Should().Be(apiResponse.Standards.First().LearningType);
         returnData.Standards.ToList().First().Should().BeEquivalentTo(apiResponse.Standards.First(), options => options
             .Excluding(c => c.Title)
             .Excluding(c => c.Id)

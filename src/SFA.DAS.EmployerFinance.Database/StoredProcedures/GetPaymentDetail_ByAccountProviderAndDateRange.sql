@@ -13,6 +13,7 @@ AS
 		pm.ApprenticeshipCourseLevel AS CourseLevel,
 		pm.PathwayName,
 		pm.PathwayCode,
+		pm.LearningType,
 		MAX(pm.ApprenticeshipCourseStartDate) AS CourseStartDate,
 		MAX(pm.ProviderName) AS ProviderName,
 		MIN(t.DateCreated) AS DateCreated,
@@ -27,4 +28,4 @@ AS
 	AND p.FundingSource IN (1, 2, 3, 5)
 	AND t.DateCreated >= @fromDate
 	AND t.DateCreated <= @toDate
-	GROUP BY p.PeriodEnd, pm.ApprenticeshipCourseName, pm.ApprenticeshipCourseLevel, pm.PathwayName, pm.PathwayCode
+	GROUP BY p.PeriodEnd, pm.ApprenticeshipCourseName, pm.ApprenticeshipCourseLevel, pm.PathwayName, pm.PathwayCode, pm.LearningType
