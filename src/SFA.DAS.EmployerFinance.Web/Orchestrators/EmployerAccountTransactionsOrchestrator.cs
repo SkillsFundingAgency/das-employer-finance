@@ -1,4 +1,4 @@
-﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -426,6 +426,7 @@ public class EmployerAccountTransactionsOrchestrator(
         var newTransactionLines = aggregatedTransactionData.TransactionLines
             .Where(t => t.TransactionType != TransactionItemType.Declaration)
             .Union(aggregatedLevyTransactions)
+            .OrderByDescending(x => x.DateCreated)
             .ToArray();
 
         viewModel.Data.TransactionLines = newTransactionLines;
