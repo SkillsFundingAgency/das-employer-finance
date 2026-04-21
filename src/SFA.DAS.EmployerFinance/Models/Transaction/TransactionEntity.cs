@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.EmployerFinance.Models.Transaction;
+﻿using SFA.DAS.Common.Domain.Types;
+
+namespace SFA.DAS.EmployerFinance.Models.Transaction;
 
 public class TransactionEntity
 {

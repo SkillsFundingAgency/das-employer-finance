@@ -319,13 +319,17 @@ public class EmployerAccountTransactionsOrchestrator(
                     ProviderName = accountCoursePaymentsResponse.ProviderName,
                     CourseName = accountCoursePaymentsResponse.CourseName,
                     CourseLevel = accountCoursePaymentsResponse.CourseLevel,
+                    LearningType = accountCoursePaymentsResponse.LearningType ?? LearningType.Apprenticeship,
                     PathwayName = accountCoursePaymentsResponse.PathwayName,
                     PaymentDate = accountCoursePaymentsResponse.DateCreated,
                     LevyPaymentsTotal = apprenticePayments.Sum(p => p.LevyPaymentAmount),
                     SFACoInvestmentTotal = apprenticePayments.Sum(p => p.SFACoInvestmentAmount),
                     EmployerCoInvestmentTotal = apprenticePayments.Sum(p => p.EmployerCoInvestmentAmount),
                     ApprenticePayments = apprenticePayments,
-                    HashedAccountId = hashedAccountId
+                    HashedAccountId = hashedAccountId,
+                    FromDate = fromDate,
+                    ToDate = toDate,
+                    Ukprn = ukprn
                 }
             };
         }
