@@ -9,6 +9,7 @@ public class PeriodEndMappings : Profile
     {
         CreateMap<Models.Payments.PeriodEnd, PeriodEnd>();
 
-        CreateMap<PeriodEnd, Models.Payments.PeriodEnd>();
+        CreateMap<PeriodEnd, Models.Payments.PeriodEnd>()
+            .ForMember(dest => dest.PeriodEndId, opt => opt.MapFrom(src => src.PeriodEndId.Trim()));
     }
 }
