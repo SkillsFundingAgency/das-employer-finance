@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Models.Transaction;
+﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.EmployerFinance.Models.Transaction;
 
 namespace SFA.DAS.EmployerFinance.Models.Payments;
 
@@ -19,6 +20,7 @@ public class PaymentTransactionLine : TransactionLine
     public string ApprenticeNINumber { get; set; }
     public decimal SfaCoInvestmentAmount { get; set; }
     public decimal EmployerCoInvestmentAmount { get; set; }
+    public LearningType? LearningType { get; set; }
 
     public bool IsCoInvested => SfaCoInvestmentAmount != 0 || EmployerCoInvestmentAmount != 0;
 }

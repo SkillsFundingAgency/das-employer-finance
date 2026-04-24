@@ -131,6 +131,29 @@
     }
 }
 
+.app-table__row--total, 
+.app-table__row--highlight {
+    background: #dfdfdf;
+}
+
+@media (max-width: 40.0625em) {
+    .app-table__row--spacer {
+        display: none !important;
+    }
+}
+
+.app-table__header-row-cell {
+    font-weight: 700;
+    padding-left: .5em !important;
+    text-align: left !important;
+}
+
+@media (min-width: 40.0625em) {
+    .app-table__header-row-cell {
+        height: 4em;
+    }
+}
+
 .app-table__cell--highlight {
     background: #f3f2f1;
 }

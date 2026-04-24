@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Models.Payments;
+﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.EmployerFinance.Models.Payments;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 
@@ -7,6 +8,7 @@ public class FindAccountCoursePaymentsResponse
     public string ProviderName { get; set; }
     public string CourseName { get; set; }
     public int? CourseLevel { get; set; }
+    public LearningType? LearningType { get; set; }
     public string PathwayName { get; set; }
     public DateTime TransactionDate { get; set; }
     public DateTime DateCreated { get; set; }

@@ -8,4 +8,5 @@ public class PaymentTransactionViewModel : TransactionLineViewModel<PaymentTrans
     public string ProviderName { get; set; }
 
     public ICollection<ApprenticeshipPaymentGroup> CoursePaymentGroups { get; set; }
+    public ICollection<ApprenticeshipPaymentGroup> ApprenticeshipUnitPaymentGroups { get; set; }
 }

@@ -70,7 +70,7 @@ public class GetEmployerAccountTransactionsHandler :
     {
         if (transaction.GetType() == typeof(LevyDeclarationTransactionLine))
         {
-            transaction.Description = transaction.Amount >= 0 ? "Levy" : "Levy adjustment";
+            transaction.Description = transaction.Amount >= 0 ? "Levy declared this month" : "Levy adjustment";
         }
         else if (transaction.GetType() == typeof(PaymentTransactionLine))
         {
@@ -80,7 +80,7 @@ public class GetEmployerAccountTransactionsHandler :
         }
         else if (transaction.GetType() == typeof(ExpiredFundTransactionLine))
         {
-            transaction.Description = "Expired levy";
+            transaction.Description = "Expired levy this month";
         }
         else if (transaction.GetType() == typeof(TransferTransactionLine))
         {

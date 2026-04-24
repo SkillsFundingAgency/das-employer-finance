@@ -19,6 +19,7 @@ FROM (
 		SUM(CASE WHEN p.FundingSource IN (1, 5) THEN -p.Amount ELSE 0 END) as LineAmount,
 		MAX(meta.ApprenticeshipCourseName) as CourseName,
 		MAX(meta.ApprenticeshipCourseLevel)	as CourseLevel,
+		MAX(meta.LearningType) as LearningType,
 		MAX(meta.PathwayName) as PathwayName,
 		MAX(meta.ApprenticeshipCourseStartDate) as CourseStartDate,
 		MAX(meta.ApprenticeName) as ApprenticeName,
