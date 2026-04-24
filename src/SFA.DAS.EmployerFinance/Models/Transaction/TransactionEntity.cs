@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.EmployerFinance.Models.Transaction;
+﻿using SFA.DAS.Common.Domain.Types;
+
+namespace SFA.DAS.EmployerFinance.Models.Transaction;
 
 public class TransactionEntity
 {
@@ -27,6 +29,7 @@ public class TransactionEntity
     public int? CourseLevel { get; set; }
     public string PathwayName { get; set; }
     public int? PathwayCode { get; set; }
+    public string? LearningType { get; set; }
     public DateTime? CourseStartDate { get; set; }
     public string ApprenticeName { get; set; }
     public long ApprenticeULN { get; set; }

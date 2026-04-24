@@ -1,7 +1,4 @@
 ﻿@using System.Globalization
-@using SFA.DAS.EmployerFinance.Interfaces
-
-@inject IUrlActionHelper UrlHelpers;
 
 @model TransferTransactionDetailsViewModel
 
@@ -27,7 +24,14 @@ else
         <hr class="govuk-section-break govuk-section-break--visible">
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">Date </dt>
+                @if (Model.IsCurrentAccountSender)
+                {
+                    <dt class="govuk-summary-list__key">Date paid </dt>
+                }
+                else
+                {
+                    <dt class="govuk-summary-list__key">Date received </dt>
+                }
                 <dd class="govuk-summary-list__value">@Model.DateCreated.ToGdsFormatFull()</dd>
             </div>
             <div class="govuk-summary-list__row">
@@ -92,18 +96,5 @@ else
 </table>
 
 @section breadcrumb {
-    <div class="govuk-breadcrumbs">
-        <ol class="govuk-breadcrumbs__list">
-            <li class="govuk-breadcrumbs__list-item">
-                <a class="govuk-breadcrumbs__link" href="@UrlHelpers.EmployerAccountsAction($"teams")">Home</a>
-            </li>
-            <li class="govuk-breadcrumbs__list-item">
-                <a class="govuk-breadcrumbs__link" href="@UrlHelpers.EmployerFinanceAction("finance")">Finance</a>
-            </li>
-            <li class="govuk-breadcrumbs__list-item">
-                <a class="govuk-breadcrumbs__link" href="@Url.Action("TransactionsView", "EmployerAccountTransactions", new { year = Model.DateCreated.Year, month = Model.DateCreated.Month })">Your transactions</a>
-            </li>
-            <li class="govuk-breadcrumbs__list-item">@(Model.IsCurrentAccountSender ? "Levy details" : "Transfer Details")</li>
-        </ol>
-    </div>
+    <a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-year="@Model.DateCreated.Year" asp-route-month="@Model.DateCreated.Month" class="govuk-back-link">Back to transactions</a>    
 }

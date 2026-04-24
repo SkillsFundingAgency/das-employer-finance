@@ -50,6 +50,7 @@ public class FindAccountCoursePaymentsQueryHandler : IRequestHandler<FindAccount
             CourseName = firstTransaction.CourseName,
             CourseLevel = firstTransaction.CourseLevel,
             PathwayName = firstTransaction.PathwayName,
+            LearningType = firstTransaction.LearningType,
             TransactionDate = firstTransaction.TransactionDate,
             DateCreated = firstTransaction.DateCreated,
             Transactions = transactions.ToList(),

@@ -250,6 +250,33 @@ public class WhenIGetAccountTransactions
         actualTransactions.Should().NotBeNull();
         actualTransactions.Single(t => t.TransactionType == TransactionItemType.Declaration).Amount.Should().Be(levyTransactions.Sum(t => t.Amount));
     }
+    
+    [Test]
+    public async Task ThenTransactionsShouldBeOrderedByDateCreatedDesc()
+    {
+        //Arrange           
+        var levyTransactions = new List<LevyDeclarationTransactionLine>
+        {
+            CreateLevyTransaction(new DateTime(2017, 5, 18), 200, DateTime.Now.AddDays(1)),
+            CreateLevyTransaction(new DateTime(2017, 6, 18), 300, DateTime.Now.AddDays(-4)),
+            CreateLevyTransaction(new DateTime(2017, 7, 18), 500, DateTime.Now.AddDays(0))
+        };
+
+        var transactions = new List<TransactionLine>();
+
+        transactions.AddRange(levyTransactions);
+        transactions.Add(new PaymentTransactionLine { Amount = 200, TransactionType = TransactionItemType.Payment });
+
+        SetupGetTransactionsResponse(2018, 2, transactions);
+
+        //Act
+        var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 0, 0);
+        var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
+
+        //Assert
+        actualTransactions.Should().NotBeNull();
+        actualTransactions.Should().BeInDescendingOrder(x => x.DateCreated);
+    }
 
     private void SetupGetTransactionsResponse(int year, int month)
     {
@@ -280,12 +307,12 @@ public class WhenIGetAccountTransactions
             });
     }
 
-    private static LevyDeclarationTransactionLine CreateLevyTransaction(DateTime submissionDate, int amount)
+    private static LevyDeclarationTransactionLine CreateLevyTransaction(DateTime submissionDate, int amount, DateTime? dateCreated = null)
     {
         return new LevyDeclarationTransactionLine
         {
             Amount = amount,
-            DateCreated = DateTime.Now,
+            DateCreated = dateCreated ?? DateTime.Now,
             TransactionDate = submissionDate,
             TransactionType = TransactionItemType.Declaration,
             Description = "Levy"

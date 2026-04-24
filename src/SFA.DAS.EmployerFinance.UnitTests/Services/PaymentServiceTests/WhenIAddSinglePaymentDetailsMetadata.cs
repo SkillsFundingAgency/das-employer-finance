@@ -1,6 +1,7 @@
 ﻿using AutoFixture.NUnit3;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ApprenticeshipCourse;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -69,6 +70,7 @@ public class WhenIAddSinglePaymentDetailsMetadata
     {
         paymentDetails.StandardCode = 100;
         standard.Code = paymentDetails.StandardCode.Value;
+        standard.LearningType = nameof(LearningType.Apprenticeship);
 
         inprocessCache.Setup(x => x.Get<StandardsView>(nameof(StandardsView))).Returns(() => null);
         apprenticeshipInfoService.Setup(x => x.GetStandardsAsync(It.IsAny<bool>())).ReturnsAsync(new StandardsView
@@ -80,6 +82,7 @@ public class WhenIAddSinglePaymentDetailsMetadata
 
         actual.CourseName.Should().Be(standard.CourseName);
         actual.CourseLevel.Should().Be(standard.Level);
+        actual.LearningType.ToString().Should().Be(standard.LearningType);
 
         apprenticeshipInfoService.Verify();
     }
