@@ -4,6 +4,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 
 public class GetTransferTransactionDetailsResponse
 {
+    public string HashedAccountId { get; set; }
     public string SenderAccountName { get; set; }
     public string SenderAccountPublicHashedId { get; set; }
     public string ReceiverAccountName { get; set; }
