@@ -11,13 +11,22 @@ public class ProviderPaymentsSummaryViewModel
     public DateTime FromDate { get; set; }
     public DateTime ToDate { get; set; }
 
-    public decimal LevyPaymentsTotal { get; set; }
-    public decimal SFACoInvestmentsTotal { get; set; }
-    public decimal EmployerCoInvestmentsTotal { get; set; }
-    public decimal PaymentsTotal { get; set; }
     public ApprenticeshipEmployerType ApprenticeshipEmployerType { get; set; }
 
-    public bool ShowNonCoInvesmentPaymentsTotal => LevyPaymentsTotal != 0 || ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy;
-
     public ICollection<CoursePaymentSummaryViewModel> CoursePayments { get; set; }
+    public ICollection<CoursePaymentSummaryViewModel> ApprenticeshipUnitGroupSummaries { get; set; }
+
+    public decimal LevyPaymentsTotalCourses => CoursePayments.Sum(p => p.LevyPaymentAmount);
+    public decimal LevyPaymentsTotalApprenticeshipUnits => ApprenticeshipUnitGroupSummaries.Sum(p => p.LevyPaymentAmount);
+    public decimal LevyPaymentsTotal => LevyPaymentsTotalCourses + LevyPaymentsTotalApprenticeshipUnits;
+    public decimal SFACoInvestmentsTotalCourses => CoursePayments.Sum(p => p.SFACoInvestmentAmount);
+    public decimal SFACoInvestmentsTotalApprenticeshipUnits => ApprenticeshipUnitGroupSummaries.Sum(p => p.SFACoInvestmentAmount);
+    public decimal SFACoInvestmentsTotal => SFACoInvestmentsTotalCourses + SFACoInvestmentsTotalApprenticeshipUnits;
+    public decimal EmployerCoInvestmentsTotalCourses => CoursePayments.Sum(p => p.EmployerCoInvestmentAmount);
+    public decimal EmployerCoInvestmentsTotalApprenticeshipUnits => ApprenticeshipUnitGroupSummaries.Sum(p => p.EmployerCoInvestmentAmount);
+    public decimal EmployerCoInvestmentsTotal => EmployerCoInvestmentsTotalCourses + EmployerCoInvestmentsTotalApprenticeshipUnits;
+    public decimal PaymentsTotalCourses => CoursePayments.Sum(p => p.TotalAmount);
+    public decimal PaymentsTotalApprenticeshipUnits => ApprenticeshipUnitGroupSummaries.Sum(p => p.TotalAmount);
+    public decimal PaymentsTotal => PaymentsTotalCourses + PaymentsTotalApprenticeshipUnits;
+    public bool ShowNonCoInvesmentPaymentsTotal => LevyPaymentsTotal != 0 || ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy;
 }

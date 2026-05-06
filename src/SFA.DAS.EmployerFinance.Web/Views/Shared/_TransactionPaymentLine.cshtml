@@ -1,0 +1,63 @@
+@using System.Globalization
+@model CoursePaymentsSummaryPartialViewModel
+@{  
+    var coursePaymentSummary = Model;
+    var culture = new CultureInfo("en-GB");
+}
+
+
+<tr class="govuk-table__row">
+    @if (string.IsNullOrEmpty(coursePaymentSummary.CoursePaymentSummaryViewModel.CourseName))
+    {
+        <td data-label="Course" class="govuk-table__cell">(Course details not available)</td>
+    }
+    else
+    {
+        <td data-label="Course" class="govuk-table__cell">@coursePaymentSummary.CoursePaymentSummaryViewModel.CourseName: @coursePaymentSummary.CoursePaymentSummaryViewModel.PathwayName <br/>level @coursePaymentSummary.CoursePaymentSummaryViewModel.CourseLevel</td>
+    }
+
+    @if (Model.ShowNonCoInvesmentPaymentsTotal)
+    {
+        <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Paid from levy">@coursePaymentSummary.CoursePaymentSummaryViewModel.LevyPaymentAmount.ToString("C2", culture)</td>
+    }
+    <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Government contribution">@coursePaymentSummary.CoursePaymentSummaryViewModel.SFACoInvestmentAmount.ToString("C2", culture)</td>
+    <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Your contribution">@coursePaymentSummary.CoursePaymentSummaryViewModel.EmployerCoInvestmentAmount.ToString("C2", culture)</td>
+    <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Amount">@coursePaymentSummary.CoursePaymentSummaryViewModel.TotalAmount.ToString("C2", culture)</td>
+    <td class="govuk-table__cell govuk-table__cell--numeric">
+        @{
+            var courseDetailsLink = string.Empty;
+
+            if (!coursePaymentSummary.CoursePaymentSummaryViewModel.PathwayCode.HasValue)
+            {
+                courseDetailsLink = Url.Action("CourseStandardPaymentSummary", "EmployerAccountTransactions",
+                    new
+                    {
+                        hashedAccountId = Model.HashedAccountId,
+                        Ukprn = Model.UkPrn,
+                        CourseName = coursePaymentSummary.CoursePaymentSummaryViewModel.CourseName,
+                        CourseLevel = coursePaymentSummary.CoursePaymentSummaryViewModel.CourseLevel,
+                        Model.FromDate,
+                        Model.ToDate
+                    });
+            }
+            else
+            {
+                courseDetailsLink = Url.Action("CourseFrameworkPaymentSummary", "EmployerAccountTransactions",
+                    new
+                    {
+                        hashedAccountId = Model.HashedAccountId,
+                        Ukprn = Model.UkPrn,
+                        CourseName = coursePaymentSummary.CoursePaymentSummaryViewModel.CourseName,
+                        CourseLevel = coursePaymentSummary.CoursePaymentSummaryViewModel.CourseLevel,
+                        PathwayCode = coursePaymentSummary.CoursePaymentSummaryViewModel.PathwayCode,
+                        Model.FromDate,
+                        Model.ToDate
+                    });
+            }
+        }
+
+        <a class="govuk-link" id="CoursePaymentDetails" title="View details of payment for @coursePaymentSummary.CoursePaymentSummaryViewModel.CourseName level @coursePaymentSummary.CoursePaymentSummaryViewModel.CourseLevel" href="@courseDetailsLink">
+            Learner details <span class="govuk-visually-hidden"> of payment for @coursePaymentSummary.CoursePaymentSummaryViewModel.CourseName level @coursePaymentSummary.CoursePaymentSummaryViewModel.CourseLevel</span>
+        </a>
+    </td>
+</tr>

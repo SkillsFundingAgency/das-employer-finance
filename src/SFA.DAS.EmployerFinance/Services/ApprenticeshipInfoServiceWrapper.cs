@@ -79,7 +79,8 @@ public class ApprenticeshipInfoServiceWrapper : IApprenticeshipInfoServiceWrappe
                 Title = GetTitle(x.Title, x.Level) + " (Standard)",
                 CourseName = x.Title,
                 Duration = x.Duration,
-                MaxFunding = x.MaxFunding
+                MaxFunding = x.MaxFunding,
+                LearningType = x.LearningType
             }).ToList()
         };
     }
