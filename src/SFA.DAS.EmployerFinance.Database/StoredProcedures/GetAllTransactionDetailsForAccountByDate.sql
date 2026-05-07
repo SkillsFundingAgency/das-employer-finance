@@ -19,6 +19,7 @@ SELECT	tl.DateCreated									AS DateCreated,
 			CONVERT(VARCHAR(MAX), NULL)						AS Apprentice,
 			CONVERT(VARCHAR(MAX), NULL)						AS ApprenticeTrainingCourse,
 			CONVERT(INT, NULL)								AS ApprenticeTrainingCourseLevel,
+          CONVERT(VARCHAR(25), NULL)						AS ApprenticeLearningType,
 			CONVERT(DECIMAL(18,4), NULL)					AS PaidFromLevy,
 			CONVERT(DECIMAL(18,4), NULL)					AS EmployerContribution,
 			CONVERT(DECIMAL(18,4), NULL)					AS GovermentContribution,
@@ -56,6 +57,7 @@ UNION ALL
 		funds.Apprentice					AS Apprentice,
 		funds.ApprenticeTrainingCourse		AS ApprenticeTrainingCourse,
 		funds.ApprenticeTrainingCourseLevel AS ApprenticeTrainingCourseLevel,
+        funds.ApprenticeLearningType        AS ApprenticeLearningType,
 		funds.FundedFromLevy				AS PaidFromLevy,
 		funds.FundedFromEmployer			AS EmployerContribution,
 		funds.FundedFromGoverment			AS GovermentContribution,
@@ -77,7 +79,8 @@ UNION ALL
 				meta.ProviderName AS TrainingProvider,
 				meta.ApprenticeName AS Apprentice,
 				meta.ApprenticeshipCourseName AS ApprenticeTrainingCourse,
-				meta.ApprenticeshipCourseLevel AS ApprenticeTrainingCourseLevel
+				meta.ApprenticeshipCourseLevel AS ApprenticeTrainingCourseLevel,
+                meta.LearningType AS ApprenticeLearningType
 		FROM [employer_financial].[Payment]   p
 				JOIN  employer_financial.TransactionLine transLine
 					ON transLine.AccountId = p.AccountId 
@@ -100,7 +103,8 @@ UNION ALL
 				meta.ProviderName,
 				meta.ApprenticeName,
 				meta.ApprenticeshipCourseName,
-				meta.ApprenticeshipCourseLevel) AS funds
+				meta.ApprenticeshipCourseLevel,
+				meta.LearningType) AS funds
 
 UNION ALL
 
@@ -118,6 +122,7 @@ SELECT		DATEADD(dd, DATEDIFF(dd, 0, tl.DateCreated), 0)		AS DateCreated,
 			NULL												AS Apprentice,
 			NULL												AS ApprenticeTrainingCourse,
 			NULL												AS ApprenticeTrainingCourseLevel,
+            NULL												AS ApprenticeLearningType,
 			NULL												AS PaidFromLevy,
 			NULL												AS EmployerContribution,
 			NULL												AS GovermentContribution,
@@ -152,6 +157,7 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		NULL																					AS Apprentice,
 		[employer_financial].[AccountTransfers].CourseName										AS ApprenticeTrainingCourse,
 		[employer_financial].[AccountTransfers].CourseLevel										AS ApprenticeTrainingCourseLevel,
+        [employer_financial].[AccountTransfers].LearningType									AS ApprenticeLearningType,
 		cast([employer_financial].[AccountTransfers].[Amount]as decimal(18,4))					AS PaidFromLevy,
 		NULL																					AS EmployerContribution,
 		NULL																					AS GovermentContribution,
@@ -182,6 +188,7 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		NULL																					AS Apprentice,
 		[employer_financial].[AccountTransfers].CourseName										AS ApprenticeTrainingCourse,
 		[employer_financial].[AccountTransfers].CourseLevel										AS ApprenticeTrainingCourseLevel,
+        [employer_financial].[AccountTransfers].LearningType									AS ApprenticeLearningType,
 		cast([employer_financial].[AccountTransfers].[Amount] as decimal(18,4))					AS PaidFromLevy,
 		NULL																					AS EmployerContribution,
 		NULL																					AS GovermentContribution,

@@ -15,10 +15,12 @@ public class NonLevyCsvTransactionFormatter : CsvTransactionFormatter, ITransact
         headerBuilder.Append("Transaction type,");
         headerBuilder.Append("Description,");
         headerBuilder.Append("Training provider,");
+        headerBuilder.Append("Cohort reference,");
         headerBuilder.Append("Unique learner number,");
         headerBuilder.Append("Apprentice,");
         headerBuilder.Append("Apprenticeship training course,");
         headerBuilder.Append("Course level,");
+        headerBuilder.Append("Learning type,");
         headerBuilder.Append("Paid from transfer,");
         headerBuilder.Append("Your contribution,");
         headerBuilder.Append("Government contribution,");
@@ -35,10 +37,12 @@ public class NonLevyCsvTransactionFormatter : CsvTransactionFormatter, ITransact
             builder.Append($"{transaction.TransactionType},");
             builder.Append($"{transaction.Description?.Replace(",", "")},");
             builder.Append($"{transaction.TrainingProviderFormatted?.Replace(",", "")},");
+            builder.Append($"{transaction.CohortReference?.Replace(",", "")},");
             builder.Append($"{transaction.Uln},");
             builder.Append($"{transaction.Apprentice},");
             builder.Append($"{transaction.ApprenticeTrainingCourse?.Replace(",", "")},");
             builder.Append($"{transaction.ApprenticeTrainingCourseLevel},");
+            builder.Append($"{transaction.ApprenticeLearningTypeFormatted},");
             builder.Append($"{transaction.PaidFromLevyFormatted},");
             builder.Append($"{transaction.EmployerContributionFormatted},");
             builder.Append($"{transaction.GovermentContributionFormatted},");

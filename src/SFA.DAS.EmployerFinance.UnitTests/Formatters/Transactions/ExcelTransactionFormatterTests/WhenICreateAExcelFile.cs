@@ -34,7 +34,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                 Total = 345.67M,
                 TrainingProvider = "Test Corp",
                 TransactionType = "Levy",
-                Uln = "QWERTY"
+                Uln = "QWERTY",
             };
         }
 
@@ -48,8 +48,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                 {
                     "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month",
                     "Levy declared",
-                    "English %", "10% top up", "Training provider", "Unique learner number",
-                    "Apprentice", "Apprenticeship training course", "Course level", "Paid from levy",
+                    "English %", "10% top up", "Training provider", "Cohort reference", "Unique learner number",
+                    "Apprentice", "Apprenticeship training course", "Course level", "Learning type", "Paid from levy",
                     "Your contribution",
                     "Government contribution", "Total"
                 },
@@ -60,9 +60,10 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                     _transactionLine.PayeScheme, "'" + _transactionLine.PeriodEnd,
                     _transactionLine.LevyDeclaredFormatted,
                     _transactionLine.EnglishFractionFormatted, _transactionLine.TenPercentTopUpFormatted,
-                    _transactionLine.TrainingProvider, _transactionLine.Uln,
+                    _transactionLine.TrainingProvider, _transactionLine.CohortReference, _transactionLine.Uln,
                     _transactionLine.Apprentice, _transactionLine.ApprenticeTrainingCourse,
                     _transactionLine.ApprenticeTrainingCourseLevel,
+                    _transactionLine.ApprenticeLearningTypeFormatted,
                     _transactionLine.PaidFromLevyFormatted, _transactionLine.EmployerContributionFormatted,
                     _transactionLine.GovermentContributionFormatted, _transactionLine.TotalFormatted
                 }

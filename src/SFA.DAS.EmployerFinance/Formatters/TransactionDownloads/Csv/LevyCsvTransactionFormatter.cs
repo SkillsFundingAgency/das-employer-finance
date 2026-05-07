@@ -20,10 +20,12 @@ public class LevyCsvTransactionFormatter : CsvTransactionFormatter, ITransaction
         headerBuilder.Append("English %,");
         headerBuilder.Append("10% top up,");
         headerBuilder.Append("Training provider,");
+        headerBuilder.Append("Cohort reference,");
         headerBuilder.Append("Unique learner number,");
         headerBuilder.Append("Apprentice,");
         headerBuilder.Append("Apprenticeship training course,");
         headerBuilder.Append("Course level,");
+        headerBuilder.Append("Learning type,");
         headerBuilder.Append("Paid from levy,");
         headerBuilder.Append("Your contribution,");
         headerBuilder.Append("Government contribution,");
@@ -45,10 +47,12 @@ public class LevyCsvTransactionFormatter : CsvTransactionFormatter, ITransaction
             builder.Append($"{transaction.EnglishFractionFormatted},");
             builder.Append($"{transaction.TenPercentTopUpFormatted},");
             builder.Append($"{transaction.TrainingProviderFormatted?.Replace(",", "")},");
+            builder.Append($"{transaction.CohortReference?.Replace(",", "")},");
             builder.Append($"{transaction.Uln},");
             builder.Append($"{transaction.Apprentice},");
             builder.Append($"{transaction.ApprenticeTrainingCourse?.Replace(",", "")},");
             builder.Append($"{transaction.ApprenticeTrainingCourseLevel},");
+            builder.Append($"{transaction.ApprenticeLearningTypeFormatted},");
             builder.Append($"{transaction.PaidFromLevyFormatted},");
             builder.Append($"{transaction.EmployerContributionFormatted},");
             builder.Append($"{transaction.GovermentContributionFormatted},");
