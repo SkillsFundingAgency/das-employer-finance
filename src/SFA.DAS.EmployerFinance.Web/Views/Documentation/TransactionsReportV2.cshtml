@@ -1,0 +1,216 @@
+﻿@{
+    ViewBag.Title = "Transactions reports data change (data specification document)";
+    ViewBag.Section = "documentation";
+    ViewBag.PageID = "documentation-reports-transactions-v2";
+    ViewBag.GaData.Vpv = "/documentation/reports/transactions/v2";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-l">Data specification for transaction downloads</h1>
+        <p>We are updating the transactions data you can download to reflect the latest information available.</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li><b>Version:</b> 2</li>
+            <li><b>Implemented:</b> 1 July 2026</li>
+            <li><b>Owner:</b> Apprenticeship Service Digital Team</li>
+        </ul>
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+        
+        <h2 class="govuk-heading-m">Data fields</h2>
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th scope="col" class="govuk-table__header">Field name</th>
+                    <th scope="col" class="govuk-table__header">Subfield</th>
+                    <th scope="col" class="govuk-table__header">Data type</th>
+                    <th scope="col" class="govuk-table__header">Description</th>
+                    <th scope="col" class="govuk-table__header">Note</th>
+                </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Transaction date</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">date</td>
+                <td class="govuk-table__cell">Date processed</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell" rowspan="8">Transaction type</td>
+                <td class="govuk-table__cell">Expired Levy 12 month</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Levy expired from 12 months ago</td>
+                <td class="govuk-table__cell"><strong>New subfield</strong></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Expired Levy 24 month</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Levy expired from 24 months ago</td>
+                <td class="govuk-table__cell"><strong>New name</strong></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Transfer</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Transferred levy</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Balance Payment</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Balance of monthly payments after early completion</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Completion Payment</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Completion payment for the end of apprenticeship</td>
+                <td class="govuk-table__cell">Will be used for the final Apprenticeship unit payment</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Monthly Payment</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">On-programme payment for the apprenticeship</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Levy</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Levy funds</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Milestone Payment</td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">On-programme payment for Apprenticeship unit</td>
+                <td class="govuk-table__cell">New subfield</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Description</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Description of the payment</td>
+                <td class="govuk-table__cell">New descriptions for apprenticeship units and transfers received from</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">PAYE scheme</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">PAYE scheme ID</td>
+                <td class="govuk-table__cell">No change - levy employer only</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Payroll month</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">date</td>
+                <td class="govuk-table__cell">Payroll reported month</td>
+                <td class="govuk-table__cell">No change - levy employer only</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Levy declared</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Levy declared amount</td>
+                <td class="govuk-table__cell">No change - levy employer only</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">English %</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">% of payroll to England residents</td>
+                <td class="govuk-table__cell">No change - levy employer only</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">10% top up</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Government additional top up funds</td>
+                <td class="govuk-table__cell">No change - levy employer only</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Cohort reference</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">ID of the training agreed, connects transfers with payments for learners</td>
+                <td class="govuk-table__cell"><strong>New field</strong></td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Training provider</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Name of the Training provider</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Unique learner number</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Unique ID for the learner</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Apprentice</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Name of the apprentice</td>
+                <td class="govuk-table__cell">New name</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Apprenticeship training course</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Name of the training course</td>
+                <td class="govuk-table__cell">New name</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Course level</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Educational level of the course</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Course type</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">string</td>
+                <td class="govuk-table__cell">Type of course funded</td>
+                <td class="govuk-table__cell">New field</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Paid from levy</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Amount used for payment</td>
+                <td class="govuk-table__cell">New field to non-levy employers</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Paid from transfer</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Amount used for payment</td>
+                <td class="govuk-table__cell">New field to levy employers</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Your contribution</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Amount employer pays the training provider by invoice separately</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Government contribution</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Amount of Government contribution</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">Total</td>
+                <td class="govuk-table__cell"></td>
+                <td class="govuk-table__cell">integer</td>
+                <td class="govuk-table__cell">Total amount</td>
+                <td class="govuk-table__cell">No change</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
