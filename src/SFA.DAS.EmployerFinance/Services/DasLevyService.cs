@@ -155,4 +155,8 @@ public class DasLevyService(
 
         return (currentDate.ToPayrollYearString(), payrollMonth);
     }
+    public Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType)
+    {
+        return transactionRepository.GetExistingTransactionLines(accountId, periodEnd, transactionType);
+    }
 }

@@ -7,6 +7,7 @@ public static class DataRepositoryServiceRegistrations
 {
     public static IServiceCollection AddDataRepositories(this IServiceCollection services)
     {
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IAccountLegalEntityRepository, AccountLegalEntityRepository>();
         services.AddScoped<IDasLevyRepository, DasLevyRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
@@ -21,6 +22,8 @@ public static class DataRepositoryServiceRegistrations
         services.AddScoped<ITransferConnectionInvitationRepository, TransferConnectionInvitationRepository>();
         services.AddScoped<IUserAccountRepository, UserAccountRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITransferStagingRepository, TransferStagingRepository>();
+        services.AddScoped<IPaymentStagingRepository, PaymentStagingRepository>();
 
         return services;
     }

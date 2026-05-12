@@ -2,8 +2,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration.Memory;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
+using SFA.DAS.EmployerFinance.Commands.CreateAuditJob;
+using SFA.DAS.EmployerFinance.Commands.CreateAuditWorkflowLog;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
+using SFA.DAS.EmployerFinance.Queries.GetAuditJobLogs;
+using SFA.DAS.EmployerFinance.Queries.GetAuditJobs;
+using SFA.DAS.EmployerFinance.Queries.GetAuditJobSummary;
+using SFA.DAS.EmployerFinance.Queries.GetAuditWorkflowLogs;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
@@ -19,6 +25,7 @@ namespace SFA.DAS.EmployerFinance.Api.UnitTests;
 public class WhenAddingServicesToTheContainer
 {
     [TestCase(typeof(AccountTransactionsOrchestrator))]
+    [TestCase(typeof(AuditLogOrchestrator))]
     [TestCase(typeof(FinanceOrchestrator))]
     [TestCase(typeof(StatisticsOrchestrator))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Orchestrators(Type toResolve)
@@ -32,7 +39,13 @@ public class WhenAddingServicesToTheContainer
     }
 
     [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
+    [TestCase(typeof(IRequestHandler<CreateAuditJobCommand, CreateAuditJobCommandResult>))]
+    [TestCase(typeof(IRequestHandler<CreateAuditWorkflowLogCommand, CreateAuditWorkflowLogCommandResult>))]
     [TestCase(typeof(IRequestHandler<GetAccountTransactionSummaryRequest, GetAccountTransactionSummaryResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAuditJobsQuery, GetAuditJobsQueryResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAuditJobSummaryQuery, GetAuditJobSummaryQueryResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAuditJobLogsQuery, GetAuditJobLogsQueryResponse>))]
+    [TestCase(typeof(IRequestHandler<GetAuditWorkflowLogsQuery, GetAuditWorkflowLogsQueryResponse>))]
     [TestCase(typeof(IRequestHandler<GetLevyDeclarationRequest, GetLevyDeclarationResponse>))]
     [TestCase(typeof(IRequestHandler<GetLevyDeclarationsByAccountAndPeriodRequest, GetLevyDeclarationsByAccountAndPeriodResponse>))]
     [TestCase(typeof(IRequestHandler<GetEnglishFractionHistoryQuery, GetEnglishFractionHistoryResposne>))]
