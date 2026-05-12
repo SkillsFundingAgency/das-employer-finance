@@ -271,3 +271,22 @@
         padding: 30px;
     }
 }
+
+.actions {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.actions__icon {
+    max-height: 1em;
+    min-width: 1em;
+    margin-right: 5px;
+}
+
+.actions__link {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}

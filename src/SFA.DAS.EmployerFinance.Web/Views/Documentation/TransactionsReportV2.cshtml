@@ -6,7 +6,26 @@
 }
 
 <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Important
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-notification-banner__heading">
+                    Reports data is changing
+                </p>
+                <p class="govuk-body">Version 2 of the transactions download data is now available. It will replace version 1 on 1 July 2026.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+
         <h1 class="govuk-heading-l">Data specification for transaction downloads</h1>
         <p>We are updating the transactions data you can download to reflect the latest information available.</p>
         <ul class="govuk-list govuk-list--bullet">
@@ -14,8 +33,17 @@
             <li><b>Implemented:</b> 1 July 2026</li>
             <li><b>Owner:</b> Apprenticeship Service Digital Team</li>
         </ul>
+        <div class="actions">
+            <a href="#print" class="govuk-link govuk-link--no-visited-state actions__link actions__link--print">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="actions__icon">
+                    <path fill="currentColor"
+                          d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z">
+                    </path>
+                </svg>Print
+            </a>
+        </div>
         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-        
+
         <h2 class="govuk-heading-m">Data fields</h2>
         <table class="govuk-table">
             <thead class="govuk-table__head">
@@ -219,14 +247,14 @@
             </tr>
             </tbody>
         </table>
-        
-        
+
+
         <h2 class="govuk-heading-m">Information about finance fields</h2>
         <p>Below are examples of the fields and transaction values displayed. For levy employers, levy added, levy sent as transfers or payments for learners funded by the levy are shown in the <b>‘Paid from levy’</b> field.</p>
         <p>Transfers received and payments funded by transfers are shown in <b>‘Paid from transfer’</b> field.</p>
         <p>For both levy and non-levy employers, payments for learners funded by co-investment are shown in the <b>‘Government contribution’</b> and <b>‘Your contribution’</b> fields. The co-investment rate is applied (for example, 100/0, 95/5 or 75/25).</p>
         <p>The <b>‘Cohort reference’</b> helps you match transfers received with learners paid from those funds.</p>
-        
+
         <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -313,7 +341,7 @@
             </tr>
             </tbody>
         </table>
-        
+
         <table class="govuk-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -391,13 +419,13 @@
             </tr>
             </tbody>
         </table>
-        
+
         <h2 class="govuk-heading-m">Data privacy and compliance</h2>
         <ul class="govuk-list govuk-list--number">
             <li>Employers own any data they download. It is their responsibility to manage this data in line with their own GDPR and compliance requirements.</li>
             <li>Once downloaded, data is covered by the organisation’s own data retention policies.</li>
         </ul>
-        
+
         <h2 class="govuk-heading-m">Data formats</h2>
         <p>File formats: CSV or Excel</p>
     </div>
