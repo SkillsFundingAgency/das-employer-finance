@@ -34,14 +34,6 @@ public class TransactionLineStagingCommandValidator : IValidator<TransactionLine
             if (item.TransactionType < 0)
                 result.AddError($"{prefix}.TransactionType", "TransactionType is not a valid value.");
 
-            if (item.Amount < 0)
-                result.AddError($"{prefix}.Amount", "Amount must be non-negative.");
-
-            if (item.SfaCoInvestmentAmount < 0)
-                result.AddError($"{prefix}.SfaCoInvestmentAmount", "SfaCoInvestmentAmount must be non-negative.");
-
-            if (item.EmployerCoInvestmentAmount < 0)
-                result.AddError($"{prefix}.EmployerCoInvestmentAmount", "EmployerCoInvestmentAmount must be non-negative.");
         }
 
         return result;
