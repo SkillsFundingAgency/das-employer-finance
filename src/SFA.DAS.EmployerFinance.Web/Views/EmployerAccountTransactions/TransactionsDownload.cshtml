@@ -84,6 +84,15 @@
                 @Html.DropDownListFor(m => m.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
             </div>
             
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="@Html.IdFor(m => m.Version)">Select version</label>
+                <select class="govuk-select" id="Version"
+                        name="Version">
+                    <option value="1">Version 1</option>
+                    <option value="2" selected>Version 2</option>
+                </select>
+            </div>
+            
             <button class="govuk-button">Download</button>
         }
     </div>
@@ -94,7 +103,7 @@
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
             <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction("teams")" class="govuk-breadcrumbs__link">Home</a></li>
-            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.FinanceIndex" asp-route-hashedAccountId="@ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]" class="govuk-breadcrumbs__link">Finance</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.FinanceIndex" asp-route-hashedAccountId="@ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]" class="govuk-breadcrumbs__link">Funding and payments</a></li>
             <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
         </ol>
     </div>
