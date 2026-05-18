@@ -27,7 +27,8 @@ SELECT	tl.DateCreated									AS DateCreated,
 			NULL											AS TransferSenderAccountId,
 			NULL											AS TransferSenderAccountName,
 			NULL											AS TransferReceiverAccountId,
-			NULL											AS TransferReceiverAccountName
+			NULL											AS TransferReceiverAccountName,
+			NULL                                            AS CohortId
 	FROM	[employer_financial].TransactionLine tl
 			LEFT JOIN [employer_financial].[TransactionLineTypes] tlt 
 				ON tlt.TransactionType = IIF(Amount >= 0, 1, 2)
@@ -65,7 +66,8 @@ UNION ALL
 		NULL								AS TransferSenderAccountId,
 		NULL								AS TransferSenderAccountName,
 		NULL								AS TransferReceiverAccountId,
-		NULL								AS TransferReceiverAccountName
+		NULL								AS TransferReceiverAccountName,
+        funds.CohortId                      AS CohortId
 	FROM (SELECT 	transLine.DateCreated,
 				p.AccountId, 
 				p.Ukprn, 
@@ -130,7 +132,8 @@ SELECT		DATEADD(dd, DATEDIFF(dd, 0, tl.DateCreated), 0)		AS DateCreated,
 			NULL												AS TransferSenderAccountId,
 			NULL												AS TransferSenderAccountName,
 			NULL												AS TransferReceiverAccountId,
-			NULL												AS TransferReceiverAccountName
+			NULL												AS TransferReceiverAccountName,
+			NULL                                                AS CohortId
 	FROM	[employer_financial].TransactionLine tl
 			LEFT JOIN [employer_financial].[TransactionLineTypes] tlt
 				ON tlt.TransactionType = 5
@@ -165,7 +168,8 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		[employer_financial].[AccountTransfers].SenderAccountID									AS TransferSenderAccountId,
 		[employer_financial].[AccountTransfers].[SenderAccountName]								AS TransferSenderAccountName,
 		[employer_financial].[AccountTransfers].[ReceiverAccountId]								AS TransferReceiverAccountId,
-		[employer_financial].[AccountTransfers].[ReceiverAccountName]							AS TransferReceiverAccountName 
+		[employer_financial].[AccountTransfers].[ReceiverAccountName]							AS TransferReceiverAccountName,
+        NULL                                                                                    AS CohortId
 	FROM [employer_financial].[AccountTransfers]
 	WHERE [employer_financial].[AccountTransfers].[SenderAccountId] = @AccountId
 		AND [employer_financial].[AccountTransfers].[CreatedDate] >= @FromDate
@@ -196,7 +200,8 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		[employer_financial].[AccountTransfers].SenderAccountID									AS TransferSenderAccountId,
 		[employer_financial].[AccountTransfers].[SenderAccountName]								AS TransferSenderAccountName,
 		[employer_financial].[AccountTransfers].[ReceiverAccountId]								AS TransferReceiverAccountId,
-		[employer_financial].[AccountTransfers].[ReceiverAccountName]							AS TransferReceiverAccountName
+		[employer_financial].[AccountTransfers].[ReceiverAccountName]							AS TransferReceiverAccountName,
+        NULL                                                                                    AS CohortId
 	FROM [employer_financial].[AccountTransfers]
 	WHERE [employer_financial].[AccountTransfers].[ReceiverAccountId] = @AccountId
 		AND [employer_financial].[AccountTransfers].[CreatedDate] >= @FromDate

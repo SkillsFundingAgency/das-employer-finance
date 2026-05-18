@@ -30,6 +30,7 @@ public class Payment
     public long PaymentMetaDataId { get; set; }
     public LearningType LearningType { get; set; }
     public string CourseCode { get; set; }
+    public long CohortId { get; set; }
     public override bool Equals(object obj)
     {
         var payment = obj as Payment;
@@ -63,6 +64,7 @@ public class Payment
         if (PathwayName != payment.PathwayName) return false;
         if (LearningType != payment.LearningType) return false;
         if (CourseCode != payment.CourseCode) return false;
+        if (CohortId != payment.CohortId) return false;
 
         return true;
     }

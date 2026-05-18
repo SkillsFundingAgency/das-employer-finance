@@ -50,6 +50,7 @@ public class WhenIAddSinglePaymentDetailsMetadata
 
         actual.ApprenticeName.Should().Be($"{apprenticeshipResponse.FirstName} {apprenticeshipResponse.LastName}");
         actual.CourseStartDate.Should().Be(apprenticeshipResponse.StartDate);
+        actual.CohortId.Should().Be(apprenticeshipResponse.CohortId);
         
         commitmentsClient.Verify();
     }

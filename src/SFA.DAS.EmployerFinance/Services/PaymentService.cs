@@ -78,6 +78,7 @@ public class PaymentService(
         {
             paymentDetails.ApprenticeName = $"{apprenticeship.FirstName} {apprenticeship.LastName}";
             paymentDetails.CourseStartDate = apprenticeship.StartDate;
+            paymentDetails.CohortId = apprenticeship.CohortId;
         }
         else
         {
