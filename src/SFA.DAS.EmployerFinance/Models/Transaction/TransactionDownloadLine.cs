@@ -8,6 +8,7 @@ public class TransactionDownloadLine
     public DateTime DateCreated { get; set; }
 
     public long AccountId { get; set; }
+    public long? CohortId { get; set; }
 
     public string TransactionType { get; set; }
 
