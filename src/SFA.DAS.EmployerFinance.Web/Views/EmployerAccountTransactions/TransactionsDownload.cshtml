@@ -24,12 +24,37 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        @if (DateTime.UtcNow > new DateTime(2026,09,01))
+        {
+            <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-import"
+                 data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title" id="govuk-notification-import">
+                        Important
+                    </h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">
+                        Reports data has changed.
+                    </h3>
+                    <p class="govuk-body">
+                        <a class="govuk-notification-banner__link" href="#">View the data specification (opens in new tab)</a> for detailed information.
+                    </p>
+                </div>
+            </div>
+        }
+        
         <h1 class="govuk-heading-xl">Download transactions</h1>
-        <p>Enter a start and end date to download transactions within a specific date range.</p>
+        <p>Create a report of your transactions for a chosen date range.</p>
+        @if (DateTime.UtcNow < new DateTime(2026,09,01))
+        {
+            <p><a href="#" target="_blank" class="govuk-link govuk-link--no-visited-state">View the data specification (opens in new tab)</a> to understand the data we provide.</p>    
+        }
+             
 
         @using (Html.BeginForm("TransactionsDownload", "EmployerAccountTransactions", new { hashedAccountId }, FormMethod.Post, true, new { novalidate = "novalidate" }))
         {
-            
+
             <div asp-fieldname="StartDate.Month, StartDate.Year" class="govuk-form-group">
                 <fieldset class="govuk-fieldset" role="group" aria-describedby="start-date-hint">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Start date</legend>
@@ -61,8 +86,8 @@
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">End date</legend>
                     <div class="govuk-hint" id="end-date-hint">For example, @exampleClosingDate.ToGdsFormatNoDayMonthsNumbers()</div>
                     <div class="govuk-date-input">
-                    <span esfa-validation-for="EndDate.Month" class="govuk-error-message"></span>
-                    <span esfa-validation-for="EndDate.Year" class="govuk-error-message"></span>
+                        <span esfa-validation-for="EndDate.Month" class="govuk-error-message"></span>
+                        <span esfa-validation-for="EndDate.Year" class="govuk-error-message"></span>
                         <div class="govuk-date-input__item">
                             <div class="govuk-form-group">
                                 <label asp-for="EndDate.Month" class="govuk-label govuk-date-input__label">Month</label>
@@ -83,7 +108,7 @@
                 <label class="govuk-label" for="@Html.IdFor(m => m.DownloadFormat)">Select format</label>
                 @Html.DropDownListFor(m => m.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
             </div>
-            
+
             <div class="govuk-form-group">
                 <label class="govuk-label" for="@Html.IdFor(m => m.Version)">Select version</label>
                 <select class="govuk-select" id="Version"
@@ -92,7 +117,7 @@
                     <option value="2" selected>Version 2</option>
                 </select>
             </div>
-            
+
             <button class="govuk-button">Download</button>
         }
     </div>
