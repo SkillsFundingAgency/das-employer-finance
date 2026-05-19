@@ -82,7 +82,8 @@ UNION ALL
 				meta.ApprenticeName AS Apprentice,
 				meta.ApprenticeshipCourseName AS ApprenticeTrainingCourse,
 				meta.ApprenticeshipCourseLevel AS ApprenticeTrainingCourseLevel,
-                meta.LearningType AS ApprenticeLearningType
+                meta.LearningType AS ApprenticeLearningType,
+                meta.CohortId as CohortId
 		FROM [employer_financial].[Payment]   p
 				JOIN  employer_financial.TransactionLine transLine
 					ON transLine.AccountId = p.AccountId 
@@ -106,7 +107,8 @@ UNION ALL
 				meta.ApprenticeName,
 				meta.ApprenticeshipCourseName,
 				meta.ApprenticeshipCourseLevel,
-				meta.LearningType) AS funds
+				meta.LearningType,
+				meta.CohortId) AS funds
 
 UNION ALL
 
