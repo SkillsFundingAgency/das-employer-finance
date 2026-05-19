@@ -252,6 +252,34 @@
     border: none;
 }
 
+.app-table-wrapper {
+    border: 1px solid #b1b4b6;
+    margin-bottom: 2rem;
+}
+
+.app-table-wrapper table {
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+.app-table-wrapper caption {
+    background: #f3f2f1;
+    padding-left: 1rem;
+    padding-top: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.app-table-wrapper th {
+    background: #f3f2f1;
+}
+
+.app-table-wrapper .govuk-table__header,
+.app-table-wrapper .govuk-table__cell {
+    padding: .5rem 1rem;
+    border: none;
+}
+
 /* Forms */
 
 .govuk-error-message + .govuk-error-message {
