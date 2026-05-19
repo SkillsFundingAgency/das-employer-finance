@@ -814,4 +814,59 @@ public class WhenCalculatingExpiringFunds
         Assert.That(439, Is.EqualTo(actual.First().Value));
         Assert.That(539, Is.EqualTo(actual.Skip(3).First().Value));
     }
+    
+    
+    [Test]
+    public void Then_The_Balance_Is_Correctly_Calculated_Over_A_Large_Expiry_Period_When_Expiry_Has_An_EndDate()
+    {
+        //Arrange
+        var expiryPeriod = 24;
+        _fundsIn = new Dictionary<CalendarPeriod, decimal>
+        {
+            {new CalendarPeriod(2017, 5), 539},
+            {new CalendarPeriod(2017, 6), 539},
+            {new CalendarPeriod(2017, 7), 539},
+            {new CalendarPeriod(2017, 8), 539},
+            {new CalendarPeriod(2017, 9), 539},
+            {new CalendarPeriod(2017, 10), 539},
+            {new CalendarPeriod(2017, 11), 539},
+            {new CalendarPeriod(2017, 12), 539},
+            {new CalendarPeriod(2018, 1), 539},
+            {new CalendarPeriod(2018, 2), 539},
+            {new CalendarPeriod(2018, 3), (decimal)-323.4},
+            {new CalendarPeriod(2018, 4), 539},
+            {new CalendarPeriod(2018, 5), (decimal)-323.4},
+            {new CalendarPeriod(2018, 6), 539},
+            {new CalendarPeriod(2018, 7), 539},
+            {new CalendarPeriod(2018, 8), 539},
+            {new CalendarPeriod(2018, 9), 539},
+            {new CalendarPeriod(2018, 10), 539},
+            {new CalendarPeriod(2018, 11), 539},
+            {new CalendarPeriod(2018, 12), 539},
+            {new CalendarPeriod(2019, 1), (decimal)-323.4}
+        };
+        var fundsOut = new Dictionary<CalendarPeriod, decimal>
+        {
+            {new CalendarPeriod(2019, 1), 0},
+            {new CalendarPeriod(2019, 2), 0},
+            {new CalendarPeriod(2019, 3), 0},
+            {new CalendarPeriod(2019, 4), 0},
+            {new CalendarPeriod(2019, 5), 100},
+            {new CalendarPeriod(2019, 6), 0} ,
+            {new CalendarPeriod(2019, 7), 0},
+            {new CalendarPeriod(2019, 8), 0}
+        };
+        var expired = new Dictionary<CalendarPeriod, decimal>
+        {
+            
+        };
+
+        //Act 5-2018
+        var actual = _expiredFunds.GetExpiringFunds(_fundsIn, fundsOut, expired, expiryPeriod, new DateTime(2018, 5, 1));
+
+        //Assert
+        Assert.That(439, Is.EqualTo(actual.First().Value));
+        Assert.That(539, Is.EqualTo(actual.Skip(3).First().Value));
+        Assert.That(actual.Skip(12).Select(c=>c.Value).Sum(), Is.EqualTo(0));
+    }
 }
