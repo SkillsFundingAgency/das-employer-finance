@@ -24,7 +24,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @if (DateTime.UtcNow > new DateTime(2026,09,01))
+        @if (DateTime.UtcNow > new DateTime(2026,07,01))
         {
             <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-import"
                  data-module="govuk-notification-banner">
@@ -38,7 +38,7 @@
                         Reports data has changed.
                     </h3>
                     <p class="govuk-body">
-                        <a class="govuk-notification-banner__link" href="#">View the data specification (opens in new tab)</a> for detailed information.
+                        <a class="govuk-notification-banner__link" asp-route="@RouteNames.DownloadTransactionsReportV2">View the data specification (opens in new tab)</a> for detailed information.
                     </p>
                 </div>
             </div>
@@ -46,9 +46,9 @@
         
         <h1 class="govuk-heading-xl">Download transactions</h1>
         <p>Create a report of your transactions for a chosen date range.</p>
-        @if (DateTime.UtcNow < new DateTime(2026,09,01))
+        @if (DateTime.UtcNow < new DateTime(2026,7,01))
         {
-            <p><a href="#" target="_blank" class="govuk-link govuk-link--no-visited-state">View the data specification (opens in new tab)</a> to understand the data we provide.</p>    
+            <p><a asp-route="@RouteNames.DownloadTransactionsReportV2" target="_blank" class="govuk-link govuk-link--no-visited-state">View the data specification (opens in new tab)</a> to understand the data we provide.</p>    
         }
              
 
