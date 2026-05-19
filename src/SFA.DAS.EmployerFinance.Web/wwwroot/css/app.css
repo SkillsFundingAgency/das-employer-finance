@@ -172,6 +172,51 @@
     border-color: transparent !important;
 }
 
+
+/* Info Table */ 
+
+.app-table--info {
+    border: 1px solid #b1b4b6;
+}
+
+.app-table--info th {
+    background: #f3f2f1;
+    white-space: nowrap;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.app-table--info tr th:first-child, 
+.app-table--info tr td:first-child,
+.app-table--info tr th:last-child,
+.app-table--info tr td:last-child {
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.app-table--info tr td:first-child:before,
+.app-table--info tr td:last-child:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: -1px;
+    left: 0;
+    width: 1.5rem;
+    background: #fff;
+}
+
+.app-table--info tr td:last-child:before {
+    left: auto;
+    right: 0;
+}
+
+.app-table--info tr:last-child td:first-child:before,
+.app-table--info tr:last-child td:last-child:before {
+    bottom: 0;
+}
+
+
 /* Survey */
 
 .app-survey-details {
