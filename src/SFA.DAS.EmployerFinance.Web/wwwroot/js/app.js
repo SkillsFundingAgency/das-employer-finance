@@ -18,7 +18,7 @@ if (createTransfersPledgeButton) {
 }
 
 const printLinks = document.querySelectorAll(
-    ".actions__link--print"
+    ".app-actions__link--print"
 );
 
 if (printLinks.length > 0) {

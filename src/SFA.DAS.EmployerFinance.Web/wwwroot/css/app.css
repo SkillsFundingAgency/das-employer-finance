@@ -272,21 +272,18 @@
     }
 }
 
-.actions {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
+.app-actions {
+    margin: 1rem 0;
 }
 
-.actions__icon {
-    max-height: 1em;
-    min-width: 1em;
-    margin-right: 5px;
-}
-
-.actions__link {
-    margin-bottom: 10px;
-    display: flex;
+.app-actions__link {
+    display: inline-flex;
     align-items: center;
     flex-direction: row;
+    gap: .5rem;
+}
+
+.app-actions__icon {
+    max-height: 1.5rem;
+    min-width: 1.5rem;
 }
