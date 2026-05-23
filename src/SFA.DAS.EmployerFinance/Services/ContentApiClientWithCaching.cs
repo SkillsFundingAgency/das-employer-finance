@@ -1,45 +1,37 @@
-﻿using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public class ContentApiClientWithCaching : IContentApiClient
+public class ContentApiClientWithCaching(
+    IContentApiClient contentService,
+    ICacheService cacheService,
+    EmployerFinanceConfiguration configuration)
+    : IContentApiClient
 {
-    private readonly IContentApiClient _contentService;
-    private readonly ICacheStorageService _cacheStorageService;
-    private readonly EmployerFinanceConfiguration _configuration;
-
-    public ContentApiClientWithCaching(
-        IContentApiClient contentService, 
-        ICacheStorageService cacheStorageService, 
-        EmployerFinanceConfiguration configuration)
-    {
-        _contentService = contentService;
-        _cacheStorageService = cacheStorageService;
-        _configuration = configuration;
-    }
-
     public async Task<string> Get(string type, string applicationId)
     {
         var cacheKey = $"{applicationId}_{type}".ToLowerInvariant();
 
         try
         {
-            if (_cacheStorageService.TryGet(cacheKey, out string cachedContentBanner))
+            var (found, cached) = await cacheService.TryGetAsync<string>(cacheKey);
+            if (found && cached != null)
             {
-                return cachedContentBanner;
+                return cached;
             }
 
-            var content = await _contentService.Get(type, applicationId);
+            var content = await contentService.Get(type, applicationId);
 
             if (content != null)
             {
-                await _cacheStorageService.Save(cacheKey, content, _configuration.DefaultCacheExpirationInMinutes);
+                var expiration = TimeSpan.FromMinutes(configuration.DefaultCacheExpirationInMinutes);
+                await cacheService.SetAsync(cacheKey, content, expiration);
             }
 
             return content;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new ArgumentException($"Failed to get content for {cacheKey}", ex);
         }

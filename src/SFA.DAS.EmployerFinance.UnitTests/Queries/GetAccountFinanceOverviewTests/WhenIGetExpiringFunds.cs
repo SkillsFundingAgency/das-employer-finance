@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Validation;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
@@ -13,25 +13,24 @@ public class WhenIGetExpiringFunds
     private const decimal ExpectedTotalSpendForLastYear = 1000.00M;
 
     private GetAccountFinanceOverviewQueryHandler _handler;
-    private Mock<IDasLevyService> _levyService;
-    private Mock<ILogger<GetAccountFinanceOverviewQueryHandler>> _logger;
+    private Mock<IFinanceDashboardRepository> _repository;
     private Mock<IValidator<GetAccountFinanceOverviewQuery>> _validator;
     private GetAccountFinanceOverviewQuery _query;
 
     [SetUp]
     public void Setup()
     {
-        _logger = new Mock<ILogger<GetAccountFinanceOverviewQueryHandler>>();
-        _levyService = new Mock<IDasLevyService>();
+        _repository = new Mock<IFinanceDashboardRepository>();
         _validator = new Mock<IValidator<GetAccountFinanceOverviewQuery>>();
 
         _query = new GetAccountFinanceOverviewQuery { AccountId = ExpectedAccountId };
 
-        _handler = new GetAccountFinanceOverviewQueryHandler(_levyService.Object, _validator.Object, _logger.Object);
-        
-        _levyService.Setup(s => s.GetAccountBalance(ExpectedAccountId)).ReturnsAsync(ExpectedBalance);
-        _levyService.Setup(s => s.GetTotalSpendForLastYear(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
-        _levyService.Setup(s => s.GetLatestLevyDeclaration(ExpectedAccountId)).ReturnsAsync(0);
+        _handler = new GetAccountFinanceOverviewQueryHandler(_repository.Object, _validator.Object);
+
+        _repository.Setup(s => s.GetAccountBalanceAsync(ExpectedAccountId)).ReturnsAsync(ExpectedBalance);
+        _repository.Setup(s => s.GetTotalSpendForLastYearAsync(ExpectedAccountId)).ReturnsAsync(ExpectedTotalSpendForLastYear);
+        _repository.Setup(s => s.GetLevyDeclarationTotalForMonthAsync(ExpectedAccountId, It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(0);
+        _repository.Setup(s => s.GetLastMonthPaymentsAndTransfersAsync(ExpectedAccountId, It.IsAny<DateTime>(), It.IsAny<DateTime>())).ReturnsAsync(0m);
         _validator.Setup(v => v.ValidateAsync(_query))
             .ReturnsAsync(new ValidationResult { ValidationDictionary = new Dictionary<string, string>() });
     }

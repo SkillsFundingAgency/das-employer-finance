@@ -1,4 +1,4 @@
-﻿CREATE TABLE [employer_financial].[LevyDeclaration]
+CREATE TABLE [employer_financial].[LevyDeclaration]
 (
 	[Id] BIGINT NOT NULL PRIMARY KEY IDENTITY, 
 	[AccountId] BIGINT NOT NULL DEFAULT 0,
@@ -35,4 +35,11 @@ GO
 
 CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_EmpRef_EOYAdjustment]
 ON [employer_financial].[LevyDeclaration] ([empRef],[EndOfYearAdjustment]) INCLUDE ([SubmissionDate],[PayrollYear],[PayrollMonth])
+GO
+
+CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_AccountId_SubmissionDate] 
+ON [employer_financial].[LevyDeclaration] 
+([AccountId], [SubmissionDate])
+INCLUDE ([EmpRef], [PayrollYear], [PayrollMonth], [EndOfYearAdjustment])
+WITH (ONLINE = ON)
 GO

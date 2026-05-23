@@ -139,7 +139,7 @@ public class WhenAddingServicesToTheContainer
         services.AddLogging(_ => { });
         services.AddHmrcServices();
         services.AddProviderServices();
-        services.AddCachesRegistrations(true);
+        services.AddCachesRegistrations("", true);
         services.AddEmployerFinanceOuterApi();
 
         RegisterEventHandlers(services);

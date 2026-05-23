@@ -1,4 +1,4 @@
-﻿using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -66,7 +66,8 @@ public class Startup
         //MAC-192
         services.AddApplicationServices(_configuration);
 
-        services.AddCachesRegistrations(_configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
+        var isLocal = _configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
+        services.AddCachesRegistrations(employerFinanceWebConfiguration.RedisConnectionString, isLocal);
 
         services.AddContentApiClient(_configuration);
         services.AddEmployerFinanceApi();

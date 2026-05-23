@@ -87,7 +87,12 @@ public static class HostExtensions
             services.AddMediatorValidators();
             services.AddHmrcServices();
             services.AddProviderServices();
-            services.AddCachesRegistrations(context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase));
+            var isLocal = context.Configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
+            var employerFinanceJobsConfiguration = context.Configuration
+                .GetSection(nameof(EmployerFinanceJobsConfiguration))
+                .Get<EmployerFinanceJobsConfiguration>();
+            var redisConnectionString = employerFinanceJobsConfiguration?.RedisConnectionString ?? string.Empty;
+            services.AddCachesRegistrations(redisConnectionString, isLocal);
             services.AddEmployerFinanceOuterApi();
             services.AddTransient<IRetryStrategy>(_ => new ExponentialBackoffRetryAttribute(5, "00:00:10", "00:00:20"));
         });
