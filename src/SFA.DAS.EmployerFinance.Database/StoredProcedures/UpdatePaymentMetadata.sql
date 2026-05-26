@@ -24,7 +24,7 @@ SET
     ,ApprenticeshipCourseStartDate = @CourseStartDate
     ,PathwayName = @PathwayName
     ,LearningType = @LearningType
-    ,CourseCode = @CourseCode,
+    ,CourseCode = @CourseCode
     ,CohortId = @CohortId
 WHERE [Id] = @PaymentMetadataId
 
