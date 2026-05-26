@@ -126,14 +126,21 @@
                 @Html.DropDownListFor(m => m.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
             </div>
 
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="@Html.IdFor(m => m.Version)">Select version</label>
-                <select class="govuk-select" id="Version"
-                        name="Version">
-                    <option value="1">Version 1</option>
-                    <option value="2" selected>Version 2</option>
-                </select>
-            </div>
+            @if (DateTime.UtcNow < new DateTime(2026, 7, 01))
+            {
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="@Html.IdFor(m => m.Version)">Select version</label>
+                    <select class="govuk-select" id="Version"
+                            name="Version">
+                        <option value="1">Version 1</option>
+                        <option value="2" selected>Version 2</option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="Version" value="2" />
+            }
 
             <button class="govuk-button">Download</button>
         }
