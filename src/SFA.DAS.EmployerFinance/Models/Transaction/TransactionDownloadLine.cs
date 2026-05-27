@@ -47,7 +47,7 @@ public class TransactionDownloadLine
 
     public string ApprenticeTrainingCourseLevel { get; set; }
     public string ApprenticeLearningType { get; set; }
-    public string ApprenticeLearningTypeFormatted => !string.IsNullOrEmpty(ApprenticeLearningType) ? Enum.Parse<LearningType>(ApprenticeLearningType).ToString() : nameof(LearningType.Apprenticeship);
+    public string ApprenticeLearningTypeFormatted => !string.IsNullOrEmpty(ApprenticeLearningType) ? Enum.Parse<LearningType>(ApprenticeLearningType).ToString() : null;
 
     public decimal PaidFromLevy { get; set; }
 
