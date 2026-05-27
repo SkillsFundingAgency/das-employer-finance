@@ -194,6 +194,11 @@
     position: relative;
 }
 
+.app-table--info tr th:last-child,
+.app-table--info tr td:last-child {
+    padding-right: 1.5rem;
+}
+
 .app-table--info tr td:first-child:before,
 .app-table--info tr td:last-child:before {
     content: "";
