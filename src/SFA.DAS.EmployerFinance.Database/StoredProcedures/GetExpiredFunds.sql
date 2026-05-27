@@ -7,4 +7,4 @@ SELECT	YEAR(TransactionDate) AS CalendarPeriodYear,
 		Amount
 FROM	[employer_financial].[TransactionLine]
 WHERE	AccountId = @AccountId
-		AND TransactionType = /*ExpiredFund*/ 5
+		AND TransactionType IN (/*ExpiredFund*/ 5, /*ShortTermExpiredFund*/ 6)

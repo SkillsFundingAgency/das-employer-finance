@@ -159,7 +159,9 @@ public class DraftExpireAccountFundsCommandHandlerTests
                 It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(2)),
                 It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(1)),
                 It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(0)),
-                It.IsAny<int>()))
+                It.IsAny<int>(),
+                It.IsAny<DateTime?>(),
+                It.IsAny<DateTime?>()))
             .Returns(expiredFund);
             
         //Act

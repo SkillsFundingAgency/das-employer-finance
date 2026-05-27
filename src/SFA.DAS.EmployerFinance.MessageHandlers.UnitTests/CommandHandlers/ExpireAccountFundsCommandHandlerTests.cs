@@ -56,7 +56,9 @@ public class ExpireAccountFundsCommandHandlerTests : FluentTest<ExpireAccountFun
             It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
             It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
             It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
-            It.IsAny<int>())).Returns(new Dictionary<CalendarPeriod, decimal>());
+            It.IsAny<int>(),
+            It.IsAny<DateTime?>(),
+            It.IsAny<DateTime?>())).Returns(new Dictionary<CalendarPeriod, decimal>());
 
         //Act
         await handler.Handle(message, new TestableMessageHandlerContext(new MessageMapper()));
@@ -171,7 +173,9 @@ public class ExpireAccountFundsCommandHandlerTestsFixture
             It.Is<Dictionary<CalendarPeriod, decimal>>(fi => AreFundsInEqual(FundsIn, fi)),
             It.Is<Dictionary<CalendarPeriod, decimal>>(fo => AreFundsOutEqual(FundsOut, fo)),
             It.Is<Dictionary<CalendarPeriod, decimal>>(ex => AreExpiredFundsEqual(ExistingExpiredFunds, ex)),
-            FundsExpiryPeriod)).Returns(ExpiringFunds);
+            FundsExpiryPeriod,
+            It.IsAny<DateTime?>(),
+            It.IsAny<DateTime?>())).Returns(ExpiringFunds);
 
         Handler = new ExpireAccountFundsCommandHandler(MockCurrentDateTime.Object, MockLevyFundsInRepository.Object, MockPaymentFundsOutRepository.Object, MockExpiredFunds.Object, MockExpiredFundsRepository.Object, MockLogger.Object, EmployerFinanceConfiguration);
     }
@@ -182,7 +186,9 @@ public class ExpireAccountFundsCommandHandlerTestsFixture
             It.Is<Dictionary<CalendarPeriod, decimal>>(fi => AreFundsInEqual(FundsIn, fi)),
             It.Is<Dictionary<CalendarPeriod, decimal>>(fo => AreFundsOutEqual(FundsOut, fo)),
             It.Is<Dictionary<CalendarPeriod, decimal>>(ex => AreExpiredFundsEqual(ExistingExpiredFunds, ex)),
-            FundsExpiryPeriod)).Returns(new Dictionary<CalendarPeriod, decimal>
+            FundsExpiryPeriod,
+            It.IsAny<DateTime?>(),
+            It.IsAny<DateTime?>())).Returns(new Dictionary<CalendarPeriod, decimal>
         {
             { new CalendarPeriod(2018, 03), 0m },
             { new CalendarPeriod(2018, 04), 0m }
@@ -195,7 +201,9 @@ public class ExpireAccountFundsCommandHandlerTestsFixture
             It.Is<Dictionary<CalendarPeriod, decimal>>(fi => AreFundsInEqual(FundsIn, fi)),
             It.Is<Dictionary<CalendarPeriod, decimal>>(fo => AreFundsOutEqual(FundsOut, fo)),
             It.Is<Dictionary<CalendarPeriod, decimal>>(ex => AreExpiredFundsEqual(ExistingExpiredFunds, ex)),
-            FundsExpiryPeriod)).Returns(new Dictionary<CalendarPeriod, decimal>());
+            FundsExpiryPeriod,
+            It.IsAny<DateTime?>(),
+            It.IsAny<DateTime?>())).Returns(new Dictionary<CalendarPeriod, decimal>());
     }
 
     public Task Handle()
