@@ -36,8 +36,8 @@ public class WhenIGetSubmissionIds
 
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
-        result.Value.Should().BeAssignableTo<List<long>>();
-        ((List<long>)result.Value!).Should().BeEquivalentTo(ids, options => options.WithStrictOrdering());
+        result.Value.Should().BeAssignableTo<List<string>>();
+        ((List<string>)result.Value!).Should().BeEquivalentTo(new List<string> { "1001", "1002" }, options => options.WithStrictOrdering());
     }
 
     [Test]
@@ -56,6 +56,6 @@ public class WhenIGetSubmissionIds
 
         result.Should().NotBeNull();
         result!.StatusCode.Should().Be(200);
-        ((List<long>)result.Value!).Should().BeEmpty();
+        ((List<string>)result.Value!).Should().BeEmpty();
     }
 }

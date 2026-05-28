@@ -75,14 +75,15 @@ public class LevyDeclarationOrchestratorTests
     public async Task Then_GetSubmissionIds_Returns_List_From_Mediator()
     {
         var empRef = "123/AB12345";
-        var expectedIds = new List<long> { 10, 20, 30 };
+        var mediatorIds = new List<long> { 10L, 20L, 30L };
+        var expectedIds = new List<string> { "10", "20", "30" };
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
 
         mediator.Setup(x => x.Send(
                 It.Is<GetLevyDeclarationSubmissionIdsQuery>(q => q.EmpRef == empRef),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedIds);
+            .ReturnsAsync(mediatorIds);
 
         var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
 
