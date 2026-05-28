@@ -24,6 +24,7 @@ public static class DataRepositoryServiceRegistrations
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITransferStagingRepository, TransferStagingRepository>();
         services.AddScoped<IPaymentStagingRepository, PaymentStagingRepository>();
+        services.AddScoped<ITransactionLineStagingRepository, TransactionLineStagingRepository>();
 
         return services;
     }

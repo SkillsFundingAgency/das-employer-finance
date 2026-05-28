@@ -544,4 +544,23 @@ public class DasLevyRepository : IDasLevyRepository
         return await _db.Value.Accounts
             .SingleOrDefaultAsync(ac => ac.Id == accountId);
     }
+    public async Task<List<SFA.DAS.EmployerFinance.Api.Types.ExistingPeriod12LevyDeclarationResult>> GetExistingPeriod12LevyDeclarations(
+        string empRef,
+        string payrollYear,
+        short payrollMonth)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@EmpRef", empRef, DbType.String);
+        parameters.Add("@PayrollYear", payrollYear, DbType.String);
+        parameters.Add("@PayrollMonth", payrollMonth, DbType.Int32);
+
+        var result = await _db.Value.Database.GetDbConnection().QueryAsync<SFA.DAS.EmployerFinance.Api.Types.ExistingPeriod12LevyDeclarationResult>(
+            sql: "[employer_financial].[GetLevyDeclarations_ByEmpRefPayrollMonthPayrollYear]",
+            param: parameters,
+            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result.ToList();
+    }
 }

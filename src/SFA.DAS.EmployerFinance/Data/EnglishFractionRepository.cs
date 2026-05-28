@@ -49,6 +49,15 @@ public class EnglishFractionRepository : IEnglishFractionRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<DateTime?> GetLastStoredCalculationDateForEmpRef(string employerReference)
+    {
+        return await _db.Value.Set<EnglishFractionEntity>()
+            .Where(x => x.EmpRef == employerReference)
+            .OrderByDescending(x => x.DateCalculated)
+            .Select(x => (DateTime?)x.DateCalculated)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task SetLastUpdateDate(DateTime dateUpdated)
     {
         await _db.Value.Set<EnglishFractionCalculationDate>().AddAsync(new EnglishFractionCalculationDate
