@@ -108,11 +108,11 @@ public class NonLevyCsvTransactionFormatter : CsvTransactionFormatter, ITransact
         if (transaction.TransactionType != nameof(TransactionItemType.Transfer))
         {
             builder.Append($"{transaction.PaidFromLevyFormatted},");
-            builder.Append($"{0.ToString("0.00000", NumberFormatInfo.InvariantInfo)}");
+            builder.Append($"{0.ToString("0.00000", NumberFormatInfo.InvariantInfo)},");
         }
         else
         {
-            builder.Append($"{0.ToString("0.00000", NumberFormatInfo.InvariantInfo)}");
+            builder.Append($"{0.ToString("0.00000", NumberFormatInfo.InvariantInfo)},");
             builder.Append($"{transaction.PaidFromLevyFormatted},");
         }
         builder.Append($"{transaction.EmployerContributionFormatted},");
