@@ -54,7 +54,7 @@ public class EnglishFractionRepository : IEnglishFractionRepository
         return await _db.Value.Set<EnglishFractionEntity>()
             .Where(x => x.EmpRef == employerReference)
             .OrderByDescending(x => x.DateCalculated)
-            .Select(x => (DateTime?)x.DateCalculated)
+            .Select(x => x.DateCalculated)
             .FirstOrDefaultAsync();
     }
 

@@ -549,18 +549,22 @@ public class DasLevyRepository : IDasLevyRepository
         string payrollYear,
         short payrollMonth)
     {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("@EmpRef", empRef, DbType.String);
-        parameters.Add("@PayrollYear", payrollYear, DbType.String);
-        parameters.Add("@PayrollMonth", payrollMonth, DbType.Int32);
-
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<SFA.DAS.EmployerFinance.Api.Types.ExistingPeriod12LevyDeclarationResult>(
-            sql: "[employer_financial].[GetLevyDeclarations_ByEmpRefPayrollMonthPayrollYear]",
-            param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.StoredProcedure);
-
-        return result.ToList();
+        return await _db.Value.LevyDeclarations
+            .AsNoTracking()
+            .Where(ld =>
+                ld.EmpRef == empRef &&
+                ld.PayrollYear == payrollYear &&
+                ld.PayrollMonth == payrollMonth)
+            .OrderByDescending(ld => ld.SubmissionDate)
+            .Select(ld => new SFA.DAS.EmployerFinance.Api.Types.ExistingPeriod12LevyDeclarationResult
+            {
+                Id = ld.SubmissionId.ToString(),
+                LevyDueYtd = ld.LevyDueYTD,
+                SubmissionDate = ld.SubmissionDate ?? new DateTime(1900, 1, 1),
+                PayrollYear = ld.PayrollYear,
+                PayrollMonth = (short)ld.PayrollMonth,
+                SubmissionId = ld.HmrcSubmissionId ?? ld.SubmissionId
+            })
+            .ToListAsync();
     }
 }

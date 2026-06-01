@@ -9,7 +9,7 @@ public class AccountMappings : Profile
 {
     public AccountMappings()
     {            
-        CreateMap<LevyDeclarationItem, LevyDeclaration>()
+        CreateMap<LevyDeclarationItem,Types.LevyDeclaration>()
             .ForMember(target => target.PayeSchemeReference, opt => opt.MapFrom(src => src.EmpRef));
 
         CreateMap<Models.Account.AccountBalance, AccountBalance>();

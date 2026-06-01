@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
+
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
@@ -32,15 +31,6 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         }
     }
 
-    private static Dictionary<string, string> GetValidationErrors(ValidationException ex)
-    {
-        return ex.ValidationResult?.MemberNames
-                   .Select(x => x.Split('|', 2))
-                   .Where(x => x.Length == 2)
-                   .ToDictionary(x => x[0], x => x[1])
-               ?? new Dictionary<string, string> { { "Validation", ex.Message } };
-    }
-
     [HttpGet("{empRef}/period-12-declarations")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetExistingPeriod12LevyDeclarations(string empRef)
@@ -63,5 +53,13 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
     {
         var result = await orchestrator.GetLastSubmissionDate(empRef);
         return Ok(result);
+    }
+    private static Dictionary<string, string> GetValidationErrors(ValidationException ex)
+    {
+        return ex.ValidationResult?.MemberNames
+                   .Select(x => x.Split('|', 2))
+                   .Where(x => x.Length == 2)
+                   .ToDictionary(x => x[0], x => x[1])
+               ?? new Dictionary<string, string> { { "Validation", ex.Message } };
     }
 }
