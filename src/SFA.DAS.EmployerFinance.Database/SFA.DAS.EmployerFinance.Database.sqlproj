@@ -211,7 +211,6 @@
     <Build Include="Tables\JobRun.sql" />
     <Build Include="Tables\WorkflowLog.sql" />
     <Build Include="Tables\TransactionLineStaging.sql" />
-    <Build Include="StoredProcedures\GetLevyDeclarations_ByEmpRefPayrollMonthPayrollYear.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />
