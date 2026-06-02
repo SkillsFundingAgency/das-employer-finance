@@ -10,4 +10,5 @@ public static class RouteNames
     public const string TransferConnectionsIndex = "transfer-connections";
 
     public const string SignOut = "SignOut";
+    public const string DownloadTransactionsReportV2 = "download-transactions-report";
 }
