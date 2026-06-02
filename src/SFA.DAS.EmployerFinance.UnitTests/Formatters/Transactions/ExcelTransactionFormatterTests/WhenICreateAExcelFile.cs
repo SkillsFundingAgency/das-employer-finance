@@ -109,7 +109,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                 {
                     "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month",
                     "Levy declared",
-                    "English %", "10% top up", "Training provider", "Cohort reference", "Unique learner number",
+                    "English %", "10% top up", "Cohort reference","Training provider",  "Unique learner number",
                     "Learner", "Course name", "Course level", "Course type", "Paid from levy", "Paid from transfer",
                     "Your contribution",
                     "Government contribution", "Total"
@@ -121,7 +121,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                     _transactionLine.PayeScheme, "'" + _transactionLine.PeriodEnd,
                     _transactionLine.LevyDeclaredFormatted,
                     _transactionLine.EnglishFractionFormatted, _transactionLine.TenPercentTopUpFormatted,
-                    _transactionLine.TrainingProvider, _transactionLine.CohortReference, _transactionLine.Uln,
+                    _transactionLine.CohortReference,_transactionLine.TrainingProvider,  _transactionLine.Uln,
                     _transactionLine.Apprentice, _transactionLine.ApprenticeTrainingCourse,
                     _transactionLine.ApprenticeTrainingCourseLevel,
                     _transactionLine.ApprenticeLearningTypeFormatted,
@@ -137,7 +137,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                     _transactionLineTransfer.PayeScheme, "'" + _transactionLineTransfer.PeriodEnd,
                     _transactionLineTransfer.LevyDeclaredFormatted,
                     _transactionLineTransfer.EnglishFractionFormatted, _transactionLineTransfer.TenPercentTopUpFormatted,
-                    _transactionLineTransfer.TrainingProvider, _transactionLineTransfer.CohortReference, _transactionLineTransfer.Uln,
+                    _transactionLineTransfer.CohortReference, _transactionLineTransfer.TrainingProvider,  _transactionLineTransfer.Uln,
                     _transactionLineTransfer.Apprentice, _transactionLineTransfer.ApprenticeTrainingCourse,
                     _transactionLineTransfer.ApprenticeTrainingCourseLevel,
                     _transactionLineTransfer.ApprenticeLearningTypeFormatted,

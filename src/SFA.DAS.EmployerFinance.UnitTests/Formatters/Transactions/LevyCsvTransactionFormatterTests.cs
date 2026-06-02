@@ -78,8 +78,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
             headerColumns[5].Should().Be("Levy declared");
             headerColumns[6].Should().Be("English %");
             headerColumns[7].Should().Be("10% top up");
-            headerColumns[8].Should().Be("Training provider");
-            headerColumns[9].Should().Be("Cohort reference");
+            headerColumns[8].Should().Be("Cohort reference");
+            headerColumns[9].Should().Be("Training provider");
             headerColumns[10].Should().Be("Unique learner number");
             headerColumns[11].Should().Be("Learner");
             headerColumns[12].Should().Be("Course name");
@@ -163,8 +163,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
                 dataRow[5].Should().Be((i * 1000).ToString("0.00000", CultureInfo.CurrentCulture)); // LevyDeclared
                 dataRow[6].Should().Be((i * 10).ToString("0.00000", CultureInfo.CurrentCulture));
                 dataRow[7].Should().Be((i * 100).ToString("0.00000", CultureInfo.CurrentCulture));
-                dataRow[8].Should().Be($"\"{TrainingProviderPrefix}{i}\"");
-                dataRow[9].Should().Be($"{CohortReferencePrefix}{i}");
+                dataRow[8].Should().Be($"{CohortReferencePrefix}{i}");
+                dataRow[9].Should().Be($"\"{TrainingProviderPrefix}{i}\"");
                 dataRow[10].Should().Be($"{UlnPrefix}{i}");
                 dataRow[11].Should().Be($"{ApprenticePrefix}{i}");
                 dataRow[12].Should().Be($"{ApprenticeTrainingCoursePrefix}{i}");

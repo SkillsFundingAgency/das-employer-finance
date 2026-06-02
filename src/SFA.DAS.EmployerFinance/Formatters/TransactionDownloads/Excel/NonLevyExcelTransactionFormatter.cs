@@ -18,8 +18,8 @@ public class NonLevyExcelTransactionFormatter(IExcelService excelService) : Exce
                     transaction.DateCreated.ToString("dd/MM/yyyy"),
                     transaction.TransactionType,
                     transaction.Description,
-                    transaction.TrainingProvider,
                     transaction.CohortReference,
+                    transaction.TrainingProvider,
                     transaction.Uln,
                     transaction.Apprentice,
                     transaction.ApprenticeTrainingCourse,
@@ -54,7 +54,7 @@ public class NonLevyExcelTransactionFormatter(IExcelService excelService) : Exce
     {
         return isNewVersion ? 
         [
-            "Transaction date", "Transaction type", "Description", "Training provider", "Cohort reference", "Unique learner number",
+            "Transaction date", "Transaction type", "Description","Cohort reference", "Training provider",  "Unique learner number",
             "Learner", "Course name", "Course level", "Course Type", "Paid from levy", "Paid from transfer", "Your contribution",
             "Government contribution", "Total"
         ] 

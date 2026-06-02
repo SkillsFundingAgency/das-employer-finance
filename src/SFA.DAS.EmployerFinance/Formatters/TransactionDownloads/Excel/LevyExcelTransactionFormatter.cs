@@ -22,8 +22,8 @@ public class LevyExcelTransactionFormatter(IExcelService excelService) : ExcelTr
             transaction.LevyDeclaredFormatted,
             transaction.EnglishFractionFormatted,
             transaction.TenPercentTopUpFormatted,
-            transaction.TrainingProvider,
             transaction.CohortReference,
+            transaction.TrainingProvider,
             transaction.Uln,
             transaction.Apprentice,
             transaction.ApprenticeTrainingCourse,
@@ -64,7 +64,7 @@ public class LevyExcelTransactionFormatter(IExcelService excelService) : ExcelTr
         return isNewVersion ?
         [
             "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month", "Levy declared",
-            "English %", "10% top up", "Training provider","Cohort reference", "Unique learner number",
+            "English %", "10% top up", "Cohort reference", "Training provider", "Unique learner number",
             "Learner", "Course name", "Course level", "Course type", "Paid from levy", "Paid from transfer", "Your contribution",
             "Government contribution", "Total"
         ]

@@ -24,7 +24,7 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        @if (DateTime.UtcNow >= new DateTime(2026,07,01))
+        @if (DateTime.UtcNow >= new DateTime(2026,09,01))
         {
             <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-import"
                  data-module="govuk-notification-banner">
@@ -37,7 +37,7 @@
                     <h3 class="govuk-notification-banner__heading">
                         Reports data has changed.
                     </h3>
-                    <p class="govuk-body">The data fields you receive in your reports changed on 1 July 2026.</p>
+                    <p class="govuk-body">The data fields you receive in your reports changed on 1 September 2026.</p>
                     <p class="govuk-body">
                         <a class="govuk-notification-banner__link" asp-route="@RouteNames.DownloadTransactionsReportV2">View the data specification (opens in new tab)</a> for detailed information.
                     </p>
@@ -56,14 +56,14 @@
                     <p class="govuk-notification-banner__heading">
                         Reports data is changing
                     </p>
-                    <p class="govuk-body">Version 2 of the transactions download data is now available. It will replace version 1 on 1 July 2026.</p>
+                    <p class="govuk-body">Version 2 of the transactions download data is now available. It will replace version 1 on 1 September 2026.</p>
                 </div>
             </div>
         }
         
         <h1 class="govuk-heading-xl">Download transactions</h1>
         <p>Create a report of your transactions for a chosen date range.</p>
-        @if (DateTime.UtcNow < new DateTime(2026,7,01))
+        @if (DateTime.UtcNow < new DateTime(2026,9,01))
         {
             <p><a asp-route="@RouteNames.DownloadTransactionsReportV2" target="_blank" class="govuk-link govuk-link--no-visited-state">View the data specification (opens in new tab)</a> to understand the data we provide.</p>    
         }
@@ -126,7 +126,7 @@
                 @Html.DropDownListFor(m => m.DownloadFormat, Html.GetEnumSelectList(typeof(DownloadFormatType)), new { @class = "govuk-select" })
             </div>
 
-            @if (DateTime.UtcNow < new DateTime(2026, 7, 01))
+            @if (DateTime.UtcNow < new DateTime(2026, 9, 01))
             {
                 <div class="govuk-form-group">
                     <label class="govuk-label" for="@Html.IdFor(m => m.Version)">Select version</label>

@@ -56,8 +56,8 @@ public class LevyCsvTransactionFormatter : CsvTransactionFormatter, ITransaction
         headerBuilder.Append("Levy declared,");
         headerBuilder.Append("English %,");
         headerBuilder.Append("10% top up,");
-        headerBuilder.Append("Training provider,");
         headerBuilder.Append("Cohort reference,");
+        headerBuilder.Append("Training provider,");
         headerBuilder.Append("Unique learner number,");
         headerBuilder.Append("Learner,");
         headerBuilder.Append("Course name,");
@@ -120,8 +120,8 @@ public class LevyCsvTransactionFormatter : CsvTransactionFormatter, ITransaction
         builder.Append($"{transaction.LevyDeclaredFormatted},");
         builder.Append($"{transaction.EnglishFractionFormatted},");
         builder.Append($"{transaction.TenPercentTopUpFormatted},");
-        builder.Append($"{transaction.TrainingProviderFormatted?.Replace(",", "")},");
         builder.Append($"{transaction.CohortReference?.Replace(",", "")},");
+        builder.Append($"{transaction.TrainingProviderFormatted?.Replace(",", "")},");
         builder.Append($"{transaction.Uln},");
         builder.Append($"{transaction.Apprentice},");
         builder.Append($"{transaction.ApprenticeTrainingCourse?.Replace(",", "")},");

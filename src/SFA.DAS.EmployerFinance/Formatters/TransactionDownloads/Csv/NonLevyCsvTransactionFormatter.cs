@@ -44,8 +44,8 @@ public class NonLevyCsvTransactionFormatter : CsvTransactionFormatter, ITransact
         headerBuilder.Append("Transaction date,");
         headerBuilder.Append("Transaction type,");
         headerBuilder.Append("Description,");
-        headerBuilder.Append("Training provider,");
         headerBuilder.Append("Cohort reference,");
+        headerBuilder.Append("Training provider,");
         headerBuilder.Append("Unique learner number,");
         headerBuilder.Append("Learner,");
         headerBuilder.Append("Course Name,");
@@ -98,8 +98,8 @@ public class NonLevyCsvTransactionFormatter : CsvTransactionFormatter, ITransact
         builder.Append($"{transaction.DateCreated:dd/MM/yyyy},");
         builder.Append($"{transaction.TransactionType},");
         builder.Append($"{transaction.Description?.Replace(",", "")},");
-        builder.Append($"{transaction.TrainingProviderFormatted?.Replace(",", "")},");
         builder.Append($"{transaction.CohortReference?.Replace(",", "")},");
+        builder.Append($"{transaction.TrainingProviderFormatted?.Replace(",", "")},");
         builder.Append($"{transaction.Uln},");
         builder.Append($"{transaction.Apprentice},");
         builder.Append($"{transaction.ApprenticeTrainingCourse?.Replace(",", "")},");
