@@ -8,6 +8,7 @@
     [ApprenticeshipId] BIGINT NOT NULL, 	
     [CourseName] VARCHAR(MAX) NOT NULL, 
     [CourseLevel] INT,
+    [LearningType] VARCHAR(25) NULL,
     [PeriodEnd] nvarchar(20) NOT NULL,
     [Amount] DECIMAL(18, 5) NOT NULL, 
     [Type] NVARCHAR(50) NOT NULL,   

@@ -5,7 +5,7 @@ namespace SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 
 public interface ITransactionFormatter
 {
-    byte[] GetFileData(IEnumerable<TransactionDownloadLine> dataPayments);
+    byte[] GetFileData(IEnumerable<TransactionDownloadLine> dataPayments, bool isNewVersion);
 
     string MimeType { get; }
 
