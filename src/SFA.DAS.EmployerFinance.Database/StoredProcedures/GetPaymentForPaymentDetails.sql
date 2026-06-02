@@ -14,6 +14,7 @@ SELECT
     ,pmd.ProgrammeType
     ,pmd.ApprenticeName
     ,pmd.ProviderName
+    ,pmd.CourseCode
 FROM [employer_financial].[Payment] p
 JOIN [employer_financial].[PaymentMetaData] pmd ON p.PaymentMetadataId = pmd.Id
 WHERE p.PaymentId = @paymentId    

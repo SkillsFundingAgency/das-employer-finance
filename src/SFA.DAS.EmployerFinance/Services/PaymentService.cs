@@ -10,6 +10,7 @@ using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.Provider.Events.Api.Client;
 using SFA.DAS.Provider.Events.Api.Types;
 using AccountTransfer = SFA.DAS.EmployerFinance.Models.Transfers.AccountTransfer;
+using LearningType = SFA.DAS.Common.Domain.Types.LearningType;
 using Payment = SFA.DAS.Provider.Events.Api.Types.Payment;
 
 namespace SFA.DAS.EmployerFinance.Services;
@@ -77,6 +78,7 @@ public class PaymentService(
         {
             paymentDetails.ApprenticeName = $"{apprenticeship.FirstName} {apprenticeship.LastName}";
             paymentDetails.CourseStartDate = apprenticeship.StartDate;
+            paymentDetails.CohortId = apprenticeship.CohortId;
         }
         else
         {
@@ -122,15 +124,23 @@ public class PaymentService(
 
         if (payment.StandardCode is > 0)
         {
-            var standard = await GetStandard(payment.StandardCode.Value);
+            var standard = await GetStandard(payment.StandardCode.ToString());
 
             payment.CourseName = standard?.CourseName;
             payment.CourseLevel = standard?.Level;
             payment.LearningType = Enum.TryParse(standard?.LearningType, out LearningType learningType) ? learningType : LearningType.Apprenticeship;
         }
-        else if (payment.FrameworkCode.HasValue && payment.FrameworkCode > 0)
+        else if (payment.FrameworkCode is > 0)
         {
             await GetFrameworkCourseDetails(payment);
+        }
+        else if (!string.IsNullOrEmpty(payment.CourseCode))
+        {
+            var standard = await GetStandard(payment.CourseCode);
+
+            payment.CourseName = standard?.CourseName;
+            payment.CourseLevel = standard?.Level;
+            payment.LearningType = Enum.TryParse(standard?.LearningType, out LearningType learningType) ? learningType : LearningType.Apprenticeship;
         }
         else
         {
@@ -183,7 +193,7 @@ public class PaymentService(
         return null;
     }
 
-    private async Task<Standard> GetStandard(long standardCode)
+    private async Task<Standard> GetStandard(string standardCode)
     {
         try
         {

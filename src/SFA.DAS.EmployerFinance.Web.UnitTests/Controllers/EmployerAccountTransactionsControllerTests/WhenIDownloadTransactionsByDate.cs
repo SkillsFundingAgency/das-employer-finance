@@ -14,7 +14,7 @@ namespace SFA.DAS.EmployerFinance.Web.UnitTests.Controllers.EmployerAccountTrans
 public class WhenIDownloadTransactionsByDate
 {
     private const string ExpectedFileExtension = "hello";
-    private const string ExpectedMimeType = @"text/csv";
+    private const string ExpectedMimeType = "text/csv";
     private const string HashedAccountId = "ABC123";
     private const long AccountId = 324324;
     private static readonly byte[] ExpectedFileData = { };
@@ -40,7 +40,8 @@ public class WhenIDownloadTransactionsByDate
             {
                 Month = "1",
                 Year = "2018"
-            }
+            },
+            Version = "1"
         };
 
         _mediator = new Mock<IMediator>();
@@ -56,7 +57,7 @@ public class WhenIDownloadTransactionsByDate
                 FileData = ExpectedFileData
             });
 
-        _formatter.Setup(x => x.GetFileData(It.IsAny<List<TransactionDownloadLine>>())).Returns(new byte[] { 1, 2, 3, 4 });
+        _formatter.Setup(x => x.GetFileData(It.IsAny<List<TransactionDownloadLine>>(), false)).Returns(new byte[] { 1, 2, 3, 4 });
         _formatter.Setup(x => x.MimeType).Returns("txt/csv");
         _formatter.Setup(x => x.DownloadFormatType).Returns(DownloadFormatType.CSV);
 
@@ -76,6 +77,7 @@ public class WhenIDownloadTransactionsByDate
             && c.EndDate.Equals(_transactionDownloadViewModel.EndDate)
             && c.StartDate.Equals(_transactionDownloadViewModel.StartDate)
             && c.DownloadFormat.Equals(_transactionDownloadViewModel.DownloadFormat)
+            && c.Version.Equals(_transactionDownloadViewModel.Version)
             ), CancellationToken.None), Times.Once);
     }
 

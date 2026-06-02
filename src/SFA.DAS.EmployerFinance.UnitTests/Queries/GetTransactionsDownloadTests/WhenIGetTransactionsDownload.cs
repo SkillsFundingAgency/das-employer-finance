@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
+using SFA.DAS.Encoding;
 using MonthYear = SFA.DAS.EmployerFinance.Messages.MonthYear;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransactionsDownloadTests;
@@ -16,6 +17,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetTransactionsDownloadTests
 public class WhenIGetTransactionsDownload
 {
     private const long AccountId = 111111;
+    private const string CohortReference = "CVD456";
     private static readonly MonthYear StartDate = new MonthYear { Month = "1", Year = "2000" };
     private static readonly MonthYear EndDate = new MonthYear { Month = "1", Year = "2000" };
     private static readonly DateTime ToDate = new DateTime(2000, 2, 1);
@@ -25,6 +27,7 @@ public class WhenIGetTransactionsDownload
     private Mock<ITransactionFormatterFactory> _transactionFormatterFactory;
     private Mock<ITransactionRepository> _transactionsRepository;
     private Mock<IAccountApiClient> _accountApiClientMock;
+    private Mock<IEncodingService> _encodingService;
 
     [SetUp]
     public void SetUp()
@@ -32,22 +35,25 @@ public class WhenIGetTransactionsDownload
         _accountApiClientMock = new Mock<IAccountApiClient>();
         _transactionsRepository = new Mock<ITransactionRepository>();
         _transactionFormatterFactory = new Mock<ITransactionFormatterFactory>();
+        _encodingService = new Mock<IEncodingService>();
 
         _transactionFormatterFactory
             .Setup(x => x.GetTransactionsFormatterByType(It.IsAny<DownloadFormatType>(), It.IsAny<ApprenticeshipEmployerType>()))
             .Returns(new LevyCsvTransactionFormatter());
 
         _transactionsRepository.Setup(x => x.GetAllTransactionDetailsForAccountByDate(AccountId, StartDate.ToDate(), ToDate))
-            .ReturnsAsync(new TransactionDownloadLine[] { new TransactionDownloadLine() { TransactionType = "Levy" } });
+            .ReturnsAsync([new TransactionDownloadLine() { TransactionType = "Levy" }]);
 
         _accountApiClientMock
             .Setup(mock => mock.GetAccount(AccountId))
             .ReturnsAsync(new AccountDetailViewModel
             {
-                ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy.ToString()
-            }); ;
+                ApprenticeshipEmployerType = nameof(ApprenticeshipEmployerType.Levy)
+            });
+        
+        _encodingService.Setup(x=>x.Encode(It.IsAny<long>(), EncodingType.CohortReference)).Returns(CohortReference);
 
-        _handler = new GetTransactionsDownloadQueryHandler(_transactionFormatterFactory.Object, _transactionsRepository.Object, _accountApiClientMock.Object);
+        _handler = new GetTransactionsDownloadQueryHandler(_transactionFormatterFactory.Object, _transactionsRepository.Object, _accountApiClientMock.Object, _encodingService.Object);
 
         _query = new GetTransactionsDownloadQuery
         {

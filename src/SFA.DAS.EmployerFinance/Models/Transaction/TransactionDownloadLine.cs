@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using SFA.DAS.Common.Domain.Types;
 
 namespace SFA.DAS.EmployerFinance.Models.Transaction;
 
@@ -7,6 +8,7 @@ public class TransactionDownloadLine
     public DateTime DateCreated { get; set; }
 
     public long AccountId { get; set; }
+    public long? CohortId { get; set; }
 
     public string TransactionType { get; set; }
 
@@ -44,6 +46,8 @@ public class TransactionDownloadLine
     public string ApprenticeTrainingCourse { get; set; }
 
     public string ApprenticeTrainingCourseLevel { get; set; }
+    public string ApprenticeLearningType { get; set; }
+    public string ApprenticeLearningTypeFormatted => !string.IsNullOrEmpty(ApprenticeLearningType) ? Enum.Parse<LearningType>(ApprenticeLearningType).ToString() : null;
 
     public decimal PaidFromLevy { get; set; }
 

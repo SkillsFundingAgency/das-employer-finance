@@ -12,13 +12,13 @@ public abstract class ExcelTransactionFormatter(IExcelService excelService)
     public string FileExtension => "xlsx";
     public DownloadFormatType DownloadFormatType => DownloadFormatType.Excel;
 
-    protected abstract string[] GetHeaderRow();
+    protected abstract string[] GetHeaderRow(bool isNewVersion);
 
-    public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions)
+    public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions, bool isNewVersion)
     {
-        var excelRows = new List<string[]> { GetHeaderRow() };
+        var excelRows = new List<string[]> { GetHeaderRow(isNewVersion) };
 
-        excelRows.AddRange(GetTransactionRows(transactions));
+        excelRows.AddRange(GetTransactionRows(transactions, isNewVersion));
 
         var transactionData = new Dictionary<string, string[][]>
         {
@@ -30,5 +30,5 @@ public abstract class ExcelTransactionFormatter(IExcelService excelService)
         return fileData;
     }
 
-    protected abstract IEnumerable<string[]> GetTransactionRows(IEnumerable<TransactionDownloadLine> transactions);
+    protected abstract IEnumerable<string[]> GetTransactionRows(IEnumerable<TransactionDownloadLine> transactions, bool isNewVersion);
 }
