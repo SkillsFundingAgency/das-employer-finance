@@ -24,5 +24,5 @@ BEGIN
 END
 IF (NOT EXISTS(SELECT TransactionType FROM [employer_financial].[TransactionLineTypes] WHERE TransactionType = 6))
 BEGIN
-    INSERT [employer_financial].[TransactionLineTypes] ([TransactionType], [Description]) VALUES (5, N'Expired Levy')
+    INSERT [employer_financial].[TransactionLineTypes] ([TransactionType], [Description]) VALUES (6, N'Expired Levy')
 END
