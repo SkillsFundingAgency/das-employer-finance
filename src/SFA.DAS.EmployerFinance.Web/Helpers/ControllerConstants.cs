@@ -8,6 +8,7 @@
         public const string CoursePaymentSummaryViewName = "CoursePaymentSummary";
         public const string IndexActionName = "Index";
         public const string LevyDeclarationDetailViewName = "LevyDeclarationDetail";
+        public const string ExpiredFundsDetailViewName = "ExpiredFundsDetail";
         public const string ProviderPaymentSummaryViewName = "ProviderPaymentSummary";
         public const string TransferDetailsViewName = "TransferDetails";
         public const string UserRefClaimKeyName = "sub";
