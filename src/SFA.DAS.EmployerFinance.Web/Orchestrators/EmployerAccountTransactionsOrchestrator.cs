@@ -428,9 +428,31 @@ public class EmployerAccountTransactionsOrchestrator(
                 };
             });
 
+        var aggregatedExpiredTransactions = aggregatedTransactionData.TransactionLines
+            .Where(t => t.TransactionType is TransactionItemType.ExpiredFund or TransactionItemType.ShortExpiredFund)
+            .GroupBy(t => t.DateCreated.Date)
+            .Select(grp =>
+            {
+                var firstLevyTransactionInDay = grp.First();
+                return new TransactionLine
+                {
+                    AccountId = firstLevyTransactionInDay.AccountId,
+                    DateCreated = firstLevyTransactionInDay.DateCreated,
+                    Amount = grp.Sum(ltl => ltl.Amount),
+                    TransactionType = TransactionItemType.ExpiredFund,
+                    Description = firstLevyTransactionInDay.Description,
+                    PayrollDate = firstLevyTransactionInDay.PayrollDate,
+                    PayrollMonth = firstLevyTransactionInDay.PayrollMonth,
+                    PayrollYear = firstLevyTransactionInDay.PayrollYear
+                };
+            });
+
         var newTransactionLines = aggregatedTransactionData.TransactionLines
             .Where(t => t.TransactionType != TransactionItemType.Declaration)
+            .Where(t => t.TransactionType != TransactionItemType.ExpiredFund)
+            .Where(t => t.TransactionType != TransactionItemType.ShortExpiredFund)
             .Union(aggregatedLevyTransactions)
+            .Union(aggregatedExpiredTransactions)
             .OrderByDescending(x => x.DateCreated)
             .ToArray();
 
