@@ -29,8 +29,8 @@
 <table class="govuk-table das-table--responsive govuk-!-font-size-16">
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col">Expired levy</th>
-            <th class="govuk-table__header" scope="col">Funding added</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Expired levy</th>
+            <th class="govuk-table__header govuk-table__header--numeric" scope="col">Funding added</th>
             <th class="govuk-table__header govuk-table__header--numeric" scope="col">Amount</th>
         </tr>
     </thead>
@@ -39,24 +39,24 @@
     @if (Model.Data.TwelveMonthExpiryAmount != 0)
     {
         <tr class="govuk-table__row">
-            <td data-label="Expired levy" class="govuk-table__cell">
+            <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
                 <span>Levy with 12 months expiry</span>
             </td>
-            <td data-label="Date funds added" class="govuk-table__cell">
-                @Model.Data.TransactionDate.AddYears(-1).ToGdsFormatWithoutDayAbbrMonth()
+            <td data-label="Date funds added" class="govuk-table__cell govuk-table__cell--numeric">
+                @Model.Data.TransactionDate.AddYears(-1).ToGdsFormatWithoutDay()
             </td>
             <td data-label="Expired funds amount" class="govuk-table__cell govuk-table__cell--numeric">
                 @Model.Data.TwelveMonthExpiryAmount.ToString("C2", culture)
             </td>
         </tr>
     }
-    @if (Model.Data.TwelveMonthExpiryAmount != 0)
+    @if (Model.Data.TwentyFourthMonthExpiryAmount != 0)
     {
         <tr class="govuk-table__row">
-            <td data-label="Expired levy" class="govuk-table__cell">
+            <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
                 <span>Levy with 24 months expiry</span>
             </td>
-            <td data-label="Date funds added" class="govuk-table__cell">
+            <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
                 @Model.Data.TransactionDate.AddYears(-2).ToGdsFormatWithoutDayAbbrMonth()
             </td>
             <td data-label="Expired funds amount" class="govuk-table__cell govuk-table__cell--numeric">
@@ -66,19 +66,23 @@
     }
     
     <tr class="govuk-table__row">
-        <td class="govuk-table__cell app-table__cell--transparent" colspan="5"> </td>
+        <td class="govuk-table__cell app-table__cell--transparent" colspan="2"> </td>
         <td data-label="Your expired funds total" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.Total.ToString("C2", culture)</td>
     </tr>
     </tbody>
 </table>
 
 <div class="govuk-grid-row">
-    <div class="column-two-thirds">
-        <div class="govuk-inset-text">
-            <p>How is this calculated? </p>
-            <p>From 1 August2026, unused levy funds expire 12 months after being added to your account.</p>
-            <p>Funds declared before this date still expires after 24 months. We use the oldest funds first.</p>
-        </div>
+    <div class="govuk-grid-column-full">
+        <details id="inform-english-percentage" class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">How is this calculated?</span>
+            </summary>
+            <div class="govuk-details__text">
+                <p class="govuk-!-margin-bottom-0">From 1 August2026, unused levy funds expire <b>12 months</b> after being added to your account.</p>
+                <p>Funds declared before this date still expires after 24 months. We use the oldest funds first.</p>
+            </div>
+        </details>
     </div>
 </div>
 
