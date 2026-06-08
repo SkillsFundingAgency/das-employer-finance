@@ -139,7 +139,8 @@ public class EmployerAccountTransactionsOrchestrator(
                     Amount = data.Total,
                     SubTransactions = data.Transactions,
                     CoursePaymentGroups = coursePaymentGroups,
-                    ApprenticeshipUnitPaymentGroups = apprenticeshipUnitPaymentGroups
+                    ApprenticeshipUnitPaymentGroups = apprenticeshipUnitPaymentGroups,
+                    ShouldShowTopUp = false
                 }
             };
         }
@@ -471,7 +472,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 HashedAccountId = hashedId,
                 Amount = data.Total,
                 SubTransactions = data.Transactions,
-                TransactionDate = data.Transactions.First().DateCreated
+                TransactionDate = data.Transactions.First().DateCreated,
+                ShouldShowTopUp = data.Transactions.Any(c=>c.TopUp > 0)
             }
         };
     }
