@@ -26,8 +26,16 @@
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
-                <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
+                @if (Model.Data.ShowTopUpChange)
+                {
+                    <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
+                    <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
+                }
+                else
+                {
+                    <p class="govuk-body">The <b>apprenticeship levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. While employers do not own these funds, they can use them to cover apprenticeship costs.</p>
+                    <p class="govuk-body">Employers have 24 months to use funds, after which they are returned to support apprenticeship programmes.</p>
+                }
             </div>
         </div>
         <div class="app-statement">
@@ -45,7 +53,15 @@
                 <tr>
                     <th class="govuk-table__header" scope="row" id="lbl-last-month-levy-label">
                         Levy declared in @Model.Data.DateUsed
-                        <div class="govuk-hint">Employer PAYE contribution</div>
+
+                        @if (Model.Data.ShowTopUpChange)
+                        {
+                            <div class="govuk-hint">Employer PAYE contribution</div>    
+                        }
+                        else
+                        {
+                            <div class="govuk-hint">Employer PAYE contribution plus 10% government top-up </div>    
+                        }
                     </th>
                     <td class="govuk-table__cell govuk-table__cell--numeric">
                         <span class="app-statement__figure" id="lbl-last-month-levy">@Model.Data.LastMonthLevyDeclaration.ToString("C0", culture)</span>
