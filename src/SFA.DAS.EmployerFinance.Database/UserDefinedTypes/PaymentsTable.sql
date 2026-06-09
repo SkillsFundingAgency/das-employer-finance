@@ -30,5 +30,7 @@
 	ApprenticeshipCourseStartDate DATETIME NULL,
 	IsHistoricProviderName BIT NOT NULL DEFAULT 0,
     LearningType VARCHAR(25) NULL,
+    CourseCode VARCHAR(25) NULL,
+    CohortId BIGINT NULL,
 	PRIMARY KEY (PaymentId ASC)
 )
