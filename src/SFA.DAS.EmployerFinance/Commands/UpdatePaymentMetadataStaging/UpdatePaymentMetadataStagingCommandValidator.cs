@@ -12,15 +12,21 @@ public class UpdatePaymentMetadataStagingCommandValidator
         if (item.PaymentId == Guid.Empty)
             validationResult.AddError("PaymentId", "PaymentId is required");
 
-        if (string.IsNullOrWhiteSpace(item.PaymentMetadataStaging?.ProviderName))
-            validationResult.AddError("ProviderName", "ProviderName is required");
+        if (item.PaymentMetadataStaging == null)
+        {
+            validationResult.AddError("PaymentMetadataStaging", "PaymentMetadataStaging is required");
+            return validationResult;
+        }
 
-        if (!IsValidNiNumber(item.PaymentMetadataStaging?.ApprenticeNINumber))
+        if (!string.IsNullOrWhiteSpace(item.PaymentMetadataStaging.ApprenticeNINumber) &&
+            !IsValidNiNumber(item.PaymentMetadataStaging.ApprenticeNINumber))
+        {
             validationResult.AddError("ApprenticeNINumber", "Invalid NI format");
+        }
 
-        var startDate = item.PaymentMetadataStaging?.ApprenticeshipCourseStartDate;
+        var startDate = item.PaymentMetadataStaging.ApprenticeshipCourseStartDate;
 
-        if (startDate == null || startDate <= new DateTime(1900, 1, 1))
+        if (startDate.HasValue && startDate <= new DateTime(1900, 1, 1))
         {
             validationResult.AddError("ApprenticeshipCourseStartDate", "StartDate must be after 1900-01-01");
         }
@@ -37,9 +43,6 @@ public class UpdatePaymentMetadataStagingCommandValidator
 
     private bool IsValidNiNumber(string ni)
     {
-        if (string.IsNullOrWhiteSpace(ni))
-            return false;
-
         var normalized = ni.Replace(" ", "").ToUpperInvariant();
 
         return NiRegex.IsMatch(normalized);

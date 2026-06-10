@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentData;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 using SFA.DAS.EmployerFinance.Commands.StagingTransfers;
+using SFA.DAS.EmployerFinance.Commands.TransactionLineStaging;
 using SFA.DAS.EmployerFinance.Commands.UpdatePayeInformation;
 using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
@@ -59,6 +60,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<UpdatePayeInformationCommand>, UpdatePayeInformationValidator>();
         services.AddTransient<IValidator<RefreshPaymentMetadataCommand>, RefreshPaymentMetadataCommandValidator>();
         services.AddTransient<IValidator<BulkPaymentsIngestCommand>, BulkPaymentsIngestCommandValidator>();
+        services.AddTransient<IValidator<TransactionLineStagingCommand>, TransactionLineStagingCommandValidator>();
     }
 
     public static void AddWebMediatorValidators(this IServiceCollection services)

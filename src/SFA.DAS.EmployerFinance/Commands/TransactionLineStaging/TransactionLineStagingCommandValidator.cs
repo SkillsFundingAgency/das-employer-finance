@@ -33,6 +33,9 @@ public class TransactionLineStagingCommandValidator : IValidator<TransactionLine
 
             if (item.TransactionType < 0)
                 result.AddError($"{prefix}.TransactionType", "TransactionType is not a valid value.");
+
+            if (item.TransactionType > byte.MaxValue)
+                result.AddError($"{prefix}.TransactionType", "TransactionType is not a valid value.");
         }
 
         return result;
