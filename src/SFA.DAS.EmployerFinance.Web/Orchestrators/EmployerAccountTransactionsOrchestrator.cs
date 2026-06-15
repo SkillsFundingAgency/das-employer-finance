@@ -78,7 +78,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 ShowLevyTransparency = configuration.ShowLevyTransparency,
                 LastMonthLevyDeclaration = getAccountFinanceOverview.LastMonthLevyDeclaration,
                 LastMonthPayments =  getAccountFinanceOverview.LastMonthPayments,
-                DateUsed = fromDate.ToString("MMMM yyyy")
+                DateUsed = fromDate.ToString("MMMM yyyy"),
+                ShowTopUpChange = currentTime.Now >= new DateTime(2026,08,01)
             }
         };
 
@@ -140,7 +141,8 @@ public class EmployerAccountTransactionsOrchestrator(
                     Amount = data.Total,
                     SubTransactions = data.Transactions,
                     CoursePaymentGroups = coursePaymentGroups,
-                    ApprenticeshipUnitPaymentGroups = apprenticeshipUnitPaymentGroups
+                    ApprenticeshipUnitPaymentGroups = apprenticeshipUnitPaymentGroups,
+                    ShouldShowTopUp = false
                 }
             };
         }
@@ -494,7 +496,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 HashedAccountId = hashedId,
                 Amount = data.Total,
                 SubTransactions = data.Transactions,
-                TransactionDate = data.Transactions.First().DateCreated
+                TransactionDate = data.Transactions.First().DateCreated,
+                ShouldShowTopUp = data.Transactions.Any(c=>c.TopUp > 0)
             }
         };
     }

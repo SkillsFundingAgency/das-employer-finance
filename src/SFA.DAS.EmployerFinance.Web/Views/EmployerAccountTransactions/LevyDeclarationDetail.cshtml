@@ -5,6 +5,7 @@
 @{
     var culture = new CultureInfo("en-GB");
     var paymentType = "Levy declared this month";
+    var colSpan = "5"; 
     if (Model.Data.Amount < 0)
     {
         paymentType = "Adjustment";
@@ -13,6 +14,10 @@
     ViewBag.Title = paymentType;
     ViewBag.Section = "finance";
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
+    if (!Model.Data.ShouldShowTopUp)
+    {
+        colSpan = "4";
+    }
 }
 
 
@@ -38,7 +43,10 @@
             <th class="govuk-table__header" scope="col">Payroll date</th>
             <th class="govuk-table__header govuk-table__header--numeric" scope="col">Levy declared</th>
             <th class="govuk-table__header govuk-table__header--numeric" scope="col">English %</th>
-            <th class="govuk-table__header govuk-table__header--numeric" scope="col">10% top up</th>
+            @if (Model.Data.ShouldShowTopUp)
+            {
+                <th class="govuk-table__header govuk-table__header--numeric" scope="col">10% top up</th>
+            }
             <th class="govuk-table__header govuk-table__header--numeric" scope="col">Your funds</th>
         </tr>
     </thead>
@@ -65,19 +73,22 @@
                 <td data-label="English %" class="govuk-table__cell govuk-table__cell--numeric">
                     @($"{aggregationLineItem.EnglishFraction:P3}")
                 </td>
-                <td data-label="10% top up" class="govuk-table__cell govuk-table__cell--numeric">
-                    @(aggregationLineItem.TopUp.ToString("C2", culture))
-                </td>
+                @if (Model.Data.ShouldShowTopUp)
+                {
+                    <td data-label="10% top up" class="govuk-table__cell govuk-table__cell--numeric">
+                        @(aggregationLineItem.TopUp.ToString("C2", culture))
+                    </td>    
+                }
                 <td data-label="Your funds" class="govuk-table__cell govuk-table__cell--numeric">
                     @((aggregationLineItem.LineAmount).ToString("C2", culture))
                 </td>
             </tr>
         }
     }
-        <tr class="govuk-table__row">
-            <td class="govuk-table__cell app-table__cell--transparent" colspan="5"> </td>
-            <td data-label="Your funds total" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.Amount.ToString("C2", culture)</td>
-        </tr>
+    <tr class="govuk-table__row">
+        <td class="govuk-table__cell app-table__cell--transparent" colspan="@colSpan"> </td>
+        <td data-label="Your funds total" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.Amount.ToString("C2", culture)</td>
+    </tr>
     </tbody>
 </table>
 

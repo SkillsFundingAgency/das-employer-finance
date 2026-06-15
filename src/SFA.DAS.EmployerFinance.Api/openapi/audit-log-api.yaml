@@ -1,0 +1,382 @@
+openapi: 3.0.0
+info:
+  version: "1.0"
+  title: Audit log api
+  description: This service provides consumers with the ability to log business metrics for transparency and monitoring of important processes.
+paths:
+  /info:
+    get:
+      description: Information regarding this API. The version will be returned.
+      responses:
+        "200":
+          description: Information response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Employer Finance API - Version 1.0.0
+
+  /health:
+    get:
+      description: The system is fully ready to accept requests and all dependencies are healthy.
+      responses:
+        "200":
+          description: Results of a health check
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthcheckResults"
+        "503":
+          description: Results of a health check
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthcheckResults"
+
+  /jobs:
+    post:
+      description: Creates a new job in the audit.
+      requestBody:
+        $ref: "#/components/requestBodies/jobRequest"
+      responses:
+        "201":
+          $ref: "#/components/responses/createdResponse"
+        "400":
+          $ref: "#/components/responses/badRequest"
+    get:
+      description: A paged list of jobs and their summary details.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Default is 1.
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          required: false
+          description: Default is 20, can be between 10 and 100.
+          schema:
+            type: integer
+            example: 20
+      responses:
+        "200":
+          $ref: "#/components/responses/pagedJobsResponse"
+        "400":
+          $ref: "#/components/responses/badRequest"
+
+  /jobs/{jobId}:
+    get:
+      description: Returns a single job summary.
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/jobResponse"
+        "404":
+          description: Job not found
+
+  /jobs/{jobId}/logs:
+    get:
+      description: Returns all logs for a single job.
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          description: Default is 1.
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          required: false
+          description: Default is 20, can be between 10 and 100.
+          schema:
+            type: integer
+            example: 20
+      responses:
+        "200":
+          $ref: "#/components/responses/pagedLogsResponse"
+        "400":
+          $ref: "#/components/responses/badRequest"
+
+  /jobs/{jobId}/workflows/{workflowId}/logs:
+    post:
+      description: Creates a new stage log for a workflow.
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: workflowId
+          in: path
+          required: true
+          description: Durable workflow instance id.
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/logRequest"
+      responses:
+        "201":
+          $ref: "#/components/responses/createdResponse"
+        "400":
+          $ref: "#/components/responses/badRequest"
+    get:
+      description: Returns the logs for a workflow.
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          description: Default is 1.
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          required: false
+          description: Default is 20, can be between 10 and 100.
+          schema:
+            type: integer
+            example: 20
+      responses:
+        "200":
+          $ref: "#/components/responses/pagedLogsResponse"
+        "400":
+          $ref: "#/components/responses/badRequest"
+
+components:
+  requestBodies:
+    logRequest:
+      description: A JSON object containing the log to save.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/logRequestSchema"
+    jobRequest:
+      description: A JSON object containing the job to save.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/jobCreateSchema"
+
+  responses:
+    jobResponse:
+      description: Response for a single job summary.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/jobSummarySchema"
+
+    pagedJobsResponse:
+      description: A paged response of jobs.
+      headers:
+        Link:
+          description: Pagination links for the previous and next pages.
+          schema:
+            type: string
+          example: <https://api.example.com/jobs?page=1&pagesize=20>; rel="prev", <https://api.example.com/jobs?page=3&pagesize=20>; rel="next"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/jobSummarySchema"
+
+    pagedLogsResponse:
+      description: A paged response of logs.
+      headers:
+        Link:
+          description: Pagination links for the previous and next pages.
+          schema:
+            type: string
+          example: <https://api.example.com/jobs/123/logs?page=1&pagesize=20>; rel="prev", <https://api.example.com/jobs/123/logs?page=3&pagesize=20>; rel="next"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/logResponseSchema"
+
+    badRequest:
+      description: A bad request was detected.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+
+    createdResponse:
+      description: Resource successfully created.
+      headers:
+        Location:
+          description: The URI of the newly created resource.
+          schema:
+            type: string
+            format: uri
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/createdResponseSchema"
+
+  schemas:
+    healthcheckResults:
+      type: array
+      items:
+        $ref: "#/components/schemas/healthcheck"
+
+    healthcheck:
+      type: object
+      properties:
+        description:
+          type: string
+        result:
+          type: string
+
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    createdResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "7a8d8a0a-7d64-4b92-9f5c-4f0f4d93c5af"
+        message:
+          type: string
+          example: Resource created successfully.
+
+    jobCreateSchema:
+      type: object
+      required:
+        - id
+        - description
+        - dateStarted
+        - numRecords
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        dateStarted:
+          type: string
+          format: date-time
+        numRecords:
+          type: integer
+
+    jobSummarySchema:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        dateStarted:
+          type: string
+          format: date-time
+        numRecords:
+          type: integer
+        running:
+          type: integer
+        completed:
+          type: integer
+        failed:
+          type: integer
+        status:
+          type: string
+          enum:
+            - running
+            - completed
+            - failed
+
+    logRequestSchema:
+      type: object
+      required:
+        - sequence
+        - spanId
+        - stage
+        - description
+        - status
+      properties:
+        sequence:
+          type: integer
+          description: Sequence number used to make retries idempotent.
+        spanId:
+          type: string
+          description: Business key for the workflow, for example account id or employer id.
+        stage:
+          type: string
+          description: Stage being run.
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - started
+            - inProgress
+            - completed
+            - failed
+        data:
+          type: object
+          additionalProperties: true
+          nullable: true
+        error:
+          $ref: "#/components/schemas/error"
+
+    logResponseSchema:
+      type: object
+      properties:
+        jobId:
+          type: string
+        workflowId:
+          type: string
+        spanId:
+          type: string
+        sequence:
+          type: integer
+        stage:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - started
+            - inProgress
+            - completed
+            - failed
+        data:
+          type: object
+          additionalProperties: true
+          nullable: true
+        error:
+          $ref: "#/components/schemas/error"
+        created:
+          type: string
+          format: date-time

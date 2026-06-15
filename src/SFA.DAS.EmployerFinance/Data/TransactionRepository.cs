@@ -276,4 +276,34 @@ public class TransactionRepository : ITransactionRepository
 
         return result.ToList();
     }
+    public async Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType)
+    {
+        var query = _db.Value.Transactions.Where(t => t.AccountId == accountId
+                                                   && t.PeriodEnd == periodEnd
+                                                   && t.TransactionType == (TransactionItemType)transactionType);
+        var transactionLines = await query.ToListAsync();
+        return MapTransactionLines(transactionLines);
+    }
+    private TransactionLine[] MapTransactionLines(IEnumerable<TransactionLineEntity> transactionLineEntities)
+    {
+        return transactionLineEntities.Select(entity =>
+        {
+            switch (entity.TransactionType)
+            {
+                case TransactionItemType.Declaration:
+                case TransactionItemType.TopUp:
+                    return _mapper.Map<LevyDeclarationTransactionLine>(entity);
+                case TransactionItemType.Payment:
+                    return _mapper.Map<PaymentTransactionLine>(entity);
+                case TransactionItemType.Transfer:
+                    return _mapper.Map<TransferTransactionLine>(entity);
+                case TransactionItemType.ExpiredFund:
+                    return _mapper.Map<ExpiredFundTransactionLine>(entity);
+                case TransactionItemType.Unknown:
+                    return _mapper.Map<TransactionLine>(entity);
+                default:
+                    throw new InvalidOperationException($"Unable to map from {entity.TransactionType}.");
+            }
+        }).ToArray();
+    }
 }
