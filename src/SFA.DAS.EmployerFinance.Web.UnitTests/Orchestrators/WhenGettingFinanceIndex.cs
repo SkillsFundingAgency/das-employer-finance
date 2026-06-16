@@ -151,8 +151,8 @@ public class WhenGettingFinanceIndex
         response.Data.DateUsed.Should().Be("December 2017");
     }
 
-    [TestCase("2026-07-31", false, TestName = "Before August 2026 cutoff ShowTopUpChange is false")]
-    [TestCase("2026-08-01", true, TestName = "On August 2026 cutoff ShowTopUpChange is true")]
+    [TestCase("2026-04-30", false, TestName = "Before August 2026 cutoff ShowTopUpChange is false")]
+    [TestCase("2026-05-01", true, TestName = "On August 2026 cutoff ShowTopUpChange is true")]
     [TestCase("2027-01-01", true, TestName = "After August 2026 cutoff ShowTopUpChange is true")]
     public async Task Then_Sets_ShowTopUpChange_Based_On_Date(string nowDate, bool expectedShowTopUpChange)
     {
