@@ -14,8 +14,24 @@ public class AccountTransactionsController(AccountTransactionsOrchestrator orche
     [Route("", Name = "GetTransactionSummary")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpGet]
-    public async Task<IActionResult> Index(string hashedAccountId)
+    public async Task<IActionResult> Index(string hashedAccountId, int? transactionType = null, string periodEnd = null)
     {
+        if (transactionType.HasValue || !string.IsNullOrWhiteSpace(periodEnd))
+        {
+            if (!transactionType.HasValue || string.IsNullOrWhiteSpace(periodEnd))
+            {
+                return BadRequest();
+            }
+
+            if (transactionType.Value != (int)TransactionItemType.Payment)
+            {
+                return BadRequest();
+            }
+
+            var resultExistingTransactions = await orchestrator.GetExistingTransactionLines(hashedAccountId, periodEnd, transactionType.Value);
+            return Ok(resultExistingTransactions);
+        }
+
         var result = await orchestrator.GetAccountTransactionSummary(hashedAccountId);
 
         if (result == null)

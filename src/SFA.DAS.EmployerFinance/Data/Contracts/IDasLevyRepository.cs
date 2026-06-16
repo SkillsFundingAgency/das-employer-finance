@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Models.Account;
+﻿using SFA.DAS.EmployerFinance.Dtos;
+using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -31,8 +32,11 @@ public interface IDasLevyRepository
     Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds);
     Task<IEnumerable<DasEnglishFraction>> GetEnglishFractionHistory(long accountId, string empRef);
     Task UpdatePaymentMetadata(PaymentDetails details);
+    Task<long> UpdatePaymentMetadataStaging(Guid paymentId, PaymentMetaDataStaging updatedMetaData);
     Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId);
     Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata();
     Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber);
     Task<Account> GetAccountById(long accountId);
+
+    Task<bool> PaymentStagingExists(Guid paymentId);
 }
