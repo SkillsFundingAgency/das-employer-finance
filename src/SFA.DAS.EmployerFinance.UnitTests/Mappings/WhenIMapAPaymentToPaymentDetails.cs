@@ -52,7 +52,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Mappings
                 PathwayCode = 4,
                 ProgrammeType = 3,
                 StandardCode = 78,
-                Uln = 5555
+                Uln = 5555,
+                CourseCode = "123ADF"
             };
 
             //Act
@@ -60,9 +61,9 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Mappings
 
             //Assert
             result.Id.Should().Be(Guid.Parse(payment.Id));
-            payment.Ukprn.Should().Be(payment.Ukprn);
-            payment.Amount.Should().Be(payment.Amount);
-            payment.ApprenticeshipId.Should().Be(payment.ApprenticeshipId);
+            result.Ukprn.Should().Be(payment.Ukprn);
+            result.Amount.Should().Be(payment.Amount);
+            result.ApprenticeshipId.Should().Be(payment.ApprenticeshipId);
             result.DeliveryPeriodMonth.Should().Be(payment.DeliveryPeriod.Month);
             result.DeliveryPeriodYear.Should().Be(payment.DeliveryPeriod.Year);
             result.CollectionPeriodId.Should().Be(payment.CollectionPeriod.Id);
@@ -79,6 +80,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Mappings
             result.ProgrammeType.Should().Be(payment.ProgrammeType);
             result.StandardCode.Should().Be(payment.StandardCode);
             result.Uln.Should().Be(payment.Uln);
+            result.CourseCode.Should().Be(payment.CourseCode);
         }
     }
 }

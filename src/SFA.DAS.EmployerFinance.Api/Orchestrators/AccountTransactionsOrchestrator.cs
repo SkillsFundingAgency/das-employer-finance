@@ -4,6 +4,7 @@ using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Helpers;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
+using SFA.DAS.EmployerFinance.Queries.GetExistingTransactionLines;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
@@ -103,5 +104,22 @@ public class AccountTransactionsOrchestrator
         }
 
         return viewModel;
+    }
+    public async Task<Transactions> GetExistingTransactionLines(string hashedAccountId, string periodEnd, int transactionType)
+    {
+        _logger.LogInformation("Requesting existing transaction lines for account {HashedAccountId}, periodEnd {PeriodEnd}, transactionType {TransactionType}", hashedAccountId, periodEnd, transactionType);
+
+        var data = await _mediator.Send(new GetExistingTransactionLinesQuery
+        {
+            HashedAccountId = hashedAccountId,
+            PeriodEnd = periodEnd,
+            TransactionType = transactionType
+        });
+
+        var response = new Transactions();
+        response.AddRange(data.Data.TransactionLines.Select(x => ConvertToTransactionViewModel(hashedAccountId, x)));
+
+        _logger.LogInformation("Received existing transaction lines for account {HashedAccountId}, periodEnd {PeriodEnd}, transactionType {TransactionType}", hashedAccountId, periodEnd, transactionType);
+        return response;
     }
 }

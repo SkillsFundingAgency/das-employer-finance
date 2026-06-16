@@ -1,4 +1,5 @@
-﻿using SFA.DAS.Common.Domain.Types;
+﻿using System.Globalization;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
@@ -9,9 +10,30 @@ public class NonLevyExcelTransactionFormatter(IExcelService excelService) : Exce
 {
     public ApprenticeshipEmployerType ApprenticeshipEmployerType => ApprenticeshipEmployerType.NonLevy;
 
-    protected override IEnumerable<string[]> GetTransactionRows(IEnumerable<TransactionDownloadLine> transactions)
+    protected override IEnumerable<string[]> GetTransactionRows(IEnumerable<TransactionDownloadLine> transactions, bool isNewVersion)
     {
-        return transactions.Select(transaction => new[]
+        return 
+            isNewVersion ? transactions.Select(transaction => new[]
+                {
+                    transaction.DateCreated.ToString("dd/MM/yyyy"),
+                    transaction.TransactionType,
+                    transaction.Description,
+                    transaction.CohortReference,
+                    transaction.TrainingProvider,
+                    transaction.Uln,
+                    transaction.Apprentice,
+                    transaction.ApprenticeTrainingCourse,
+                    transaction.ApprenticeTrainingCourseLevel,
+                    transaction.ApprenticeLearningTypeFormatted,
+                    transaction.TransactionType != nameof(TransactionItemType.Transfer) 
+                        ? transaction.PaidFromLevyFormatted :$"{0.ToString("0.00000", NumberFormatInfo.InvariantInfo)}",
+                    transaction.TransactionType == nameof(TransactionItemType.Transfer) 
+                        ? transaction.PaidFromLevyFormatted :$"{0.ToString("0.00000", NumberFormatInfo.InvariantInfo)}",
+                    transaction.EmployerContributionFormatted,
+                    transaction.GovermentContributionFormatted,
+                    transaction.TotalFormatted
+                })
+            : transactions.Select(transaction => new[]
         {
             transaction.DateCreated.ToString("dd/MM/yyyy"),
             transaction.TransactionType,
@@ -28,9 +50,15 @@ public class NonLevyExcelTransactionFormatter(IExcelService excelService) : Exce
         });
     }
 
-    protected override string[] GetHeaderRow()
+    protected override string[] GetHeaderRow(bool isNewVersion)
     {
-        return
+        return isNewVersion ? 
+        [
+            "Transaction date", "Transaction type", "Description","Cohort reference", "Training provider",  "Unique learner number",
+            "Learner", "Course name", "Course level", "Course Type", "Paid from levy", "Paid from transfer", "Your contribution",
+            "Government contribution", "Total"
+        ] 
+            :
         [
             "Transaction date", "Transaction type", "Description", "Training provider", "Unique learner number",
             "Apprentice", "Apprenticeship training course", "Course level", "Paid from transfer", "Your contribution",

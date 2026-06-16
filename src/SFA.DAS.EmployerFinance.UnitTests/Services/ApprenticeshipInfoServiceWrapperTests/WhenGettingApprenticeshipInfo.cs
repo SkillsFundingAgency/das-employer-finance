@@ -34,7 +34,7 @@ public class WhenGettingApprenticeshipInfo
             {
                 new StandardResponse
                 {
-                    Id = 1,
+                    Id = "1",
                     LearningType = "ApprenticeshipUnit"
                 }
             }
@@ -68,7 +68,7 @@ public class WhenGettingApprenticeshipInfo
             [
                 new Standard
                 {
-                    Code = 1
+                    Code = "1"
                 }
             ]
         };

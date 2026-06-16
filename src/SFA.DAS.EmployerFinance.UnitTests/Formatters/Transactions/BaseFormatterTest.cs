@@ -46,7 +46,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
                 TenPercentTopUp = 100,
                 Total = 1100,
                 TransactionType = $"{TransactionTypePrefix}1",
-                Uln = $"{UlnPrefix}1"
+                Uln = $"{UlnPrefix}1",
+                ApprenticeLearningType = "Apprenticeship"
             },
             new TransactionDownloadLine
             {
@@ -67,7 +68,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
                 TenPercentTopUp = 200,
                 Total = 2200,
                 TransactionType = $"{TransactionTypePrefix}2",
-                Uln = $"{UlnPrefix}2"
+                Uln = $"{UlnPrefix}2",
+                ApprenticeLearningType = $"Apprenticeship"
             },
             new TransactionDownloadLine
             {
@@ -88,7 +90,8 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions
                 TenPercentTopUp = 300,
                 Total = 3300,
                 TransactionType = $"{TransactionTypePrefix}3",
-                Uln = $"{UlnPrefix}3"
+                Uln = $"{UlnPrefix}3",
+                ApprenticeLearningType = $"Apprenticeship"
             },
         };
 

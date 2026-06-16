@@ -1,4 +1,3 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 
@@ -13,54 +12,50 @@ public class EnglishFractionRepository : IEnglishFractionRepository
         _db = db;
     }
 
-    public Task CreateEmployerFraction(DasEnglishFraction fractions, string employerReference)
+    public async Task CreateEmployerFraction(DasEnglishFraction fractions, string employerReference)
     {
-        var parameters = new DynamicParameters();
+        var entity = new EnglishFractionEntity
+        {
+            EmpRef = employerReference,
+            Amount = fractions.Amount,
+            DateCalculated = fractions.DateCalculated
+        };
 
-        parameters.Add("@EmpRef", employerReference, DbType.String);
-        parameters.Add("@Amount", fractions.Amount, DbType.Decimal);
-        parameters.Add("@dateCalculated", fractions.DateCalculated, DbType.DateTime);
-
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(
-            sql: "INSERT INTO [employer_financial].[EnglishFraction] (EmpRef, DateCalculated, Amount) VALUES (@empRef, @dateCalculated, @amount);",
-            param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.Text);
+        await _db.Value.Set<EnglishFractionEntity>().AddAsync(entity);
+        await _db.Value.SaveChangesAsync();
     }
 
-    public Task<IEnumerable<DasEnglishFraction>> GetAllEmployerFractions(string employerReference)
+    public async Task<IEnumerable<DasEnglishFraction>> GetAllEmployerFractions(string employerReference)
     {
-        var parameters = new DynamicParameters();
+        var entities = await _db.Value.Set<EnglishFractionEntity>()
+            .Where(x => x.EmpRef == employerReference)
+            .OrderByDescending(x => x.DateCalculated)
+            .ToListAsync();
 
-        parameters.Add("@empRef", employerReference, DbType.String);
-
-        return _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
-            sql: "SELECT * FROM [employer_financial].[EnglishFraction] WHERE EmpRef = @empRef ORDER BY DateCalculated desc;",
-            param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.Text);
+        return entities.Select(x => new DasEnglishFraction
+        {
+            Id = x.Id.ToString(),
+            EmpRef = x.EmpRef,
+            Amount = x.Amount ?? 0m,
+            DateCalculated = x.DateCalculated
+        });
     }
 
     public async Task<DateTime> GetLastUpdateDate()
     {
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DateTime>(
-            sql: "SELECT Top(1) DateCalculated FROM [employer_financial].[EnglishFractionCalculationDate] ORDER BY DateCalculated DESC;",
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.Text);
-
-        return result.FirstOrDefault();
+        return await _db.Value.Set<EnglishFractionCalculationDate>()
+            .OrderByDescending(x => x.DateCalculated)
+            .Select(x => x.DateCalculated)
+            .FirstOrDefaultAsync();
     }
 
-    public Task SetLastUpdateDate(DateTime dateUpdated)
+    public async Task SetLastUpdateDate(DateTime dateUpdated)
     {
-        var parameters = new DynamicParameters();
+        await _db.Value.Set<EnglishFractionCalculationDate>().AddAsync(new EnglishFractionCalculationDate
+        {
+            DateCalculated = dateUpdated.Date
+        });
 
-        parameters.Add("@dateCalculated", dateUpdated, DbType.Date);
-
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(
-            sql: "INSERT INTO [employer_financial].[EnglishFractionCalculationDate] (DateCalculated) VALUES (@dateCalculated);",
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            param: parameters,
-            commandType: CommandType.Text);
+        await _db.Value.SaveChangesAsync();
     }
 }

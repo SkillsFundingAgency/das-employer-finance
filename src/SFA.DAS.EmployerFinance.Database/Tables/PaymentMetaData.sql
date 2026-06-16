@@ -13,5 +13,7 @@
     [ApprenticeName] VARCHAR(MAX) NULL, 
     [ApprenticeNINumber] VARCHAR(MAX) NULL, 
     [IsHistoricProviderName] BIT NOT NULL DEFAULT 0,
-    [LearningType] varchar(25) NULL
+    [LearningType] varchar(25) NULL,
+    [CourseCode] varchar(25) NULL,
+    [CohortId] BIGINT NULL
 )

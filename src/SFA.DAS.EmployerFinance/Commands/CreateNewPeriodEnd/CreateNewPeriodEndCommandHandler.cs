@@ -24,6 +24,6 @@ public class CreateNewPeriodEndCommandHandler : IRequestHandler<CreateNewPeriodE
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        await _dasLevyRepository.CreateNewPeriodEnd(request.NewPeriodEnd); ;
+        await _dasLevyRepository.CreateNewPeriodEnd(request.NewPeriodEnd);
     }
 }

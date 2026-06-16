@@ -29,4 +29,5 @@ public interface IDasLevyService
     Task<decimal> GetTotalSpendForLastYear(long accountId);
 
     Task<decimal> GetLatestLevyDeclaration(long accountId);
+    Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType);
 }

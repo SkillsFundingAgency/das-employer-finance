@@ -10,6 +10,7 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
+using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
 
@@ -205,5 +206,27 @@ public class FinanceOrchestrator(
         }
 
         return response;
+    }
+
+    public async Task<List<PayeScheme>> GetPayeSchemesByEmployerId(long accountId, string? source)
+    {
+        _logger.LogInformation("Requesting PAYE schemes for accountId {AccountId} and source {Source}", accountId, source);
+
+        var response = await _mediator.Send(new GetPayeSchemesByEmployerIdQuery
+        {
+            AccountId = accountId,
+            Source = source
+        });
+
+        if (response?.Schemes == null)
+        {
+            return null;
+        }
+
+        var result = response.Schemes.Select(x => _mapper.Map<PayeScheme>(x)).ToList();
+
+        _logger.LogInformation("Received response - PAYE schemes for accountId {AccountId}: {Count}", accountId, result.Count);
+
+        return result;
     }
 }

@@ -93,6 +93,8 @@ public static class PaymentDetailsExtensions
         paymentsDataTable.Columns.Add("ApprenticeshipCourseStartDate", typeof(DateTime));
         paymentsDataTable.Columns.Add("IsHistoricProviderName", typeof(bool));
         paymentsDataTable.Columns.Add("LearningType", typeof(string)).MaxLength = 25;
+        paymentsDataTable.Columns.Add("CourseCode", typeof(string)).MaxLength = 25;
+        paymentsDataTable.Columns.Add("CohortId", typeof(long));
 
         foreach (var payment in payments)
         {
@@ -128,7 +130,9 @@ public static class PaymentDetailsExtensions
                 payment.CourseLevel,
                 payment.CourseStartDate,
                 payment.IsHistoricProviderName,
-                ((int)payment.LearningType).ToString());
+                ((int)payment.LearningType).ToString(),
+                payment.CourseCode,
+                payment.CohortId);
         }
 
         return paymentsDataTable;

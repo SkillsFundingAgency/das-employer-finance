@@ -9,6 +9,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
         private Mock<IExcelService> _excelService;
         private ExcelTransactionFormatter _formatter;
         private TransactionDownloadLine _transactionLine;
+        private TransactionDownloadLine _transactionLineTransfer;
 
         [SetUp]
         public void Arrange()
@@ -34,7 +35,27 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                 Total = 345.67M,
                 TrainingProvider = "Test Corp",
                 TransactionType = "Levy",
-                Uln = "QWERTY"
+                Uln = "QWERTY",
+            };
+            _transactionLineTransfer = new TransactionDownloadLine
+            {
+                Apprentice = "Joe Bloggs",
+                PayeScheme = "123/ABCDE",
+                Description = "Description",
+                ApprenticeTrainingCourse = "Testing",
+                CohortReference = "123456",
+                DateCreated = DateTime.Now,
+                EmployerContribution = 12.8M,
+                EnglishFraction = 11.2M,
+                GovermentContribution = 23.6M,
+                LevyDeclared = 12300.34M,
+                PaidFromLevy = 2000.34M,
+                PeriodEnd = "1617R4",
+                TenPercentTopUp = 200.56M,
+                Total = 345.67M,
+                TrainingProvider = "Test Corp",
+                TransactionType = "Transfer",
+                Uln = "QWERTY",
             };
         }
 
@@ -69,14 +90,76 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
             };
 
             //Act
-            _formatter.GetFileData(new List<TransactionDownloadLine> {_transactionLine});
+            _formatter.GetFileData(new List<TransactionDownloadLine> {_transactionLine}, false);
 
             //Assert
             _excelService.Verify(x => x.CreateExcelFile(It.Is<Dictionary<string, string[][]>>(t =>
-                t.Values.First().First().SequenceEqual(expectedData.First()) &&
-                t.Values.First().ElementAt(1).SequenceEqual(expectedData.ElementAt(1)))));
+                    t.Values.First().First().SequenceEqual(expectedData.First()) 
+                && t.Values.First().ElementAt(1).SequenceEqual(expectedData.ElementAt(1))
+            )));
         }
 
+        [Test]
+        public void ThenIShouldPassTheCorrectDataForNewVersion()
+        {
+            //Arrange
+            var expectedData = new[]
+            {
+                new[]
+                {
+                    "Transaction date", "Transaction type", "Description", "PAYE scheme", "Payroll month",
+                    "Levy declared",
+                    "English %", "10% top up", "Cohort reference","Training provider",  "Unique learner number",
+                    "Learner", "Course name", "Course level", "Course type", "Paid from levy", "Paid from transfer",
+                    "Your contribution",
+                    "Government contribution", "Total"
+                },
+                new[]
+                {
+                    _transactionLine.DateCreated.ToString("dd/MM/yyyy"), _transactionLine.TransactionType,
+                    _transactionLine.Description,
+                    _transactionLine.PayeScheme, "'" + _transactionLine.PeriodEnd,
+                    _transactionLine.LevyDeclaredFormatted,
+                    _transactionLine.EnglishFractionFormatted, _transactionLine.TenPercentTopUpFormatted,
+                    _transactionLine.CohortReference,_transactionLine.TrainingProvider,  _transactionLine.Uln,
+                    _transactionLine.Apprentice, _transactionLine.ApprenticeTrainingCourse,
+                    _transactionLine.ApprenticeTrainingCourseLevel,
+                    _transactionLine.ApprenticeLearningTypeFormatted,
+                    _transactionLine.PaidFromLevyFormatted, 
+                    "0.00000", 
+                    _transactionLine.EmployerContributionFormatted,
+                    _transactionLine.GovermentContributionFormatted, _transactionLine.TotalFormatted
+                },
+                new[]
+                {
+                    _transactionLineTransfer.DateCreated.ToString("dd/MM/yyyy"), _transactionLineTransfer.TransactionType,
+                    _transactionLineTransfer.Description,
+                    _transactionLineTransfer.PayeScheme, "'" + _transactionLineTransfer.PeriodEnd,
+                    _transactionLineTransfer.LevyDeclaredFormatted,
+                    _transactionLineTransfer.EnglishFractionFormatted, _transactionLineTransfer.TenPercentTopUpFormatted,
+                    _transactionLineTransfer.CohortReference, _transactionLineTransfer.TrainingProvider,  _transactionLineTransfer.Uln,
+                    _transactionLineTransfer.Apprentice, _transactionLineTransfer.ApprenticeTrainingCourse,
+                    _transactionLineTransfer.ApprenticeTrainingCourseLevel,
+                    _transactionLineTransfer.ApprenticeLearningTypeFormatted,
+                    "0.00000",
+                    _transactionLineTransfer.PaidFromLevyFormatted,
+                    _transactionLineTransfer.EmployerContributionFormatted,
+                    _transactionLineTransfer.GovermentContributionFormatted, _transactionLineTransfer.TotalFormatted
+                }
+            };
+
+            //Act
+            _formatter.GetFileData(new List<TransactionDownloadLine> {_transactionLine, _transactionLineTransfer}, true);
+
+            //Assert
+            _excelService.Verify(x => x.CreateExcelFile(It.Is<Dictionary<string, string[][]>>(t =>
+                t.Values.First().First().SequenceEqual(expectedData.First()) 
+                &&
+                t.Values.First().ElementAt(1).SequenceEqual(expectedData.ElementAt(1))
+                &&
+                t.Values.First().ElementAt(2).SequenceEqual(expectedData.ElementAt(2))
+                )));
+        }
 
         [Test]
         public void ThenIShouldReturnTheExcelFile()
@@ -87,7 +170,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Formatters.Transactions.ExcelTransac
                 .Returns(expectedFileData);
 
             //Act
-            var result = _formatter.GetFileData(new List<TransactionDownloadLine> {_transactionLine});
+            var result = _formatter.GetFileData(new List<TransactionDownloadLine> {_transactionLine}, false);
 
             //Assert
             result.Should().BeEquivalentTo(expectedFileData);

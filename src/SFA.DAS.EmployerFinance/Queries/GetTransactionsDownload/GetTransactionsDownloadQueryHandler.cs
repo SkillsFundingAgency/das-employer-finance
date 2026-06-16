@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Validation;
+using SFA.DAS.Encoding;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
@@ -12,7 +13,8 @@ namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 public class GetTransactionsDownloadQueryHandler(
     ITransactionFormatterFactory transactionsFormatterFactory,
     ITransactionRepository transactionRepository,
-    IAccountApiClient accountApiClient)
+    IAccountApiClient accountApiClient,
+    IEncodingService encodingService)
     : IRequestHandler<GetTransactionsDownloadQuery, GetTransactionsDownloadResponse>
 {
     public async Task<GetTransactionsDownloadResponse> Handle(GetTransactionsDownloadQuery message,CancellationToken cancellationToken)
@@ -33,6 +35,7 @@ public class GetTransactionsDownloadQueryHandler(
         foreach (var transaction in transactions)
         {
             GenerateTransactionDescription(transaction);
+            EncodeCohortReference(transaction);
         }
 
         var fileFormatter = transactionsFormatterFactory.GetTransactionsFormatterByType(
@@ -41,10 +44,20 @@ public class GetTransactionsDownloadQueryHandler(
 
         return new GetTransactionsDownloadResponse
         {
-            FileData = fileFormatter.GetFileData(transactions),
+            FileData = fileFormatter.GetFileData(transactions, message.Version == "2"),
             FileExtension = fileFormatter.FileExtension,
             MimeType = fileFormatter.MimeType
         };
+    }
+
+    private void EncodeCohortReference(TransactionDownloadLine transaction)
+    {
+        if(!transaction.CohortId.HasValue)
+        {
+            return;
+        }
+
+        transaction.CohortReference = encodingService.Encode(transaction.CohortId.Value, EncodingType.CohortReference);
     }
 
     private static void GenerateTransactionDescription(TransactionDownloadLine transaction)

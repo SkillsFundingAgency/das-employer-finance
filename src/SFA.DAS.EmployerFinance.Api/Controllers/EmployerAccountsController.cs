@@ -94,4 +94,18 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
 
         return Ok(result);
     }
+
+    [HttpGet("{accountId}/paye-schemes")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetPayeSchemes(long accountId, [FromQuery] string? source = null)
+    {
+        var result = await financeOrchestrator.GetPayeSchemesByEmployerId(accountId, source);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
 }

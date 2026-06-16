@@ -16,5 +16,11 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Ignore(a => a.ProgrammeType);
         builder.Ignore(a => a.PathwayCode);
         builder.Ignore(a => a.PathwayName);
+
+        builder.Property(p => p.FundingSource)
+       .HasConversion<string>();
+
+        builder.Property(p => p.TransactionType)
+               .HasConversion<string>();
     }
 }

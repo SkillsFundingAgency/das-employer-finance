@@ -10,17 +10,25 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 [Route("jobs")]
 public class AuditLogController(AuditLogOrchestrator auditLogOrchestrator) : ControllerBase
 {
+    private const string InvalidRequestCode = "invalid_request";
+    private const string InvalidPagingCode = "invalid_paging";
+
     [HttpPost]
     public async Task<IActionResult> CreateJob([FromBody] CreateAuditJobRequest request)
     {
         if (request == null)
         {
-            return BadRequest(CreateError("invalid_request", "A job payload is required."));
+            return BadRequest(CreateError(InvalidRequestCode, "A job payload is required."));
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(CreateError(InvalidRequestCode, "The job payload is invalid."));
         }
 
         if (string.IsNullOrWhiteSpace(request.Id) || string.IsNullOrWhiteSpace(request.Description) || request.DateStarted == default || request.NumRecords < 0)
         {
-            return BadRequest(CreateError("invalid_request", "The job payload is invalid."));
+            return BadRequest(CreateError(InvalidRequestCode, "The job payload is invalid."));
         }
 
         var result = await auditLogOrchestrator.CreateJob(request);
@@ -83,18 +91,23 @@ public class AuditLogController(AuditLogOrchestrator auditLogOrchestrator) : Con
     {
         if (request == null)
         {
-            return BadRequest(CreateError("invalid_request", "A workflow log payload is required."));
+            return BadRequest(CreateError(InvalidRequestCode, "A workflow log payload is required."));
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(CreateError(InvalidRequestCode, "The workflow log payload is invalid."));
         }
 
         if (!IsValidWorkflowLogRequest(request, out var message))
         {
-            return BadRequest(CreateError("invalid_request", message));
+            return BadRequest(CreateError(InvalidRequestCode, message));
         }
 
         var result = await auditLogOrchestrator.CreateWorkflowLog(jobId, workflowId, request);
         if (!result.Succeeded)
         {
-            return BadRequest(CreateError("invalid_request", result.Message));
+            return BadRequest(CreateError(InvalidRequestCode, result.Message));
         }
 
         return Created($"/jobs/{jobId}/workflows/{workflowId}/logs", new CreateResourceResponse
@@ -132,12 +145,12 @@ public class AuditLogController(AuditLogOrchestrator auditLogOrchestrator) : Con
     {
         if (page < 1)
         {
-            return CreateError("invalid_paging", "The page query parameter must be 1 or greater.");
+            return CreateError(InvalidPagingCode, "The page query parameter must be 1 or greater.");
         }
 
         if (pageSize < 10 || pageSize > 100)
         {
-            return CreateError("invalid_paging", "The pagesize query parameter must be between 10 and 100.");
+            return CreateError(InvalidPagingCode, "The pagesize query parameter must be between 10 and 100.");
         }
 
         return null;
@@ -204,7 +217,7 @@ public class AuditLogController(AuditLogOrchestrator auditLogOrchestrator) : Con
 
         if (links.Count > 0)
         {
-            Response.Headers["Link"] = string.Join(", ", links);
+            Response.Headers.Link = string.Join(", ", links);
         }
     }
 

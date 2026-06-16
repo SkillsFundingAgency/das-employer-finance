@@ -86,7 +86,7 @@ public class AuditLogRepository(EmployerFinanceDbContext dbContext) : IAuditLogR
         return await BuildPagedWorkflowLogs(query, page, pageSize, cancellationToken);
     }
 
-    private async Task<PagedResult<WorkflowLogDto>> BuildPagedWorkflowLogs(IQueryable<WorkflowLog> query, int page, int pageSize, CancellationToken cancellationToken)
+    private static async Task<PagedResult<WorkflowLogDto>> BuildPagedWorkflowLogs(IQueryable<WorkflowLog> query, int page, int pageSize, CancellationToken cancellationToken)
     {
         var totalCount = await query.CountAsync(cancellationToken);
 

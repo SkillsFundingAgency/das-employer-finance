@@ -56,19 +56,27 @@ public class PayeRepository : IPayeRepository
         return result.SingleOrDefault();
     }
 
-    public async Task<PayeSchemes> GetGovernmentGatewayOnlySchemesByEmployerId(long employerId)
+    public async Task<PayeSchemes> GetSchemesByEmployerId(long employerId)
     {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("@accountId", employerId, DbType.Int64);
-
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<Paye>(sql: "[employer_financial].[GetPayeSchemesAddedByGovernmentGateway_ByAccountId]", param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.StoredProcedure);
+        var result = await _db.Value.AccountPayes
+            .Where(p => p.AccountId == employerId)
+            .ToListAsync();
 
         return new PayeSchemes
         {
-            SchemesList = result.ToList()
+            SchemesList = result
+        };
+    }
+
+    public async Task<PayeSchemes> GetGovernmentGatewayOnlySchemesByEmployerId(long employerId)
+    {
+        var result = await _db.Value.AccountPayes
+            .Where(p => p.AccountId == employerId && p.Aorn == null)
+            .ToListAsync();
+
+        return new PayeSchemes
+        {
+            SchemesList = result
         };
     }
 

@@ -24,14 +24,14 @@ namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests.EventHandlers
         }
 
         [Test]
-        public Task Handle_WhenThePayeSchemeWasAddedViaGovernmentGateway_ThenLevyShouldBeAddedToAccount()
+        public Task Handle_WhenThePayeSchemeWasAddedViaGovernmentGateway_ThenLevyImportIsTriggeredByCreateAccountPayeOnly()
         {
             return TestAsync(f =>
                 {
                     f.Event.Aorn = string.Empty;
                 },
                 f => f.Handle(),
-                f => f.Context.Verify(x => x.Send(It.Is<ImportAccountLevyDeclarationsCommand>(y => y.AccountId == f.Event.AccountId && y.PayeRef == f.Event.PayeRef), It.IsAny<SendOptions>()), Times.Once()));
+                f => f.Context.Verify(x => x.Send(It.IsAny<ImportAccountLevyDeclarationsCommand>(), It.IsAny<SendOptions>()), Times.Never()));
         }
 
         [Test]

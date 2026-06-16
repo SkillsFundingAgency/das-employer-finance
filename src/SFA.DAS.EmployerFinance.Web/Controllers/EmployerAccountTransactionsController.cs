@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
@@ -78,7 +78,8 @@ public class EmployerAccountTransactionsController : Controller
                 AccountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId),
                 DownloadFormat = model.DownloadFormat,
                 EndDate = model.EndDate,
-                StartDate = model.StartDate
+                StartDate = model.StartDate,
+                Version = model.Version
             });
             return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
         }
