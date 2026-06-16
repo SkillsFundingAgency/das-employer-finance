@@ -7,7 +7,10 @@
     @CourseLevel INT,
     @CourseStartDate DATETIME,
     @PathwayName VARCHAR(MAX),
-    @PaymentMetaDataId BIGINT
+    @PaymentMetaDataId BIGINT,
+    @LearningType VARCHAR(25) NULL,
+    @CourseCode VARCHAR(25) NULL,
+    @CohortId BIGINT NULL
 )
 AS
 
@@ -20,6 +23,9 @@ SET
     ,ApprenticeshipCourseLevel = @CourseLevel
     ,ApprenticeshipCourseStartDate = @CourseStartDate
     ,PathwayName = @PathwayName
+    ,LearningType = @LearningType
+    ,CourseCode = @CourseCode
+    ,CohortId = @CohortId
 WHERE [Id] = @PaymentMetadataId
 
 UPDATE at

@@ -4,8 +4,12 @@ using Microsoft.Azure.Services.AppAuthentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
+using SFA.DAS.EmployerFinance.Models.AuditLogs;
 using SFA.DAS.EmployerFinance.Models.Account;
+using SFA.DAS.EmployerFinance.Models.Levy;
+using SFA.DAS.EmployerFinance.Models.Paye;
 using SFA.DAS.EmployerFinance.Models.Payments;
+using SFA.DAS.EmployerFinance.Models.PaymentStaging;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Models.TransferConnections;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -24,10 +28,18 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<HealthCheck> HealthChecks { get; set; }
     public virtual DbSet<PeriodEnd> PeriodEnds { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<Paye> AccountPayes { get; set; }
+    public virtual DbSet<EnglishFractionEntity> EnglishFractions { get; set; }
+    public virtual DbSet<EnglishFractionCalculationDate> EnglishFractionCalculationDates { get; set; }
     public virtual DbSet<TransactionLineEntity> Transactions { get; set; }
     public virtual DbSet<TransferConnectionInvitation> TransferConnectionInvitations { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<PaymentMetaData> PaymentMetaData{ get; set; }
+    public virtual DbSet<TransferStaging> TransferStaging { get; set; }
+    public virtual DbSet<PaymentStagingModel> PaymentStaging { get; set; }
+    public virtual DbSet<PaymentMetaDataStaging> PaymentMetaDataStaging{ get; set; }
+    public virtual DbSet<JobRun> JobRuns { get; set; }
+    public virtual DbSet<WorkflowLog> WorkflowLogs { get; set; }
 
     public EmployerFinanceDbContext() { }   
 
@@ -60,12 +72,21 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new AccountConfiguration());
         modelBuilder.ApplyConfiguration(new AccountTransferConfiguration());
         modelBuilder.ApplyConfiguration(new HealthCheckConfiguration());
+        modelBuilder.ApplyConfiguration(new PayeConfiguration());
+        modelBuilder.ApplyConfiguration(new EnglishFractionEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new EnglishFractionCalculationDateConfiguration());
+        modelBuilder.ApplyConfiguration(new JobRunConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMetadataConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMetadataStagingConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionLineEntityConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationConfiguration());
         modelBuilder.ApplyConfiguration(new TransferConnectionInvitationChangeConfiguration());
         modelBuilder.ApplyConfiguration(new PeriodEndConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentStagingConfiguration());
+        modelBuilder.ApplyConfiguration(new TransferStagingConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
+        modelBuilder.ApplyConfiguration(new WorkflowLogConfiguration());
         modelBuilder.Ignore<PaymentDetails>();
     }
 }

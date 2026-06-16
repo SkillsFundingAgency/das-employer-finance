@@ -19,7 +19,10 @@ AS
 			ApprenticeNINumber,
 			ApprenticeshipCourseLevel,
 			ApprenticeshipCourseStartDate,
-			IsHistoricProviderName
+			IsHistoricProviderName,
+			LearningType,
+		    CourseCode,
+		    CohortId    
 		) VALUES (
 			p.ProviderName,
 			p.StandardCode,
@@ -32,7 +35,10 @@ AS
 			p.ApprenticeNINumber,
 			p.ApprenticeshipCourseLevel,
 			p.ApprenticeshipCourseStartDate,
-			p.IsHistoricProviderName
+			p.IsHistoricProviderName,
+			p.LearningType,
+		    p.CourseCode,
+		    p.CohortId      
 		)
 		OUTPUT p.PaymentId, INSERTED.Id INTO @paymentMetaDataIds;		
 

@@ -1,6 +1,7 @@
 ﻿using AutoFixture.NUnit3;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
+using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.ApprenticeshipCourse;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -49,6 +50,7 @@ public class WhenIAddSinglePaymentDetailsMetadata
 
         actual.ApprenticeName.Should().Be($"{apprenticeshipResponse.FirstName} {apprenticeshipResponse.LastName}");
         actual.CourseStartDate.Should().Be(apprenticeshipResponse.StartDate);
+        actual.CohortId.Should().Be(apprenticeshipResponse.CohortId);
         
         commitmentsClient.Verify();
     }
@@ -68,7 +70,8 @@ public class WhenIAddSinglePaymentDetailsMetadata
     )
     {
         paymentDetails.StandardCode = 100;
-        standard.Code = paymentDetails.StandardCode.Value;
+        standard.Code = paymentDetails.StandardCode.ToString();
+        standard.LearningType = nameof(LearningType.Apprenticeship);
 
         inprocessCache.Setup(x => x.Get<StandardsView>(nameof(StandardsView))).Returns(() => null);
         apprenticeshipInfoService.Setup(x => x.GetStandardsAsync(It.IsAny<bool>())).ReturnsAsync(new StandardsView
@@ -80,6 +83,7 @@ public class WhenIAddSinglePaymentDetailsMetadata
 
         actual.CourseName.Should().Be(standard.CourseName);
         actual.CourseLevel.Should().Be(standard.Level);
+        actual.LearningType.ToString().Should().Be(standard.LearningType);
 
         apprenticeshipInfoService.Verify();
     }
@@ -122,5 +126,60 @@ public class WhenIAddSinglePaymentDetailsMetadata
         actual.PathwayName.Should().Be(framework.PathwayName);
 
         apprenticeshipInfoService.Verify();
+    }
+
+    [Test, MoqAutoData]
+    public async Task WhenCourseCodeIsPopulatedAndStandardCodeAndFrameworkCodeAreAbsentThenStandardIsRetrievedByCourseCode(
+        long accountId,
+        Standard standard,
+        [Frozen] Mock<IInProcessCache> inprocessCache,
+        [Frozen] Mock<IProviderService> providerService,
+        [Frozen] Mock<ICommitmentsV2ApiClient> commitmentsClient,
+        [Frozen] Mock<IApprenticeshipInfoServiceWrapper> apprenticeshipInfoService,
+        PaymentDetails paymentDetails,
+        PaymentService service
+    )
+    {
+        paymentDetails.StandardCode = null;
+        paymentDetails.FrameworkCode = null;
+        paymentDetails.CourseCode = "ST0001";
+        standard.Code = paymentDetails.CourseCode;
+        standard.LearningType = nameof(LearningType.Apprenticeship);
+
+        inprocessCache.Setup(x => x.Get<StandardsView>(nameof(StandardsView))).Returns(() => null);
+        apprenticeshipInfoService.Setup(x => x.GetStandardsAsync(It.IsAny<bool>())).ReturnsAsync(new StandardsView
+        {
+            Standards = [standard]
+        }).Verifiable(Times.Once);
+
+        var actual = await service.AddSinglePaymentDetailsMetadata(accountId, paymentDetails);
+
+        actual.CourseName.Should().Be(standard.CourseName);
+        actual.CourseLevel.Should().Be(standard.Level);
+        actual.LearningType.ToString().Should().Be(standard.LearningType);
+
+        apprenticeshipInfoService.Verify();
+    }
+
+    [Test, MoqAutoData]
+    public async Task WhenCourseCodeAndStandardCodeAndFrameworkCodeAreAllAbsentThenNoCourseDetailsArePopulated(
+        long accountId,
+        [Frozen] Mock<IInProcessCache> inprocessCache,
+        [Frozen] Mock<IProviderService> providerService,
+        [Frozen] Mock<ICommitmentsV2ApiClient> commitmentsClient,
+        [Frozen] Mock<IApprenticeshipInfoServiceWrapper> apprenticeshipInfoService,
+        PaymentDetails paymentDetails,
+        PaymentService service
+    )
+    {
+        paymentDetails.StandardCode = null;
+        paymentDetails.FrameworkCode = null;
+        paymentDetails.CourseCode = null;
+
+        var actual = await service.AddSinglePaymentDetailsMetadata(accountId, paymentDetails);
+
+        actual.CourseName.Should().BeEmpty();
+        apprenticeshipInfoService.Verify(x => x.GetStandardsAsync(It.IsAny<bool>()), Times.Never);
+        apprenticeshipInfoService.Verify(x => x.GetFrameworksAsync(It.IsAny<bool>()), Times.Never);
     }
 }

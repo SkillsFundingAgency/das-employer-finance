@@ -1,4 +1,6 @@
-﻿using SFA.DAS.Provider.Events.Api.Types;
+﻿using SFA.DAS.Common.Domain.Types;
+using SFA.DAS.Provider.Events.Api.Types;
+using LearningType = SFA.DAS.Common.Domain.Types.LearningType;
 
 namespace SFA.DAS.EmployerFinance.Models.Payments;
 
@@ -26,7 +28,9 @@ public class Payment
     public int? PathwayCode { get; set; }
     public string PathwayName { get; set; }
     public long PaymentMetaDataId { get; set; }
-
+    public LearningType LearningType { get; set; }
+    public string CourseCode { get; set; }
+    public long CohortId { get; set; }
     public override bool Equals(object obj)
     {
         var payment = obj as Payment;
@@ -58,6 +62,9 @@ public class Payment
         if (ProgrammeType != payment.ProgrammeType) return false;
         if (PathwayCode != payment.PathwayCode) return false;
         if (PathwayName != payment.PathwayName) return false;
+        if (LearningType != payment.LearningType) return false;
+        if (CourseCode != payment.CourseCode) return false;
+        if (CohortId != payment.CohortId) return false;
 
         return true;
     }

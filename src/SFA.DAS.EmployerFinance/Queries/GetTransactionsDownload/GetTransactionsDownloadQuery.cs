@@ -23,4 +23,7 @@ public class GetTransactionsDownloadQuery : IRequest<GetTransactionsDownloadResp
 
     [Required]
     public DownloadFormatType? DownloadFormat { get; set; }
+
+    [Required]
+    public string Version { get; set; }
 }

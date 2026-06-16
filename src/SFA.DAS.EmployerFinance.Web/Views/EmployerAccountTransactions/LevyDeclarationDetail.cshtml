@@ -1,14 +1,10 @@
 ﻿@using System.Globalization
-@using SFA.DAS.EmployerFinance.Interfaces
-@using SFA.DAS.EmployerFinance.Web.Infrastructure
-
-@inject IUrlActionHelper UrlHelpers;
 
 @model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<TransactionLineViewModel<SFA.DAS.EmployerFinance.Models.Levy.LevyDeclarationTransactionLine>>
 
 @{
     var culture = new CultureInfo("en-GB");
-    var paymentType = "Levy";
+    var paymentType = "Levy declared this month";
     if (Model.Data.Amount < 0)
     {
         paymentType = "Adjustment";
@@ -27,7 +23,7 @@
         <hr class="govuk-section-break govuk-section-break--visible">
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">Date </dt>
+                <dt class="govuk-summary-list__key">Date received</dt>
                 <dd class="govuk-summary-list__value">@Model.Data.TransactionDate.ToGdsFormatFull()</dd>
             </div>
         </dl>
@@ -89,17 +85,11 @@
     <div class="column-two-thirds">
         @await Html.PartialAsync("_WhatIsEnglishPercentage")
         <div class="govuk-inset-text">
-            <p><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/employer-enquiries" target="_blank" rel="noopener" class="govuk-link">Contact HMRC</a> if the levied amount isn't what you expected. </p>
+            <p><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/employer-enquiries" target="_blank" rel="noopener" class="govuk-link">Contact HMRC</a> if the levy amount isn't what you expected. </p>
         </div>
     </div>
 </div>
 
 @section breadcrumb {
-    <div class="govuk-breadcrumbs">
-        <ol class="govuk-breadcrumbs__list">
-            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerFinanceAction($"teams")" class="govuk-breadcrumbs__link">Home</a></li>
-            <li class="govuk-breadcrumbs__list-item"><a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.Data.HashedAccountId" asp-route-year="@Model.Data.TransactionDate.Year" asp-route-month="@Model.Data.TransactionDate.Month" class="govuk-breadcrumbs__link">Your transactions</a></li>
-            <li class="govuk-breadcrumbs__list-item">@paymentType details</li>
-        </ol>
-    </div>
+    <a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.Data.HashedAccountId" asp-route-year="@Model.Data.TransactionDate.Year" asp-route-month="@Model.Data.TransactionDate.Month" class="govuk-back-link">Back to transactions</a>
 }

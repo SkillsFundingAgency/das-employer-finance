@@ -33,13 +33,13 @@
     <PackageReference Include="SFA.DAS.ActiveDirectory" Version="1.0.3" />
     <PackageReference Include="SFA.DAS.Caches" Version="1.1.4" />
     <PackageReference Include="SFA.DAS.CommitmentsV2.Api.Types" Version="8.2.0" />
-    <PackageReference Include="SFA.DAS.Common.Domain" Version="1.4.283" />
+    <PackageReference Include="SFA.DAS.Common.Domain" Version="1.4.308" />
     <PackageReference Include="SFA.DAS.Encoding" Version="1.1.76" />
     <PackageReference Include="SFA.DAS.Events.Api.Client" Version="1.20.0.26497" />
     <PackageReference Include="SFA.DAS.Notifications.Api.Client" Version="2.2.37" />
     <PackageReference Include="SFA.DAS.NServiceBus" Version="16.0.21" />
     <PackageReference Include="SFA.DAS.NServiceBus.SqlServer" Version="16.0.21" />
-    <PackageReference Include="SFA.DAS.Provider.Events.Api.Client" Version="3.0.3" />
+    <PackageReference Include="SFA.DAS.Provider.Events.Api.Client" Version="3.0.9" />
     <PackageReference Include="SFA.DAS.TokenService.Api.Client" Version="2.3.0" />
     <PackageReference Include="SFA.DAS.UnitOfWork" Version="9.0.28" />
     <PackageReference Include="SFA.DAS.UnitOfWork.NServiceBus" Version="9.0.28" />
