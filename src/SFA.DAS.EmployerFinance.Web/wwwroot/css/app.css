@@ -131,6 +131,29 @@
     }
 }
 
+.app-table__row--total, 
+.app-table__row--highlight {
+    background: #dfdfdf;
+}
+
+@media (max-width: 40.0625em) {
+    .app-table__row--spacer {
+        display: none !important;
+    }
+}
+
+.app-table__header-row-cell {
+    font-weight: 700;
+    padding-left: .5em !important;
+    text-align: left !important;
+}
+
+@media (min-width: 40.0625em) {
+    .app-table__header-row-cell {
+        height: 4em;
+    }
+}
+
 .app-table__cell--highlight {
     background: #f3f2f1;
 }
@@ -148,6 +171,56 @@
 .app-table__cell--transparent {
     border-color: transparent !important;
 }
+
+
+/* Info Table */ 
+
+.app-table--info {
+    border: 1px solid #b1b4b6;
+}
+
+.app-table--info th {
+    background: #f3f2f1;
+    white-space: nowrap;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.app-table--info tr th:first-child, 
+.app-table--info tr td:first-child,
+.app-table--info tr th:last-child,
+.app-table--info tr td:last-child {
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.app-table--info tr th:last-child,
+.app-table--info tr td:last-child {
+    padding-right: 1.5rem;
+}
+
+.app-table--info tr td:first-child:before,
+.app-table--info tr td:last-child:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: -1px;
+    left: 0;
+    width: 1.5rem;
+    background: #fff;
+}
+
+.app-table--info tr td:last-child:before {
+    left: auto;
+    right: 0;
+}
+
+.app-table--info tr:last-child td:first-child:before,
+.app-table--info tr:last-child td:last-child:before {
+    bottom: 0;
+}
+
 
 /* Survey */
 
@@ -181,6 +254,34 @@
     width: 100%;
     height: 300px;
     display: block;
+    border: none;
+}
+
+.app-table-wrapper {
+    border: 1px solid #b1b4b6;
+    margin-bottom: 2rem;
+}
+
+.app-table-wrapper table {
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+.app-table-wrapper caption {
+    background: #f3f2f1;
+    padding-left: 1rem;
+    padding-top: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.app-table-wrapper th {
+    background: #f3f2f1;
+}
+
+.app-table-wrapper .govuk-table__header,
+.app-table-wrapper .govuk-table__cell {
+    padding: .5rem 1rem;
     border: none;
 }
 
@@ -247,4 +348,20 @@
     .app-highlight-boxes__box {
         padding: 30px;
     }
+}
+
+.app-actions {
+    margin: 1rem 0;
+}
+
+.app-actions__link {
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row;
+    gap: .5rem;
+}
+
+.app-actions__icon {
+    max-height: 1.5rem;
+    min-width: 1.5rem;
 }

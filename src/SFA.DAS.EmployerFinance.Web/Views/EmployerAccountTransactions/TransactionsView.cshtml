@@ -3,7 +3,10 @@
 @using SFA.DAS.EmployerFinance.Models.Transaction
 @using SFA.DAS.EmployerFinance.Models.Transfers
 @using SFA.DAS.Common.Domain.Types;
+@using SFA.DAS.EmployerFinance.Interfaces
 @model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>
+
+@inject IUrlActionHelper UrlHelpers;
 
 @{
     var culture = new CultureInfo("en-GB");
@@ -17,17 +20,16 @@
     var nextMonthDate = displayingMonthDate.AddMonths(1);
 }
 
-
         <h1 class="govuk-heading-xl">
             Your transactions
             <span class="govuk-caption-xl">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
         </h1>
 
-        @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy.ToString())
+        @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == nameof(ApprenticeshipEmployerType.Levy))
         {
             <div class="govuk-grid-row govuk-!-margin-bottom-8">
                 <div class="govuk-grid-column-one-third">
-                    <p class="app-finance-figure__title" id="lbl-current-funds">Current funds</p>
+                    <p class="app-finance-figure__title" id="lbl-current-funds">Total levy in account</p>
                     <div class="govuk-body govuk-!-font-size-24 app-finance-figure" aria-labelledby="lbl-current-funds">@Model.Data.Model.CurrentBalance.ToString("C0", culture)</div>
                 </div>
             </div>
@@ -113,7 +115,7 @@
                                      aggregationLine.TransactionType == TransactionItemType.TopUp)
                                 {
                                     <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("LevyDeclarationDetail", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
-                                        Details <span class="govuk-visually-hidden"> for the transaction on @date</span>
+                                        View <span class="govuk-visually-hidden"> for the transaction on @date</span>
                                     </a>
                                 }
                                 else if (aggregationLine.TransactionType == TransactionItemType.Payment)
@@ -121,8 +123,7 @@
                                     var paymentTransaction = aggregationLine as PaymentTransactionLine;
 
                                     <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, ukPrn = paymentTransaction?.UkPrn, fromDate = fromDate, toDate = toDate })">
-                                        Details <span class="govuk-visually-hidden"> for the transaction on @date</span>
-
+                                        View <span class="govuk-visually-hidden"> for the transaction on @date</span>
                                     </a>
                                 }
                                 else if (aggregationLine.TransactionType == TransactionItemType.Transfer)
@@ -142,7 +143,7 @@
                                                          TargetAccountPublicHashedId = targetAccountPublicHashedId,
                                                          PeriodEnd = transferTransaction?.PeriodEnd
                                                      })">
-                                        Details <span class="govuk-visually-hidden"> for the transfer transaction on @date</span>
+                                        View <span class="govuk-visually-hidden"> for the transfer transaction on @date</span>
                                     </a>
 
                                 }
@@ -182,8 +183,9 @@
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">
-            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId})" class="govuk-breadcrumbs__link">Finance</a></li>
-            <li class="govuk-breadcrumbs__list-item">Your transactions</li>
+            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction("teams")" class="govuk-breadcrumbs__link">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item"><a href="@Url.Action("Index", "EmployerAccountTransactions", new { HashedAccountId = Model.Data.Model.Data.HashedAccountId })" class="govuk-breadcrumbs__link">Funding and payments</a></li>
+            <li class="govuk-breadcrumbs__list-item">Transactions</li>
         </ol>
     </div>
 }

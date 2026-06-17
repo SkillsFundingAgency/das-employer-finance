@@ -1,4 +1,4 @@
-﻿using AutoFixture.NUnit3;
+﻿using AutoFixture.NUnit4;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.Testing.AutoFixture;
 

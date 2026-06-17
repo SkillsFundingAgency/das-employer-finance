@@ -34,5 +34,17 @@ namespace SFA.DAS.EmployerFinance.Api.Client
         Task<string> CreatePeriodEnd(PeriodEnd periodEnd);
 
         Task<PeriodEnd> GetPeriodEndByPeriodEndId(string periodEndId);
+
+        Task<CreateResourceResponse> CreateAuditJob(CreateAuditJobRequest request);
+
+        Task<CreateResourceResponse> CreateWorkflowLog(string jobId, string workflowId, CreateWorkflowLogRequest request);
+
+        Task<List<AuditJobSummary>> GetAuditJobs(int page = 1, int pageSize = 20);
+
+        Task<AuditJobSummary> GetAuditJob(string jobId);
+
+        Task<List<WorkflowLogEntry>> GetAuditJobLogs(string jobId, int page = 1, int pageSize = 20);
+
+        Task<List<WorkflowLogEntry>> GetAuditWorkflowLogs(string jobId, string workflowId, int page = 1, int pageSize = 20);
     }
 }

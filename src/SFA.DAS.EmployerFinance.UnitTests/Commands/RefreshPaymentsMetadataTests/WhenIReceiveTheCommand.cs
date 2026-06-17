@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoFixture.NUnit3;
+using AutoFixture.NUnit4;
 using SFA.DAS.EmployerFinance.Commands.RefreshPaymentMetadata;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;

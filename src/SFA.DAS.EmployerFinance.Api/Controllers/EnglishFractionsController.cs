@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
@@ -31,7 +31,6 @@ public class EnglishFractionsController(EnglishFractionsOrchestrator orchestrato
             return BadRequest(GetValidationErrors(ex));
         }
     }
-
     private static Dictionary<string, string> GetValidationErrors(ValidationException ex)
     {
         return ex.ValidationResult?.MemberNames
