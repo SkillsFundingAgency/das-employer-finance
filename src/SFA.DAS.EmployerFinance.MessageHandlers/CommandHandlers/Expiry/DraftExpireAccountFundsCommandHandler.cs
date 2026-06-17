@@ -56,6 +56,8 @@ public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpire
                 new DateTime(message.DateTo.Value.Year, message.DateTo.Value.Month, 1)).ToList();
         }
 
+        _logger.LogInformation($"DRAFT: short term expired from date: '{_configuration.FundsExpiryPolicyChangeDate}' for period of: '{_configuration.NewFundsExpiryPeriod}' for account ID '{message.AccountId}'");
+        
         var (longTermExpiredFunds, shortTermExpiredFunds) = _expiredFunds.GetExpiredFunds(
             fundsIn.ToCalendarPeriodDictionary(),
             fundsOut.ToCalendarPeriodDictionary(),
@@ -75,12 +77,15 @@ public class DraftExpireAccountFundsCommandHandler : IHandleMessages<DraftExpire
         {
             longTermExpiredFunds.Add(currentCalendarPeriod, 0);
         }
+        if(!shortTermExpiredFunds.ContainsKey(currentCalendarPeriod))
+        {
+            shortTermExpiredFunds.Add(currentCalendarPeriod, 0);
+        }
 
         await _expiredFundsRepository.CreateDraft(message.AccountId, longTermExpiredFunds.Where(c => c.Key.Equals(currentCalendarPeriod)).ToDictionary(key => key.Key, value => value.Value).ToExpiredFundsList(), now);
-
-        if (shortTermExpiredFunds.ContainsKey(currentCalendarPeriod))
-            await _expiredFundsRepository.CreateDraft(message.AccountId, shortTermExpiredFunds.Where(c => c.Key.Equals(currentCalendarPeriod)).ToDictionary(key => key.Key, value => value.Value).ToExpiredFundsList(), now, transactionType: 6);
-
+        await _expiredFundsRepository.CreateDraft(message.AccountId, shortTermExpiredFunds.Where(c => c.Key.Equals(currentCalendarPeriod)).ToDictionary(key => key.Key, value => value.Value).ToExpiredFundsList(), now, transactionType: 6);
+        
+        
         _logger.LogInformation($"DRAFT: Expired '{longTermExpiredFunds.Count}' long-term and '{shortTermExpiredFunds.Count}' short-term month(s) of funds for account ID '{message.AccountId}'");
     }
 }
