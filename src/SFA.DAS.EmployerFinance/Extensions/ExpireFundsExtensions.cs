@@ -27,7 +27,7 @@ public static class ExpireFundsExtensions
             : null;
 
         var longTermFundsIn = policyChangePeriod != null
-            ? fundsIn.Where(c => c.Key <= policyChangePeriod).ToDictionary(c => c.Key, c => c.Value)
+            ? fundsIn.Where(c => c.Key < policyChangePeriod).ToDictionary(c => c.Key, c => c.Value)
             : new Dictionary<CalendarPeriod, decimal>(fundsIn);
 
         var expiringFunds = expiredFundsService.GetExpiringFunds(longTermFundsIn, fundsOut, longTermExpired, expiryPeriod);
@@ -42,7 +42,7 @@ public static class ExpireFundsExtensions
         // starts with clean, unadjusted values for its own levy periods.
         // fundsOut is intentionally shared — the long-term run consumes first, short-term gets the remainder.
         var shortTermFundsIn = fundsIn
-            .Where(c => c.Key > policyChangePeriod)
+            .Where(c => c.Key >= policyChangePeriod)
             .ToDictionary(c => c.Key, c => c.Value);
 
         var newTermExpiringFunds = expiredFundsService.GetExpiringFunds(shortTermFundsIn, fundsOut, shortTermExpired, newExpiryPeriod);
