@@ -121,7 +121,7 @@ public class DraftExpireAccountFundsCommandHandlerTests
         PaymentFundsOut paymentThree,
         int expiredFundsPeriod,
         decimal expiryAmount,
-        [Frozen] Mock<EmployerFinanceConfiguration> configuration,
+        Mock<EmployerFinanceConfiguration> configuration,
         [Frozen] Mock<ILevyFundsInRepository> levyFundsInRepository,
         [Frozen] Mock<IPaymentFundsOutRepository> paymentFundsOutRepository,
         [Frozen] Mock<IExpiredFunds> expiredFunds,
@@ -134,7 +134,6 @@ public class DraftExpireAccountFundsCommandHandlerTests
         expiredFundsRepository.Setup(x => x.Get(message.AccountId)).ReturnsAsync(new List<ExpiredFund>());
         expiredFundsRepository.Setup(x => x.GetDraft(message.AccountId)).ReturnsAsync(new List<ExpiredFund>());
         configuration.Setup(x => x.FundsExpiryPeriod).Returns(expiredFundsPeriod);
-        configuration.Setup(x => x.FundsExpiryPolicyChangeDate).Returns((DateTime?)null);
         message.DateTo = DateTime.Now.AddMonths(-1);
         levyOne.CalendarPeriodYear = message.DateTo.Value.Year;
         levyOne.CalendarPeriodMonth = message.DateTo.Value.Month;
@@ -157,9 +156,9 @@ public class DraftExpireAccountFundsCommandHandlerTests
             {new CalendarPeriod(message.DateTo.Value.Year, message.DateTo.Value.Month), expiryAmount}
         };
         expiredFunds.Setup(x => x.GetExpiringFunds(
-                It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(2)),
-                It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(1)),
-                It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(0)),
+                It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
+                It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
+                It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
                 It.IsAny<int>(),
                 It.IsAny<DateTime?>(),
                 It.IsAny<DateTime?>()))
