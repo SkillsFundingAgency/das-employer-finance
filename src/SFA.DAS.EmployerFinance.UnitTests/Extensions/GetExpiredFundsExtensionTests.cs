@@ -16,7 +16,8 @@ public class GetExpiredFundsExtensionTests
 
         var (longTerm, shortTerm) = expiredFunds.GetExpiredFunds(
             fundsIn, fundsOut,
-            expired: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
             expiryPeriod: 24,
             today: today,
             policyChangeDate: null);
@@ -52,7 +53,8 @@ public class GetExpiredFundsExtensionTests
 
         var (longTerm, _) = expiredFunds.GetExpiredFunds(
             fundsIn, fundsOut,
-            expired: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
             expiryPeriod: 24,
             today: today,
             policyChangeDate: policyChangeDate);
@@ -81,7 +83,8 @@ public class GetExpiredFundsExtensionTests
 
         var (_, shortTerm) = expiredFunds.GetExpiredFunds(
             fundsIn, fundsOut,
-            expired: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
             expiryPeriod: 24,
             today: today,
             policyChangeDate: policyChangeDate);
@@ -110,7 +113,8 @@ public class GetExpiredFundsExtensionTests
 
         var (longTerm, shortTerm) = expiredFunds.GetExpiredFunds(
             fundsIn, fundsOut,
-            expired: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
             expiryPeriod: 24,
             today: today,
             policyChangeDate: policyChangeDate);
@@ -134,7 +138,8 @@ public class GetExpiredFundsExtensionTests
 
         var (longTerm, shortTerm) = expiredFunds.GetExpiredFunds(
             fundsIn, new Dictionary<CalendarPeriod, decimal>(),
-            expired: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
             expiryPeriod: 24,
             today: today,
             policyChangeDate: policyChangeDate);
@@ -171,7 +176,8 @@ public class GetExpiredFundsExtensionTests
 
         var (longTerm, _) = expiredFunds.GetExpiredFunds(
             fundsIn, new Dictionary<CalendarPeriod, decimal>(),
-            expired: existingExpired,
+            longTermExpired: existingExpired,
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
             expiryPeriod: 24,
             today: today,
             policyChangeDate: policyChangeDate);

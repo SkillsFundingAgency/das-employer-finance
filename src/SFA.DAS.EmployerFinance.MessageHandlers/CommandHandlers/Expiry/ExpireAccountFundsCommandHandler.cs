@@ -48,7 +48,8 @@ public class ExpireAccountFundsCommandHandler : IHandleMessages<ExpireAccountFun
         var (longTermExpiredFunds, shortTermExpiredFunds) = _expiredFunds.GetExpiredFunds(
             fundsIn.ToCalendarPeriodDictionary(),
             fundsOut.ToCalendarPeriodDictionary(),
-            existingExpiredFunds.ToCalendarPeriodDictionary(),
+            existingExpiredFunds.Where(f => f.TransactionType == 5).ToCalendarPeriodDictionary(),
+            existingExpiredFunds.Where(f => f.TransactionType == 6).ToCalendarPeriodDictionary(),
             _configuration.FundsExpiryPeriod,
             now,
             _configuration.FundsExpiryPolicyChangeDate,

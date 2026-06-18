@@ -137,8 +137,8 @@ public class ExpireAccountFundsCommandHandlerTestsFixture
         };
         ExistingExpiredFunds = new List<ExpiredFund>
         {
-            new ExpiredFund{ CalendarPeriodYear = 2018, CalendarPeriodMonth = 01, Amount = 2000 },
-            new ExpiredFund{ CalendarPeriodYear = 2018, CalendarPeriodMonth = 02, Amount = 2000 }
+            new ExpiredFund{ CalendarPeriodYear = 2018, CalendarPeriodMonth = 01, Amount = 2000, TransactionType = 5 },
+            new ExpiredFund{ CalendarPeriodYear = 2018, CalendarPeriodMonth = 02, Amount = 2000, TransactionType = 5 }
         };
         ExpiringFunds = new Dictionary<CalendarPeriod, decimal>
         {

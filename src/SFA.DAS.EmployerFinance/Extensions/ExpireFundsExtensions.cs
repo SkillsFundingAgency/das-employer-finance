@@ -11,7 +11,8 @@ public static class ExpireFundsExtensions
         this IExpiredFunds expiredFundsService,
         IDictionary<CalendarPeriod, decimal> fundsIn,
         IDictionary<CalendarPeriod, decimal> fundsOut,
-        IDictionary<CalendarPeriod, decimal> expired,
+        IDictionary<CalendarPeriod, decimal> longTermExpired,
+        IDictionary<CalendarPeriod, decimal> shortTermExpired,
         int expiryPeriod,
         DateTime today,
         DateTime? policyChangeDate = null,
@@ -19,9 +20,9 @@ public static class ExpireFundsExtensions
     {
         var currentCalendarPeriod = new CalendarPeriod(today.Year, today.Month);
 
-        var expiringFunds = expiredFundsService.GetExpiringFunds(fundsIn, fundsOut, expired, expiryPeriod, expiryEndDate: policyChangeDate);
+        var expiringFunds = expiredFundsService.GetExpiringFunds(fundsIn, fundsOut, longTermExpired, expiryPeriod, expiryEndDate: policyChangeDate);
         var longTerm = expiringFunds
-            .Where(ef => ef.Key <= currentCalendarPeriod && ef.Value >= 0 && !expired.Any(e => e.Key == ef.Key && e.Value == ef.Value))
+            .Where(ef => ef.Key <= currentCalendarPeriod && ef.Value >= 0 && !longTermExpired.Any(e => e.Key == ef.Key && e.Value == ef.Value))
             .ToDictionary(e => e.Key, e => e.Value);
 
         if (!policyChangeDate.HasValue)
@@ -32,9 +33,9 @@ public static class ExpireFundsExtensions
         var fundsInCopy = new Dictionary<CalendarPeriod, decimal>(fundsIn);
 
         // fundsOut is intentionally shared — the long-term run consumes first, short-term gets the remainder
-        var newTermExpiringFunds = expiredFundsService.GetExpiringFunds(fundsInCopy, fundsOut, expired, newExpiryPeriod, expiryStartDate: policyChangeDate);
+        var newTermExpiringFunds = expiredFundsService.GetExpiringFunds(fundsInCopy, fundsOut, shortTermExpired, newExpiryPeriod, expiryStartDate: policyChangeDate);
         var shortTerm = newTermExpiringFunds
-            .Where(ef => ef.Key <= currentCalendarPeriod && ef.Value >= 0 && !expired.Any(e => e.Key == ef.Key && e.Value == ef.Value))
+            .Where(ef => ef.Key <= currentCalendarPeriod && ef.Value >= 0 && !shortTermExpired.Any(e => e.Key == ef.Key && e.Value == ef.Value))
             .ToDictionary(e => e.Key, e => e.Value);
 
         return (longTerm, shortTerm);
