@@ -191,6 +191,39 @@ public class GetExpiredFundsExtensionTests
         Assert.That(longTerm.Count, Is.EqualTo(23));
     }
     
+    [Test]
+    public void ShortTermNegativeAdjustment_IsAppliedOnce_NotDoubleAdjusted()
+    {
+        var expiredFunds = new ExpiredFunds();
+        var policyChangeDate = new DateTime(2021, 1, 1);
+        var today = new DateTime(2023, 6, 1);
+
+        var fundsIn = new Dictionary<CalendarPeriod, decimal>
+        {
+            { new CalendarPeriod(2019, 1), 1000m },  // long-term: expires 2021-01 after 24 months
+            { new CalendarPeriod(2021, 2), 1000m },  // short-term: expires 2022-02 after 12 months
+            { new CalendarPeriod(2021, 6), -500m }   // short-term adjustment: should reduce 2021-02 by 500 once
+        };
+
+        var (longTerm, shortTerm) = expiredFunds.GetExpiredFunds(
+            fundsIn,
+            fundsOut: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            expiryPeriod: 24,
+            today: today,
+            policyChangeDate: policyChangeDate,
+            newExpiryPeriod: 12);
+
+        Assert.That(longTerm[new CalendarPeriod(2021, 1)], Is.EqualTo(1000m),
+            "Long-term levy should be unaffected by the short-term adjustment");
+
+        // The adjustment reduces 2021-02 from 1000 to 500. Applied once → 500 expires.
+        // Applied twice (the bug) → 0 expires.
+        Assert.That(shortTerm[new CalendarPeriod(2022, 2)], Is.EqualTo(500m),
+            "Short-term adjustment should be applied exactly once, leaving 500 to expire");
+    }
+
     private static IDictionary<CalendarPeriod, decimal> BuildThreeYearFundsIn()
     {
         var fundsIn = new Dictionary<CalendarPeriod, decimal>();

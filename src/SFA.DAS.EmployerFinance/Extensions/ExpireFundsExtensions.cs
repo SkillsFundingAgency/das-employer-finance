@@ -20,20 +20,32 @@ public static class ExpireFundsExtensions
     {
         var currentCalendarPeriod = new CalendarPeriod(today.Year, today.Month);
 
-        var expiringFunds = expiredFundsService.GetExpiringFunds(fundsIn, fundsOut, longTermExpired, expiryPeriod, expiryEndDate: policyChangeDate);
+        // Pre-filter each levy expiry amount so CalculateAndApplyAdjustmentsToTotals inside GetExpiringFunds
+        // only operates on the relevant levy periods and never double-adjusts across runs.
+        var policyChangePeriod = policyChangeDate.HasValue
+            ? new CalendarPeriod(policyChangeDate.Value.Year, policyChangeDate.Value.Month)
+            : null;
+
+        var longTermFundsIn = policyChangePeriod != null
+            ? fundsIn.Where(c => c.Key <= policyChangePeriod).ToDictionary(c => c.Key, c => c.Value)
+            : new Dictionary<CalendarPeriod, decimal>(fundsIn);
+
+        var expiringFunds = expiredFundsService.GetExpiringFunds(longTermFundsIn, fundsOut, longTermExpired, expiryPeriod);
         var longTerm = expiringFunds
             .Where(ef => ef.Key <= currentCalendarPeriod && ef.Value >= 0 && !longTermExpired.Any(e => e.Key == ef.Key && e.Value == ef.Value))
             .ToDictionary(e => e.Key, e => e.Value);
 
-        if (!policyChangeDate.HasValue)
+        if (policyChangePeriod == null)
             return (longTerm, new Dictionary<CalendarPeriod, decimal>());
 
-        // fundsIn adjustments have been applied in-place by the long-term run; use a fresh copy so
-        // the short-term run's adjustment logic starts clean for its levy cohort
-        var fundsInCopy = new Dictionary<CalendarPeriod, decimal>(fundsIn);
+        // Filter from the original fundsIn (not the mutated longTermFundsIn copy) so the short-term
+        // starts with clean, unadjusted values for its own levy periods.
+        // fundsOut is intentionally shared — the long-term run consumes first, short-term gets the remainder.
+        var shortTermFundsIn = fundsIn
+            .Where(c => c.Key > policyChangePeriod)
+            .ToDictionary(c => c.Key, c => c.Value);
 
-        // fundsOut is intentionally shared — the long-term run consumes first, short-term gets the remainder
-        var newTermExpiringFunds = expiredFundsService.GetExpiringFunds(fundsInCopy, fundsOut, shortTermExpired, newExpiryPeriod, expiryStartDate: policyChangeDate);
+        var newTermExpiringFunds = expiredFundsService.GetExpiringFunds(shortTermFundsIn, fundsOut, shortTermExpired, newExpiryPeriod);
         var shortTerm = newTermExpiringFunds
             .Where(ef => ef.Key <= currentCalendarPeriod && ef.Value >= 0 && !shortTermExpired.Any(e => e.Key == ef.Key && e.Value == ef.Value))
             .ToDictionary(e => e.Key, e => e.Value);

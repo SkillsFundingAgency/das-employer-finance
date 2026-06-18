@@ -121,7 +121,7 @@ public class DraftExpireAccountFundsCommandHandlerTests
         PaymentFundsOut paymentThree,
         int expiredFundsPeriod,
         decimal expiryAmount,
-        Mock<EmployerFinanceConfiguration> configuration,
+        [Frozen] Mock<EmployerFinanceConfiguration> configuration,
         [Frozen] Mock<ILevyFundsInRepository> levyFundsInRepository,
         [Frozen] Mock<IPaymentFundsOutRepository> paymentFundsOutRepository,
         [Frozen] Mock<IExpiredFunds> expiredFunds,
@@ -134,6 +134,7 @@ public class DraftExpireAccountFundsCommandHandlerTests
         expiredFundsRepository.Setup(x => x.Get(message.AccountId)).ReturnsAsync(new List<ExpiredFund>());
         expiredFundsRepository.Setup(x => x.GetDraft(message.AccountId)).ReturnsAsync(new List<ExpiredFund>());
         configuration.Setup(x => x.FundsExpiryPeriod).Returns(expiredFundsPeriod);
+        configuration.Setup(x => x.FundsExpiryPolicyChangeDate).Returns((DateTime?)null);
         message.DateTo = DateTime.Now.AddMonths(-1);
         levyOne.CalendarPeriodYear = message.DateTo.Value.Year;
         levyOne.CalendarPeriodMonth = message.DateTo.Value.Month;
