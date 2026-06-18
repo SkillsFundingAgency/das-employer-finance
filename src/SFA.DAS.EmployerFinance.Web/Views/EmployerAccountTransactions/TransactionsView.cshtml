@@ -120,9 +120,12 @@
                                 }
                                 else if (aggregationLine.TransactionType == TransactionItemType.ExpiredFund)
                                 {
-                                    <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ExpiredFundsDetails", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
-                                        View <span class="govuk-visually-hidden"> for the transaction on @date</span>
-                                    </a>
+                                    if (transactionAmount != 0)
+                                    {
+                                        <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ExpiredFundsDetails", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
+                                            View <span class="govuk-visually-hidden"> for the transaction on @date</span>
+                                        </a>    
+                                    }
                                 }
                                 else if (aggregationLine.TransactionType == TransactionItemType.Payment)
                                 {

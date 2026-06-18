@@ -57,7 +57,7 @@
                 <span>Levy with 24 months expiry</span>
             </td>
             <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
-                @Model.Data.TransactionDate.AddYears(-2).ToGdsFormatWithoutDayAbbrMonth()
+                @Model.Data.TransactionDate.AddYears(-2).ToGdsFormatWithoutDay()
             </td>
             <td data-label="Expired funds amount" class="govuk-table__cell govuk-table__cell--numeric">
                 @Model.Data.TwentyFourthMonthExpiryAmount.ToString("C2", culture)
@@ -79,7 +79,7 @@
                 <span class="govuk-details__summary-text">How is this calculated?</span>
             </summary>
             <div class="govuk-details__text">
-                <p class="govuk-!-margin-bottom-0">From 1 August2026, unused levy funds expire <b>12 months</b> after being added to your account.</p>
+                <p class="govuk-!-margin-bottom-0">From 1 August 2026, unused levy funds expire <b>12 months</b> after being added to your account.</p>
                 <p>Funds declared before this date still expires after 24 months. We use the oldest funds first.</p>
             </div>
         </details>
