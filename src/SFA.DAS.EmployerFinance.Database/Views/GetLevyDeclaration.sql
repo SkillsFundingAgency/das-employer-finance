@@ -58,6 +58,7 @@ outer apply
 	SELECT top 1 Amount
 	from [employer_financial].[TopUpPercentage] tp
 	WHERE tp.[DateFrom] < [employer_financial].[CalculateSubmissionCutoffDate](ld.PayrollMonth, ld.PayrollYear)
+    order by DateFrom desc
 ) TopUpPercentage
 outer apply
 (

@@ -1,4 +1,4 @@
-﻿using AutoFixture.NUnit3;
+﻿using AutoFixture.NUnit4;
 using SFA.DAS.Caches;
 using SFA.DAS.CommitmentsV2.Api.Types.Responses;
 using SFA.DAS.Common.Domain.Types;

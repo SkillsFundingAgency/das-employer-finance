@@ -64,10 +64,10 @@ public class PeriodEndOrchestrator
 
         await _mediator.Send(new CreateNewPeriodEndCommand { NewPeriodEnd = mappedPeriodEnd });
 
-        var created = await GetPeriodEndByPeriodEndId(periodEnd.PeriodEndId);
+        var created = await GetPeriodEndByPeriodEndId(mappedPeriodEnd.PeriodEndId);
         if (created == null)
         {
-            _logger.LogError("Period end {PeriodEndId} was not created", periodEnd.PeriodEndId);
+            _logger.LogError("Period end {PeriodEndId} was not created", mappedPeriodEnd.PeriodEndId);
             return null;
         }
 

@@ -1,4 +1,4 @@
-﻿using AutoFixture.NUnit3;
+﻿using AutoFixture.NUnit4;
 using NServiceBus;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.Notifications.Messages.Commands;
