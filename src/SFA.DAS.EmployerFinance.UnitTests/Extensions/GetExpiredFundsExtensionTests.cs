@@ -59,17 +59,18 @@ public class GetExpiredFundsExtensionTests
             today: today,
             policyChangeDate: policyChangeDate);
 
-        // Levy 2019-01 to 2021-01 (≤ policyChangeDate) produces expiry dates 2021-01 to 2023-01.
-        // All 25 are ≤ today (2023-06).
-        Assert.That(longTerm.Count, Is.EqualTo(25));
+        // policyChangeDate is the FIRST month of the new (12-month) policy.
+        // Long-term cohort: levy < policyChangePeriod → 2019-01 to 2020-12 (24 months).
+        // Expiry dates 2021-01 to 2022-12, all ≤ today (2023-06) → count = 24.
+        Assert.That(longTerm.Count, Is.EqualTo(24));
         Assert.That(longTerm.ContainsKey(new CalendarPeriod(2021, 1)), Is.True, "Earliest 24-month expiry should be present");
-        Assert.That(longTerm.ContainsKey(new CalendarPeriod(2023, 1)), Is.True, "Latest 24-month expiry should be present");
-        Assert.That(longTerm.ContainsKey(new CalendarPeriod(2023, 2)), Is.False, "Post-policyChangeDate levy should not appear in LongTerm");
+        Assert.That(longTerm.ContainsKey(new CalendarPeriod(2022, 12)), Is.True, "Latest 24-month expiry should be present");
+        Assert.That(longTerm.ContainsKey(new CalendarPeriod(2023, 1)), Is.False, "Levy on or after policyChangeDate (2021-01) is short-term, not long-term");
 
         // Payment at 2022-06 = 1500: covers 2020-06 levy fully (500 left), then partially covers 2020-07 levy.
         Assert.That(longTerm[new CalendarPeriod(2022, 6)], Is.EqualTo(0m));
         Assert.That(longTerm[new CalendarPeriod(2022, 7)], Is.EqualTo(500m));
-        Assert.That(longTerm.Values.Sum(), Is.EqualTo(23500m));
+        Assert.That(longTerm.Values.Sum(), Is.EqualTo(22500m));
     }
 
     [Test]
@@ -89,14 +90,16 @@ public class GetExpiredFundsExtensionTests
             today: today,
             policyChangeDate: policyChangeDate);
 
-        // Levy 2021-02 to 2021-12 (> policyChangeDate) produces 12-month expiry dates 2022-02 to 2022-12.
-        // All 11 are ≤ today (2023-06).
-        Assert.That(shortTerm.Count, Is.EqualTo(11));
-        Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 2)), Is.True, "Earliest 12-month expiry should be present");
+        // Short-term cohort: levy >= policyChangePeriod → 2021-01 to 2021-12 (12 months).
+        // Expiry dates 2022-01 to 2022-12, all ≤ today (2023-06) → count = 12.
+        // The levy on the policyChangeDate itself (2021-01) IS in short-term (>= semantics).
+        Assert.That(shortTerm.Count, Is.EqualTo(12));
+        Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 1)), Is.True, "Levy on policyChangeDate (2021-01) is short-term, expiry 2022-01");
         Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 12)), Is.True, "Latest 12-month expiry should be present");
-        Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 1)), Is.False, "Levy on the policyChangeDate itself (2021-01) should not appear in ShortTerm");
 
-        Assert.That(shortTerm.Values.Sum(), Is.EqualTo(11000m));
+        // Payment at 2022-06 was consumed by the long-term run (see FundsOut_ConsumedByLongTermRunFirst test).
+        // All 12 short-term periods expire in full: 12 × 1000 = 12000.
+        Assert.That(shortTerm.Values.Sum(), Is.EqualTo(12000m));
     }
 
     [Test]
@@ -145,14 +148,15 @@ public class GetExpiredFundsExtensionTests
             policyChangeDate: policyChangeDate);
 
         // With today = 2022-06 only expiry dates ≤ 2022-06 are included.
-        // LongTerm: levy 2019-01 to 2020-06 → expiry 2021-01 to 2022-06 (18 entries).
+        // LongTerm (levy < 2021-01): 2019-01 to 2020-12 → expiry 2021-01 to 2022-12, capped at 2022-06 = 18 entries.
         Assert.That(longTerm.Count, Is.EqualTo(18));
         Assert.That(longTerm.ContainsKey(new CalendarPeriod(2022, 6)), Is.True);
         Assert.That(longTerm.ContainsKey(new CalendarPeriod(2022, 7)), Is.False,
             "Expiry dates beyond today should be excluded");
 
-        // ShortTerm: levy 2021-02 to 2021-06 → expiry 2022-02 to 2022-06 (5 entries).
-        Assert.That(shortTerm.Count, Is.EqualTo(5));
+        // ShortTerm (levy >= 2021-01): 2021-01 to 2021-06 → expiry 2022-01 to 2022-06 (6 entries).
+        Assert.That(shortTerm.Count, Is.EqualTo(6));
+        Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 1)), Is.True, "Levy on policyChangeDate (2021-01) is short-term");
         Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 6)), Is.True);
         Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2022, 7)), Is.False,
             "Short-term expiry dates beyond today should be excluded");
@@ -187,8 +191,8 @@ public class GetExpiredFundsExtensionTests
         Assert.That(longTerm.ContainsKey(new CalendarPeriod(2021, 2)), Is.False,
             "Already-expired 2021-02 should be excluded from new results");
 
-        // Remaining 23 periods should still be calculated.
-        Assert.That(longTerm.Count, Is.EqualTo(23));
+        // Long-term cohort (levy < 2021-01): 24 periods, minus 2 already expired = 22.
+        Assert.That(longTerm.Count, Is.EqualTo(22));
     }
     
     [Test]
@@ -222,6 +226,109 @@ public class GetExpiredFundsExtensionTests
         // Applied twice (the bug) → 0 expires.
         Assert.That(shortTerm[new CalendarPeriod(2022, 2)], Is.EqualTo(500m),
             "Short-term adjustment should be applied exactly once, leaving 500 to expire");
+    }
+
+    [Test]
+    public void MonthByMonthRun_September2027_ShouldHaveBothLongTermAndShortTermExpiry()
+    {
+        // Simulate what the DraftExpireAccountFundsCommandHandler does month by month.
+        // Each month it:
+        //   1. Reads existing stored draft records (type=5 long-term, type=6 short-term)
+        //   2. Calls GetExpiredFunds with the accumulated context
+        //   3. Stores only the current period's expiry
+
+        var expiredFundsService = new ExpiredFunds();
+        var policyChangeDate = new DateTime(2026, 8, 1);
+
+        // Funds in: 100/month from 2025-04 to 2026-09 (inclusive)
+        var fundsIn = new Dictionary<CalendarPeriod, decimal>();
+        for (var d = new DateTime(2025, 4, 1); d <= new DateTime(2026, 9, 1); d = d.AddMonths(1))
+            fundsIn[new CalendarPeriod(d.Year, d.Month)] = 100m;
+
+        var fundsOut = new Dictionary<CalendarPeriod, decimal>();
+
+        // Simulate stored draft records (like the DB table)
+        var storedType5 = new List<(int Year, int Month, decimal Amount)>();
+        var storedType6 = new List<(int Year, int Month, decimal Amount)>();
+
+        var runMonths = Enumerable.Range(0, 6).Select(i => new DateTime(2027, 4, 1).AddMonths(i)).ToList();
+
+        foreach (var runMonth in runMonths)
+        {
+            // Handler sets now = DateTo with day 28
+            var today = new DateTime(runMonth.Year, runMonth.Month, 28);
+
+            // Build existing expired fund dicts from stored records (mirrors ToCalendarPeriodDictionary)
+            var longTermExpired = storedType5.ToDictionary(r => new CalendarPeriod(r.Year, r.Month), r => -r.Amount);
+            var shortTermExpired = storedType6.ToDictionary(r => new CalendarPeriod(r.Year, r.Month), r => -r.Amount);
+
+            var (longTermResult, shortTermResult) = expiredFundsService.GetExpiredFunds(
+                fundsIn,
+                fundsOut,
+                longTermExpired,
+                shortTermExpired,
+                expiryPeriod: 24,
+                today: today,
+                policyChangeDate: policyChangeDate,
+                newExpiryPeriod: 12);
+
+            var currentPeriod = new CalendarPeriod(runMonth.Year, runMonth.Month);
+            if (!longTermResult.ContainsKey(currentPeriod)) longTermResult[currentPeriod] = 0;
+            if (!shortTermResult.ContainsKey(currentPeriod)) shortTermResult[currentPeriod] = 0;
+
+            // Store current period only (mirrors handler's CreateDraft call)
+            // Amount = -value (mirrors ToExpiredFundsList), read back as -Amount = value (mirrors ToCalendarPeriodDictionary)
+            storedType5.Add((runMonth.Year, runMonth.Month, -longTermResult[currentPeriod]));
+            storedType6.Add((runMonth.Year, runMonth.Month, -shortTermResult[currentPeriod]));
+        }
+
+        var sept5 = storedType5.First(r => r.Year == 2027 && r.Month == 9);
+        var sept6 = storedType6.First(r => r.Year == 2027 && r.Month == 9);
+
+        Assert.That(-sept5.Amount, Is.EqualTo(100m), $"September 2027 long-term expiry should be 100, got {-sept5.Amount}");
+        Assert.That(-sept6.Amount, Is.EqualTo(100m), $"September 2027 short-term expiry should be 100, got {-sept6.Amount}");
+    }
+
+    [Test]
+    public void PolicyChangeDate_WhenOffByOneMonthLate_August2026LevyIsLongTermInsteadOfShortTerm()
+    {
+        // policyChangeDate = first month of new (short-term) policy.
+        // Levies >= policyChangeDate go into short-term (12-month); levies < policyChangeDate go into long-term (24-month).
+        //
+        // Correct date: 2026-08-01 → 2026-08 and 2026-09 levies are short-term.
+        // Wrong date:   2026-09-01 → only 2026-09 is short-term; 2026-08 is misclassified as long-term
+        //               and won't expire until 2028-08 instead of 2027-08.
+        var expiredFundsService = new ExpiredFunds();
+        var wrongPolicyChangeDate = new DateTime(2026, 9, 1); // should be 2026-08-01
+
+        var fundsIn = new Dictionary<CalendarPeriod, decimal>();
+        for (var d = new DateTime(2025, 4, 1); d <= new DateTime(2026, 9, 1); d = d.AddMonths(1))
+            fundsIn[new CalendarPeriod(d.Year, d.Month)] = 100m;
+
+        var today = new DateTime(2027, 9, 28);
+        var (longTerm, shortTerm) = expiredFundsService.GetExpiredFunds(
+            fundsIn,
+            fundsOut: new Dictionary<CalendarPeriod, decimal>(),
+            longTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            shortTermExpired: new Dictionary<CalendarPeriod, decimal>(),
+            expiryPeriod: 24,
+            today: today,
+            policyChangeDate: wrongPolicyChangeDate,
+            newExpiryPeriod: 12);
+
+        // With 2026-09 as the cutover (one month late), levy 2026-08 is misclassified as long-term.
+        // It will not expire until 2028-08 (24 months), so August 2027 has no short-term expiry.
+        Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2027, 8)), Is.False,
+            "2026-08 levy should be misclassified as long-term, producing no short-term expiry for 2027-08");
+
+        // Levy 2026-09 is correctly in short-term (>= 2026-09) and expires after 12 months = 2027-09.
+        Assert.That(shortTerm.ContainsKey(new CalendarPeriod(2027, 9)), Is.True,
+            "2026-09 levy should still be in short-term, expiring at 2027-09");
+        Assert.That(shortTerm[new CalendarPeriod(2027, 9)], Is.EqualTo(100m));
+
+        // Long-term still contains September 2027 from levy 2025-09 (24 months earlier).
+        Assert.That(longTerm.ContainsKey(new CalendarPeriod(2027, 9)), Is.True);
+        Assert.That(longTerm[new CalendarPeriod(2027, 9)], Is.EqualTo(100m));
     }
 
     private static IDictionary<CalendarPeriod, decimal> BuildThreeYearFundsIn()
