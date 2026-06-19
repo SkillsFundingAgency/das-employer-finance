@@ -22,7 +22,7 @@
 
         <h1 class="govuk-heading-xl">
             Your transactions
-            <span class="govuk-caption-xl">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
+            <span class="govuk-caption-xl  govuk-!-margin-top-3">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
         </h1>
 
         @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == nameof(ApprenticeshipEmployerType.Levy))
