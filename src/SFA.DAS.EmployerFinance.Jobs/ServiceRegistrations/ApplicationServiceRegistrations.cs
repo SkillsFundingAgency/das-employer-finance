@@ -8,7 +8,6 @@ public static class ApplicationServiceRegistrations
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddTransient<ICurrentDateTime, CurrentDateTime>();
-     
         return services;
     }
 }
