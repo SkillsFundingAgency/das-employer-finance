@@ -355,7 +355,7 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@currentDate", _currentDateTime.Now, DbType.DateTime);
 
         if (_configuration.FundsExpiryPolicyChangeDate != null 
-            && _configuration.FundsExpiryPolicyChangeDate > _currentDateTime.Now)
+            && _currentDateTime.Now > _configuration.FundsExpiryPolicyChangeDate)
         {
             parameters.Add("@expiryPeriod", 12, DbType.Int32);    
         }

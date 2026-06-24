@@ -506,7 +506,7 @@ public class EmployerAccountTransactionsOrchestrator(
         DateTime fromDate, DateTime toDate)
     {
 
-        var data = mediator.Send(new FindEmployerAccountExpiredFundsQuery
+        var data = await mediator.Send(new FindEmployerAccountExpiredFundsQuery
         {
             FromDate = fromDate,
             ToDate = toDate,
@@ -518,10 +518,10 @@ public class EmployerAccountTransactionsOrchestrator(
             Status = HttpStatusCode.OK,
             Data = new ExpiredFundsTransactionDetailsViewModel
             {
-                TransactionDate = data.Result.TransactionDate,
-                Total = data.Result.Total,
-                TwelveMonthExpiryAmount = data.Result.TwelveMonthExpiryAmount,
-                TwentyFourthMonthExpiryAmount = data.Result.TwentyFourthMonthExpiryAmount,
+                TransactionDate = data.TransactionDate,
+                Total = data.Total,
+                TwelveMonthExpiryAmount = data.TwelveMonthExpiryAmount,
+                TwentyFourthMonthExpiryAmount = data.TwentyFourthMonthExpiryAmount,
                 HashedAccountId = hashedId
             }
         };
