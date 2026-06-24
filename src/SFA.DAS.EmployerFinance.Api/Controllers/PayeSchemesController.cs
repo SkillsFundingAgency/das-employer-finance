@@ -10,13 +10,14 @@ namespace SFA.DAS.EmployerFinance.Api.Controllers;
 [Route("api/paye-schemes")]
 public class PayeSchemesController(FinanceOrchestrator orchestrator) : ControllerBase
 {
-    [HttpGet("{empRef}/last-submission-date")]
+    [HttpGet("last-submission-date")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetLastSubmissionDate(string empRef)
+    public async Task<IActionResult> GetLastSubmissionDate([FromQuery] string empRef)
     {
         try
         {
-            var result = await orchestrator.GetLastSubmissionDateForPayeScheme(empRef);
+            var decodedEmpRef = string.IsNullOrEmpty(empRef) ? empRef : Uri.UnescapeDataString(empRef);
+            var result = await orchestrator.GetLastSubmissionDateForPayeScheme(decodedEmpRef);
             return Ok(result);
         }
         catch (ValidationException ex)
