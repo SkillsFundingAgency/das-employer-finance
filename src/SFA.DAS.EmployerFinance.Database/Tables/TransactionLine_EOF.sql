@@ -41,3 +41,6 @@ GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_AccountId_TransactionType_TransactionDate] ON [employer_financial].[TransactionLine_EOF] ([AccountId] ASC, [TransactionType] ASC, [TransactionDate] ASC) WHERE [TransactionType] = /*ExpiredFund*/ 5
 GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [UK_TransactionLine_EOF_AccountId_ShortTermExpiredFund_TransactionDate] ON [employer_financial].[TransactionLine_EOF] ([AccountId] ASC, [TransactionType] ASC, [TransactionDate] ASC) WHERE [TransactionType] = /*ShortTermExpiredFund*/ 6
+GO

@@ -353,8 +353,17 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@AccountId", accountId, DbType.Int64);
         parameters.Add("@EmpRef", empRef, DbType.String);
         parameters.Add("@currentDate", _currentDateTime.Now, DbType.DateTime);
-        parameters.Add("@expiryPeriod", _configuration.FundsExpiryPeriod, DbType.Int32);
 
+        if (_configuration.FundsExpiryPolicyChangeDate != null 
+            && _configuration.FundsExpiryPolicyChangeDate > _currentDateTime.Now)
+        {
+            parameters.Add("@expiryPeriod", 12, DbType.Int32);    
+        }
+        else
+        {
+            parameters.Add("@expiryPeriod", _configuration.FundsExpiryPeriod, DbType.Int32);
+        }
+        
         return _db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
             sql: "[employer_financial].[ProcessDeclarationsTransactions]",
             param: parameters,

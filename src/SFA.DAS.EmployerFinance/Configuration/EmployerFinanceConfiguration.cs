@@ -8,6 +8,8 @@ public class EmployerFinanceConfiguration
     public string ServiceBusConnectionString { get; set; }
     public string RedisConnectionString { get; set; }
     public virtual int FundsExpiryPeriod { get; set; }
+    public virtual DateTime? FundsExpiryPolicyChangeDate { get; set; }
+    public virtual int NewFundsExpiryPeriod { get; set; } = 12;
     public string EmployerFinanceBaseUrl { get; set; }
     public string SqlConnectionString { get; set; }
 }

@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
+using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountExpiredFunds;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
@@ -429,9 +430,31 @@ public class EmployerAccountTransactionsOrchestrator(
                 };
             });
 
+        var aggregatedExpiredTransactions = aggregatedTransactionData.TransactionLines
+            .Where(t => t.TransactionType is TransactionItemType.ExpiredFund or TransactionItemType.ShortExpiredFund)
+            .GroupBy(t => t.DateCreated.Date)
+            .Select(grp =>
+            {
+                var firstLevyTransactionInDay = grp.First();
+                return new TransactionLine
+                {
+                    AccountId = firstLevyTransactionInDay.AccountId,
+                    DateCreated = firstLevyTransactionInDay.DateCreated,
+                    Amount = grp.Sum(ltl => ltl.Amount),
+                    TransactionType = TransactionItemType.ExpiredFund,
+                    Description = firstLevyTransactionInDay.Description,
+                    PayrollDate = firstLevyTransactionInDay.PayrollDate,
+                    PayrollMonth = firstLevyTransactionInDay.PayrollMonth,
+                    PayrollYear = firstLevyTransactionInDay.PayrollYear
+                };
+            });
+
         var newTransactionLines = aggregatedTransactionData.TransactionLines
             .Where(t => t.TransactionType != TransactionItemType.Declaration)
+            .Where(t => t.TransactionType != TransactionItemType.ExpiredFund)
+            .Where(t => t.TransactionType != TransactionItemType.ShortExpiredFund)
             .Union(aggregatedLevyTransactions)
+            .Union(aggregatedExpiredTransactions)
             .OrderByDescending(x => x.DateCreated)
             .ToArray();
 
@@ -475,6 +498,31 @@ public class EmployerAccountTransactionsOrchestrator(
                 SubTransactions = data.Transactions,
                 TransactionDate = data.Transactions.First().DateCreated,
                 ShouldShowTopUp = data.Transactions.Any(c=>c.TopUp > 0)
+            }
+        };
+    }
+
+    public async Task<OrchestratorResponse<ExpiredFundsTransactionDetailsViewModel>> FindAccountExpiredFunds(string hashedId,
+        DateTime fromDate, DateTime toDate)
+    {
+
+        var data = mediator.Send(new FindEmployerAccountExpiredFundsQuery
+        {
+            FromDate = fromDate,
+            ToDate = toDate,
+            HashedAccountId = hashedId
+        });
+        
+        return new OrchestratorResponse<ExpiredFundsTransactionDetailsViewModel>
+        {
+            Status = HttpStatusCode.OK,
+            Data = new ExpiredFundsTransactionDetailsViewModel
+            {
+                TransactionDate = data.Result.TransactionDate,
+                Total = data.Result.Total,
+                TwelveMonthExpiryAmount = data.Result.TwelveMonthExpiryAmount,
+                TwentyFourthMonthExpiryAmount = data.Result.TwentyFourthMonthExpiryAmount,
+                HashedAccountId = hashedId
             }
         };
     }

@@ -1,0 +1,44 @@
+﻿using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountExpiredFunds;
+
+namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountExpiredFundsTests
+{
+    public class WhenIValidateTheRequest
+    {
+        private FindEmployerAccountExpiredFundsQueryValidator _validator;
+
+        [SetUp]
+        public void Arrange()
+        {
+            _validator = new FindEmployerAccountExpiredFundsQueryValidator();
+        }
+
+        [Test]
+        public async Task ThenTrueIsReturnedWhenAllFieldsArePopulatedAndTheMemberIsPartOfTheAccount()
+        {
+            //Act
+            var actual = await _validator.ValidateAsync(new FindEmployerAccountExpiredFundsQuery
+                {
+                    HashedAccountId = "test",
+                    FromDate = DateTime.Now.AddDays(-10),
+                    ToDate = DateTime.Now.AddDays(-2)
+                });
+
+            //Assert
+            actual.IsValid().Should().BeTrue();
+        }
+
+        [Test]
+        public async Task ThenFalseIsReturnedAndTheValidtionDictionaryIsPopulatedWhenFieldsArentSupplied()
+        {
+            //Act
+            var actual = await _validator.ValidateAsync(new FindEmployerAccountExpiredFundsQuery());
+
+            //Assert
+            actual.IsValid().Should().BeFalse();
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("FromDate", "From date has not been supplied")));
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("ToDate", "To date has not been supplied")));
+            actual.ValidationDictionary.Should().Contain((new KeyValuePair<string, string>("HashedAccountId", "HashedAccountId has not been supplied")));
+        }
+
+    }
+}

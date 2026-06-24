@@ -27,7 +27,10 @@ namespace SFA.DAS.EmployerFinance.Types.Models
         public IDictionary<CalendarPeriod, decimal> GetExpiringFunds(
             IDictionary<CalendarPeriod, decimal> fundsIn,
             IDictionary<CalendarPeriod, decimal> fundsOut,
-            IDictionary<CalendarPeriod, decimal> expired, int expiryPeriod)
+            IDictionary<CalendarPeriod, decimal> expired,
+            int expiryPeriod,
+            DateTime? expiryEndDate = null,
+            DateTime? expiryStartDate = null)
         {
             if (fundsIn == null)
             {
@@ -42,6 +45,18 @@ namespace SFA.DAS.EmployerFinance.Types.Models
             CalculateAndApplyAdjustmentsToTotals(fundsOut);
 
             CalculateAndApplyAdjustmentsToTotals(fundsIn);
+
+            if (expiryEndDate.HasValue)
+            {
+                var period = new CalendarPeriod(expiryEndDate.Value.Year, expiryEndDate.Value.Month);
+                fundsIn = fundsIn.Where(c=>c.Key <= period).ToDictionary(c => c.Key, c => c.Value);
+            }
+
+            if (expiryStartDate.HasValue)
+            {
+                var period = new CalendarPeriod(expiryStartDate.Value.Year, expiryStartDate.Value.Month);
+                fundsIn = fundsIn.Where(c => c.Key > period).ToDictionary(c => c.Key, c => c.Value);
+            }
 
             CalculateAndApplyExpiredFundsToFundsOut(fundsOut, expired, fundsIn, expiryPeriod);
 

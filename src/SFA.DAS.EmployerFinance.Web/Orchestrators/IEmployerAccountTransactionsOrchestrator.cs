@@ -24,4 +24,7 @@ public interface IEmployerAccountTransactionsOrchestrator
         string hashedId, int year, int month);
 
     Task<OrchestratorResponse<TransactionLineViewModel<LevyDeclarationTransactionLine>>> FindAccountLevyDeclarationTransactions(string hashedId, DateTime fromDate, DateTime toDate);
+
+    Task<OrchestratorResponse<ExpiredFundsTransactionDetailsViewModel>> FindAccountExpiredFunds(string hashedId,
+        DateTime fromDate, DateTime toDate);
 }

@@ -1,0 +1,91 @@
+@using System.Globalization
+
+@model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<ExpiredFundsTransactionDetailsViewModel>
+
+@{
+    var culture = new CultureInfo("en-GB");
+    ViewBag.PageID = "expired-funds-details";
+    ViewBag.Title = "Expired levy this month";
+    ViewBag.Section = "finance";
+    ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
+}
+
+
+<h1 class="govuk-heading-xl">Expired levy this month</h1>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Date expired</dt>
+                <dd class="govuk-summary-list__value">@Model.Data.TransactionDate.ToGdsFormatFull()</dd>
+            </div>
+        </dl>
+    </div>
+</div>
+
+
+<table class="govuk-table das-table--responsive">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th class="govuk-table__header govuk-table__header--numeric das-table-cell-width-60" scope="col">Expired levy</th>
+            <th class="govuk-table__header govuk-table__header--numeric das-table-cell-width-25" scope="col">Funding added</th>
+            <th class="govuk-table__header govuk-table__header--numeric das-table-cell-width-15" scope="col">Amount</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    
+    @if (Model.Data.TwelveMonthExpiryAmount != 0)
+    {
+        <tr class="govuk-table__row">
+            <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
+                <span>Levy with 12 months expiry</span>
+            </td>
+            <td data-label="Date funds added" class="govuk-table__cell govuk-table__cell--numeric">
+                @Model.Data.TransactionDate.AddYears(-1).ToGdsFormatWithoutDay()
+            </td>
+            <td data-label="Expired funds amount" class="govuk-table__cell govuk-table__cell--numeric">
+                @Model.Data.TwelveMonthExpiryAmount.ToString("C2", culture)
+            </td>
+        </tr>
+    }
+    @if (Model.Data.TwentyFourthMonthExpiryAmount != 0)
+    {
+        <tr class="govuk-table__row">
+            <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
+                <span>Levy with 24 months expiry</span>
+            </td>
+            <td data-label="Expired levy" class="govuk-table__cell govuk-table__cell--numeric">
+                @Model.Data.TransactionDate.AddYears(-2).ToGdsFormatWithoutDay()
+            </td>
+            <td data-label="Expired funds amount" class="govuk-table__cell govuk-table__cell--numeric">
+                @Model.Data.TwentyFourthMonthExpiryAmount.ToString("C2", culture)
+            </td>
+        </tr>
+    }
+    
+    <tr class="govuk-table__row">
+        <td class="govuk-table__cell app-table__cell--transparent" colspan="2"> </td>
+        <td data-label="Your expired funds total" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.Data.Total.ToString("C2", culture)</td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <details id="inform-english-percentage" class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">How is this calculated?</span>
+            </summary>
+            <div class="govuk-details__text">
+                <p class="govuk-!-margin-bottom-0">From 1 August 2026, unused levy funds expire <b>12 months</b> after being added to your account.</p>
+                <p>Funds declared before this date still expires after 24 months. We use the oldest funds first.</p>
+            </div>
+        </details>
+    </div>
+</div>
+
+@section breadcrumb {
+    <a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.Data.HashedAccountId" asp-route-year="@Model.Data.TransactionDate.Year" asp-route-month="@Model.Data.TransactionDate.Month" class="govuk-back-link">Back to transactions</a>
+}

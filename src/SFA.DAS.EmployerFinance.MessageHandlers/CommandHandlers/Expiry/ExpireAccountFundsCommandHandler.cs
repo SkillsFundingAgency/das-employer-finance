@@ -45,27 +45,36 @@ public class ExpireAccountFundsCommandHandler : IHandleMessages<ExpireAccountFun
         var fundsOut = await _paymentFundsOutRepository.GetPaymentFundsOut(message.AccountId);
         var existingExpiredFunds = await _expiredFundsRepository.Get(message.AccountId);
 
-        var expiredFunds = _expiredFunds.GetExpiredFunds(
+        var (longTermExpiredFunds, shortTermExpiredFunds) = _expiredFunds.GetExpiredFunds(
             fundsIn.ToCalendarPeriodDictionary(),
             fundsOut.ToCalendarPeriodDictionary(),
-            existingExpiredFunds.ToCalendarPeriodDictionary(),
+            existingExpiredFunds.Where(f => f.TransactionType == 5).ToCalendarPeriodDictionary(),
+            existingExpiredFunds.Where(f => f.TransactionType == 6).ToCalendarPeriodDictionary(),
             _configuration.FundsExpiryPeriod,
-            now);
+            now,
+            _configuration.FundsExpiryPolicyChangeDate,
+            _configuration.NewFundsExpiryPeriod);
 
         var currentCalendarPeriod = new CalendarPeriod(_currentDateTime.Now.Year, _currentDateTime.Now.Month);
-        if (!expiredFunds.ContainsKey(currentCalendarPeriod))
+        if (!longTermExpiredFunds.ContainsKey(currentCalendarPeriod))
         {
-            expiredFunds.Add(currentCalendarPeriod, 0);
+            longTermExpiredFunds.Add(currentCalendarPeriod, 0);
+        }
+        
+        if(!shortTermExpiredFunds.ContainsKey(currentCalendarPeriod))
+        {
+            shortTermExpiredFunds.Add(currentCalendarPeriod, 0);
         }
 
-        await _expiredFundsRepository.Create(message.AccountId, expiredFunds.ToExpiredFundsList(), now);
+        await _expiredFundsRepository.Create(message.AccountId, longTermExpiredFunds.ToExpiredFundsList(), now);
+        await _expiredFundsRepository.Create(message.AccountId, shortTermExpiredFunds.ToExpiredFundsList(), now, transactionType: 6);
 
         //todo: do we publish the event if no fund expired? we could add a bool like the levy declared message
         // once an account has an expired fund, we'll publish every run, even if no additional funds have expired
-        if (expiredFunds.Any(ef => ef.Value != 0m))
+        if (longTermExpiredFunds.Any(ef => ef.Value != 0m) || shortTermExpiredFunds.Any(ef => ef.Value != 0m))
             await PublishAccountFundsExpiredEvent(context, message.AccountId);
 
-        _logger.LogInformation("Expired '{ExpiredFundsCount}' month(s) of funds for account ID '{AccountId}' with expiry period '{FundsExpiryPeriod}'", expiredFunds.Count, message.AccountId, _configuration.FundsExpiryPeriod);
+        _logger.LogInformation("Expired '{LongTermCount}' long-term and '{ShortTermCount}' short-term month(s) of funds for account ID '{AccountId}'", longTermExpiredFunds.Count, shortTermExpiredFunds.Count, message.AccountId);
     }
 
     private static async Task PublishAccountFundsExpiredEvent(IMessageHandlerContext context, long accountId)

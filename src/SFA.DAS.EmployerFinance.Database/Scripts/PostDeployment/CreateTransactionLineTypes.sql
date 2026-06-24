@@ -22,3 +22,9 @@ IF (NOT EXISTS(SELECT TransactionType FROM [employer_financial].[TransactionLine
 BEGIN
 	INSERT [employer_financial].[TransactionLineTypes] ([TransactionType], [Description]) VALUES (5, N'Expired Levy')
 END
+-- 6 is the new transaction type for 12 month expired levy, it has the same description as 5, but is a separate transaction type
+-- so we can show it separately in the UI from the 24 month expired levy, transaction type 5
+IF (NOT EXISTS(SELECT TransactionType FROM [employer_financial].[TransactionLineTypes] WHERE TransactionType = 6))
+BEGIN
+    INSERT [employer_financial].[TransactionLineTypes] ([TransactionType], [Description]) VALUES (6, N'Expired Levy')
+END

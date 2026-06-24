@@ -146,4 +146,13 @@ public class EmployerAccountTransactionsController : Controller
         var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);
         return View(ControllerConstants.TransferDetailsViewName, model);
     }
+    
+    
+    [Route("finance/expiredfunds/details")]
+    public async Task<IActionResult> ExpiredFundsDetails([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
+    {
+        var viewModel = await _accountTransactionsOrchestrator.FindAccountExpiredFunds(hashedAccountId, fromDate, toDate);
+
+        return View(ControllerConstants.ExpiredFundsDetailViewName, viewModel);
+    }
 }
