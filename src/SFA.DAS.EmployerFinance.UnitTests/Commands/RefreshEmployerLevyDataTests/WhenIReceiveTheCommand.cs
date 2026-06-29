@@ -33,6 +33,7 @@ public class WhenIReceiveTheCommand
     {
         _levyRepository = new Mock<IDasLevyRepository>();
         _levyRepository.Setup(x => x.GetLastSubmissionForScheme(ExpectedEmpRef)).ReturnsAsync(new DasDeclaration { LevyDueYtd = 1000m, LevyAllowanceForFullYear = 1200m });
+        _levyRepository.Setup(x => x.GetLastPositiveNetDeclarationForScheme(ExpectedEmpRef)).ReturnsAsync((DasDeclaration)null);
 
         _validator = new Mock<IValidator<RefreshEmployerLevyDataCommand>>();
         _validator.Setup(x => x.Validate(It.IsAny<RefreshEmployerLevyDataCommand>())).Returns(new ValidationResult());
@@ -118,6 +119,7 @@ public class WhenIReceiveTheCommand
 
         (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId) &&
+            e.PayeRef.Equals(ExpectedEmpRef) &&
             e.LevyImported.Equals(true) &&
             e.LevyTransactionValue.Equals(decimal.One))).Should().BeTrue();
     }
@@ -141,6 +143,7 @@ public class WhenIReceiveTheCommand
 
         _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId) &&
+            e.PayeRef.Equals(ExpectedEmpRef) &&
             e.LevyImported.Equals(false) &&
             e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
     }

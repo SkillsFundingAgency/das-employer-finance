@@ -31,22 +31,22 @@ public class RefreshEmployerLevyDataCommandHandlerTests
                 EmpRef = empRef,
                 Declarations = new DasDeclarations
                 {
-                    Declarations = new List<DasDeclaration>
-                    {
+                    Declarations =
+                    [
                         new()
                         {
                             LevyDueYtd = 2000,
                             PayrollYear = "2018",
                             PayrollMonth = 6
                         }
-                    }
+                    ]
                 }
             }
         });
 
         await fixture.Handle();
 
-        fixture.VerifyRefreshEmployerLevyDataCompletedEventIsPublished(true);
+        fixture.VerifyRefreshEmployerLevyDataCompletedEventIsPublished(empRef, true);
     }
 }
 
@@ -94,6 +94,7 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
     public RefreshEmployerLevyDataCommandHandlerTestsFixture SetLastSubmissionForScheme(string empRef, DasDeclaration lastDeclaration)
     {
         _dasLevyRepository.Setup(x => x.GetLastSubmissionForScheme(empRef)).ReturnsAsync(lastDeclaration);
+        _dasLevyRepository.Setup(x => x.GetLastPositiveNetDeclarationForScheme(empRef)).ReturnsAsync(lastDeclaration);
 
         return this;
     }
@@ -114,10 +115,11 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
         }, CancellationToken.None);
     }
 
-    public void VerifyRefreshEmployerLevyDataCompletedEventIsPublished(bool expectedLevyImportedValue)
+    public void VerifyRefreshEmployerLevyDataCompletedEventIsPublished(string empRef, bool expectedLevyImportedValue)
     {
         (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(_accountId)
+            && e.PayeRef.Equals(empRef)
             && e.LevyImported.Equals(expectedLevyImportedValue))).Should().BeTrue();
     }
 }
