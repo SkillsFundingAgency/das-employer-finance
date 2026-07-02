@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 using SFA.DAS.EmployerFinance.Data.Contracts;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Messages.Events;
-using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.NServiceBus.Services;
 
@@ -13,6 +13,7 @@ public class RefreshEmployerLevyDataCommandHandler(
     IDasLevyRepository dasLevyRepository,
     ILevyImportCleanerStrategy levyImportCleanerStrategy,
     IEventPublisher eventPublisher,
+    ICurrentDateTime currentDateTime,
     ILogger<RefreshEmployerLevyDataCommandHandler> logger)
     : IRequestHandler<RefreshEmployerLevyDataCommand>
 {
@@ -25,77 +26,105 @@ public class RefreshEmployerLevyDataCommandHandler(
             throw new ValidationException(result.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var savedDeclarations = new List<DasDeclaration>();
-        var updatedEmpRefs = new List<string>();
+        if (request.EmployerLevyData == null || request.EmployerLevyData.Count == 0)
+        {
+            return;
+        }
+
+        var levyTotalTransactionValue = decimal.Zero;
+        var levyImportedForAccount = false;
 
         foreach (var employerLevyData in request.EmployerLevyData)
         {
             var declarations = await levyImportCleanerStrategy.Cleanup(employerLevyData.EmpRef, employerLevyData.Declarations.Declarations);
 
-            if (declarations.Length == 0) continue;
+            if (declarations.Length == 0)
+            {
+                continue;
+            }
+
+            levyImportedForAccount = true;
 
             await dasLevyRepository.CreateEmployerDeclarations(declarations, employerLevyData.EmpRef, request.AccountId);
 
-            updatedEmpRefs.Add(employerLevyData.EmpRef);
-            savedDeclarations.AddRange(declarations);
+            logger.LogInformation("Processing declarations for {AccountId}, PAYE: {PayeRef}", request.AccountId, ObscurePayeScheme(employerLevyData.EmpRef));
+
+            var levyTransactionValue = await dasLevyRepository.ProcessDeclarations(request.AccountId, employerLevyData.EmpRef);
+            levyTotalTransactionValue += levyTransactionValue;
+
+            logger.LogInformation("Levy declarations processed for {AccountId}, PAYE: {PayeRef}, LevyTotal: {LevyTotal}", request.AccountId, ObscurePayeScheme(employerLevyData.EmpRef), levyTransactionValue);
         }
 
-        var hasDecalarations = savedDeclarations.Any();
-        var levyTotalTransactionValue = decimal.Zero;
+        var lastLevyDeclarationDate = await ResolveAccountLastLevyDeclarationDate(
+            request.AccountId,
+            levyImportedForAccount,
+            levyTotalTransactionValue);
 
-        if (hasDecalarations)
-        {
-            levyTotalTransactionValue = await HasAccountHadLevyTransactions(request, updatedEmpRefs);
-        }
+        await PublishRefreshEmployerLevyDataCompletedEvent(
+            levyImportedForAccount,
+            levyTotalTransactionValue,
+            request.AccountId,
+            lastLevyDeclarationDate);
 
-        await PublishRefreshEmployerLevyDataCompletedEvent(hasDecalarations, levyTotalTransactionValue, request.AccountId);
         await PublishAccountLevyStatusEvent(levyTotalTransactionValue, request.AccountId);
     }
 
-    private async Task PublishRefreshEmployerLevyDataCompletedEvent(bool levyImported, decimal levyTotalTransactionValue, long accountId)
+    private async Task<DateTime?> ResolveAccountLastLevyDeclarationDate(
+        long accountId,
+        bool levyImportedForAccount,
+        decimal levyTotalTransactionValue)
     {
-        logger.LogInformation("Publishing RefreshEmployerLevyDataCompletedEvent levyImported {0}, levyTotalTransactionValue {1} for account {2}", levyImported, levyTotalTransactionValue, accountId);
+        if (levyImportedForAccount && levyTotalTransactionValue != decimal.Zero)
+        {
+            return currentDateTime.Now.Date;
+        }
 
-        eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
+        var lastPositiveDeclaration = await dasLevyRepository.GetLastPositiveNetDeclarationForAccount(accountId);
+
+        return lastPositiveDeclaration?.SubmissionDate;
+    }
+
+    private async Task PublishRefreshEmployerLevyDataCompletedEvent(
+        bool levyImported,
+        decimal levyTransactionValue,
+        long accountId,
+        DateTime? lastLevyDeclarationDate)
+    {
+        logger.LogInformation(
+            "Publishing RefreshEmployerLevyDataCompletedEvent levyImported {LevyImported}, levyTransactionValue {LevyTransactionValue}, lastLevyDeclarationDate {LastLevyDeclarationDate} for account {AccountId}",
+            levyImported,
+            levyTransactionValue,
+            lastLevyDeclarationDate,
+            accountId);
+
+        await eventPublisher.Publish(new RefreshEmployerLevyDataCompletedEvent
         {
             AccountId = accountId,
+            LastLevyDeclarationDate = lastLevyDeclarationDate,
             Created = DateTime.UtcNow,
             LevyImported = levyImported,
-            LevyTransactionValue = levyTotalTransactionValue
+            LevyTransactionValue = levyTransactionValue
         });
-        logger.LogInformation("Published RefreshEmployerLevyDataCompletedEvent for account {0}", accountId);
+
+        logger.LogInformation("Published RefreshEmployerLevyDataCompletedEvent for account {AccountId}", accountId);
     }
 
     private async Task PublishAccountLevyStatusEvent(decimal levyTotalTransactionValue, long accountId)
     {
         if (levyTotalTransactionValue != decimal.Zero)
         {
-            logger.LogInformation("Publishing LevyAddedToAccountEvent levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
-            
+            logger.LogInformation("Publishing LevyAddedToAccountEvent levyTotalTransactionValue {LevyTotalTransactionValue} for account {AccountId}", levyTotalTransactionValue, accountId);
+
             await eventPublisher.Publish(new LevyAddedToAccountEvent
             {
                 AccountId = accountId,
                 Amount = levyTotalTransactionValue
             });
 
-            logger.LogInformation("Published LevyAddedToAccountEvent levyTotalTransactionValue {0} for account {1}", levyTotalTransactionValue, accountId);
+            logger.LogInformation("Published LevyAddedToAccountEvent levyTotalTransactionValue {LevyTotalTransactionValue} for account {AccountId}", levyTotalTransactionValue, accountId);
         }
     }
 
-    private async Task<decimal> HasAccountHadLevyTransactions(RefreshEmployerLevyDataCommand message, IEnumerable<string> updatedEmpRefs)
-    {
-        var levyTransactionTotalAmount = decimal.Zero;
-
-        foreach (var empRef in updatedEmpRefs)
-        {
-            logger.LogInformation("Processing declarations for {AccountId}, PAYE: {PayeRef}", message.AccountId, ObscurePayeScheme(empRef));
-            levyTransactionTotalAmount += await dasLevyRepository.ProcessDeclarations(message.AccountId, empRef);
-        }
-        logger.LogInformation("Total levy declarations for {AccountId}, LevyTotal: {total}", message.AccountId, levyTransactionTotalAmount);
-
-        return levyTransactionTotalAmount;
-    }
-    
     private static string ObscurePayeScheme(string payeSchemeId)
     {
         var length = payeSchemeId.Length;

@@ -1,5 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Dtos;
-using SFA.DAS.EmployerFinance.Models.Account;
+﻿using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transfers;
@@ -17,6 +16,8 @@ public interface IDasLevyRepository
     Task<GetAccountPaymentIdsResponse> GetAccountPaymentIdsLinq(long accountId, int pageSize, int pageNumber);
     Task<IEnumerable<long>> GetEmployerDeclarationSubmissionIds(string empRef);
     Task<DasDeclaration> GetLastSubmissionForScheme(string empRef);
+    Task<DasDeclaration> GetLastPositiveNetDeclarationForScheme(string empRef);
+    Task<DasDeclaration> GetLastPositiveNetDeclarationForAccount(long accountId);
     Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds();
     Task<IEnumerable<AccountTransfer>> GetTransfersByPeriodEnd(long accountId, string periodEnd);
     Task<PeriodEnd> GetPeriodEndById(string periodEndId);
