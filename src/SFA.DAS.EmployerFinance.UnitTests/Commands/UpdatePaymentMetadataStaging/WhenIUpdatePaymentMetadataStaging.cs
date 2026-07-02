@@ -123,5 +123,42 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
             Assert.That(result.Upserted, Is.True);
             Assert.That(result.MetadataId, Is.EqualTo(123));
         }
+
+        [Test]
+        public async Task ThenPassesAppUnitMetadataFieldsToRepository()
+        {
+            var paymentId = Guid.NewGuid();
+            var command = new UpdatePaymentMetadataStagingCommand
+            {
+                PaymentId = paymentId,
+                PaymentMetadataStaging = new PaymentMetaDataStaging
+                {
+                    LearningType = "ApprenticeshipUnit",
+                    CourseCode = "ST0001",
+                    CohortId = 123456
+                }
+            };
+
+            _repository.Setup(r => r.PaymentStagingExists(paymentId)).ReturnsAsync(true);
+            _repository
+                .Setup(r => r.UpdatePaymentMetadataStaging(
+                    paymentId,
+                    It.Is<PaymentMetaDataStaging>(metadata =>
+                        metadata.LearningType == "ApprenticeshipUnit"
+                        && metadata.CourseCode == "ST0001"
+                        && metadata.CohortId == 123456)))
+                .ReturnsAsync(123);
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            Assert.That(result.IsSuccess, Is.True);
+            _repository.Verify(r => r.UpdatePaymentMetadataStaging(
+                paymentId,
+                It.Is<PaymentMetaDataStaging>(metadata =>
+                    metadata.LearningType == "ApprenticeshipUnit"
+                    && metadata.CourseCode == "ST0001"
+                    && metadata.CohortId == 123456)),
+                Times.Once);
+        }
     }
 }

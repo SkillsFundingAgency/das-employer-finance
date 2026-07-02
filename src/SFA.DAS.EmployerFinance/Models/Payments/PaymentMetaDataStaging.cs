@@ -15,6 +15,9 @@ public class PaymentMetaDataStaging
     public string ApprenticeName { get; set; }
     public string ApprenticeNINumber { get; set; }
     public bool IsHistoricProviderName { get; set; }
+    public string LearningType { get; set; }
+    public string CourseCode { get; set; }
+    public long? CohortId { get; set; }
     public string CreatedBy { get; set; }
 
     public Guid? CorrelationId { get; set; }
