@@ -26,6 +26,14 @@ public class PaymentMetadataConfiguration : IEntityTypeConfiguration<PaymentMeta
         builder.Property(x => x.ApprenticeNINumber)
                .HasMaxLength(20);
 
+        builder.Property(x => x.LearningType)
+               .HasMaxLength(25);
+
+        builder.Property(x => x.CourseCode)
+               .HasMaxLength(25);
+
+        builder.Property(x => x.CohortId);
+
         builder.Property(x => x.StandardCode);
         builder.Property(x => x.FrameworkCode);
         builder.Property(x => x.ProgrammeType);

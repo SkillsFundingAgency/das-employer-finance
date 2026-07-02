@@ -191,6 +191,9 @@ public class DasLevyRepository : IDasLevyRepository
                 ApprenticeName = updatedMetaData.ApprenticeName,
                 ApprenticeNINumber = updatedMetaData.ApprenticeNINumber,
                 IsHistoricProviderName = updatedMetaData.IsHistoricProviderName,
+                LearningType = updatedMetaData.LearningType,
+                CourseCode = updatedMetaData.CourseCode,
+                CohortId = updatedMetaData.CohortId,
                 CreatedBy = updatedMetaData.CreatedBy,
                 CorrelationId = updatedMetaData.CorrelationId,
                 PaymentId = paymentId,
@@ -214,6 +217,9 @@ public class DasLevyRepository : IDasLevyRepository
         metadata.ApprenticeName = updatedMetaData.ApprenticeName;
         metadata.ApprenticeNINumber = updatedMetaData.ApprenticeNINumber;
         metadata.IsHistoricProviderName = updatedMetaData.IsHistoricProviderName;
+        metadata.LearningType = updatedMetaData.LearningType;
+        metadata.CourseCode = updatedMetaData.CourseCode;
+        metadata.CohortId = updatedMetaData.CohortId;
         metadata.CreatedBy = updatedMetaData.CreatedBy;
         metadata.CorrelationId = updatedMetaData.CorrelationId;
         metadata.PaymentId = paymentId;

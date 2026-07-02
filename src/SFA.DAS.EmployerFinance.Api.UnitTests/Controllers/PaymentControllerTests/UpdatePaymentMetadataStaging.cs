@@ -58,6 +58,38 @@ public class UpdatePaymentMetadata
     }
 
     [Test]
+    public async Task Then_Sends_App_Unit_Metadata_Fields_To_The_Orchestrator()
+    {
+        var paymentId = Guid.NewGuid();
+        var metadata = new PaymentMetaDataStaging
+        {
+            LearningType = "ApprenticeshipUnit",
+            CourseCode = "ST0001",
+            CohortId = 123456
+        };
+
+        _mediator
+            .Setup(m => m.Send(
+                It.Is<UpdatePaymentMetadataStagingCommand>(command =>
+                    command.PaymentId == paymentId
+                    && command.PaymentMetadataStaging.LearningType == "ApprenticeshipUnit"
+                    && command.PaymentMetadataStaging.CourseCode == "ST0001"
+                    && command.PaymentMetadataStaging.CohortId == 123456),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PaymentMetaDataResponse
+            {
+                Upserted = true,
+                MetadataId = 1,
+                IsSuccess = true
+            });
+
+        var result = await _controller.PaymentMetaDataStaging(paymentId, metadata);
+
+        result.Should().BeOfType<OkObjectResult>();
+        _mediator.Verify(m => m.Send(It.IsAny<UpdatePaymentMetadataStagingCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
     public async Task When_Request_Is_Null_Returns_BadRequest()
     {
         var result = await _controller.PaymentMetaDataStaging(Guid.NewGuid(), null);
