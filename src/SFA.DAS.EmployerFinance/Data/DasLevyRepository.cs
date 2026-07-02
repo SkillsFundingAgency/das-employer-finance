@@ -287,17 +287,29 @@ public class DasLevyRepository(
 
     public async Task<DasDeclaration> GetLastPositiveNetDeclarationForScheme(string empRef)
     {
-        var declaration = await db.Value.LevyDeclarations
-            .AsNoTracking()
-            .Where(x => x.EmpRef == empRef
-                        && x.LevyDueYtd != null
-                        && x.LevyAllowanceForYear != null
-                        && (x.LevyDueYtd - x.LevyAllowanceForYear) > 0)
-            .OrderByDescending(x => x.SubmissionDate)
+        var declaration = await GetLastPositiveNetDeclarationQuery()
+            .Where(x => x.EmpRef == empRef)
             .FirstOrDefaultAsync();
 
         return declaration == null ? null : MapToDasDeclaration(declaration);
     }
+
+    public async Task<DasDeclaration> GetLastPositiveNetDeclarationForAccount(long accountId)
+    {
+        var declaration = await GetLastPositiveNetDeclarationQuery()
+            .Where(x => x.AccountId == accountId)
+            .FirstOrDefaultAsync();
+
+        return declaration == null ? null : MapToDasDeclaration(declaration);
+    }
+
+    private IQueryable<LevyDeclarationEntity> GetLastPositiveNetDeclarationQuery() =>
+        db.Value.LevyDeclarations
+            .AsNoTracking()
+            .Where(x => x.LevyDueYtd != null
+                        && x.LevyAllowanceForYear != null
+                        && (x.LevyDueYtd - x.LevyAllowanceForYear) > 0)
+            .OrderByDescending(x => x.SubmissionDate);
 
     private static DasDeclaration MapToDasDeclaration(LevyDeclarationEntity declaration) =>
         new()
