@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using FluentAssertions;
 using SFA.DAS.EmployerFinance.Commands.UpdatePaymentMetadataStaging;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -151,7 +152,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.UpdatePaymentMetadataTests
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            Assert.That(result.IsSuccess, Is.True);
+            result.IsSuccess.Should().BeTrue();
             _repository.Verify(r => r.UpdatePaymentMetadataStaging(
                 paymentId,
                 It.Is<PaymentMetaDataStaging>(metadata =>
