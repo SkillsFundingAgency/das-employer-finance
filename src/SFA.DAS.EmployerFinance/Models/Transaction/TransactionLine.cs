@@ -3,6 +3,8 @@
 public class TransactionLine
 {
     public long AccountId { get; set; }
+    public string EmployerName { get; set; }
+    public bool ShowEmployerName => TransactionType == TransactionItemType.Transfer;
     public string Description { get; set; }
     public TransactionItemType TransactionType { get; set; }
     public DateTime TransactionDate { get; set; }
