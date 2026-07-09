@@ -91,13 +91,10 @@
                             </td>
                             @{
                                 var transactionAmount = aggregationLine.Amount;
-                                if (aggregationLine.TransactionType == TransactionItemType.Payment)
+                                if (aggregationLine.TransactionType == TransactionItemType.Payment && aggregationLine is PaymentTransactionLine paymentTransactionLine)
                                 {
-                                    if (aggregationLine is PaymentTransactionLine paymentTransaction)
-                                    {
-                                        transactionAmount += paymentTransaction.EmployerCoInvestmentAmount +
-                                                 paymentTransaction.SfaCoInvestmentAmount;
-                                    }
+                                    transactionAmount += paymentTransactionLine.EmployerCoInvestmentAmount +
+                                                         paymentTransactionLine.SfaCoInvestmentAmount;
                                 }
                             }
                             <td class="govuk-table__cell govuk-table__cell--numeric">
