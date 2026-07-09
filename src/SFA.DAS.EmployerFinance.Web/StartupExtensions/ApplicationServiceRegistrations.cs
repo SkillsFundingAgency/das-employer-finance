@@ -47,7 +47,16 @@ public static class ApplicationServiceRegistrations
         //TODO MAC-192 - was services.Decorate
         services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
 
-        services.AddScoped<IAccountApiClient, AccountApiClient>();
+        services.AddTransient<AccountApiClient>();
+            services.AddTransient<IAccountApiClient>(sp =>
+            {
+                var isEnvLocal = configuration["EnvironmentName"].Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase);
+                var real = sp.GetRequiredService<AccountApiClient>();
+                return isEnvLocal
+                    ? new FakeAccountApiClient(real)
+                    : real;
+            });
+        
         services.AddTransient<IExcelService, ExcelService>();
 
         services.AddTransient<IDateTimeService, DateTimeService>();
