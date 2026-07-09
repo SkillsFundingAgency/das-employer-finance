@@ -27,4 +27,6 @@ public class CoursePaymentDetailsViewModel
     public DateTime FromDate { get; set; }
     public DateTime ToDate { get; set; }
     public long Ukprn { get; set; }
+    public string CohortReference { get; set; }
+    public bool ShowCohortReference => !string.IsNullOrWhiteSpace(CohortReference);
 }

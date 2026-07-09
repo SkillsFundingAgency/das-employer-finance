@@ -1,6 +1,5 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
@@ -332,7 +331,8 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedAccountId,
                     FromDate = fromDate,
                     ToDate = toDate,
-                    Ukprn = ukprn
+                    Ukprn = ukprn,
+                    CohortReference = accountCoursePaymentsResponse.CohortReference
                 }
             };
         }

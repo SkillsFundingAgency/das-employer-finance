@@ -1,6 +1,4 @@
-﻿using SFA.DAS.Common.Domain.Types;
-
-namespace SFA.DAS.EmployerFinance.Models.Transaction;
+﻿namespace SFA.DAS.EmployerFinance.Models.Transaction;
 
 public class TransactionEntity
 {
@@ -43,4 +41,5 @@ public class TransactionEntity
     public long ReceiverAccountId { get; set; }
     public string ReceiverAccountName { get; set; }
 
+    public long? CohortId { get; set; }
 }

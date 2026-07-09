@@ -84,10 +84,13 @@
                             </td>
                             <td class="govuk-table__cell">
                                 @aggregationLine.Description
-                                <br/>
-                                <span class="govuk-hint" asp-show="@aggregationLine.ShowEmployerName">
-                                    Paid using transfer from @aggregationLine.EmployerName
-                                </span>
+                                @if(aggregationLine.ShowEmployerName)
+                                {
+                                    <br/>
+                                    <span class="govuk-hint">
+                                        Paid using transfer from @aggregationLine.EmployerName
+                                    </span>
+                                }
                             </td>
                             @{
                                 var transactionAmount = aggregationLine.Amount;
