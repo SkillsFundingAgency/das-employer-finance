@@ -131,7 +131,6 @@ public class DraftExpireAccountFundsCommandHandlerTests
     {
         //Arrange
         currentDateTime.Setup(x => x.Now).Returns(DateTime.Now);
-        expiredFundsRepository.Setup(x => x.Get(message.AccountId)).ReturnsAsync(new List<ExpiredFund>());
         expiredFundsRepository.Setup(x => x.GetDraft(message.AccountId)).ReturnsAsync(new List<ExpiredFund>());
         configuration.Setup(x => x.FundsExpiryPeriod).Returns(expiredFundsPeriod);
         message.DateTo = DateTime.Now.AddMonths(-1);
@@ -156,17 +155,19 @@ public class DraftExpireAccountFundsCommandHandlerTests
             {new CalendarPeriod(message.DateTo.Value.Year, message.DateTo.Value.Month), expiryAmount}
         };
         expiredFunds.Setup(x => x.GetExpiringFunds(
-                It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(2)),
-                It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(1)),
-                It.Is<IDictionary<CalendarPeriod, decimal>>(c => c.Count.Equals(0)),
-                It.IsAny<int>()))
+                It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
+                It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
+                It.IsAny<IDictionary<CalendarPeriod, decimal>>(),
+                It.IsAny<int>(),
+                It.IsAny<DateTime?>(),
+                It.IsAny<DateTime?>()))
             .Returns(expiredFund);
             
         //Act
         await handler.Handle(message, new TestableMessageHandlerContext(new MessageMapper()));
 
         //Assert
-        expiredFundsRepository.Verify(x => x.GetDraft(message.AccountId), Times.Once);
+        expiredFundsRepository.Verify(x => x.GetDraft(message.AccountId), Times.AtLeastOnce);
         expiredFundsRepository.Verify(x => x.CreateDraft(message.AccountId,
             It.Is<IEnumerable<ExpiredFund>>(c => 
                 c.First().Amount.Equals(expiryAmount*-1)

@@ -307,6 +307,112 @@ public class WhenIGetAccountTransactions
             });
     }
 
+    [Test]
+    public async Task ThenExpiredFundAndShortExpiredFundTransactionsOnTheSameDayAreAggregatedIntoOneTransaction()
+    {
+        //Arrange
+        var date = new DateTime(2017, 5, 18);
+        var transactions = new List<TransactionLine>
+        {
+            CreateExpiredFundTransaction(date, 100, TransactionItemType.ExpiredFund),
+            CreateExpiredFundTransaction(date, 50, TransactionItemType.ShortExpiredFund)
+        };
+
+        SetupGetTransactionsResponse(2017, 5, transactions);
+
+        //Act
+        var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 5);
+        var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
+
+        //Assert
+        actualTransactions!.Count(t => t.TransactionType == TransactionItemType.ExpiredFund).Should().Be(1);
+    }
+
+    [Test]
+    public async Task ThenAggregatedExpiredFundsTransactionTypeIsExpiredFund()
+    {
+        //Arrange
+        var date = new DateTime(2017, 5, 18);
+        var transactions = new List<TransactionLine>
+        {
+            CreateExpiredFundTransaction(date, 100, TransactionItemType.ShortExpiredFund)
+        };
+
+        SetupGetTransactionsResponse(2017, 5, transactions);
+
+        //Act
+        var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 5);
+        var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
+
+        //Assert
+        actualTransactions.Should().NotContain(t => t.TransactionType == TransactionItemType.ShortExpiredFund);
+        actualTransactions.Should().Contain(t => t.TransactionType == TransactionItemType.ExpiredFund);
+    }
+
+    [Test]
+    public async Task ThenAggregatedExpiredFundsTransactionHasCorrectAmount()
+    {
+        //Arrange
+        var date = new DateTime(2017, 5, 18);
+        var transactions = new List<TransactionLine>
+        {
+            CreateExpiredFundTransaction(date, 100, TransactionItemType.ExpiredFund),
+            CreateExpiredFundTransaction(date, 50, TransactionItemType.ShortExpiredFund)
+        };
+
+        SetupGetTransactionsResponse(2017, 5, transactions);
+
+        //Act
+        var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 5);
+        var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
+
+        //Assert
+        actualTransactions!.Single(t => t.TransactionType == TransactionItemType.ExpiredFund).Amount.Should().Be(150);
+    }
+
+    [Test]
+    public async Task ThenExpiredFundsAggregationDoesNotAffectOtherTransactions()
+    {
+        //Arrange
+        var date = new DateTime(2017, 5, 18);
+        var transactions = new List<TransactionLine>
+        {
+            CreateExpiredFundTransaction(date, 100, TransactionItemType.ExpiredFund),
+            CreateExpiredFundTransaction(date, 50, TransactionItemType.ShortExpiredFund),
+            new PaymentTransactionLine { Amount = 200, TransactionType = TransactionItemType.Payment, DateCreated = date }
+        };
+
+        SetupGetTransactionsResponse(2017, 5, transactions);
+
+        //Act
+        var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 5);
+        var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
+
+        //Assert
+        actualTransactions.Should().Contain(t => t.TransactionType == TransactionItemType.Payment);
+        actualTransactions!.Length.Should().Be(2);
+    }
+
+    [Test]
+    public async Task ThenExpiredFundsOnDifferentDaysProduceSeparateAggregatedLines()
+    {
+        //Arrange
+        var transactions = new List<TransactionLine>
+        {
+            CreateExpiredFundTransaction(new DateTime(2017, 5, 18), 100, TransactionItemType.ExpiredFund),
+            CreateExpiredFundTransaction(new DateTime(2017, 5, 19), 200, TransactionItemType.ExpiredFund)
+        };
+
+        SetupGetTransactionsResponse(2017, 5, transactions);
+
+        //Act
+        var result = await _orchestrator.GetAccountTransactions(HashedAccountId, 2017, 5);
+        var actualTransactions = result?.Data?.Model?.Data?.TransactionLines;
+
+        //Assert
+        actualTransactions!.Count(t => t.TransactionType == TransactionItemType.ExpiredFund).Should().Be(2);
+    }
+
     private static LevyDeclarationTransactionLine CreateLevyTransaction(DateTime submissionDate, int amount, DateTime? dateCreated = null)
     {
         return new LevyDeclarationTransactionLine
@@ -316,6 +422,18 @@ public class WhenIGetAccountTransactions
             TransactionDate = submissionDate,
             TransactionType = TransactionItemType.Declaration,
             Description = "Levy"
+        };
+    }
+
+    private static TransactionLine CreateExpiredFundTransaction(DateTime date, decimal amount, TransactionItemType type)
+    {
+        return new TransactionLine
+        {
+            Amount = amount,
+            DateCreated = date,
+            TransactionDate = date,
+            TransactionType = type,
+            Description = "Expired Funds"
         };
     }
 }
