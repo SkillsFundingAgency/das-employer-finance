@@ -39,7 +39,7 @@ public class GetTransferTransactionDetailsQueryHandler(
                 at.ApprenticeshipId,
                 CourseName = pmd.ApprenticeshipCourseName,
                 CourseLevel = pmd.ApprenticeshipCourseLevel,
-                CohortId = pmd.CohortId
+                pmd.CohortId
             }).ToListAsync(cancellationToken);
 
         var firstTransfer = transfers.First();
