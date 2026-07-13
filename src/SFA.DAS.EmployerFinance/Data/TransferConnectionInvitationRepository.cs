@@ -116,6 +116,18 @@ public class TransferConnectionInvitationRepository(Lazy<EmployerFinanceDbContex
             .ToListAsync();
     }
 
+    public Task<List<TransferConnectionInvitation>> GetPendingBySender(long senderAccountId)
+    {
+        return db.Value.TransferConnectionInvitations
+            .Include(i => i.ReceiverAccount)
+            .Include(i => i.SenderAccount)
+            .Where(i =>
+                i.SenderAccountId == senderAccountId &&
+                i.Status == TransferConnectionInvitationStatus.Pending &&
+                !i.DeletedBySender)
+            .ToListAsync();
+    }
+
     public Task<bool> AnyTransferConnectionInvitations(long senderAccountId, long receiverAccountId, List<TransferConnectionInvitationStatus> statuses)
     {
         return db.Value.TransferConnectionInvitations.AnyAsync(i =>
