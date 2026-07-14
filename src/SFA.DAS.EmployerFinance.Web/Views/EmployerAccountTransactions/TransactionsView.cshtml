@@ -84,11 +84,11 @@
                             </td>
                             <td class="govuk-table__cell">
                                 @aggregationLine.Description
-                                @if(aggregationLine.ShowEmployerName)
+                                @if (aggregationLine.TransactionType == TransactionItemType.Transfer)
                                 {
                                     <br/>
                                     <span class="govuk-hint">
-                                        Paid using transfer from @aggregationLine.EmployerName
+                                        Paid using transfer from @aggregationLine.TransferSourceDescription
                                     </span>
                                 }
                             </td>

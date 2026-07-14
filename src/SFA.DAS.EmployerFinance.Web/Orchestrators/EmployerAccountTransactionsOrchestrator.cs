@@ -500,8 +500,6 @@ public class EmployerAccountTransactionsOrchestrator(
             .OrderByDescending(x => x.DateCreated)
             .ToArray();
 
-        await PopulateEmployerNames(newTransactionLines);
-
         viewModel.Data.TransactionLines = newTransactionLines;
     }
 
@@ -525,31 +523,5 @@ public class EmployerAccountTransactionsOrchestrator(
                     PayrollYear = first.PayrollYear
                 };
             });
-    }
-
-    private async Task PopulateEmployerNames(IEnumerable<TransactionLine> transactionLines)
-    {
-        var paymentLines = transactionLines
-            .Where(t => t.TransactionType == TransactionItemType.Transfer)
-            .ToArray();
-
-        if (paymentLines.Length == 0)
-        {
-            return;
-        }
-
-        var accountIds = paymentLines
-            .Select(t => t.AccountId)
-            .Distinct()
-            .ToArray();
-
-        var accountDetails = await Task.WhenAll(accountIds.Select(async id => (id, account: await accountApiClient.GetAccount(id))));
-
-        var namesByAccountId = accountDetails.ToDictionary(x => x.id, x => x.account.DasAccountName);
-
-        foreach (var transactionLine in paymentLines)
-        {
-            transactionLine.EmployerName = namesByAccountId[transactionLine.AccountId];
-        }
     }
 }
