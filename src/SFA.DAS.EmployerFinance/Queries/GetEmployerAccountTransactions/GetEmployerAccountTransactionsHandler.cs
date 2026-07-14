@@ -9,29 +9,17 @@ using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 
-public class GetEmployerAccountTransactionsHandler :
-    IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>
+public class GetEmployerAccountTransactionsHandler(
+    IDasLevyService dasLevyService,
+    IValidator<GetEmployerAccountTransactionsQuery> validator,
+    ILogger<GetEmployerAccountTransactionsHandler> logger,
+    IEncodingService encodingService)
+    :
+        IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>
 {
-    private readonly IDasLevyService _dasLevyService;
-    private readonly IValidator<GetEmployerAccountTransactionsQuery> _validator;
-    private readonly IEncodingService _encodingService;
-    private readonly ILogger<GetEmployerAccountTransactionsHandler> _logger;
-
-    public GetEmployerAccountTransactionsHandler(
-        IDasLevyService dasLevyService,
-        IValidator<GetEmployerAccountTransactionsQuery> validator,
-        ILogger<GetEmployerAccountTransactionsHandler> logger,
-        IEncodingService encodingService)
-    {
-        _dasLevyService = dasLevyService;
-        _validator = validator;
-        _logger = logger;
-        _encodingService = encodingService;
-    }
-
     public async Task<GetEmployerAccountTransactionsResponse> Handle(GetEmployerAccountTransactionsQuery message, CancellationToken cancellationToken)
     {
-        var result = await _validator.ValidateAsync(message);
+        var result = await validator.ValidateAsync(message);
 
         if (!result.IsValid())
         {
@@ -43,11 +31,11 @@ public class GetEmployerAccountTransactionsHandler :
             throw new UnauthorizedAccessException();
         }
 
-        var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
-        var transactions = await _dasLevyService.GetAccountTransactionsByDateRange(accountId, message.FromDate, message.ToDate);
-        var balance = await _dasLevyService.GetAccountBalance(accountId);
+        var accountId = encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
+        var transactions = await dasLevyService.GetAccountTransactionsByDateRange(accountId, message.FromDate, message.ToDate);
+        var balance = await dasLevyService.GetAccountBalance(accountId);
 
-        var hasPreviousTransactions = await _dasLevyService.GetPreviousAccountTransaction(accountId, message.FromDate) > 0;
+        var hasPreviousTransactions = await dasLevyService.GetPreviousAccountTransaction(accountId, message.FromDate) > 0;
 
         foreach (var transaction in transactions)
         {
@@ -93,6 +81,7 @@ public class GetEmployerAccountTransactionsHandler :
             else
             {
                 transaction.Description = $"Transfer received from {transferTransaction.SenderAccountName}";
+                transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}";
             }
         }
     }
@@ -104,13 +93,13 @@ public class GetEmployerAccountTransactionsHandler :
         try
         {
             var ukprn = Convert.ToInt32(transaction.UkPrn);
-            var providerName = await _dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
+            var providerName = await dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
             if (providerName != null)
                 return $"{transactionPrefix}{providerName}";
         }
         catch (Exception ex)
         {
-            _logger.LogInformation($"Provider not found for UkPrn:{transaction.UkPrn} - {ex.Message}");
+            logger.LogInformation("Provider not found for UkPrn:{TransactionUkPrn} - {ExMessage}", transaction.UkPrn, ex.Message);
         }
 
         return $"{transactionPrefix}Training provider - name not recognised";
@@ -147,10 +136,10 @@ public class GetEmployerAccountTransactionsHandler :
         foreach (var transaction in transferTransactions)
         {
             transaction.ReceiverAccountPublicHashedId =
-                _encodingService.Encode(transaction.ReceiverAccountId, EncodingType.PublicAccountId);
+                encodingService.Encode(transaction.ReceiverAccountId, EncodingType.PublicAccountId);
 
             transaction.SenderAccountPublicHashedId =
-                _encodingService.Encode(transaction.SenderAccountId, EncodingType.PublicAccountId);
+                encodingService.Encode(transaction.SenderAccountId, EncodingType.PublicAccountId);
         }
     }
 }
