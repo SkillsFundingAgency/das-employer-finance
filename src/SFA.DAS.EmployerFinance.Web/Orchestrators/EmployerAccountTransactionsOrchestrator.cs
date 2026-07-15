@@ -377,7 +377,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedId
                 });
 
-        var viewModel = await BuildTransactionViewModel(aggregatedTransactions.Data);
+        var viewModel = BuildTransactionViewModel(aggregatedTransactions.Data);
 
         return new OrchestratorResponse<TransactionViewResultViewModel>
         {
@@ -392,7 +392,7 @@ public class EmployerAccountTransactionsOrchestrator(
         };
     }
 
-    private async Task<TransactionViewModel> BuildTransactionViewModel(AggregationData aggregationData)
+    private static TransactionViewModel BuildTransactionViewModel(AggregationData aggregationData)
     {
         var viewModel = new TransactionViewModel
         {
@@ -404,7 +404,7 @@ public class EmployerAccountTransactionsOrchestrator(
             CurrentBalance = aggregationData.Balance
         };
 
-        await SetTransactionLines(viewModel, aggregationData);
+        SetTransactionLines(viewModel, aggregationData);
         return viewModel;
     }
 
@@ -452,7 +452,6 @@ public class EmployerAccountTransactionsOrchestrator(
     public async Task<OrchestratorResponse<ExpiredFundsTransactionDetailsViewModel>> FindAccountExpiredFunds(string hashedId,
         DateTime fromDate, DateTime toDate)
     {
-
         var data = await mediator.Send(new FindEmployerAccountExpiredFundsQuery
         {
             FromDate = fromDate,
@@ -481,7 +480,7 @@ public class EmployerAccountTransactionsOrchestrator(
         TransactionItemType.ShortExpiredFund
     ];
 
-    private async Task SetTransactionLines(TransactionViewModel viewModel, AggregationData aggregatedTransactionData)
+    private static void SetTransactionLines(TransactionViewModel viewModel, AggregationData aggregatedTransactionData)
     {
         var aggregatedLevyTransactions = AggregateByDay(aggregatedTransactionData.TransactionLines,
             t => t.TransactionType == TransactionItemType.Declaration,
