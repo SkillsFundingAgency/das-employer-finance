@@ -56,33 +56,31 @@ public class GetEmployerAccountTransactionsHandler(
 
     private async Task GenerateTransactionDescription(TransactionLine transaction)
     {
-        if (transaction.GetType() == typeof(LevyDeclarationTransactionLine))
+        switch (transaction)
         {
-            transaction.Description = transaction.Amount >= 0 ? "Levy declared this month" : "Levy adjustment";
-        }
-        else if (transaction.GetType() == typeof(PaymentTransactionLine))
-        {
-            var paymentTransaction = (PaymentTransactionLine)transaction;
+            case LevyDeclarationTransactionLine levyTransaction:
+                transaction.Description = levyTransaction.Amount >= 0 ? "Levy declared this month" : "Levy adjustment";
+                break;
 
-            transaction.Description = await GetPaymentTransactionDescription(paymentTransaction);
-        }
-        else if (transaction.GetType() == typeof(ExpiredFundTransactionLine))
-        {
-            transaction.Description = "Expired levy this month";
-        }
-        else if (transaction.GetType() == typeof(TransferTransactionLine))
-        {
-            var transferTransaction = (TransferTransactionLine)transaction;
+            case PaymentTransactionLine paymentTransaction:
+                transaction.Description = await GetPaymentTransactionDescription(paymentTransaction);
+                break;
 
-            if (transferTransaction.TransactionAccountIsTransferSender)
-            {
-                transaction.Description = $"Transfer sent to {transferTransaction.ReceiverAccountName}";
-            }
-            else
-            {
-                transaction.Description = $"Transfer received from {transferTransaction.SenderAccountName}";
-                transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}";
-            }
+            case ExpiredFundTransactionLine:
+                transaction.Description = "Expired levy this month";
+                break;
+
+            case TransferTransactionLine transferTransaction:
+                if (transferTransaction.TransactionAccountIsTransferSender)
+                {
+                    transaction.Description = $"Transfer sent to {transferTransaction.ReceiverAccountName}";
+                }
+                else
+                {
+                    transaction.Description = $"Transfer received from {transferTransaction.SenderAccountName}";
+                    transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}";
+                }
+                break;
         }
     }
 

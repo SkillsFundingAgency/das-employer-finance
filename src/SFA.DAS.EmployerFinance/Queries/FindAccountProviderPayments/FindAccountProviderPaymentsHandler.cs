@@ -42,6 +42,7 @@ public class FindAccountProviderPaymentsHandler(
             ProviderName = firstTransaction.ProviderName,
             TransactionDate = firstTransaction.TransactionDate,
             DateCreated = firstTransaction.DateCreated,
+            SenderAccountName = firstTransaction.SenderAccountName,
             Transactions = transactions.ToList(),
             Total = transactions.Sum(c => c.LineAmount)
         };

@@ -241,6 +241,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedAccountId,
                     UkPrn = ukprn,
                     ProviderName = providerPaymentsResponse.ProviderName,
+                    SenderAccountName = providerPaymentsResponse.SenderAccountName,
                     PaymentDate = providerPaymentsResponse.DateCreated,
                     FromDate = fromDate,
                     ToDate = toDate,
