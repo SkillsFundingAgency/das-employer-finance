@@ -19,6 +19,10 @@ public class TransferStagingConfiguration : IEntityTypeConfiguration<TransferSta
         builder.Property(x => x.SenderAccountId)
             .IsRequired();
 
+        builder.Property(x => x.SenderAccountName)
+            .HasMaxLength(100)
+            .IsRequired();
+
         builder.Property(x => x.ReceiverAccountId)
             .IsRequired();
 
@@ -47,7 +51,21 @@ public class TransferStagingConfiguration : IEntityTypeConfiguration<TransferSta
             .IsRequired();
 
         builder.Property(x => x.CourseName)
-            .HasMaxLength(255)
+            .HasMaxLength(255);
+
+        builder.Property(x => x.CourseLevel);
+
+        builder.Property(x => x.LearningType)
+            .HasMaxLength(25);
+
+        builder.Property(x => x.ApprenticeshipId)
+            .IsRequired();
+
+        builder.Property(x => x.Type)
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(x => x.RequiredPaymentId)
             .IsRequired();
 
         builder.Property(x => x.CreatedBy)

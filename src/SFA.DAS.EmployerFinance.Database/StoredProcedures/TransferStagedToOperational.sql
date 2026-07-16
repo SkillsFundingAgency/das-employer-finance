@@ -9,8 +9,13 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
+        DECLARE @metadataCount INT = 0;
+        DECLARE @paymentsCount INT = 0;
+        DECLARE @transfersCount INT = 0;
+        DECLARE @transactionLinesCount INT = 0;
+
         ---------------------------------------------------------------------
-        -- 1. Insert PaymentMetaData
+        -- 1. Insert PaymentMetaData (scoped to account + period payments)
         ---------------------------------------------------------------------
 
         DECLARE @PaymentMetaDataMap TABLE
@@ -20,7 +25,28 @@ BEGIN
         );
 
         MERGE employer_financial.PaymentMetaData AS target
-        USING employer_financial.PaymentMetaDataStaging AS source
+        USING
+        (
+            SELECT
+                pms.Id,
+                pms.ProviderName,
+                pms.StandardCode,
+                pms.FrameworkCode,
+                pms.ProgrammeType,
+                pms.PathwayCode,
+                pms.PathwayName,
+                pms.ApprenticeshipCourseName,
+                pms.ApprenticeshipCourseStartDate,
+                pms.ApprenticeshipCourseLevel,
+                pms.ApprenticeName,
+                pms.ApprenticeNINumber,
+                pms.IsHistoricProviderName
+            FROM employer_financial.PaymentMetaDataStaging pms
+            INNER JOIN employer_financial.PaymentStaging ps
+                ON ps.PaymentId = pms.PaymentId
+            WHERE ps.AccountId = @accountId
+              AND ps.CollectionPeriodId = @periodEndRef
+        ) AS source
             ON 1 = 0 -- insert-only
         WHEN NOT MATCHED THEN
             INSERT
@@ -61,6 +87,8 @@ BEGIN
             StagingPaymentMetaDataId,
             OperationalPaymentMetaDataId
         );
+
+        SET @metadataCount = @@ROWCOUNT;
 
         ---------------------------------------------------------------------
         -- 2. Insert Payments
@@ -138,7 +166,104 @@ BEGIN
                 source.PaymentMetaDataId
             );
 
+        SET @paymentsCount = @@ROWCOUNT;
+
+        ---------------------------------------------------------------------
+        -- 3. Insert AccountTransfers from TransferStaging
+        ---------------------------------------------------------------------
+
+        INSERT INTO employer_financial.AccountTransfers
+        (
+            SenderAccountId,
+            SenderAccountName,
+            ReceiverAccountId,
+            ReceiverAccountName,
+            ApprenticeshipId,
+            CourseName,
+            CourseLevel,
+            LearningType,
+            PeriodEnd,
+            Amount,
+            [Type],
+            CreatedDate,
+            RequiredPaymentId
+        )
+        SELECT
+            ts.SenderAccountId,
+            ts.SenderAccountName,
+            ts.ReceiverAccountId,
+            ts.ReceiverAccountName,
+            ts.ApprenticeshipId,
+            ISNULL(ts.CourseName, ''),
+            ts.CourseLevel,
+            ts.LearningType,
+            ts.PeriodEnd,
+            ts.Amount,
+            ts.[Type],
+            ts.TransferDate,
+            ts.RequiredPaymentId
+        FROM employer_financial.TransferStaging ts
+        WHERE ts.ReceiverAccountId = @accountId
+          AND ts.PeriodEnd = @periodEndRef;
+
+        SET @transfersCount = @@ROWCOUNT;
+
+        ---------------------------------------------------------------------
+        -- 4. Insert TransactionLines from TransactionLineStaging
+        ---------------------------------------------------------------------
+
+        INSERT INTO employer_financial.TransactionLine
+        (
+            AccountId,
+            DateCreated,
+            SubmissionId,
+            TransactionDate,
+            TransactionType,
+            LevyDeclared,
+            Amount,
+            EmpRef,
+            PeriodEnd,
+            Ukprn,
+            SfaCoInvestmentAmount,
+            EmployerCoInvestmentAmount,
+            EnglishFraction,
+            TransferSenderAccountId,
+            TransferSenderAccountName,
+            TransferReceiverAccountId,
+            TransferReceiverAccountName
+        )
+        SELECT
+            tls.AccountId,
+            tls.DateCreated,
+            tls.SubmissionId,
+            tls.TransactionDate,
+            tls.TransactionType,
+            tls.LevyDeclared,
+            tls.Amount,
+            tls.EmpRef,
+            tls.PeriodEnd,
+            tls.Ukprn,
+            tls.SfaCoInvestmentAmount,
+            tls.EmployerCoInvestmentAmount,
+            tls.EnglishFraction,
+            tls.TransferSenderAccountId,
+            tls.TransferSenderAccountName,
+            tls.TransferReceiverAccountId,
+            tls.TransferReceiverAccountName
+        FROM employer_financial.TransactionLineStaging tls
+        WHERE tls.AccountId = @accountId
+          AND tls.PeriodEnd = @periodEndRef;
+
+        SET @transactionLinesCount = @@ROWCOUNT;
+
         COMMIT TRANSACTION;
+
+        SELECT
+            (@paymentsCount + @transfersCount + @transactionLinesCount) AS ProcessedCount,
+            @paymentsCount AS PaymentsCount,
+            @transfersCount AS TransfersCount,
+            @transactionLinesCount AS TransactionLinesCount,
+            @metadataCount AS MetadataCount;
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0
