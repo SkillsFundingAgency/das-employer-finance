@@ -31,18 +31,19 @@ public class RefreshEmployerLevyDataCommandHandlerTests
                 EmpRef = empRef,
                 Declarations = new DasDeclarations
                 {
-                    Declarations = new List<DasDeclaration>
-                    {
+                    Declarations =
+                    [
                         new()
                         {
                             LevyDueYtd = 2000,
                             PayrollYear = "2018",
                             PayrollMonth = 6
                         }
-                    }
+                    ]
                 }
             }
         });
+        fixture.SetupProcessDeclarations(accountId, empRef, 10m);
 
         await fixture.Handle();
 
@@ -74,7 +75,7 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
 
         var levyImportCleanerStrategy = new LevyImportCleanerStrategy(_dasLevyRepository.Object, _hmrcDateService.Object, logger.Object, _currentDateTime.Object);
 
-        _handler = new RefreshEmployerLevyDataCommandHandler(validator.Object, _dasLevyRepository.Object, levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
+        _handler = new RefreshEmployerLevyDataCommandHandler(validator.Object, _dasLevyRepository.Object, levyImportCleanerStrategy, _eventPublisher, _currentDateTime.Object, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
     }
 
     public RefreshEmployerLevyDataCommandHandlerTestsFixture SetAccountId(long accountId)
@@ -94,6 +95,7 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
     public RefreshEmployerLevyDataCommandHandlerTestsFixture SetLastSubmissionForScheme(string empRef, DasDeclaration lastDeclaration)
     {
         _dasLevyRepository.Setup(x => x.GetLastSubmissionForScheme(empRef)).ReturnsAsync(lastDeclaration);
+        _dasLevyRepository.Setup(x => x.GetLastPositiveNetDeclarationForAccount(_accountId)).ReturnsAsync(lastDeclaration);
 
         return this;
     }
@@ -102,6 +104,12 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
     {
         _employerLevyData = employerLevyData;
 
+        return this;
+    }
+
+    public RefreshEmployerLevyDataCommandHandlerTestsFixture SetupProcessDeclarations(long accountId, string empRef, decimal amount)
+    {
+        _dasLevyRepository.Setup(x => x.ProcessDeclarations(accountId, empRef)).ReturnsAsync(amount);
         return this;
     }
 
@@ -118,6 +126,7 @@ public class RefreshEmployerLevyDataCommandHandlerTestsFixture
     {
         (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(_accountId)
+            && string.IsNullOrWhiteSpace(e.PayeRef)
             && e.LevyImported.Equals(expectedLevyImportedValue))).Should().BeTrue();
     }
 }

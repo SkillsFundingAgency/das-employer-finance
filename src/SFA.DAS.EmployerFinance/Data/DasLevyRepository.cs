@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -9,7 +10,6 @@ using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
 
@@ -20,7 +20,6 @@ public class DasLevyRepository(
     ICurrentDateTime currentDateTime)
     : IDasLevyRepository
 {
-
     public async Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId)
     {
         var parameters = new DynamicParameters();
@@ -285,6 +284,50 @@ public class DasLevyRepository(
 
         return result.SingleOrDefault();
     }
+
+    public async Task<DasDeclaration> GetLastPositiveNetDeclarationForScheme(string empRef)
+    {
+        var declaration = await GetLastPositiveNetDeclarationQuery()
+            .Where(x => x.EmpRef == empRef)
+            .FirstOrDefaultAsync();
+
+        return declaration == null ? null : MapToDasDeclaration(declaration);
+    }
+
+    public async Task<DasDeclaration> GetLastPositiveNetDeclarationForAccount(long accountId)
+    {
+        var declaration = await GetLastPositiveNetDeclarationQuery()
+            .Where(x => x.AccountId == accountId)
+            .FirstOrDefaultAsync();
+
+        return declaration == null ? null : MapToDasDeclaration(declaration);
+    }
+
+    private IQueryable<LevyDeclarationEntity> GetLastPositiveNetDeclarationQuery() =>
+        db.Value.LevyDeclarations
+            .AsNoTracking()
+            .Where(x => x.LevyDueYtd != null
+                        && x.LevyAllowanceForYear != null
+                        && (x.LevyDueYtd - x.LevyAllowanceForYear) > 0)
+            .OrderByDescending(x => x.SubmissionDate);
+
+    private static DasDeclaration MapToDasDeclaration(LevyDeclarationEntity declaration) =>
+        new()
+        {
+            Id = declaration.Id.ToString(),
+            LevyDueYtd = declaration.LevyDueYtd,
+            SubmissionDate = declaration.SubmissionDate ?? default,
+            LevyAllowanceForFullYear = declaration.LevyAllowanceForYear ?? decimal.Zero,
+            PayrollYear = declaration.PayrollYear,
+            PayrollMonth = declaration.PayrollMonth,
+            NoPaymentForPeriod = declaration.NoPaymentForPeriod,
+            DateCeased = declaration.DateCeased,
+            InactiveFrom = declaration.InactiveFrom,
+            InactiveTo = declaration.InactiveTo,
+            EndOfYearAdjustment = declaration.EndOfYearAdjustment,
+            EndOfYearAdjustmentAmount = declaration.EndOfYearAdjustmentAmount ?? decimal.Zero,
+            SubmissionId = declaration.SubmissionId
+        };
 
     public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
     {
