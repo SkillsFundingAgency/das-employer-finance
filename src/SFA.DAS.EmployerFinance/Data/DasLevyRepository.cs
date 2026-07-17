@@ -422,6 +422,27 @@ public class DasLevyRepository(
             commandType: CommandType.StoredProcedure);
     }
 
+    public async Task<int> TransferStagedToOperational(long accountId, string periodEndRef)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@periodEndRef", periodEndRef, DbType.String, size: 25);
+
+        var result = await db.Value.Database.GetDbConnection().QuerySingleOrDefaultAsync<TransferStagedToOperationalResult>(
+            sql: "[employer_financial].[TransferStagedToOperational]",
+            param: parameters,
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return result?.ProcessedCount ?? 0;
+    }
+
+    private sealed class TransferStagedToOperationalResult
+    {
+        public int ProcessedCount { get; set; }
+    }
+
     public async Task<string> FindHistoricalProviderName(long ukprn)
     {
         var parameters = new DynamicParameters();

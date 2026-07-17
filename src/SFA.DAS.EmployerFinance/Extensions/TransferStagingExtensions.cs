@@ -11,6 +11,7 @@ public static class TransferStagingExtensions
 
         table.Columns.Add("TransferId", typeof(long));
         table.Columns.Add("SenderAccountId", typeof(long));
+        table.Columns.Add("SenderAccountName", typeof(string));
         table.Columns.Add("ReceiverAccountId", typeof(long));
         table.Columns.Add("ReceiverAccountName", typeof(string));
         table.Columns.Add("Amount", typeof(decimal));
@@ -20,6 +21,11 @@ public static class TransferStagingExtensions
         table.Columns.Add("CollectionPeriodYear", typeof(int));
         table.Columns.Add("Ukprn", typeof(long));
         table.Columns.Add("CourseName", typeof(string));
+        table.Columns.Add("CourseLevel", typeof(int));
+        table.Columns.Add("LearningType", typeof(string));
+        table.Columns.Add("ApprenticeshipId", typeof(long));
+        table.Columns.Add("Type", typeof(string));
+        table.Columns.Add("RequiredPaymentId", typeof(Guid));
         table.Columns.Add("CreatedBy", typeof(string));
         table.Columns.Add("CorrelationId", typeof(string));
 
@@ -28,6 +34,7 @@ public static class TransferStagingExtensions
             table.Rows.Add(
                 t.TransferId,
                 t.SenderAccountId,
+                t.SenderAccountName ?? string.Empty,
                 t.ReceiverAccountId,
                 t.ReceiverAccountName,
                 t.Amount,
@@ -36,9 +43,14 @@ public static class TransferStagingExtensions
                 t.CollectionPeriodMonth,
                 t.CollectionPeriodYear,
                 t.Ukprn,
-                t.CourseName,
+                string.IsNullOrEmpty(t.CourseName) ? DBNull.Value : t.CourseName,
+                t.CourseLevel.HasValue ? t.CourseLevel.Value : DBNull.Value,
+                string.IsNullOrEmpty(t.LearningType) ? DBNull.Value : t.LearningType,
+                t.ApprenticeshipId,
+                t.Type ?? string.Empty,
+                t.RequiredPaymentId,
                 t.CreatedBy,
-                t.CorrelationId
+                string.IsNullOrEmpty(t.CorrelationId) ? DBNull.Value : t.CorrelationId
             );
         }
 

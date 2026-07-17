@@ -25,6 +25,7 @@ public interface IDasLevyRepository
     Task<DasDeclaration> GetEffectivePeriod12Declaration(string empRef, string payrollYear, DateTime yearEndAdjustmentCutOff);
     Task<decimal> ProcessDeclarations(long accountId, string empRef);
     Task ProcessPaymentData(long accountId);
+    Task<int> TransferStagedToOperational(long accountId, string periodEndRef);
     Task<string> FindHistoricalProviderName(long ukprn);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsForPreviousMonths(long accountId, int months);
