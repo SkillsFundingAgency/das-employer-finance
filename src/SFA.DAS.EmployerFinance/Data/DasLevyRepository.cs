@@ -14,18 +14,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace SFA.DAS.EmployerFinance.Data;
 
 [ExcludeFromCodeCoverage]
-public class DasLevyRepository : IDasLevyRepository
+public class DasLevyRepository(
+    EmployerFinanceConfiguration configuration,
+    Lazy<EmployerFinanceDbContext> db,
+    ICurrentDateTime currentDateTime)
+    : IDasLevyRepository
 {
-    private readonly EmployerFinanceConfiguration _configuration;
-    private readonly Lazy<EmployerFinanceDbContext> _db;
-    private readonly ICurrentDateTime _currentDateTime;
-
-    public DasLevyRepository(EmployerFinanceConfiguration configuration, Lazy<EmployerFinanceDbContext> db, ICurrentDateTime currentDateTime)
-    {
-        _configuration = configuration;
-        _db = db;
-        _currentDateTime = currentDateTime;
-    }
 
     public async Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId)
     {
@@ -33,22 +27,22 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@paymentId", paymentId, DbType.Guid);
 
-        return await _db.Value.Database
+        return await db.Value.Database
             .GetDbConnection()
             .QuerySingleOrDefaultAsync<PaymentDetails>(
                 sql: "[employer_financial].[GetPaymentForPaymentDetails]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
     }
 
     public async Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata()
     {
-        return await _db.Value.Database
+        return await db.Value.Database
             .GetDbConnection()
             .QueryAsync<PaymentDetails>(
                 sql: "[employer_financial].[GetPaymentsWithMissingMetadata]",
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
     }
 
@@ -88,10 +82,10 @@ public class DasLevyRepository : IDasLevyRepository
             parameters.Add("@EndOfYearAdjustmentAmount", dasDeclaration.EndOfYearAdjustmentAmount, DbType.Decimal);
             parameters.Add("@NoPaymentForPeriod", dasDeclaration.NoPaymentForPeriod, DbType.Boolean);
 
-            await _db.Value.Database.GetDbConnection().ExecuteAsync(
+            await db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreateDeclaration]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
         }
     }
@@ -108,10 +102,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@CompletionDateTime", periodEnd.CompletionDateTime, DbType.DateTime);
         parameters.Add("@PaymentsForPeriod", periodEnd.PaymentsForPeriod, DbType.String);
 
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(
+        return db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[CreatePeriodEnd]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -128,11 +122,11 @@ public class DasLevyRepository : IDasLevyRepository
 
             parameters.Add("@payments", batch.AsTableValuedParameter("[employer_financial].[PaymentsTable]"));
 
-            await _db.Value.Database.GetDbConnection().ExecuteAsync(
+            await db.Value.Database.GetDbConnection().ExecuteAsync(
                 sql: "[employer_financial].[CreatePayments]",
                 param: parameters,
                 commandTimeout: 300,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
         }
     }
@@ -153,10 +147,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@CourseCode", details.CourseCode, DbType.String);
         parameters.Add("@CohortId", details.CohortId, DbType.Int64);
 
-        await _db.Value.Database.GetDbConnection().ExecuteAsync(
+        await db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[UpdatePaymentMetadata]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -164,13 +158,13 @@ public class DasLevyRepository : IDasLevyRepository
         Guid paymentId,
         PaymentMetaDataStaging updatedMetaData)
     {
-        var payment = await _db.Value.PaymentStaging
+        var payment = await db.Value.PaymentStaging
             .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
 
         if (payment == null)
             throw new KeyNotFoundException($"Payment {paymentId} not found");
 
-        var metadata = await _db.Value.PaymentMetaDataStaging
+        var metadata = await db.Value.PaymentMetaDataStaging
             .AsTracking()
             .FirstOrDefaultAsync(m => m.PaymentId == payment.PaymentId);
 
@@ -196,8 +190,8 @@ public class DasLevyRepository : IDasLevyRepository
                 PaymentId = paymentId,
             };
 
-            _db.Value.PaymentMetaDataStaging.Add(metadata);
-            await _db.Value.SaveChangesAsync();
+            db.Value.PaymentMetaDataStaging.Add(metadata);
+            await db.Value.SaveChangesAsync();
 
             return metadata.Id;
         }
@@ -218,7 +212,7 @@ public class DasLevyRepository : IDasLevyRepository
         metadata.CorrelationId = updatedMetaData.CorrelationId;
         metadata.PaymentId = paymentId;
 
-        await _db.Value.SaveChangesAsync();
+        await db.Value.SaveChangesAsync();
 
         return metadata.Id;
     }
@@ -231,10 +225,10 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@accountId", accountId, DbType.Int64);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<Guid>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<Guid>(
             sql: "[employer_financial].[GetAccountPaymentIds]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return new HashSet<Guid>(result);
@@ -242,11 +236,11 @@ public class DasLevyRepository : IDasLevyRepository
 
     public async Task<GetAccountPaymentIdsResponse> GetAccountPaymentIdsLinq(long accountId, int pageSize, int pageNumber)
     {
-        var totalCount = await _db.Value.Payments
+        var totalCount = await db.Value.Payments
          .Where(p => p.EmployerAccountId == accountId)
          .CountAsync();
 
-        var paymentIds = await _db.Value.Payments
+        var paymentIds = await db.Value.Payments
             .Where(p => p.EmployerAccountId == accountId)
             .OrderBy(p => p.Id)
             .Skip((pageNumber - 1) * pageSize)
@@ -270,10 +264,10 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@empRef", empRef, DbType.String);
 
-        return _db.Value.Database.GetDbConnection().QueryAsync<long>(
+        return db.Value.Database.GetDbConnection().QueryAsync<long>(
             sql: "[employer_financial].[GetLevyDeclarationSubmissionIdsByEmpRef]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -283,10 +277,10 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@empRef", empRef, DbType.String);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
             sql: "[employer_financial].[GetLastLevyDeclarations_ByEmpRef]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.SingleOrDefault();
@@ -294,21 +288,21 @@ public class DasLevyRepository : IDasLevyRepository
 
     public Task<IEnumerable<PeriodEnd>> GetAllPeriodEnds()
     {
-        return _db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
+        return db.Value.Database.GetDbConnection().QueryAsync<PeriodEnd>(
             sql: "[employer_financial].[GetAllPeriodEnds]",
             param: null,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
     public async Task<IEnumerable<AccountTransfer>> GetTransfersByPeriodEnd(long accountId, string periodEnd) 
     {
-        return await _db.Value.AccountTransfers.Where(x => x.SenderAccountId == accountId && x.PeriodEnd == periodEnd).ToListAsync();
+        return await db.Value.AccountTransfers.Where(x => x.SenderAccountId == accountId && x.PeriodEnd == periodEnd).ToListAsync();
     }
 
     public async Task<PeriodEnd> GetPeriodEndById(string periodEndId)
     {
-        return await _db.Value.PeriodEnds
+        return await db.Value.PeriodEnds
         .SingleOrDefaultAsync(pe => pe.PeriodEndId == periodEndId);
     }
 
@@ -320,10 +314,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@payrollYear", payrollYear, DbType.String);
         parameters.Add("@payrollMonth", payrollMonth, DbType.Int32);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
             sql: "[employer_financial].[GetLevyDeclaration_ByEmpRefPayrollMonthPayrollYear]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.SingleOrDefault();
@@ -337,10 +331,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@payrollYear", payrollYear, DbType.String);
         parameters.Add("@yearEndAdjustmentCutOff", yearEndAdjustmentCutOff, DbType.DateTime);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<DasDeclaration>(
             sql: "[employer_financial].[GetEffectivePeriod12Declaration]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.SingleOrDefault();
@@ -352,23 +346,23 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@AccountId", accountId, DbType.Int64);
         parameters.Add("@EmpRef", empRef, DbType.String);
-        parameters.Add("@currentDate", _currentDateTime.Now, DbType.DateTime);
+        parameters.Add("@currentDate", currentDateTime.Now, DbType.DateTime);
 
-        if (_configuration.FundsExpiryPolicyChangeDate != null 
-            && _currentDateTime.Now > _configuration.FundsExpiryPolicyChangeDate)
+        if (configuration.FundsExpiryPolicyChangeDate != null 
+            && currentDateTime.Now > configuration.FundsExpiryPolicyChangeDate)
         {
             parameters.Add("@expiryPeriod", 12, DbType.Int32);    
         }
         else
         {
-            parameters.Add("@expiryPeriod", _configuration.FundsExpiryPeriod, DbType.Int32);
+            parameters.Add("@expiryPeriod", configuration.FundsExpiryPeriod, DbType.Int32);
         }
         
-        return _db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
+        return db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
             sql: "[employer_financial].[ProcessDeclarationsTransactions]",
             param: parameters,
             commandTimeout: 120,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -378,10 +372,10 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@accountId", accountId, DbType.Int64);
 
-        return _db.Value.Database.GetDbConnection().ExecuteAsync(
+        return db.Value.Database.GetDbConnection().ExecuteAsync(
             sql: "[employer_financial].[ProcessPaymentDataTransactions]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -392,10 +386,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@accountId", accountId, DbType.Int64);
         parameters.Add("@periodEndRef", periodEndRef, DbType.String, size: 25);
 
-        var result = await _db.Value.Database.GetDbConnection().QuerySingleOrDefaultAsync<TransferStagedToOperationalResult>(
+        var result = await db.Value.Database.GetDbConnection().QuerySingleOrDefaultAsync<TransferStagedToOperationalResult>(
             sql: "[employer_financial].[TransferStagedToOperational]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result?.ProcessedCount ?? 0;
@@ -412,10 +406,10 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@ukprn", ukprn, DbType.Int64);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<string>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<string>(
             sql: "[employer_financial].[GetLastKnownProviderNameForUkprn]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.FirstOrDefault();
@@ -427,10 +421,10 @@ public class DasLevyRepository : IDasLevyRepository
 
         parameters.Add("@accountId", accountId, DbType.Int64);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
             sql: "[employer_financial].[GetLevyDeclarations_ByAccountId]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.ToList();
@@ -462,11 +456,11 @@ public class DasLevyRepository : IDasLevyRepository
                                 AND SubmissionDate >= DATEADD(month, -@months, GETDATE())
                                 ORDER BY SubmissionDate ASC"; 
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
             sql: sqlQuery,
             param: parameters,
             commandTimeout: 60,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
 
         return result.ToList();
@@ -480,10 +474,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@payrollYear", payrollYear, DbType.String);
         parameters.Add("@payrollMonth", payrollMonth, DbType.Int16);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
             sql: "[employer_financial].[GetLevyDeclarations_ByAccountPayrollMonthPayrollYear]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.ToList();
@@ -493,12 +487,12 @@ public class DasLevyRepository : IDasLevyRepository
     {
         var accountParametersTable = new AccountIdUserTableParam(accountIds);
 
-        accountParametersTable.Add("@allowancePercentage", _configuration.TransferAllowancePercentage, DbType.Decimal);
+        accountParametersTable.Add("@allowancePercentage", configuration.TransferAllowancePercentage, DbType.Decimal);
 
-        var result = await _db.Value.Database.GetDbConnection().QueryAsync<AccountBalance>(
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<AccountBalance>(
             sql: "[employer_financial].[GetAccountBalance_ByAccountIds]",
             param: accountParametersTable,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
         return result.ToList();
@@ -511,10 +505,10 @@ public class DasLevyRepository : IDasLevyRepository
         parameters.Add("@accountId", accountId, DbType.Int64);
         parameters.Add("@empRef", empRef, DbType.String);
 
-        return _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
+        return db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
             sql: "[employer_financial].[GetEnglishFraction_ByEmpRef]",
             param: parameters,
-            transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
     }
 
@@ -529,10 +523,10 @@ public class DasLevyRepository : IDasLevyRepository
             parameters.Add("@accountId", accountId, DbType.Int64);
             parameters.Add("@empRef", empRef, DbType.String);
 
-            var currentFraction = await _db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
+            var currentFraction = await db.Value.Database.GetDbConnection().QueryAsync<DasEnglishFraction>(
                 sql: "[employer_financial].[GetCurrentFractionForScheme]",
                 param: parameters,
-                transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+                transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
                 commandType: CommandType.StoredProcedure);
 
             currentFractions.Add(currentFraction.FirstOrDefault());
@@ -543,9 +537,9 @@ public class DasLevyRepository : IDasLevyRepository
 
     public async Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber)
     {
-        var totalCount = await _db.Value.Accounts.CountAsync();
+        var totalCount = await db.Value.Accounts.CountAsync();
 
-        var accounts = await _db.Value.Accounts
+        var accounts = await db.Value.Accounts
             .OrderBy(ac => ac.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -567,13 +561,13 @@ public class DasLevyRepository : IDasLevyRepository
 
     public async Task<bool> PaymentStagingExists(Guid paymentId)
     {
-        return await _db.Value.PaymentStaging
+        return await db.Value.PaymentStaging
             .AnyAsync(p => p.PaymentId == paymentId);
     }
 
     public async Task<Account> GetAccountById(long accountId)
     {
-        return await _db.Value.Accounts
+        return await db.Value.Accounts
             .SingleOrDefaultAsync(ac => ac.Id == accountId);
     }
 }
