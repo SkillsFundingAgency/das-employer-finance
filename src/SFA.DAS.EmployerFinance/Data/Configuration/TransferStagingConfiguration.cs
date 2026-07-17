@@ -27,18 +27,18 @@ public class TransferStagingConfiguration : IEntityTypeConfiguration<TransferSta
             .IsRequired();
 
         builder.Property(x => x.ReceiverAccountName)
-            .HasMaxLength(255)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder.Property(x => x.Amount)
-            .HasColumnType("decimal(18,2)")
+            .HasColumnType("decimal(18,5)")
             .IsRequired();
 
         builder.Property(x => x.TransferDate)
             .IsRequired();
 
         builder.Property(x => x.PeriodEnd)
-            .HasMaxLength(25)
+            .HasMaxLength(20)
             .IsRequired();
 
         builder.Property(x => x.CollectionPeriodMonth)

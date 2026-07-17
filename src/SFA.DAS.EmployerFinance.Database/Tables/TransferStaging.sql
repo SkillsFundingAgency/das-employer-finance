@@ -6,11 +6,11 @@
     SenderAccountName NVARCHAR(100) NOT NULL
         CONSTRAINT DF_TransferStaging_SenderAccountName DEFAULT (''),
     ReceiverAccountId BIGINT NOT NULL,
-    ReceiverAccountName NVARCHAR(200) NOT NULL,
-    Amount DECIMAL(18, 2) NOT NULL,
+    ReceiverAccountName NVARCHAR(100) NOT NULL,
+    Amount DECIMAL(18, 5) NOT NULL,
     TransferDate DATETIME2(0) NOT NULL,
 
-    PeriodEnd VARCHAR(25) NOT NULL,
+    PeriodEnd NVARCHAR(20) NOT NULL,
     CollectionPeriodMonth INT NOT NULL,
     CollectionPeriodYear INT NOT NULL,
 

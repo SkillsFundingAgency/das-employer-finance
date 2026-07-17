@@ -143,7 +143,9 @@ BEGIN
                 FundingSource,
                 TransactionType,
                 Amount,
-                PaymentMetaDataId
+                PeriodEnd,
+                PaymentMetaDataId,
+                DateImported
             )
             VALUES
             (
@@ -163,7 +165,9 @@ BEGIN
                 source.FundingSource,
                 source.TransactionType,
                 source.Amount,
-                source.PaymentMetaDataId
+                @periodEndRef,
+                source.PaymentMetaDataId,
+                GETUTCDATE()
             );
 
         SET @paymentsCount = @@ROWCOUNT;
