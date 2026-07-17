@@ -33,6 +33,7 @@ public class WhenIReceiveTheCommand
     {
         _levyRepository = new Mock<IDasLevyRepository>();
         _levyRepository.Setup(x => x.GetLastSubmissionForScheme(ExpectedEmpRef)).ReturnsAsync(new DasDeclaration { LevyDueYtd = 1000m, LevyAllowanceForFullYear = 1200m });
+        _levyRepository.Setup(x => x.GetLastPositiveNetDeclarationForAccount(ExpectedAccountId)).ReturnsAsync((DasDeclaration)null);
 
         _validator = new Mock<IValidator<RefreshEmployerLevyDataCommand>>();
         _validator.Setup(x => x.Validate(It.IsAny<RefreshEmployerLevyDataCommand>())).Returns(new ValidationResult());
@@ -50,7 +51,7 @@ public class WhenIReceiveTheCommand
         _eventPublisher = new TestableEventPublisher();
         _levyImportCleanerStrategy = new LevyImportCleanerStrategy(_levyRepository.Object, _hmrcDateService.Object, _logger.Object, _currentDateTime.Object);
 
-        _refreshEmployerLevyDataCommandHandler = new RefreshEmployerLevyDataCommandHandler(_validator.Object, _levyRepository.Object, _levyImportCleanerStrategy, _eventPublisher, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
+        _refreshEmployerLevyDataCommandHandler = new RefreshEmployerLevyDataCommandHandler(_validator.Object, _levyRepository.Object, _levyImportCleanerStrategy, _eventPublisher, _currentDateTime.Object, Mock.Of<ILogger<RefreshEmployerLevyDataCommandHandler>>());
     }
 
     [Test]
@@ -118,6 +119,7 @@ public class WhenIReceiveTheCommand
 
         (_eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId) &&
+            string.IsNullOrWhiteSpace(e.PayeRef) &&
             e.LevyImported.Equals(true) &&
             e.LevyTransactionValue.Equals(decimal.One))).Should().BeTrue();
     }
@@ -141,6 +143,7 @@ public class WhenIReceiveTheCommand
 
         _eventPublisher.Events.OfType<RefreshEmployerLevyDataCompletedEvent>().Any(e =>
             e.AccountId.Equals(ExpectedAccountId) &&
+            string.IsNullOrWhiteSpace(e.PayeRef) &&
             e.LevyImported.Equals(false) &&
             e.LevyTransactionValue.Equals(decimal.Zero)).Should().BeTrue();
     }
