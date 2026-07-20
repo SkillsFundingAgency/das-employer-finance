@@ -46,6 +46,7 @@ public class TransferStagingRepository : ITransferStagingRepository
 
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.TransferId), "TransferId");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.SenderAccountId), "SenderAccountId");
+            bulkCopy.ColumnMappings.Add(nameof(TransferStaging.SenderAccountName), "SenderAccountName");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.ReceiverAccountId), "ReceiverAccountId");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.ReceiverAccountName), "ReceiverAccountName");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.Amount), "Amount");
@@ -55,6 +56,11 @@ public class TransferStagingRepository : ITransferStagingRepository
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.CollectionPeriodYear), "CollectionPeriodYear");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.Ukprn), "Ukprn");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.CourseName), "CourseName");
+            bulkCopy.ColumnMappings.Add(nameof(TransferStaging.CourseLevel), "CourseLevel");
+            bulkCopy.ColumnMappings.Add(nameof(TransferStaging.LearningType), "LearningType");
+            bulkCopy.ColumnMappings.Add(nameof(TransferStaging.ApprenticeshipId), "ApprenticeshipId");
+            bulkCopy.ColumnMappings.Add(nameof(TransferStaging.Type), "Type");
+            bulkCopy.ColumnMappings.Add(nameof(TransferStaging.RequiredPaymentId), "RequiredPaymentId");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.CreatedBy), "CreatedBy");
             bulkCopy.ColumnMappings.Add(nameof(TransferStaging.CorrelationId), "CorrelationId");
 
