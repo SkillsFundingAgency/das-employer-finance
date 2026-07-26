@@ -62,7 +62,10 @@ BEGIN
                 ApprenticeshipCourseLevel,
                 ApprenticeName,
                 ApprenticeNINumber,
-                IsHistoricProviderName
+                IsHistoricProviderName,
+                LearningType,
+                CourseCode,
+                CohortId
             )
             VALUES
             (
@@ -77,7 +80,10 @@ BEGIN
                 source.ApprenticeshipCourseLevel,
                 source.ApprenticeName,
                 source.ApprenticeNINumber,
-                source.IsHistoricProviderName
+                source.IsHistoricProviderName,
+                source.LearningType,
+                source.CourseCode,
+                source.CohortId
             )
         OUTPUT
             source.Id,
