@@ -40,7 +40,10 @@ BEGIN
                 pms.ApprenticeshipCourseLevel,
                 pms.ApprenticeName,
                 pms.ApprenticeNINumber,
-                pms.IsHistoricProviderName
+                pms.IsHistoricProviderName,
+                pms.LearningType,
+                pms.CourseCode,
+                pms.CohortId
             FROM employer_financial.PaymentMetaDataStaging pms
             INNER JOIN employer_financial.PaymentStaging ps
                 ON ps.PaymentId = pms.PaymentId
