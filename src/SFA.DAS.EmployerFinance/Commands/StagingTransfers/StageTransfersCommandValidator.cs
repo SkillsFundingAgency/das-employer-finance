@@ -36,6 +36,15 @@ public class StageTransfersCommandValidator : IValidator<StageTransfersCommand>
 
             if (string.IsNullOrWhiteSpace(t.PeriodEnd))
                 result.AddError(nameof(t.PeriodEnd), "PeriodEnd is required");
+
+            if (t.ApprenticeshipId <= 0)
+                result.AddError(nameof(t.ApprenticeshipId), "ApprenticeshipId must be greater than 0");
+
+            if (string.IsNullOrWhiteSpace(t.Type))
+                result.AddError(nameof(t.Type), "Type is required");
+
+            if (t.RequiredPaymentId == Guid.Empty)
+                result.AddError(nameof(t.RequiredPaymentId), "RequiredPaymentId is required");
         }
 
         return result;

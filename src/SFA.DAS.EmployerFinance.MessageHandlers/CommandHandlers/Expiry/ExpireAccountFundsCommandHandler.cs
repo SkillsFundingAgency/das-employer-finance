@@ -67,7 +67,11 @@ public class ExpireAccountFundsCommandHandler : IHandleMessages<ExpireAccountFun
         }
 
         await _expiredFundsRepository.Create(message.AccountId, longTermExpiredFunds.ToExpiredFundsList(), now);
-        await _expiredFundsRepository.Create(message.AccountId, shortTermExpiredFunds.ToExpiredFundsList(), now, transactionType: 6);
+        if (_configuration.FundsExpiryPolicyChangeDate != null
+            && _currentDateTime.Now > _configuration.FundsExpiryPolicyChangeDate)
+        {
+            await _expiredFundsRepository.Create(message.AccountId, shortTermExpiredFunds.ToExpiredFundsList(), now, transactionType: 6);    
+        }
 
         //todo: do we publish the event if no fund expired? we could add a bool like the levy declared message
         // once an account has an expired fund, we'll publish every run, even if no additional funds have expired
