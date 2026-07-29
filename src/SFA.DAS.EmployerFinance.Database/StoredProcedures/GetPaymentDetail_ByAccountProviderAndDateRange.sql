@@ -19,7 +19,8 @@ AS
 		MIN(t.DateCreated) AS DateCreated,
 		SUM(CASE WHEN p.FundingSource IN (1, 5) THEN p.Amount END) * -1 AS LineAmount,
 		SUM(CASE WHEN p.FundingSource = 2 THEN p.Amount END) * -1 AS SfaCoInvestmentAmount,
-		SUM(CASE WHEN p.FundingSource = 3 THEN p.Amount END) * -1 AS EmployerCoInvestmentAmount
+		SUM(CASE WHEN p.FundingSource = 3 THEN p.Amount END) * -1 AS EmployerCoInvestmentAmount,
+        t.TransferSenderAccountName as SenderAccountName
 	FROM [employer_financial].[Payment] p
 	LEFT JOIN [employer_financial].[PaymentMetaData] pm ON pm.Id = p.PaymentMetaDataId
 	INNER JOIN [employer_financial].[TransactionLine] t ON t.AccountId = p.AccountId AND t.PeriodEnd = p.PeriodEnd AND t.Ukprn = p.Ukprn
@@ -28,4 +29,4 @@ AS
 	AND p.FundingSource IN (1, 2, 3, 5)
 	AND t.DateCreated >= @fromDate
 	AND t.DateCreated <= @toDate
-	GROUP BY p.PeriodEnd, pm.ApprenticeshipCourseName, pm.ApprenticeshipCourseLevel, pm.PathwayName, pm.PathwayCode, pm.LearningType
+	GROUP BY p.PeriodEnd, pm.ApprenticeshipCourseName, pm.ApprenticeshipCourseLevel, pm.PathwayName, pm.PathwayCode, pm.LearningType, t.TransferSenderAccountName
