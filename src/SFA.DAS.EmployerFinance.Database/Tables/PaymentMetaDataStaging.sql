@@ -16,6 +16,9 @@
     [ApprenticeNINumber] VARCHAR(MAX) NULL, 
     [IsHistoricProviderName] BIT NOT NULL
         CONSTRAINT [DF_PaymentMetaDataStaging_IsHistoricProviderName] DEFAULT (0),
+    [LearningType] VARCHAR(25) NULL,
+    [CourseCode] VARCHAR(25) NULL,
+    [CohortId] BIGINT NULL,
 
     [CreatedBy] NCHAR(30) NULL, 
     [CorrelationId] UNIQUEIDENTIFIER NULL,

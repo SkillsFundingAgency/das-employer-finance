@@ -13,6 +13,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAuditWorkflowLogs;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+using SFA.DAS.EmployerFinance.Queries.GetExistingTransactionLines;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
@@ -39,6 +40,7 @@ public class WhenAddingServicesToTheContainer
     }
 
     [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
+    [TestCase(typeof(IRequestHandler<GetExistingTransactionLinesQuery, GetEmployerAccountTransactionsResponse>))]
     [TestCase(typeof(IRequestHandler<CreateAuditJobCommand, CreateAuditJobCommandResult>))]
     [TestCase(typeof(IRequestHandler<CreateAuditWorkflowLogCommand, CreateAuditWorkflowLogCommandResult>))]
     [TestCase(typeof(IRequestHandler<GetAccountTransactionSummaryRequest, GetAccountTransactionSummaryResponse>))]
