@@ -5,7 +5,6 @@
 @inject IUrlActionHelper UrlHelpers;
 
 @model CoursePaymentDetailsViewModel
-
 @{
     var culture = new CultureInfo("en-GB");
     ViewBag.PageID = "course-payment-summary";
@@ -13,9 +12,7 @@
     ViewBag.Section = "finance";
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
 }
-
 <h1 class="govuk-heading-xl">Payment: learner details</h1>
-
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
         <hr class="govuk-section-break govuk-section-break--visible">
@@ -53,98 +50,95 @@
                 }
                 <dd class="govuk-summary-list__value">@courseTitle</dd>
             </div>
+            @if (Model.ShowCohortReference)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Cohort reference</dt>
+                    <dd class="govuk-summary-list__value">@Model.CohortReference</dd>
+                </div>     
+            }
         </dl>
     </div>
 </div>
-
-
-        <table class="govuk-table das-table--responsive">
-            <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                    <th class="govuk-table__header" colspan="@(Model.ShowNonCoInvesmentPaymentsTotal ? "2" : "1")"></th>
-                    <th class="govuk-table__header app-table__cell--highlight app-table__cell--colgroup" scope="colgroup" colspan="2">Co-investment</th>
-                    <th class="govuk-table__header" colspan="2"></th>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="col" class="govuk-table__header das-table-cell-width-20">Learner</th>
-                    @if (Model.ShowNonCoInvesmentPaymentsTotal)
-                    {
-                        <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">@(Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy ? "Paid from levy" : "Transferred funds")</th>
-                    }
-                    <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20 app-table__cell--highlight">Government contribution</th>
-                    <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20 app-table__cell--highlight">Your contribution</th>
-                    <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">Amount</th>
-                </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-                @foreach (var coursePaymentSummary in Model.ApprenticePayments)
+<table class="govuk-table das-table--responsive">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th class="govuk-table__header" colspan="@(Model.ShowNonCoInvesmentPaymentsTotal ? "2" : "1")"></th>
+            <th class="govuk-table__header app-table__cell--highlight app-table__cell--colgroup" scope="colgroup" colspan="2">Co-investment</th>
+            <th class="govuk-table__header" colspan="2"></th>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header das-table-cell-width-20">Learner</th>
+            @if (Model.ShowNonCoInvesmentPaymentsTotal)
+            {
+                <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">@(Model.ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy ? "Paid from levy" : "Transferred funds")</th>
+            }
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20 app-table__cell--highlight">Government contribution</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20 app-table__cell--highlight">Your contribution</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric das-table-cell-width-20">Amount</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        @foreach (var coursePaymentSummary in Model.ApprenticePayments)
+        {
+            <tr class="govuk-table__row">
+                @if (string.IsNullOrEmpty(@coursePaymentSummary.ApprenticeName))
                 {
-                    <tr class="govuk-table__row">
-                        @if (string.IsNullOrEmpty(@coursePaymentSummary.ApprenticeName))
-                        {
-                            <td class="govuk-table__cell" data-label="Apprentice"><em>Not available</em></td>
-                        }
-                        else
-                        {
-                            <td class="govuk-table__cell" data-label="Apprentice">@coursePaymentSummary.ApprenticeName</td>
-                        }
-
-                        @if (Model.ShowNonCoInvesmentPaymentsTotal)
-                        {
-                            <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Paid from levy">@coursePaymentSummary.LevyPaymentAmount.ToString("C2", culture)</td>
-                        }
-                        <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Government contribution">@coursePaymentSummary.SFACoInvestmentAmount.ToString("C2", culture)</td>
-                        <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Your contribution">@coursePaymentSummary.EmployerCoInvestmentAmount.ToString("C2", culture)</td>
-                        <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Amount">@coursePaymentSummary.TotalAmount.ToString("C2", culture)</td>
-                    </tr>
+                    <td class="govuk-table__cell" data-label="Apprentice"><em>Not available</em></td>
                 }
-                <tr class="govuk-table__row">
-                    <td data-label="Totals" class="app-table__cell--transparent"> </td>
-                    @if (Model.ShowNonCoInvesmentPaymentsTotal)
-                    {
-                        <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.LevyPaymentsTotal.ToString("C2", culture)</td>
-                    }
-                    <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.SFACoInvestmentTotal.ToString("C2", culture)</td>
-                    <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.EmployerCoInvestmentTotal.ToString("C2", culture)</td>
-                    <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.PaymentsTotal.ToString("C2", culture)</td>
-                </tr>
-            </tbody>
-        </table>
+                else
+                {
+                    <td class="govuk-table__cell" data-label="Apprentice">@coursePaymentSummary.ApprenticeName</td>
+                }
 
-        @if (Model.EmployerCoInvestmentTotal > 0m)
-        {
-            <div class="govuk-inset-text">
-                <p>Talk to your training provider and agree when to pay your contribution.</p>
-            </div>    
+                @if (Model.ShowNonCoInvesmentPaymentsTotal)
+                {
+                    <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Paid from levy">@coursePaymentSummary.LevyPaymentAmount.ToString("C2", culture)</td>
+                }
+                <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Government contribution">@coursePaymentSummary.SFACoInvestmentAmount.ToString("C2", culture)</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight" data-label="Your contribution">@coursePaymentSummary.EmployerCoInvestmentAmount.ToString("C2", culture)</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Amount">@coursePaymentSummary.TotalAmount.ToString("C2", culture)</td>
+            </tr>
         }
-
-
-        @if (Model.PaymentDate.Equals(new DateTime(2017, 09, 14)))
-        {
-            <div class="govuk-inset-text">
-                <h3 class="govuk-heading-s">Why are there two payments to individual providers this month?</h3>
-                <p>
-                    The second payment is the result of final adjustments made by the training providers
-                    for the academic year ending 31 July 2017. These payments only occur in September and October.
-                </p>
-            </div>
-        }
-
-        @if (Model.PaymentDate.Equals(new DateTime(2017, 11, 2)))
-        {
-            <div class="govuk-inset-text">
-                <h3 class="govuk-heading-s">Note on payments dated 2 November</h3>
-                <p>
-                    Payments on 2 November are for final costs submitted by training providers for training
-                    during the academic year ending July 31 2017. The amount was calculated based on your
-                    levy balance on 6 October and does not include the levy payment on 23 October.
-                </p>
-            </div>
-        }
-
-
-
-
+        <tr class="govuk-table__row">
+            <td data-label="Totals" class="app-table__cell--transparent"> </td>
+            @if (Model.ShowNonCoInvesmentPaymentsTotal)
+            {
+                <td data-label="Paid from levy" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.LevyPaymentsTotal.ToString("C2", culture)</td>
+            }
+            <td data-label="Government contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.SFACoInvestmentTotal.ToString("C2", culture)</td>
+            <td data-label="Your contribution" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--highlight app-table__cell--total">@Model.EmployerCoInvestmentTotal.ToString("C2", culture)</td>
+            <td data-label="Amount" class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@Model.PaymentsTotal.ToString("C2", culture)</td>
+        </tr>
+    </tbody>
+</table>
+@if (Model.EmployerCoInvestmentTotal > 0m)
+{
+    <div class="govuk-inset-text">
+        <p>Talk to your training provider and agree when to pay your contribution.</p>
+    </div>    
+}
+@if (Model.PaymentDate.Equals(new DateTime(2017, 09, 14)))
+{
+    <div class="govuk-inset-text">
+        <h3 class="govuk-heading-s">Why are there two payments to individual providers this month?</h3>
+        <p>
+            The second payment is the result of final adjustments made by the training providers
+            for the academic year ending 31 July 2017. These payments only occur in September and October.
+        </p>
+    </div>
+}
+@if (Model.PaymentDate.Equals(new DateTime(2017, 11, 2)))
+{
+    <div class="govuk-inset-text">
+        <h3 class="govuk-heading-s">Note on payments dated 2 November</h3>
+        <p>
+            Payments on 2 November are for final costs submitted by training providers for training
+            during the academic year ending July 31 2017. The amount was calculated based on your
+            levy balance on 6 October and does not include the levy payment on 23 October.
+        </p>
+    </div>
+}
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">

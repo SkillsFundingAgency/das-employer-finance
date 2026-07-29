@@ -15,31 +15,17 @@ namespace SFA.DAS.EmployerFinance.Web.Controllers;
 [SetNavigationSection(NavigationSection.AccountsFinance)]
 [Route("accounts/{HashedAccountId}")]
 [Authorize(Policy = nameof(PolicyNames.HasEmployerViewerTransactorOwnerAccount))]
-public class EmployerAccountTransactionsController : Controller
+public class EmployerAccountTransactionsController(
+    IEmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
+    IMapper mapper,
+    IMediator mediator,
+    IEncodingService encodingService)
+    : Controller
 {
-    private readonly IMapper _mapper;
-    private readonly IMediator _mediator;
-    private readonly IEncodingService _encodingService;
-
-    private readonly IEmployerAccountTransactionsOrchestrator _accountTransactionsOrchestrator;
-
-    public EmployerAccountTransactionsController(
-        IEmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
-        IMapper mapper,
-        IMediator mediator,
-        IEncodingService encodingService)
-    {
-        _accountTransactionsOrchestrator = accountTransactionsOrchestrator;
-
-        _mapper = mapper;
-        _mediator = mediator;
-        _encodingService = encodingService;
-    }
-
     [Route("finance/provider/summary")]
     public async Task<IActionResult> ProviderPaymentSummary([FromRoute]string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
     {
-        var viewModel = await _accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate);
+        var viewModel = await accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate);
 
         return View(ControllerConstants.ProviderPaymentSummaryViewName, viewModel);
     }
@@ -48,7 +34,7 @@ public class EmployerAccountTransactionsController : Controller
     public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
     {
 
-        var viewModel = await _accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());
+        var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());
 
         if (viewModel.RedirectUrl != null)
             return Redirect(viewModel.RedirectUrl);
@@ -73,9 +59,9 @@ public class EmployerAccountTransactionsController : Controller
 
         try
         {
-            var response = await _mediator.Send(new GetTransactionsDownloadQuery
+            var response = await mediator.Send(new GetTransactionsDownloadQuery
             {
-                AccountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId),
+                AccountId = encodingService.Decode(hashedAccountId,EncodingType.AccountId),
                 DownloadFormat = model.DownloadFormat,
                 EndDate = model.EndDate,
                 StartDate = model.StartDate,
@@ -97,7 +83,7 @@ public class EmployerAccountTransactionsController : Controller
     [Route("finance/{year}/{month}", Name = RouteNames.TransactionsView)]
     public async Task<IActionResult> TransactionsView([FromRoute]string hashedAccountId, [FromRoute]int year, [FromRoute]int month)
     {
-        var transactionViewResult = await _accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month);
+        var transactionViewResult = await accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month);
 
         if (transactionViewResult.Data.Account == null)
         {
@@ -113,7 +99,7 @@ public class EmployerAccountTransactionsController : Controller
     [Route("finance/levyDeclaration/details")]
     public async Task<IActionResult> LevyDeclarationDetail([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
     {
-        var viewModel = await _accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate);
+        var viewModel = await accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate);
 
         return View(ControllerConstants.LevyDeclarationDetailViewName, viewModel);
     }
@@ -129,7 +115,7 @@ public class EmployerAccountTransactionsController : Controller
     public async Task<IActionResult> CourseFrameworkPaymentSummary(string hashedAccountId, long ukprn, string courseName,
         int? courseLevel, int? pathwayCode, DateTime fromDate, DateTime toDate)
     {
-        var orchestratorResponse = await _accountTransactionsOrchestrator.GetCoursePaymentSummary(
+        var orchestratorResponse = await accountTransactionsOrchestrator.GetCoursePaymentSummary(
             hashedAccountId, ukprn, courseName, courseLevel, pathwayCode,
             fromDate, toDate);
 
@@ -139,11 +125,11 @@ public class EmployerAccountTransactionsController : Controller
     [Route("finance/transfer/details")]
     public async Task<IActionResult> TransferDetail([FromRoute]string hashedAccountId, GetTransferTransactionDetailsQuery query)
     {
-        query.AccountId = _encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var response = await _mediator.Send(query);
+        query.AccountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+        var response = await mediator.Send(query);
         response.HashedAccountId = hashedAccountId;
 
-        var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);
+        var model = mapper.Map<TransferTransactionDetailsViewModel>(response);
         return View(ControllerConstants.TransferDetailsViewName, model);
     }
     
@@ -151,7 +137,7 @@ public class EmployerAccountTransactionsController : Controller
     [Route("finance/expiredfunds/details")]
     public async Task<IActionResult> ExpiredFundsDetails([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
     {
-        var viewModel = await _accountTransactionsOrchestrator.FindAccountExpiredFunds(hashedAccountId, fromDate, toDate);
+        var viewModel = await accountTransactionsOrchestrator.FindAccountExpiredFunds(hashedAccountId, fromDate, toDate);
 
         return View(ControllerConstants.ExpiredFundsDetailViewName, viewModel);
     }

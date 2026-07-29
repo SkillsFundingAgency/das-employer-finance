@@ -241,6 +241,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedAccountId,
                     UkPrn = ukprn,
                     ProviderName = providerPaymentsResponse.ProviderName,
+                    SenderAccountName = providerPaymentsResponse.SenderAccountName,
                     PaymentDate = providerPaymentsResponse.DateCreated,
                     FromDate = fromDate,
                     ToDate = toDate,
@@ -331,7 +332,8 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedAccountId,
                     FromDate = fromDate,
                     ToDate = toDate,
-                    Ukprn = ukprn
+                    Ukprn = ukprn,
+                    CohortReference = accountCoursePaymentsResponse.CohortReference
                 }
             };
         }

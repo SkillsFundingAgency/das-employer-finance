@@ -26,16 +26,9 @@ using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web;
 
-public class Startup
+public class Startup(IConfiguration configuration, IWebHostEnvironment environment)
 {
-    private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _environment;
-   
-    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-    {
-        _environment = environment;
-        _configuration = configuration.BuildDasConfiguration();
-    }
+    private readonly IConfiguration _configuration = configuration.BuildDasConfiguration();
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -105,7 +98,7 @@ public class Startup
             builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
         });
 
-        if (!_environment.IsDevelopment())
+        if (!environment.IsDevelopment())
         {
             services.AddDataProtection(_configuration);
         }
