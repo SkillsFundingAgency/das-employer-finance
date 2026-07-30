@@ -15,6 +15,7 @@ public class GetTransferTransactionDetailsQueryHandler(
     public async Task<GetTransferTransactionDetailsResponse> Handle(GetTransferTransactionDetailsQuery query,
         CancellationToken cancellationToken)
     {
+        
         logger.LogInformation("{TypeName} processing started.", nameof(GetTransferTransactionDetailsQueryHandler));
 
         var targetAccountId = encodingService.Decode(query.TargetAccountPublicHashedId, EncodingType.PublicAccountId);
