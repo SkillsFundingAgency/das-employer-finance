@@ -78,7 +78,7 @@ public class GetEmployerAccountTransactionsHandler(
                 else
                 {
                     transaction.Description = $"Transfer received from {transferTransaction.SenderAccountName}";
-                    transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}";
+                    // transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}"; // Have to revisit this as it is not possible and will be removed in the future
                 }
                 break;
         }
