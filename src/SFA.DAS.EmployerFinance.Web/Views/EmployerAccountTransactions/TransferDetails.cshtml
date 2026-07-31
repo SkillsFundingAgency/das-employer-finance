@@ -83,7 +83,7 @@ else
         </tr>
     }
     <tr class="govuk-table__row">
-        <td class="govuk-table__cell app-table__cell--transparent" colspan="2"> </td>
+        <td class="govuk-table__cell app-table__cell--transparent" colspan="3"> </td>
         @if (Model.IsCurrentAccountSender)
         {
             <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@((Model.TransferPaymentTotal * -1).ToString("C2", culture))</td>
