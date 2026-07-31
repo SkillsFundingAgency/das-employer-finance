@@ -39,7 +39,7 @@ public class GetTransactionsDownloadQueryHandler(
         }
 
         var fileFormatter = transactionsFormatterFactory.GetTransactionsFormatterByType(
-            message.DownloadFormat.Value,
+            message.DownloadFormat.GetValueOrDefault(),
             apprenticeshipEmployerTypeEnum);
 
         return new GetTransactionsDownloadResponse
@@ -72,7 +72,7 @@ public class GetTransactionsDownloadQueryHandler(
         {
             transaction.Description = transaction.TransferSenderAccountId.Equals(transaction.AccountId) 
                 ? $"Transfer sent to {transaction.TransferReceiverAccountName}" 
-                : $"Transfer received from {transaction.TransferSenderAccountName}";
+                : $"Transfer received from {transaction.TrainingProvider}";
         }
     }
 }
