@@ -84,7 +84,7 @@ public class WhenGettingProviderPaymentSummary
         var response = await _sut.GetProviderPaymentSummary("abc123", 888888, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
         // Assert
-        response.Data.ShowNonCoInvesmentPaymentsTotal.Should().BeFalse();
+        response.Data.ShowNonCoInvestmentPaymentsTotal.Should().BeFalse();
     }
 
     [Test]
@@ -112,7 +112,7 @@ public class WhenGettingProviderPaymentSummary
         var response = await _sut.GetProviderPaymentSummary("abc123", 888888, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
         // Assert
-        response.Data.ShowNonCoInvesmentPaymentsTotal.Should().BeTrue();
+        response.Data.ShowNonCoInvestmentPaymentsTotal.Should().BeTrue();
     }
 
     [Test]
@@ -135,7 +135,7 @@ public class WhenGettingProviderPaymentSummary
         var response = await _sut.GetProviderPaymentSummary("abc123", 888888, new DateTime(2019, 9, 1), new DateTime(2019, 9, 30));
 
         // Assert
-        response.Data.ShowNonCoInvesmentPaymentsTotal.Should().BeTrue();
+        response.Data.ShowNonCoInvestmentPaymentsTotal.Should().BeTrue();
     }
 
     private IEnumerable<PaymentTransactionLine> CreateCoursePayments(

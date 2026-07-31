@@ -1,6 +1,5 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
-using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
@@ -49,7 +48,7 @@ public class EmployerAccountTransactionsOrchestrator(
         
         var accountId = encodingService.Decode(hashedAccountId,EncodingType.AccountId);
         var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
-        
+
         logger.LogInformation("After GetAccount call");
 
         var fromDate = new DateTime(currentTime.Now.Year, currentTime.Now.Month, 1).AddMonths(-1);
@@ -170,7 +169,7 @@ public class EmployerAccountTransactionsOrchestrator(
         try
         {
             var accountTask = accountApiClient.GetAccount(hashedAccountId);
-                
+
             var getProviderPaymentsTask = mediator.Send(new FindAccountProviderPaymentsQuery
             {
                 HashedAccountId = hashedAccountId,
@@ -242,6 +241,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedAccountId,
                     UkPrn = ukprn,
                     ProviderName = providerPaymentsResponse.ProviderName,
+                    SenderAccountName = providerPaymentsResponse.SenderAccountName,
                     PaymentDate = providerPaymentsResponse.DateCreated,
                     FromDate = fromDate,
                     ToDate = toDate,
@@ -332,7 +332,8 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedAccountId,
                     FromDate = fromDate,
                     ToDate = toDate,
-                    Ukprn = ukprn
+                    Ukprn = ukprn,
+                    CohortReference = accountCoursePaymentsResponse.CohortReference
                 }
             };
         }
@@ -367,10 +368,10 @@ public class EmployerAccountTransactionsOrchestrator(
             };
         }
 
-        year = year == default ? DateTime.Now.Year : year;
-        month = month == default ? DateTime.Now.Month : month;
+        year = year == 0 ? DateTime.Now.Year : year;
+        month = month == 0 ? DateTime.Now.Month : month;
 
-        var aggregratedTransactions = await
+        var aggregatedTransactions = await
                 mediator.Send(new GetEmployerAccountTransactionsQuery
                 {
                     FromDate = new DateTime(year, month, 1),
@@ -378,7 +379,7 @@ public class EmployerAccountTransactionsOrchestrator(
                     HashedAccountId = hashedId
                 });
 
-        var viewModel = BuildTransactionViewModel(aggregratedTransactions.Data);
+        var viewModel = BuildTransactionViewModel(aggregatedTransactions.Data);
 
         return new OrchestratorResponse<TransactionViewResultViewModel>
         {
@@ -386,9 +387,9 @@ public class EmployerAccountTransactionsOrchestrator(
             {
                 Account = employerAccountResult,
                 Model = viewModel,
-                Month = aggregratedTransactions.Month,
-                Year = aggregratedTransactions.Year,
-                AccountHasPreviousTransactions = aggregratedTransactions.AccountHasPreviousTransactions
+                Month = aggregatedTransactions.Month,
+                Year = aggregatedTransactions.Year,
+                AccountHasPreviousTransactions = aggregatedTransactions.AccountHasPreviousTransactions
             }
         };
     }
@@ -407,58 +408,6 @@ public class EmployerAccountTransactionsOrchestrator(
 
         SetTransactionLines(viewModel, aggregationData);
         return viewModel;
-    }
-
-    private static void SetTransactionLines(TransactionViewModel viewModel, AggregationData aggregatedTransactionData)
-    {
-        var aggregatedLevyTransactions = aggregatedTransactionData.TransactionLines
-            .Where(t => t.TransactionType == TransactionItemType.Declaration)
-            .GroupBy(t => t.DateCreated.Date)
-            .Select(grp =>
-            {
-                var firstLevyTransactionInDay = grp.First();
-                return new TransactionLine
-                {
-                    AccountId = firstLevyTransactionInDay.AccountId,
-                    DateCreated = firstLevyTransactionInDay.DateCreated,
-                    Amount = grp.Sum(ltl => ltl.Amount),
-                    TransactionType = TransactionItemType.Declaration,
-                    Description = firstLevyTransactionInDay.Description,
-                    PayrollDate = firstLevyTransactionInDay.PayrollDate,
-                    PayrollMonth = firstLevyTransactionInDay.PayrollMonth,
-                    PayrollYear = firstLevyTransactionInDay.PayrollYear
-                };
-            });
-
-        var aggregatedExpiredTransactions = aggregatedTransactionData.TransactionLines
-            .Where(t => t.TransactionType is TransactionItemType.ExpiredFund or TransactionItemType.ShortExpiredFund)
-            .GroupBy(t => t.DateCreated.Date)
-            .Select(grp =>
-            {
-                var firstLevyTransactionInDay = grp.First();
-                return new TransactionLine
-                {
-                    AccountId = firstLevyTransactionInDay.AccountId,
-                    DateCreated = firstLevyTransactionInDay.DateCreated,
-                    Amount = grp.Sum(ltl => ltl.Amount),
-                    TransactionType = TransactionItemType.ExpiredFund,
-                    Description = firstLevyTransactionInDay.Description,
-                    PayrollDate = firstLevyTransactionInDay.PayrollDate,
-                    PayrollMonth = firstLevyTransactionInDay.PayrollMonth,
-                    PayrollYear = firstLevyTransactionInDay.PayrollYear
-                };
-            });
-
-        var newTransactionLines = aggregatedTransactionData.TransactionLines
-            .Where(t => t.TransactionType != TransactionItemType.Declaration)
-            .Where(t => t.TransactionType != TransactionItemType.ExpiredFund)
-            .Where(t => t.TransactionType != TransactionItemType.ShortExpiredFund)
-            .Union(aggregatedLevyTransactions)
-            .Union(aggregatedExpiredTransactions)
-            .OrderByDescending(x => x.DateCreated)
-            .ToArray();
-
-        viewModel.Data.TransactionLines = newTransactionLines;
     }
 
     public async Task<OrchestratorResponse<TransactionLineViewModel<LevyDeclarationTransactionLine>>> FindAccountLevyDeclarationTransactions(string hashedId, DateTime fromDate, DateTime toDate)
@@ -505,7 +454,6 @@ public class EmployerAccountTransactionsOrchestrator(
     public async Task<OrchestratorResponse<ExpiredFundsTransactionDetailsViewModel>> FindAccountExpiredFunds(string hashedId,
         DateTime fromDate, DateTime toDate)
     {
-
         var data = await mediator.Send(new FindEmployerAccountExpiredFundsQuery
         {
             FromDate = fromDate,
@@ -525,5 +473,55 @@ public class EmployerAccountTransactionsOrchestrator(
                 HashedAccountId = hashedId
             }
         };
+    }
+
+    private static readonly HashSet<TransactionItemType> AggregatedTransactionTypes =
+    [
+        TransactionItemType.Declaration,
+        TransactionItemType.ExpiredFund,
+        TransactionItemType.ShortExpiredFund
+    ];
+
+    private static void SetTransactionLines(TransactionViewModel viewModel, AggregationData aggregatedTransactionData)
+    {
+        var aggregatedLevyTransactions = AggregateByDay(aggregatedTransactionData.TransactionLines,
+            t => t.TransactionType == TransactionItemType.Declaration,
+            TransactionItemType.Declaration);
+
+        var aggregatedExpiredTransactions = AggregateByDay(aggregatedTransactionData.TransactionLines,
+            t => t.TransactionType is 
+                TransactionItemType.ExpiredFund 
+                or TransactionItemType.ShortExpiredFund, TransactionItemType.ExpiredFund);
+
+        var newTransactionLines = aggregatedTransactionData.TransactionLines
+            .Where(t => !AggregatedTransactionTypes.Contains(t.TransactionType))
+            .Concat(aggregatedLevyTransactions)
+            .Concat(aggregatedExpiredTransactions)
+            .OrderByDescending(x => x.DateCreated)
+            .ToArray();
+
+        viewModel.Data.TransactionLines = newTransactionLines;
+    }
+
+    private static IEnumerable<TransactionLine> AggregateByDay(IEnumerable<TransactionLine> transactionLines, Func<TransactionLine, bool> predicate, TransactionItemType resultType)
+    {
+        return transactionLines
+            .Where(predicate)
+            .GroupBy(t => t.DateCreated.Date)
+            .Select(grp =>
+            {
+                var first = grp.First();
+                return new TransactionLine
+                {
+                    AccountId = first.AccountId,
+                    DateCreated = first.DateCreated,
+                    Amount = grp.Sum(x => x.Amount),
+                    TransactionType = resultType,
+                    Description = first.Description,
+                    PayrollDate = first.PayrollDate,
+                    PayrollMonth = first.PayrollMonth,
+                    PayrollYear = first.PayrollYear
+                };
+            });
     }
 }

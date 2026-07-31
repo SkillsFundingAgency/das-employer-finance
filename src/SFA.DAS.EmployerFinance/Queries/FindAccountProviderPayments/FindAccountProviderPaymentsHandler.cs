@@ -6,25 +6,15 @@ using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
 
-public class FindAccountProviderPaymentsHandler : IRequestHandler<FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>
+public class FindAccountProviderPaymentsHandler(
+    IValidator<FindAccountProviderPaymentsQuery> validator,
+    IDasLevyService dasLevyService,
+    IEncodingService encodingService)
+    : IRequestHandler<FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>
 {
-    private readonly IValidator<FindAccountProviderPaymentsQuery> _validator;
-    private readonly IDasLevyService _dasLevyService;
-    private readonly IEncodingService _encodingService;
-
-    public FindAccountProviderPaymentsHandler(
-        IValidator<FindAccountProviderPaymentsQuery> validator,
-        IDasLevyService dasLevyService,
-        IEncodingService encodingService)
-    {
-        _validator = validator;
-        _dasLevyService = dasLevyService;
-        _encodingService = encodingService;
-    }
-
     public async Task<FindAccountProviderPaymentsResponse> Handle(FindAccountProviderPaymentsQuery message,CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(message);
+        var validationResult = await validator.ValidateAsync(message);
 
         if (!validationResult.IsValid())
         {
@@ -36,8 +26,8 @@ public class FindAccountProviderPaymentsHandler : IRequestHandler<FindAccountPro
             throw new UnauthorizedAccessException();
         }
 
-        var accountId = _encodingService.Decode(message.HashedAccountId,EncodingType.AccountId);
-        var transactions = await _dasLevyService.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
+        var accountId = encodingService.Decode(message.HashedAccountId,EncodingType.AccountId);
+        var transactions = await dasLevyService.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
             (accountId, message.UkPrn, message.FromDate, message.ToDate);
 
         if (!transactions.Any())
@@ -52,6 +42,7 @@ public class FindAccountProviderPaymentsHandler : IRequestHandler<FindAccountPro
             ProviderName = firstTransaction.ProviderName,
             TransactionDate = firstTransaction.TransactionDate,
             DateCreated = firstTransaction.DateCreated,
+            SenderAccountName = firstTransaction.SenderAccountName,
             Transactions = transactions.ToList(),
             Total = transactions.Sum(c => c.LineAmount)
         };

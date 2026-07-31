@@ -6,4 +6,5 @@ public class AccountTransferDetails
     public int? CourseLevel { get; set; }
     public uint ApprenticeCount { get; set; }
     public decimal PaymentTotal { get; set; }
+    public string CohortReference { get; set; }
 }

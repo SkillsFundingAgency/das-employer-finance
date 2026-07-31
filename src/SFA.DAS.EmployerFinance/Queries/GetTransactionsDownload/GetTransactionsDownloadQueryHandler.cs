@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -6,6 +5,7 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Validation;
 using SFA.DAS.Encoding;
+using System.ComponentModel.DataAnnotations;
 using ValidationResult = SFA.DAS.EmployerFinance.Validation.ValidationResult;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
@@ -39,7 +39,7 @@ public class GetTransactionsDownloadQueryHandler(
         }
 
         var fileFormatter = transactionsFormatterFactory.GetTransactionsFormatterByType(
-            message.DownloadFormat.Value,
+            message.DownloadFormat.GetValueOrDefault(),
             apprenticeshipEmployerTypeEnum);
 
         return new GetTransactionsDownloadResponse
@@ -72,7 +72,7 @@ public class GetTransactionsDownloadQueryHandler(
         {
             transaction.Description = transaction.TransferSenderAccountId.Equals(transaction.AccountId) 
                 ? $"Transfer sent to {transaction.TransferReceiverAccountName}" 
-                : $"Transfer received from {transaction.TransferSenderAccountName}";
+                : $"Transfer received from {transaction.TrainingProvider}";
         }
     }
 }
