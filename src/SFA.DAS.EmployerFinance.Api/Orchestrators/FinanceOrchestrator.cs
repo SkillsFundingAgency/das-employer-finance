@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
@@ -228,5 +229,26 @@ public class FinanceOrchestrator(
         _logger.LogInformation("Received response - PAYE schemes for accountId {AccountId}: {Count}", accountId, result.Count);
 
         return result;
+    }
+
+    public async Task<PayeSchemeLastSubmissionDate> GetLastSubmissionDateForPayeScheme(string empRef)
+    {
+        _logger.LogInformation("Requesting last levy submission date for empRef {EmpRef}", empRef);
+
+        var response = await _mediator.Send(new GetLastLevyDeclarationQuery { EmpRef = empRef });
+
+        DateTime? submissionDate = response?.Transaction?.SubmissionDate;
+        if (submissionDate == DateTime.MinValue)
+        {
+            submissionDate = null;
+        }
+
+        _logger.LogInformation("Received last levy submission date for empRef {EmpRef}", empRef);
+
+        return new PayeSchemeLastSubmissionDate
+        {
+            EmpRef = empRef,
+            LastSubmissionDate = submissionDate
+        };
     }
 }
