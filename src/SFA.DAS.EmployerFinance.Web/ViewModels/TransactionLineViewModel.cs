@@ -9,4 +9,5 @@ public class TransactionLineViewModel<T> where T : TransactionLine
     public decimal Amount { get; set; }
     public List<T> SubTransactions { get; set; }
     public string HashedAccountId { get; set; }
+    public bool ShouldShowTopUp { get; set; }
 }

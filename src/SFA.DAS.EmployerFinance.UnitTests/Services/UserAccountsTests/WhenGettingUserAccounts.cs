@@ -1,4 +1,4 @@
-using AutoFixture.NUnit3;
+using AutoFixture.NUnit4;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.UserAccounts;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.UserAccounts;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;

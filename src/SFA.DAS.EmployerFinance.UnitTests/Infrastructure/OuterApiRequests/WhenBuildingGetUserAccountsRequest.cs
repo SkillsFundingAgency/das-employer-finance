@@ -1,5 +1,5 @@
 using System.Net;
-using AutoFixture.NUnit3;
+using AutoFixture.NUnit4;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.UserAccounts;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Infrastructure.OuterApiRequests;

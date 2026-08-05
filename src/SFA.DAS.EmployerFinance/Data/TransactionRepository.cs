@@ -152,8 +152,9 @@ public class TransactionRepository : ITransactionRepository
                     return _mapper.Map<TransferTransactionLine>(entity);
 
                 case TransactionItemType.ExpiredFund:
+                case TransactionItemType.ShortExpiredFund:
                     return _mapper.Map<ExpiredFundTransactionLine>(entity);
-
+                
                 case TransactionItemType.Unknown:
                     return _mapper.Map<TransactionLine>(entity);
 

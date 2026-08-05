@@ -17,6 +17,7 @@ using SFA.DAS.EmployerFinance.Queries.GetExistingPeriod12LevyDeclarations;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLastEnglishFractionCalculationDate;
+using SFA.DAS.EmployerFinance.Queries.GetExistingTransactionLines;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
@@ -44,8 +45,9 @@ public class WhenAddingServicesToTheContainer
         var type = provider.GetService(toResolve);
         type.Should().NotBeNull();
     }
- 
+
     [TestCase(typeof(IRequestHandler<GetEmployerAccountTransactionsQuery, GetEmployerAccountTransactionsResponse>))]
+    [TestCase(typeof(IRequestHandler<GetExistingTransactionLinesQuery, GetEmployerAccountTransactionsResponse>))]
     [TestCase(typeof(IRequestHandler<CreateAuditJobCommand, CreateAuditJobCommandResult>))]
     [TestCase(typeof(IRequestHandler<CreateAuditWorkflowLogCommand, CreateAuditWorkflowLogCommandResult>))]
     [TestCase(typeof(IRequestHandler<GetAccountTransactionSummaryRequest, GetAccountTransactionSummaryResponse>))]

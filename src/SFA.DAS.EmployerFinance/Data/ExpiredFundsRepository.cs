@@ -14,7 +14,7 @@ public class ExpiredFundsRepository : IExpiredFundsRepository
         _db = db;
     }
 
-    public Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now)
+    public Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now, byte transactionType = 5)
     {
         var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
 
@@ -23,6 +23,7 @@ public class ExpiredFundsRepository : IExpiredFundsRepository
         parameters.Add("@accountId", accountId);
         parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
         parameters.Add("@now", now);
+        parameters.Add("@transactionType", transactionType);
 
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
              sql: "[employer_financial].[CreateDraftExpiredFunds]",
@@ -31,7 +32,7 @@ public class ExpiredFundsRepository : IExpiredFundsRepository
              commandType: CommandType.StoredProcedure);
     }
 
-    public Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now)
+    public Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now, byte transactionType = 5)
     {
         var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
 
@@ -40,13 +41,13 @@ public class ExpiredFundsRepository : IExpiredFundsRepository
         parameters.Add("@accountId", accountId);
         parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
         parameters.Add("@now", now);
+        parameters.Add("@transactionType", transactionType);
 
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
              sql: "[employer_financial].[CreateExpiredFunds]",
              transaction: _db.Value.Database.CurrentTransaction?.GetDbTransaction(),
              param: parameters,
              commandType: CommandType.StoredProcedure);
-
     }
 
     public Task<IEnumerable<ExpiredFund>> Get(long accountId)

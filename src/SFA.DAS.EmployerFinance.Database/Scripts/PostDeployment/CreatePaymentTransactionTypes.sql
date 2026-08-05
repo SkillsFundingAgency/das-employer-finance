@@ -10,3 +10,7 @@ IF (NOT EXISTS(SELECT TransactionType FROM [employer_financial].[PaymentTransact
 BEGIN
 	INSERT [employer_financial].[PaymentTransactionTypes] ([TransactionType], [Description]) VALUES (N'3', N'Balance Payment')
 END
+IF (NOT EXISTS(SELECT TransactionType FROM [employer_financial].[PaymentTransactionTypes] WHERE TransactionType = 17))
+BEGIN
+    INSERT [employer_financial].[PaymentTransactionTypes] ([TransactionType], [Description]) VALUES (N'17', N'Milestone Payment')
+END

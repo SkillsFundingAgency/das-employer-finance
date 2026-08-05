@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
@@ -78,7 +78,8 @@ public class EmployerAccountTransactionsController : Controller
                 AccountId = _encodingService.Decode(hashedAccountId,EncodingType.AccountId),
                 DownloadFormat = model.DownloadFormat,
                 EndDate = model.EndDate,
-                StartDate = model.StartDate
+                StartDate = model.StartDate,
+                Version = model.Version
             });
             return File(response.FileData, response.MimeType, $"esfaTransactions_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
         }
@@ -144,5 +145,14 @@ public class EmployerAccountTransactionsController : Controller
 
         var model = _mapper.Map<TransferTransactionDetailsViewModel>(response);
         return View(ControllerConstants.TransferDetailsViewName, model);
+    }
+    
+    
+    [Route("finance/expiredfunds/details")]
+    public async Task<IActionResult> ExpiredFundsDetails([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
+    {
+        var viewModel = await _accountTransactionsOrchestrator.FindAccountExpiredFunds(hashedAccountId, fromDate, toDate);
+
+        return View(ControllerConstants.ExpiredFundsDetailViewName, viewModel);
     }
 }

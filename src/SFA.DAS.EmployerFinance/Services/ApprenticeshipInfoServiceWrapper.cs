@@ -73,13 +73,11 @@ public class ApprenticeshipInfoServiceWrapper : IApprenticeshipInfoServiceWrappe
             CreationDate = DateTime.UtcNow,
             Standards = standards.Select(x => new Standard
             {
-                Id = x.Id.ToString(),
+                Id = x.Id,
                 Code = x.Id,
                 Level = x.Level,
                 Title = GetTitle(x.Title, x.Level) + " (Standard)",
                 CourseName = x.Title,
-                Duration = x.Duration,
-                MaxFunding = x.MaxFunding,
                 LearningType = x.LearningType
             }).ToList()
         };

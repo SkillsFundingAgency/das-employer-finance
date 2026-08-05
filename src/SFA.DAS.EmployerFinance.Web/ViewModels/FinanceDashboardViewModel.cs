@@ -12,4 +12,5 @@ public class FinanceDashboardViewModel
     public decimal LastMonthLevyDeclaration { get; set; }
     public decimal LastMonthPayments { get; set; }
     public string DateUsed { get; set; }
+    public bool ShowTopUpChange { get; set; }
 }

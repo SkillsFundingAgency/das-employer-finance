@@ -19,6 +19,9 @@ public class TransactionDownloadViewModel
     [Required]
     public DownloadFormatType? DownloadFormat { get; set; }
     
+    [Required]
+    public string Version { get; set; }
+    
     public static Dictionary<string, int> BuildPropertyOrderDictionary()
     {
         var propertyOrderDictionary = new Dictionary<string, int>

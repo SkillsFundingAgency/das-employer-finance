@@ -7,5 +7,6 @@ public enum TransactionItemType : byte
     TopUp = 2,
     Payment = 3,
     Transfer = 4,
-    ExpiredFund = 5
+    ExpiredFund = 5,
+    ShortExpiredFund = 6
 }

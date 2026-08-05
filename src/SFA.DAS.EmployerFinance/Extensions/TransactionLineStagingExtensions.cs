@@ -10,7 +10,7 @@ public static class TransactionLineStagingExtensions
         table.Columns.Add(nameof(TransactionLineStagingModel.DateCreated), typeof(DateTime));
         AddNullableLongColumn(table, nameof(TransactionLineStagingModel.SubmissionId));
         table.Columns.Add(nameof(TransactionLineStagingModel.TransactionDate), typeof(DateTime));
-        table.Columns.Add(nameof(TransactionLineStagingModel.TransactionType), typeof(int));
+        table.Columns.Add(nameof(TransactionLineStagingModel.TransactionType), typeof(byte));
         AddNullableDecimalColumn(table, nameof(TransactionLineStagingModel.LevyDeclared));
         table.Columns.Add(nameof(TransactionLineStagingModel.Amount), typeof(decimal));
         AddNullableStringColumn(table, nameof(TransactionLineStagingModel.EmpRef));
@@ -31,7 +31,7 @@ public static class TransactionLineStagingExtensions
                 line.DateCreated,
                 line.SubmissionId ?? (object)DBNull.Value,
                 line.TransactionDate,
-                (int)line.TransactionType,
+                checked((byte)line.TransactionType),
                 line.LevyDeclared ?? (object)DBNull.Value,
                 line.Amount,
                 line.EmpRef ?? (object)DBNull.Value,

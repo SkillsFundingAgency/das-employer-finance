@@ -1,11 +1,10 @@
 ﻿using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Azure.Services.AppAuthentication;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Configuration;
 using SFA.DAS.EmployerFinance.Models;
-using SFA.DAS.EmployerFinance.Models.AuditLogs;
 using SFA.DAS.EmployerFinance.Models.Account;
+using SFA.DAS.EmployerFinance.Models.AuditLogs;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Models.Paye;
 using SFA.DAS.EmployerFinance.Models.Payments;
@@ -40,7 +39,7 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<PaymentMetaDataStaging> PaymentMetaDataStaging{ get; set; }
     public virtual DbSet<JobRun> JobRuns { get; set; }
     public virtual DbSet<WorkflowLog> WorkflowLogs { get; set; }
-    public virtual DbSet<LevyDeclaration> LevyDeclarations { get; set; }
+    public virtual DbSet<LevyDeclarationEntity> LevyDeclarations { get; set; }
     public EmployerFinanceDbContext() { }   
 
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
@@ -87,6 +86,7 @@ public class EmployerFinanceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TransferStagingConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());//Maybe delete this table
         modelBuilder.ApplyConfiguration(new WorkflowLogConfiguration());
+        modelBuilder.ApplyConfiguration(new LevyDeclarationEntityConfiguration());
         modelBuilder.Ignore<PaymentDetails>();
     }
 }

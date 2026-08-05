@@ -150,5 +150,28 @@ public class WhenGettingFinanceIndex
         response.Data.LastMonthPayments.Should().Be(20);
         response.Data.DateUsed.Should().Be("December 2017");
     }
-    
+
+    [TestCase("2026-07-31", false, TestName = "Before August 2026 cutoff ShowTopUpChange is false")]
+    [TestCase("2026-08-01", true, TestName = "On August 2026 cutoff ShowTopUpChange is true")]
+    [TestCase("2027-01-01", true, TestName = "After August 2026 cutoff ShowTopUpChange is true")]
+    public async Task Then_Sets_ShowTopUpChange_Based_On_Date(string nowDate, bool expectedShowTopUpChange)
+    {
+        _currentTime.Setup(x => x.Now).Returns(DateTime.Parse(nowDate));
+        _accountApiClient.Setup(c => c.GetAccount(AccountId))
+            .ReturnsAsync(new AccountDetailViewModel
+            {
+                ApprenticeshipEmployerType = "Levy"
+            });
+        _mediator.Setup(m => m.Send(It.IsAny<GetAccountFinanceOverviewQuery>(), CancellationToken.None))
+            .ReturnsAsync(new GetAccountFinanceOverviewResponse());
+
+        var response = await _orchestrator.Index(HashedAccountId, new ClaimsIdentity(new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, "UserId"),
+            new(ClaimTypes.Email, "UserEmail")
+        }));
+
+        response.Data.ShowTopUpChange.Should().Be(expectedShowTopUpChange);
+    }
+
 }

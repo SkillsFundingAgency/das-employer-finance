@@ -22,7 +22,7 @@
 
         <h1 class="govuk-heading-xl">
             Your transactions
-            <span class="govuk-caption-xl">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
+            <span class="govuk-caption-xl  govuk-!-margin-top-3">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
         </h1>
 
         @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == nameof(ApprenticeshipEmployerType.Levy))
@@ -117,6 +117,15 @@
                                     <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("LevyDeclarationDetail", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
                                         View <span class="govuk-visually-hidden"> for the transaction on @date</span>
                                     </a>
+                                }
+                                else if (aggregationLine.TransactionType == TransactionItemType.ExpiredFund)
+                                {
+                                    if (transactionAmount != 0)
+                                    {
+                                        <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ExpiredFundsDetails", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
+                                            View <span class="govuk-visually-hidden"> for the transaction on @date</span>
+                                        </a>    
+                                    }
                                 }
                                 else if (aggregationLine.TransactionType == TransactionItemType.Payment)
                                 {

@@ -19,22 +19,26 @@ public class TransferStagingConfiguration : IEntityTypeConfiguration<TransferSta
         builder.Property(x => x.SenderAccountId)
             .IsRequired();
 
+        builder.Property(x => x.SenderAccountName)
+            .HasMaxLength(100)
+            .IsRequired();
+
         builder.Property(x => x.ReceiverAccountId)
             .IsRequired();
 
         builder.Property(x => x.ReceiverAccountName)
-            .HasMaxLength(255)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder.Property(x => x.Amount)
-            .HasColumnType("decimal(18,2)")
+            .HasColumnType("decimal(18,5)")
             .IsRequired();
 
         builder.Property(x => x.TransferDate)
             .IsRequired();
 
         builder.Property(x => x.PeriodEnd)
-            .HasMaxLength(25)
+            .HasMaxLength(20)
             .IsRequired();
 
         builder.Property(x => x.CollectionPeriodMonth)
@@ -47,7 +51,21 @@ public class TransferStagingConfiguration : IEntityTypeConfiguration<TransferSta
             .IsRequired();
 
         builder.Property(x => x.CourseName)
-            .HasMaxLength(255)
+            .HasMaxLength(255);
+
+        builder.Property(x => x.CourseLevel);
+
+        builder.Property(x => x.LearningType)
+            .HasMaxLength(25);
+
+        builder.Property(x => x.ApprenticeshipId)
+            .IsRequired();
+
+        builder.Property(x => x.Type)
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(x => x.RequiredPaymentId)
             .IsRequired();
 
         builder.Property(x => x.CreatedBy)

@@ -11,20 +11,20 @@ public abstract class CsvTransactionFormatter
 
     public DownloadFormatType DownloadFormatType => DownloadFormatType.CSV;
 
-    public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions)
+    public byte[] GetFileData(IEnumerable<TransactionDownloadLine> transactions, bool isNewVersion)
     {
         var builder = new StringBuilder();
 
-        builder.AppendLine(CreateHeaders());
+        builder.AppendLine(CreateHeaders(isNewVersion));
 
-        WriteRowsCsv(transactions, builder);
+        WriteRowsCsv(transactions, builder, isNewVersion);
 			
         var csvContent = builder.ToString();
 
         return System.Text.Encoding.UTF8.GetBytes(csvContent);
     }
 
-    protected abstract string CreateHeaders();
+    protected abstract string CreateHeaders(bool isNewVersion);
 
-    protected abstract void WriteRowsCsv(IEnumerable<TransactionDownloadLine> transactions, StringBuilder builder);
+    protected abstract void WriteRowsCsv(IEnumerable<TransactionDownloadLine> transactions, StringBuilder builder, bool isNewVersion);
 }
