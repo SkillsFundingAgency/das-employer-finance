@@ -20,7 +20,7 @@ public static class ApplicationServiceRegistrations
 
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
         services.AddScoped<ILinkGeneratorWrapper, LinkGeneratorWrapper>();
-        services.AddTransient<IHmrcService, HmrcService>();       
+        services.AddTransient<IHmrcService, HmrcService>();
         services.AddScoped<ILevyImportCleanerStrategy, LevyImportCleanerStrategy>();
 
         return services;

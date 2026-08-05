@@ -19,6 +19,11 @@ public class PersistLevyDeclarationsCommandValidator : IValidator<PersistLevyDec
             validationResult.AddError(nameof(item.Data.AccountId), "AccountId must be supplied and greater than zero.");
         }
 
+        if (string.IsNullOrWhiteSpace(item.Data.CorrelationId))
+        {
+            validationResult.AddError(nameof(item.Data.CorrelationId), "CorrelationId has not been supplied.");
+        }
+
         if (string.IsNullOrWhiteSpace(item.Data.EmpRef))
         {
             validationResult.AddError(nameof(item.Data.EmpRef), "EmpRef has not been supplied.");
@@ -41,9 +46,9 @@ public class PersistLevyDeclarationsCommandValidator : IValidator<PersistLevyDec
                 continue;
             }
 
-            if (d.Id <= 0)
+            if (!long.TryParse(d.Id, out var declarationId) || declarationId <= 0)
             {
-                validationResult.AddError($"{prefix}.{nameof(d.Id)}", "Id must be greater than zero.");
+                validationResult.AddError($"{prefix}.{nameof(d.Id)}", "Id must be a positive whole number.");
             }
 
             if (d.SubmissionId <= 0)

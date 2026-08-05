@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using SFA.DAS.EmployerFinance.Api.Types;
-using SFA.DAS.EmployerFinance.Commands.RefreshEmployerLevyData;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Validation;
@@ -11,7 +9,6 @@ namespace SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
 public class PersistLevyDeclarationsCommandHandler(
     IValidator<PersistLevyDeclarationsCommand> validator,
     IDasLevyRepository dasLevyRepository,
-    ILevyImportCleanerStrategy levyImportCleanerStrategy,
     ILogger<PersistLevyDeclarationsCommandHandler> logger)
     : IRequestHandler<PersistLevyDeclarationsCommand, PersistLevyDeclarationsResponse>
 {
@@ -28,58 +25,47 @@ public class PersistLevyDeclarationsCommandHandler(
         var received = data.Declarations.Count;
 
         logger.LogInformation(
-            "Persist levy declarations started for AccountId {AccountId}, EmpRef {EmpRef}, declarations received {Received}",
+            "[CorrelationId: {CorrelationId}] Persist levy declarations started for AccountId {AccountId}, EmpRef {EmpRef}, declarations received {Received}, GenerateTransactions {GenerateTransactions}",
+            data.CorrelationId,
             data.AccountId,
             data.EmpRef,
-            received);
+            received,
+            data.GenerateTransactions);
 
         try
         {
-            var dasDeclarations = data.Declarations.Select(ToDasDeclaration).ToArray();
-            var cleaned = await levyImportCleanerStrategy.Cleanup(data.EmpRef, dasDeclarations);
-
-            if (cleaned.Length == 0)
-            {
-                logger.LogInformation(
-                    "Persist levy declarations: none remained after cleanup for AccountId {AccountId}, EmpRef {EmpRef}",
-                    data.AccountId,
-                    data.EmpRef);
-
-                return new PersistLevyDeclarationsResponse
-                {
-                    DeclarationsPersisted = 0,
-                    DeclarationsSkipped = received,
-                    TransactionsCreated = 0
-                };
-            }
-
-            await dasLevyRepository.CreateEmployerDeclarations(cleaned, data.EmpRef, data.AccountId);
-
-            var levyTransactionValue = await dasLevyRepository.ProcessDeclarations(data.AccountId, data.EmpRef);
-
-            var transactionsCreated = levyTransactionValue != 0m ? cleaned.Length : 0;
+            var declarations = data.Declarations.Select(ToDasDeclaration).ToArray();
+            var persistenceResult = await dasLevyRepository.PersistLevyDeclarations(
+                declarations,
+                data.EmpRef,
+                data.AccountId,
+                data.GenerateTransactions,
+                cancellationToken);
+            var declarationsSkipped = received - persistenceResult.DeclarationsPersisted;
 
             logger.LogInformation(
-                "Persist levy declarations completed for AccountId {AccountId}, EmpRef {EmpRef}, persisted {Persisted}, skipped {Skipped}, levy transaction total {LevyValue}, transactions created {TransactionsCreated}",
+                "[CorrelationId: {CorrelationId}] Persist levy declarations completed for AccountId {AccountId}, EmpRef {EmpRef}, persisted {Persisted}, skipped {Skipped}, levy transaction total {LevyValue}, transactions created {TransactionsCreated}",
+                data.CorrelationId,
                 data.AccountId,
                 data.EmpRef,
-                cleaned.Length,
-                received - cleaned.Length,
-                levyTransactionValue,
-                transactionsCreated);
+                persistenceResult.DeclarationsPersisted,
+                declarationsSkipped,
+                persistenceResult.LevyTransactionValue,
+                persistenceResult.TransactionsCreated);
 
             return new PersistLevyDeclarationsResponse
             {
-                DeclarationsPersisted = cleaned.Length,
-                DeclarationsSkipped = received - cleaned.Length,
-                TransactionsCreated = transactionsCreated
+                DeclarationsPersisted = persistenceResult.DeclarationsPersisted,
+                DeclarationsSkipped = declarationsSkipped,
+                TransactionsCreated = persistenceResult.TransactionsCreated
             };
         }
         catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "Persist levy declarations failed for AccountId {AccountId}, EmpRef {EmpRef}, declarations received {Received}",
+                "[CorrelationId: {CorrelationId}] Persist levy declarations failed for AccountId {AccountId}, EmpRef {EmpRef}, declarations received {Received}",
+                data.CorrelationId,
                 data.AccountId,
                 data.EmpRef,
                 received);
@@ -90,8 +76,9 @@ public class PersistLevyDeclarationsCommandHandler(
     private static DasDeclaration ToDasDeclaration(NormalizedLevyDeclaration n) =>
         new()
         {
-            Id = n.Id.ToString(CultureInfo.InvariantCulture),
+            Id = n.Id,
             SubmissionDate = n.SubmissionDate,
+            SubmissionType = n.SubmissionType,
             LevyDueYtd = n.LevyDueYtd,
             LevyAllowanceForFullYear = n.LevyAllowanceForFullYear,
             PayrollYear = n.PayrollYear ?? string.Empty,
@@ -101,7 +88,7 @@ public class PersistLevyDeclarationsCommandHandler(
             InactiveFrom = n.InactiveFrom,
             InactiveTo = n.InactiveTo,
             SubmissionId = n.SubmissionId,
-            EndOfYearAdjustment = false,
-            EndOfYearAdjustmentAmount = 0
+            EndOfYearAdjustment = n.EndOfYearAdjustment,
+            EndOfYearAdjustmentAmount = n.EndOfYearAdjustmentAmount
         };
 }

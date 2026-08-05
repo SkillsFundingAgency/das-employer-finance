@@ -57,13 +57,15 @@ public class WhenIPersistLevyDeclarations
     {
         var request = new PersistLevyDeclarationRequestData
         {
+            CorrelationId = "corr-123",
             AccountId = 99,
             EmpRef = "123/REF",
+            GenerateTransactions = true,
             Declarations =
             [
                 new NormalizedLevyDeclaration
                 {
-                    Id = 1,
+                    Id = "1",
                     SubmissionId = 2,
                     PayrollYear = "25-26",
                     PayrollMonth = 1,

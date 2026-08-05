@@ -15,10 +15,12 @@ public class LevyDeclarationOrchestrator(IMediator mediator, ILogger<LevyDeclara
     public async Task<PersistLevyDeclarationsResponse> PersistLevyDeclarations(PersistLevyDeclarationRequestData request)
     {
         _logger.LogInformation(
-            "Persisting levy declarations for AccountId {AccountId}, EmpRef {EmpRef}, count {Count}",
+            "[CorrelationId: {CorrelationId}] Persisting levy declarations for AccountId {AccountId}, EmpRef {EmpRef}, count {Count}, GenerateTransactions {GenerateTransactions}",
+            request.CorrelationId,
             request.AccountId,
             request.EmpRef,
-            request.Declarations?.Count ?? 0);
+            request.Declarations?.Count ?? 0,
+            request.GenerateTransactions);
 
         return await _mediator.Send(new PersistLevyDeclarationsCommand { Data = request });
     }

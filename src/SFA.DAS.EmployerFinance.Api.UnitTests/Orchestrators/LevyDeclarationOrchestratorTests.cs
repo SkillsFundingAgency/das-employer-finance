@@ -15,6 +15,7 @@ public class LevyDeclarationOrchestratorTests
     {
         var request = new PersistLevyDeclarationRequestData
         {
+            CorrelationId = "corr-123",
             AccountId = 5,
             EmpRef = "999/ZZ",
             Declarations = new List<NormalizedLevyDeclaration>()
