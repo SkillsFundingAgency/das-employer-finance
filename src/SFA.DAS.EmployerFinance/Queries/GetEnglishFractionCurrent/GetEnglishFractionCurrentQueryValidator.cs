@@ -23,8 +23,7 @@ public class GetEnglishFractionCurrentQueryValidator : IValidator<GetEnglishFrac
             {
                 if (!EmployerReferenceValidation.TryNormalise(item.EmpRefs[index], out var normalisedEmployerReference))
                 {
-                    validationResult.AddError($"{nameof(item.EmpRefs)}[{index}]", "EmpRef must be a valid PAYE reference");
-
+                    validationResult.AddError(nameof(item.EmpRefs), $"EmpRefs[{index}] must be a valid PAYE reference");
                     break;
                 }
 
