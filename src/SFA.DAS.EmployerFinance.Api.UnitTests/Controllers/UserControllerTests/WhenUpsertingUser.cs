@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AutoFixture.NUnit4;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Commands.UpsertRegisteredUser;
@@ -36,5 +37,23 @@ public class WhenUpsertingUser
         var actualResult = actual as StatusCodeResult;
         actualResult.Should().NotBeNull();
         actualResult.StatusCode.Should().Be(500);
+    }
+
+    [Test, MoqAutoData]
+    public async Task Then_ValidationException_Is_Rethrown(
+        UpsertRegisteredUserCommand request,
+        [Frozen] Mock<IMediator> mediator,
+        [Greedy] UserController controller)
+    {
+        var validationResult = new ValidationResult(
+            "Validation failed",
+            ["EmailAddress|EmailAddress has not been supplied"]);
+
+        mediator.Setup(x => x.Send(It.IsAny<UpsertRegisteredUserCommand>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException(validationResult, null, null));
+
+        var act = () => controller.Upsert(request);
+
+        await act.Should().ThrowAsync<ValidationException>();
     }
 }

@@ -99,7 +99,7 @@ public class WhenIPersistEnglishFractions
     }
 
     [Test]
-    public async Task ThenItReturnsBadRequestWithValidationErrors_WhenFractionsAreEmpty()
+    public async Task ThenValidationExceptionIsThrown_WhenFractionsAreEmpty()
     {
         var request = new EnglishFractionsRequest
         {
@@ -120,18 +120,13 @@ public class WhenIPersistEnglishFractions
             .Setup(x => x.Send(It.IsAny<PersistEnglishFractionsCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ValidationException(validationResult, null, null));
 
-        var result = await _controller.Persist(request);
+        var act = () => _controller.Persist(request);
 
-        result.Should().BeOfType<BadRequestObjectResult>();
-
-        var response = ((BadRequestObjectResult)result).Value as Dictionary<string, string>;
-        response.Should().NotBeNull();
-        response!.Should().ContainKey("Fractions");
-        response["Fractions"].Should().Be("Fractions payload is required.");
+        await act.Should().ThrowAsync<ValidationException>();
     }
 
     [Test]
-    public async Task ThenItReturnsBadRequestWithValidationErrors_WhenValidationFails()
+    public async Task ThenValidationExceptionIsThrown_WhenValidationFails()
     {
         var request = new EnglishFractionsRequest
         {
@@ -155,13 +150,8 @@ public class WhenIPersistEnglishFractions
             .Setup(x => x.Send(It.IsAny<PersistEnglishFractionsCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ValidationException(validationResult, null, null));
 
-        var result = await _controller.Persist(request);
+        var act = () => _controller.Persist(request);
 
-        result.Should().BeOfType<BadRequestObjectResult>();
-
-        var response = ((BadRequestObjectResult)result).Value as Dictionary<string, string>;
-        response.Should().NotBeNull();
-        response!.Should().ContainKey("EmployerReference");
-        response["EmployerReference"].Should().Be("EmployerReference has not been supplied");
+        await act.Should().ThrowAsync<ValidationException>();
     }
 }
