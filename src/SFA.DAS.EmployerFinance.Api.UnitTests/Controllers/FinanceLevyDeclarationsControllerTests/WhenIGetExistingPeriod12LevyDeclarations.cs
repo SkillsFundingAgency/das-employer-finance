@@ -51,4 +51,27 @@ public class WhenIGetExistingPeriod12LevyDeclarations
         result.Value.Should().BeAssignableTo<List<ExistingPeriod12LevyDeclarationResult>>();
         ((List<ExistingPeriod12LevyDeclarationResult>)result.Value!).Should().BeEquivalentTo(declarations);
     }
+
+    [Test]
+    public async Task Then_Accepts_UrlEncoded_EmpRef()
+    {
+        const string encodedEmpRef = "001%2FAC004317";
+        const string decodedEmpRef = "001/AC004317";
+        var declarations = new List<ExistingPeriod12LevyDeclarationResult>();
+
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<GetExistingPeriod12LevyDeclarationsQuery>(q => q.EmpRef == decodedEmpRef),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(declarations);
+
+        var result = await _controller.GetExistingPeriod12LevyDeclarations(encodedEmpRef) as OkObjectResult;
+
+        result.Should().NotBeNull();
+        result!.Value.Should().BeSameAs(declarations);
+        _mediator.Verify(x => x.Send(
+                It.Is<GetExistingPeriod12LevyDeclarationsQuery>(q => q.EmpRef == decodedEmpRef),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
 }

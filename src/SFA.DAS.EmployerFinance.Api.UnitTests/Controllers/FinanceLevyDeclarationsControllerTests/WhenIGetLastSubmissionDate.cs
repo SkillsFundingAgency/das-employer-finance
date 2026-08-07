@@ -65,4 +65,30 @@ public class WhenIGetLastSubmissionDate
         responseObject.Should().NotBeNull();
         responseObject!.LastSumissionDate.Should().BeNull();
     }
+
+    [Test]
+    public async Task Then_Accepts_UrlEncoded_EmpRef()
+    {
+        const string encodedEmpRef = "001%2FAC004317";
+        const string decodedEmpRef = "001/AC004317";
+        var submissionDate = new DateTime(2026, 4, 10);
+
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<GetLastLevyDeclarationQuery>(q => q.EmpRef == decodedEmpRef),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetLastLevyDeclarationResponse
+            {
+                Transaction = new DasDeclaration { SubmissionDate = submissionDate }
+            });
+
+        var result = await _controller.GetLastSubmissionDate(encodedEmpRef) as OkObjectResult;
+
+        result.Should().NotBeNull();
+        ((LastSubmissionDateResult)result!.Value!).LastSumissionDate.Should().Be(submissionDate.AddDays(-1));
+        _mediator.Verify(x => x.Send(
+                It.Is<GetLastLevyDeclarationQuery>(q => q.EmpRef == decodedEmpRef),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
 }

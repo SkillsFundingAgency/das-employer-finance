@@ -35,7 +35,7 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetExistingPeriod12LevyDeclarations(string empRef)
     {
-        var result = await orchestrator.GetExistingPeriod12LevyDeclarations(empRef);
+        var result = await orchestrator.GetExistingPeriod12LevyDeclarations(DecodeEmpRef(empRef));
         return Ok(result);
     }
 
@@ -43,7 +43,7 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetSubmissionIds(string empRef)
     {
-        List<string> result = await orchestrator.GetSubmissionIds(empRef);
+        List<string> result = await orchestrator.GetSubmissionIds(DecodeEmpRef(empRef));
         return Ok(result);
     }
 
@@ -51,9 +51,13 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetLastSubmissionDate(string empRef)
     {
-        var result = await orchestrator.GetLastSubmissionDate(empRef);
+        var result = await orchestrator.GetLastSubmissionDate(DecodeEmpRef(empRef));
         return Ok(result);
     }
+
+    private static string DecodeEmpRef(string empRef) =>
+        string.IsNullOrEmpty(empRef) ? empRef : Uri.UnescapeDataString(empRef);
+
     private static Dictionary<string, string> GetValidationErrors(ValidationException ex)
     {
         return ex.ValidationResult?.MemberNames

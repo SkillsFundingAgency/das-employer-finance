@@ -58,4 +58,26 @@ public class WhenIGetSubmissionIds
         result!.StatusCode.Should().Be(200);
         ((List<string>)result.Value!).Should().BeEmpty();
     }
+
+    [Test]
+    public async Task Then_Accepts_UrlEncoded_EmpRef()
+    {
+        const string encodedEmpRef = "001%2FAC004317";
+        const string decodedEmpRef = "001/AC004317";
+
+        _mediator
+            .Setup(x => x.Send(
+                It.Is<GetLevyDeclarationSubmissionIdsQuery>(q => q.EmpRef == decodedEmpRef),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<long> { 1001 });
+
+        var result = await _controller.GetSubmissionIds(encodedEmpRef) as OkObjectResult;
+
+        result.Should().NotBeNull();
+        ((List<string>)result!.Value!).Should().Equal("1001");
+        _mediator.Verify(x => x.Send(
+                It.Is<GetLevyDeclarationSubmissionIdsQuery>(q => q.EmpRef == decodedEmpRef),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
 }
