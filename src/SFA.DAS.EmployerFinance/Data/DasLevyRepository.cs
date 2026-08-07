@@ -312,9 +312,7 @@ public class DasLevyRepository(
     private IQueryable<LevyDeclarationEntity> GetLastPositiveNetDeclarationQuery() =>
         db.Value.LevyDeclarations
             .AsNoTracking()
-            .Where(x => x.LevyDueYtd != null
-                        && x.LevyAllowanceForYear != null
-                        && (x.LevyDueYtd - x.LevyAllowanceForYear) > 0)
+            .Where(x => x.LevyDueYtd != null && x.LevyDueYtd > 0)
             .OrderByDescending(x => x.SubmissionDate);
 
     private static DasDeclaration MapToDasDeclaration(LevyDeclarationEntity declaration) =>
