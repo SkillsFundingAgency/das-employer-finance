@@ -65,6 +65,10 @@ public class PersistLevyDeclarationsCommandValidator : IValidator<PersistLevyDec
             {
                 validationResult.AddError($"{prefix}.{nameof(d.PayrollMonth)}", "PayrollMonth has not been supplied.");
             }
+            else if (d.PayrollMonth is < 1 or > 12)
+            {
+                validationResult.AddError($"{prefix}.{nameof(d.PayrollMonth)}", "PayrollMonth must be between 1 and 12.");
+            }
 
             if (d.SubmissionDate == DateTime.MinValue)
             {

@@ -22,8 +22,10 @@ public class LevyDeclarationOrchestratorTests
         };
         var expected = new PersistLevyDeclarationsResponse
         {
+            DeclarationsReceived = 0,
             DeclarationsPersisted = 0,
             DeclarationsSkipped = 0,
+            LevyTransactionValue = 0,
             TransactionsCreated = 0
         };
         var mediator = new Mock<IMediator>();
