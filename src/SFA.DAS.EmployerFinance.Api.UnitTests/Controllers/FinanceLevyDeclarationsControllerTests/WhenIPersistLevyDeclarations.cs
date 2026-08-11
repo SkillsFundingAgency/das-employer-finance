@@ -76,8 +76,10 @@ public class WhenIPersistLevyDeclarations
 
         var expected = new PersistLevyDeclarationsResponse
         {
+            DeclarationsReceived = 1,
             DeclarationsPersisted = 1,
             DeclarationsSkipped = 0,
+            LevyTransactionValue = 125.50m,
             TransactionsCreated = 1
         };
 

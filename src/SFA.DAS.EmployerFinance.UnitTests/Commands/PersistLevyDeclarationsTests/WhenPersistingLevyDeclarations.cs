@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
@@ -10,6 +11,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Commands.PersistLevyDeclarationsTest
 
 public class WhenPersistingLevyDeclarations
 {
+    private Mock<IValidator<PersistLevyDeclarationsCommand>> _validator = null!;
     private Mock<IDasLevyRepository> _repository = null!;
     private Mock<ILogger<PersistLevyDeclarationsCommandHandler>> _logger = null!;
     private PersistLevyDeclarationsCommandHandler _handler = null!;
@@ -17,17 +19,38 @@ public class WhenPersistingLevyDeclarations
     [SetUp]
     public void Arrange()
     {
-        var validator = new Mock<IValidator<PersistLevyDeclarationsCommand>>();
-        validator
+        _validator = new Mock<IValidator<PersistLevyDeclarationsCommand>>();
+        _validator
             .Setup(x => x.Validate(It.IsAny<PersistLevyDeclarationsCommand>()))
             .Returns(new ValidationResult());
 
         _repository = new Mock<IDasLevyRepository>();
         _logger = new Mock<ILogger<PersistLevyDeclarationsCommandHandler>>();
         _handler = new PersistLevyDeclarationsCommandHandler(
-            validator.Object,
+            _validator.Object,
             _repository.Object,
             _logger.Object);
+    }
+
+    [Test]
+    public void Then_Does_Not_Persist_When_Validation_Fails()
+    {
+        var command = CreateCommand();
+        var validationResult = new ValidationResult();
+        validationResult.AddError(nameof(command.Data.AccountId), "AccountId is invalid.");
+        _validator.Setup(x => x.Validate(command)).Returns(validationResult);
+
+        Assert.ThrowsAsync<ValidationException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        _repository.Verify(
+            x => x.PersistLevyDeclarations(
+                It.IsAny<IEnumerable<DasDeclaration>>(),
+                It.IsAny<string>(),
+                It.IsAny<long>(),
+                It.IsAny<bool>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Test]
@@ -44,17 +67,27 @@ public class WhenPersistingLevyDeclarations
             .ReturnsAsync(new LevyPersistenceResult
             {
                 DeclarationsPersisted = 2,
-                LevyTransactionValue = 0,
+                LevyTransactionValue = 175.25m,
                 TransactionsCreated = 2
             });
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        result.DeclarationsReceived.Should().Be(2);
         result.DeclarationsPersisted.Should().Be(2);
         result.DeclarationsSkipped.Should().Be(0);
+        result.LevyTransactionValue.Should().Be(175.25m);
         result.TransactionsCreated.Should().Be(2);
+        _repository.Verify(
+            x => x.PersistLevyDeclarations(
+                It.Is<IEnumerable<DasDeclaration>>(declarations => DeclarationsMatch(declarations)),
+                command.Data.EmpRef,
+                command.Data.AccountId,
+                true,
+                It.IsAny<CancellationToken>()),
+            Times.Once);
         _logger.VerifyLogging(
-            "[CorrelationId: corr-123] Persist levy declarations completed for AccountId 123, EmpRef 123/ABC, persisted 2, skipped 0, levy transaction total 0, transactions created 2",
+            "[CorrelationId: corr-123] Persist levy declarations completed for AccountId 123, EmpRef 123/ABC, persisted 2, skipped 0, levy transaction total 175.25, transactions created 2",
             LogLevel.Information,
             Times.Once());
     }
@@ -78,7 +111,9 @@ public class WhenPersistingLevyDeclarations
         var first = await _handler.Handle(command, CancellationToken.None);
         var replay = await _handler.Handle(command, CancellationToken.None);
 
+        first.DeclarationsReceived.Should().Be(2);
         first.TransactionsCreated.Should().Be(2);
+        replay.DeclarationsReceived.Should().Be(2);
         replay.DeclarationsPersisted.Should().Be(0);
         replay.DeclarationsSkipped.Should().Be(2);
         replay.TransactionsCreated.Should().Be(0);
@@ -108,9 +143,41 @@ public class WhenPersistingLevyDeclarations
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
+        result.DeclarationsReceived.Should().Be(2);
         result.DeclarationsPersisted.Should().Be(2);
+        result.DeclarationsSkipped.Should().Be(0);
+        result.LevyTransactionValue.Should().Be(0);
         result.TransactionsCreated.Should().Be(0);
         _repository.VerifyAll();
+    }
+
+    [Test]
+    public async Task Then_Logs_Context_And_Rethrows_When_Persistence_Fails()
+    {
+        var command = CreateCommand();
+        var expectedException = new InvalidOperationException("Database unavailable");
+        _repository
+            .Setup(x => x.PersistLevyDeclarations(
+                It.IsAny<IEnumerable<DasDeclaration>>(),
+                command.Data.EmpRef,
+                command.Data.AccountId,
+                true,
+                It.IsAny<CancellationToken>()))
+            .ThrowsAsync(expectedException);
+
+        var actualException = Assert.ThrowsAsync<InvalidOperationException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        actualException.Should().BeSameAs(expectedException);
+        _logger.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) => state.ToString() ==
+                    "[CorrelationId: corr-123] Persist levy declarations failed for AccountId 123, EmpRef 123/ABC, declarations received 2"),
+                It.Is<Exception>(exception => ReferenceEquals(exception, expectedException)),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
     }
 
     private static bool DeclarationsMatch(IEnumerable<DasDeclaration> declarations)

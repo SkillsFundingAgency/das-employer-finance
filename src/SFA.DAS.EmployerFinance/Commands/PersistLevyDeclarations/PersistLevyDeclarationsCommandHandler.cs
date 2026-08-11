@@ -55,8 +55,10 @@ public class PersistLevyDeclarationsCommandHandler(
 
             return new PersistLevyDeclarationsResponse
             {
+                DeclarationsReceived = received,
                 DeclarationsPersisted = persistenceResult.DeclarationsPersisted,
                 DeclarationsSkipped = declarationsSkipped,
+                LevyTransactionValue = persistenceResult.LevyTransactionValue,
                 TransactionsCreated = persistenceResult.TransactionsCreated
             };
         }
