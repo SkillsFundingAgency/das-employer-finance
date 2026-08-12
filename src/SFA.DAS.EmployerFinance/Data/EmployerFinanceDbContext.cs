@@ -40,7 +40,6 @@ public class EmployerFinanceDbContext : DbContext
     public virtual DbSet<JobRun> JobRuns { get; set; }
     public virtual DbSet<WorkflowLog> WorkflowLogs { get; set; }
     public virtual DbSet<LevyDeclarationEntity> LevyDeclarations { get; set; }
-
     public EmployerFinanceDbContext() { }   
 
     public EmployerFinanceDbContext(DbContextOptions options) : base(options) { }
