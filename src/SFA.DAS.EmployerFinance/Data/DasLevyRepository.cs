@@ -391,11 +391,11 @@ public class DasLevyRepository(
             LevyAllowanceForFullYear = declaration.LevyAllowanceForYear ?? decimal.Zero,
             PayrollYear = declaration.PayrollYear,
             PayrollMonth = declaration.PayrollMonth,
-            NoPaymentForPeriod = declaration.NoPaymentForPeriod,
+            NoPaymentForPeriod = declaration.NoPaymentForPeriod ?? false,
             DateCeased = declaration.DateCeased,
             InactiveFrom = declaration.InactiveFrom,
             InactiveTo = declaration.InactiveTo,
-            EndOfYearAdjustment = declaration.EndOfYearAdjustment,
+            EndOfYearAdjustment = declaration.EndOfYearAdjustment ?? false,
             EndOfYearAdjustmentAmount = declaration.EndOfYearAdjustmentAmount ?? decimal.Zero,
             SubmissionId = declaration.SubmissionId
         };
