@@ -2,8 +2,13 @@
 	@AccountId BIGINT,
 	@EmpRef NVARCHAR(50),
 	@currentDate DATETIME = NULL,
-	@expiryPeriod INT = NULL
+	@expiryPeriod INT = NULL,
+	@TransactionsCreated INT = 0 OUTPUT
 AS
+
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+SET @TransactionsCreated = 0;
 
 --Add the topup from the declaration
 INSERT INTO [employer_financial].LevyDeclarationTopup
@@ -103,6 +108,9 @@ select mainUpdate.* from
 	EXCEPT
 		select SubmissionId from [employer_financial].TransactionLine where TransactionType = 1
 	) dervx on dervx.SubmissionId = mainUpdate.SubmissionId
+
+	SELECT @TransactionsCreated = COUNT(*)
+	FROM @updatedAccountTransactions
 
 	SELECT ISNULL(SUM(Amount), 0)
 	FROM @updatedAccountTransactions
