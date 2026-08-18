@@ -83,7 +83,7 @@ public class WhenIGetLastEnglishFractionCalculationDate
     }
 
     [Test]
-    public async Task ThenReturnsBadRequestWhenTheEmployerReferenceIsInvalid()
+    public async Task ThenValidationExceptionIsThrown_WhenTheEmployerReferenceIsInvalid()
     {
         var validationResult = new System.ComponentModel.DataAnnotations.ValidationResult(
             "Validation failed",
@@ -95,11 +95,8 @@ public class WhenIGetLastEnglishFractionCalculationDate
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ValidationException(validationResult, null, null));
 
-        var result = await _controller.GetLastCalculationDate(string.Empty);
+        var act = () => _controller.GetLastCalculationDate(string.Empty);
 
-        result.Should().BeOfType<BadRequestObjectResult>();
-        var response = ((BadRequestObjectResult)result).Value.Should()
-            .BeOfType<Dictionary<string, string>>().Subject;
-        response.Should().Contain("EmpRef", "EmpRef has not been supplied");
+        await act.Should().ThrowAsync<ValidationException>();
     }
 }

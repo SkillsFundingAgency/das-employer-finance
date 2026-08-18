@@ -13,16 +13,9 @@ public class EnglishFractionCalculationDateController(EnglishFractionCalculation
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetLastCalculationDate([FromRoute] string empRef)
     {
-        try
-        {
-            var decodedEmpRef = string.IsNullOrEmpty(empRef) ? empRef : Uri.UnescapeDataString(empRef);
-            var result = await orchestrator.GetLastCalculationDate(decodedEmpRef);
-            return Ok(result);
-        }
-        catch (ValidationException ex)
-        {
-            return BadRequest(GetValidationErrors(ex));
-        }
+        var decodedEmpRef = string.IsNullOrEmpty(empRef) ? empRef : Uri.UnescapeDataString(empRef);
+        var result = await orchestrator.GetLastCalculationDate(decodedEmpRef);
+        return Ok(result);
     }
 
     [HttpPost]
