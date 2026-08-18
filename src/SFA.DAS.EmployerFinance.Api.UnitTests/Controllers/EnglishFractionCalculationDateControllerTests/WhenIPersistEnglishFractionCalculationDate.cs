@@ -50,7 +50,7 @@ public class WhenIPersistEnglishFractionCalculationDate
     }
 
     [Test]
-    public async Task ThenItReturnsBadRequestWithValidationErrors_WhenDateIsInvalid()
+    public async Task ThenValidationExceptionIsThrown_WhenDateIsInvalid()
     {
         var request = new EnglishFractionCalculationDateRequest
         {
@@ -68,13 +68,8 @@ public class WhenIPersistEnglishFractionCalculationDate
             .Setup(x => x.Send(It.IsAny<CreateEnglishFractionCalculationDateCommand>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ValidationException(validationResult, null, null));
 
-        var result = await _controller.Persist(request);
+        var act = () => _controller.Persist(request);
 
-        result.Should().BeOfType<BadRequestObjectResult>();
-
-        var response = ((BadRequestObjectResult)result).Value as Dictionary<string, string>;
-        response.Should().NotBeNull();
-        response!.Should().ContainKey("DateCalculated");
-        response["DateCalculated"].Should().Be("DateCalculated has not been supplied");
+        await act.Should().ThrowAsync<ValidationException>();
     }
 }

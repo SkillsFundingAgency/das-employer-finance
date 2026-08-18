@@ -12,7 +12,7 @@ public class EnglishFractionsOrchestrator(IMediator mediator, ILogger<EnglishFra
 
     public async Task<EnglishFractionsResponse> PersistEnglishFractions(EnglishFractionsRequest request)
     {
-        _logger.LogInformation("Persisting english fractions for empRef {EmpRef}", request.EmpRef);
+        _logger.LogInformation("Persisting english fractions");
 
         var fractions = request.Fractions?
             .Select(f => new Models.Levy.DasEnglishFraction
