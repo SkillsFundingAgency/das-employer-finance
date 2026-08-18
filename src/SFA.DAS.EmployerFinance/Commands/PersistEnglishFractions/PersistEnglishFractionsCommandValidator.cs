@@ -12,6 +12,22 @@ public class PersistEnglishFractionsCommandValidator : IValidator<PersistEnglish
         {
             validationResult.AddError(nameof(item.EmployerReference), "EmployerReference has not been supplied");
         }
+        else if (!EmployerReferenceValidation.TryNormalise(item.EmployerReference, out var normalisedEmployerReference))
+        {
+            validationResult.AddError(nameof(item.EmployerReference), "EmployerReference must be a valid PAYE reference");
+        }
+        else
+        {
+            item.EmployerReference = normalisedEmployerReference;
+
+            if (item.Fractions != null)
+            {
+                foreach (var fraction in item.Fractions)
+                {
+                    fraction.EmpRef = normalisedEmployerReference;
+                }
+            }
+        }
 
         if (item.DateCalculated == DateTime.MinValue)
         {
