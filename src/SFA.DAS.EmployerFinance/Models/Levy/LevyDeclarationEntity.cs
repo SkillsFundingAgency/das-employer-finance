@@ -12,11 +12,11 @@ public class LevyDeclarationEntity
     public string PayrollYear { get; set; }
     public short? PayrollMonth { get; set; }
     public DateTime CreatedDate { get; set; }
-    public bool EndOfYearAdjustment { get; set; }
+    public bool? EndOfYearAdjustment { get; set; }
     public decimal? EndOfYearAdjustmentAmount { get; set; }
     public DateTime? DateCeased { get; set; }
     public DateTime? InactiveFrom { get; set; }
     public DateTime? InactiveTo { get; set; }
     public long? HmrcSubmissionId { get; set; }
-    public bool NoPaymentForPeriod { get; set; }
+    public bool? NoPaymentForPeriod { get; set; }
 }

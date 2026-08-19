@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +20,13 @@ public class UserController(IMediator mediator, ILogger<UserController> logger) 
             await mediator.Send(command);
             return Ok();
         }
-        catch(Exception e)
+        catch (ValidationException)
         {
-            logger.LogError(e,"Error in UserController PUT");
+            throw;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error in UserController PUT");
             return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
         }
     }
