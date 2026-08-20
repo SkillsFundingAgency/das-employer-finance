@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Time;
+using SFA.DAS.EmployerFinance.Types.Models;
 using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations;
@@ -17,6 +18,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IEncodingService, EncodingService>();
         services.AddTransient<IDasLevyService, DasLevyService>();
         services.AddTransient<ICurrentDateTime, CurrentDateTime>();
+        services.AddTransient<IExpiredFunds, ExpiredFunds>();
 
         services.AddSingleton<IHmrcDateService, HmrcDateService>();
         services.AddScoped<ILinkGeneratorWrapper, LinkGeneratorWrapper>();
