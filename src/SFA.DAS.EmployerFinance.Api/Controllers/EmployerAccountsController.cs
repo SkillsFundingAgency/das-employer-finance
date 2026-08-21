@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
-using SFA.DAS.EmployerFinance.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
@@ -109,36 +107,5 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
         }
 
         return Ok(result);
-    }
-
-    [HttpPost("{accountId}/expire-funds")]
-    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> ExpireFunds(
-        long accountId,
-        [FromBody] ExpireFundsRequest request)
-    {
-        if (request is null)
-        {
-            return BadRequest("Expire funds payload is required.");
-        }
-
-        try
-        {
-            var response = await financeOrchestrator.ExpireFunds(accountId, request.CorrelationId);
-            return Ok(response);
-        }
-        catch (ValidationException exception)
-        {
-            return BadRequest(GetValidationErrors(exception));
-        }
-    }
-
-    private static Dictionary<string, string> GetValidationErrors(ValidationException exception)
-    {
-        return exception.ValidationResult?.MemberNames
-                   .Select(member => member.Split('|', 2))
-                   .Where(member => member.Length == 2)
-                   .ToDictionary(member => member[0], member => member[1])
-               ?? new Dictionary<string, string> { { "Validation", exception.Message } };
     }
 }
