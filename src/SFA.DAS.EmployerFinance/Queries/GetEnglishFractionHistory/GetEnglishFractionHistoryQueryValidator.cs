@@ -13,16 +13,25 @@ public class GetEnglishFractionHistoryQueryValidator : IValidator<GetEnglishFrac
             validationResult.AddError(nameof(item.HashedAccountId));
         }
 
-        if (string.IsNullOrEmpty(item.EmpRef))
+        if (string.IsNullOrWhiteSpace(item.EmpRef))
         {
             validationResult.AddError(nameof(item.EmpRef));
         }
-           
+        else if (!EmployerReferenceValidation.TryNormalise(item.EmpRef, out var normalisedEmployerReference))
+        {
+            validationResult.AddError(nameof(item.EmpRef), "EmpRef must be a valid PAYE reference");
+        }
+        else
+        {
+            item.EmpRef = normalisedEmployerReference;
+        }
+
         return validationResult;
     }
 
-    public Task<ValidationResult> ValidateAsync(GetEnglishFractionHistoryQuery item)
+    public Task<ValidationResult> ValidateAsync(
+        GetEnglishFractionHistoryQuery item)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(Validate(item));
     }
 }

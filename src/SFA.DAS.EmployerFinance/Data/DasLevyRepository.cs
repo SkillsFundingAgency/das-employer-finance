@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore.Storage;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Data.Contracts;
@@ -47,7 +48,67 @@ public class DasLevyRepository(
 
     public async Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId)
     {
-        foreach (var dasDeclaration in declarations)
+        await CreateEmployerDeclarations(
+            declarations,
+            empRef,
+            accountId,
+            db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            CancellationToken.None);
+    }
+
+    public async Task<LevyPersistenceResult> PersistLevyDeclarations(
+        IEnumerable<DasDeclaration> declarations,
+        string empRef,
+        long accountId,
+        bool generateTransactions,
+        CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await db.Value.Database.BeginTransactionAsync(cancellationToken);
+        var dbTransaction = transaction.GetDbTransaction();
+
+        var declarationsPersisted = await CreateEmployerDeclarations(
+            declarations,
+            empRef,
+            accountId,
+            dbTransaction,
+            cancellationToken);
+
+        var result = new LevyPersistenceResult
+        {
+            DeclarationsPersisted = declarationsPersisted
+        };
+
+        if (generateTransactions)
+        {
+            var parameters = CreateProcessDeclarationsParameters(accountId, empRef);
+            parameters.Add("@TransactionsCreated", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            result.LevyTransactionValue = await db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
+                new CommandDefinition(
+                    "[employer_financial].[ProcessDeclarationsTransactions]",
+                    parameters,
+                    dbTransaction,
+                    commandTimeout: 120,
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: cancellationToken));
+            result.TransactionsCreated = parameters.Get<int>("@TransactionsCreated");
+        }
+
+        await transaction.CommitAsync(cancellationToken);
+        return result;
+    }
+
+    private async Task<int> CreateEmployerDeclarations(
+        IEnumerable<DasDeclaration> declarations,
+        string empRef,
+        long accountId,
+        IDbTransaction? transaction,
+        CancellationToken cancellationToken)
+    {
+        var declarationsPersisted = 0;
+
+        foreach (var dasDeclaration in declarations.OrderBy(
+                     declaration => long.Parse(declaration.Id, CultureInfo.InvariantCulture)))
         {
             var parameters = new DynamicParameters();
 
@@ -80,13 +141,19 @@ public class DasLevyRepository(
             parameters.Add("@EndOfYearAdjustment", dasDeclaration.EndOfYearAdjustment, DbType.Boolean);
             parameters.Add("@EndOfYearAdjustmentAmount", dasDeclaration.EndOfYearAdjustmentAmount, DbType.Decimal);
             parameters.Add("@NoPaymentForPeriod", dasDeclaration.NoPaymentForPeriod, DbType.Boolean);
+            parameters.Add("@DeclarationCreated", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
             await db.Value.Database.GetDbConnection().ExecuteAsync(
-                sql: "[employer_financial].[CreateDeclaration]",
-                param: parameters,
-                transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+                new CommandDefinition(
+                    "[employer_financial].[CreateDeclaration]",
+                    parameters,
+                    transaction,
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: cancellationToken));
+            declarationsPersisted += parameters.Get<int>("@DeclarationCreated");
         }
+
+        return declarationsPersisted;
     }
 
     public Task CreateNewPeriodEnd(PeriodEnd periodEnd)
@@ -312,9 +379,7 @@ public class DasLevyRepository(
     private IQueryable<LevyDeclarationEntity> GetLastPositiveNetDeclarationQuery() =>
         db.Value.LevyDeclarations
             .AsNoTracking()
-            .Where(x => x.LevyDueYtd != null
-                        && x.LevyAllowanceForYear != null
-                        && (x.LevyDueYtd - x.LevyAllowanceForYear) > 0)
+            .Where(x => x.LevyDueYtd != null && x.LevyDueYtd > 0)
             .OrderByDescending(x => x.SubmissionDate);
 
     private static DasDeclaration MapToDasDeclaration(LevyDeclarationEntity declaration) =>
@@ -326,11 +391,11 @@ public class DasLevyRepository(
             LevyAllowanceForFullYear = declaration.LevyAllowanceForYear ?? decimal.Zero,
             PayrollYear = declaration.PayrollYear,
             PayrollMonth = declaration.PayrollMonth,
-            NoPaymentForPeriod = declaration.NoPaymentForPeriod,
+            NoPaymentForPeriod = declaration.NoPaymentForPeriod ?? false,
             DateCeased = declaration.DateCeased,
             InactiveFrom = declaration.InactiveFrom,
             InactiveTo = declaration.InactiveTo,
-            EndOfYearAdjustment = declaration.EndOfYearAdjustment,
+            EndOfYearAdjustment = declaration.EndOfYearAdjustment ?? false,
             EndOfYearAdjustmentAmount = declaration.EndOfYearAdjustmentAmount ?? decimal.Zero,
             SubmissionId = declaration.SubmissionId
         };
@@ -391,28 +456,32 @@ public class DasLevyRepository(
 
     public Task<decimal> ProcessDeclarations(long accountId, string empRef)
     {
-        var parameters = new DynamicParameters();
+        var parameters = CreateProcessDeclarationsParameters(accountId, empRef);
 
-        parameters.Add("@AccountId", accountId, DbType.Int64);
-        parameters.Add("@EmpRef", empRef, DbType.String);
-        parameters.Add("@currentDate", currentDateTime.Now, DbType.DateTime);
-
-        if (configuration.FundsExpiryPolicyChangeDate != null 
-            && currentDateTime.Now > configuration.FundsExpiryPolicyChangeDate)
-        {
-            parameters.Add("@expiryPeriod", 12, DbType.Int32);    
-        }
-        else
-        {
-            parameters.Add("@expiryPeriod", configuration.FundsExpiryPeriod, DbType.Int32);
-        }
-        
         return db.Value.Database.GetDbConnection().QuerySingleAsync<decimal>(
             sql: "[employer_financial].[ProcessDeclarationsTransactions]",
             param: parameters,
             commandTimeout: 120,
             transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
+    }
+
+    private DynamicParameters CreateProcessDeclarationsParameters(long accountId, string empRef)
+    {
+        var parameters = new DynamicParameters();
+        var now = currentDateTime.Now;
+
+        parameters.Add("@AccountId", accountId, DbType.Int64);
+        parameters.Add("@EmpRef", empRef, DbType.String);
+        parameters.Add("@currentDate", now, DbType.DateTime);
+        parameters.Add(
+            "@expiryPeriod",
+            configuration.FundsExpiryPolicyChangeDate != null && now > configuration.FundsExpiryPolicyChangeDate
+                ? 12
+                : configuration.FundsExpiryPeriod,
+            DbType.Int32);
+
+        return parameters;
     }
 
     public Task ProcessPaymentData(long accountId)
@@ -618,5 +687,28 @@ public class DasLevyRepository(
     {
         return await db.Value.Accounts
             .SingleOrDefaultAsync(ac => ac.Id == accountId);
+    }
+    public async Task<List<SFA.DAS.EmployerFinance.Api.Types.ExistingPeriod12LevyDeclarationResult>> GetExistingPeriod12LevyDeclarations(
+        string empRef,
+        string payrollYear,
+        short payrollMonth)
+    {
+        return await db.Value.LevyDeclarations
+            .AsNoTracking()
+            .Where(ld =>
+                ld.EmpRef == empRef &&
+                ld.PayrollYear == payrollYear &&
+                ld.PayrollMonth == payrollMonth)
+            .OrderByDescending(ld => ld.SubmissionDate)
+            .Select(ld => new SFA.DAS.EmployerFinance.Api.Types.ExistingPeriod12LevyDeclarationResult
+            {
+                Id = ld.SubmissionId.ToString(),
+                LevyDueYtd = ld.LevyDueYtd,
+                SubmissionDate = ld.SubmissionDate ?? new DateTime(1900, 1, 1),
+                PayrollYear = ld.PayrollYear,
+                PayrollMonth = (short)ld.PayrollMonth,
+                SubmissionId = ld.HmrcSubmissionId ?? ld.SubmissionId
+            })
+            .ToListAsync();
     }
 }

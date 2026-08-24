@@ -8,6 +8,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
+using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
@@ -74,34 +75,48 @@ public class FinanceOrchestrator(
 
     public async Task<List<DasEnglishFraction>> GetEnglishFractionHistory(string hashedAccountId, string empRef)
     {
-        _logger.LogInformation("Requesting english fraction history for account {HashedAccountId}, empRef {EmpRef}", hashedAccountId, empRef);
+        _logger.LogInformation("Requesting english fraction history for account {HashedAccountId}", hashedAccountId);
 
-        var response = await _mediator.Send(new GetEnglishFractionHistoryQuery { HashedAccountId = hashedAccountId, EmpRef = empRef });
+        var response = await _mediator.Send(new GetEnglishFractionHistoryQuery
+        {
+            HashedAccountId = hashedAccountId,
+            EmpRef = empRef
+        });
+
         if (response.FractionDetail == null)
         {
             return null;
         }
 
-        var dasEnglishFractions = response.FractionDetail.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
+        var dasEnglishFractions = response.FractionDetail
+            .Select(x => _mapper.Map<DasEnglishFraction>(x))
+            .ToList();
 
-        _logger.LogInformation("Received response for english fraction history for account {HashedAccountId}, empRef {EmpRef}", hashedAccountId, empRef);
+        _logger.LogInformation("Received response for english fraction history for account {HashedAccountId}", hashedAccountId);
 
         return dasEnglishFractions;
     }
 
     public async Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(string hashedAccountId, string[] empRefs)
     {
-        _logger.LogInformation("Requesting current english fractions for account {HashedAccountId}, empRefs {EmpRefs}", hashedAccountId, string.Join(", ", empRefs));
+        _logger.LogInformation("Requesting current english fractions for account {HashedAccountId}", hashedAccountId);
 
-        var response = await _mediator.Send(new GetEnglishFractionCurrentQuery { HashedAccountId = hashedAccountId, EmpRefs = empRefs });
+        var response = await _mediator.Send(new GetEnglishFractionCurrentQuery
+        {
+            HashedAccountId = hashedAccountId,
+            EmpRefs = empRefs
+        });
+
         if (response.Fractions == null)
         {
             return null;
         }
 
-        var dasEnglishFractions = response.Fractions.Select(x => _mapper.Map<DasEnglishFraction>(x)).ToList();
+        var dasEnglishFractions = response.Fractions
+            .Select(x => _mapper.Map<DasEnglishFraction>(x))
+            .ToList();
 
-        _logger.LogInformation("Received response for current english fractions for account {HashedAccountId}, empRefs {EmpRefs}", hashedAccountId, string.Join(", ", empRefs));
+        _logger.LogInformation("Received response for current english fractions for account {HashedAccountId}", hashedAccountId);
 
         return dasEnglishFractions;
     }
@@ -228,5 +243,26 @@ public class FinanceOrchestrator(
         _logger.LogInformation("Received response - PAYE schemes for accountId {AccountId}: {Count}", accountId, result.Count);
 
         return result;
+    }
+
+    public async Task<PayeSchemeLastSubmissionDate> GetLastSubmissionDateForPayeScheme(string empRef)
+    {
+        _logger.LogInformation("Requesting last levy submission date for empRef {EmpRef}", empRef);
+
+        var response = await _mediator.Send(new GetLastLevyDeclarationQuery { EmpRef = empRef });
+
+        DateTime? submissionDate = response?.Transaction?.SubmissionDate;
+        if (submissionDate == DateTime.MinValue)
+        {
+            submissionDate = null;
+        }
+
+        _logger.LogInformation("Received last levy submission date for empRef {EmpRef}", empRef);
+
+        return new PayeSchemeLastSubmissionDate
+        {
+            EmpRef = empRef,
+            LastSubmissionDate = submissionDate
+        };
     }
 }

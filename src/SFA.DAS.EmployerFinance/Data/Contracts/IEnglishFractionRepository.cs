@@ -7,5 +7,6 @@ public interface IEnglishFractionRepository
     Task CreateEmployerFraction(DasEnglishFraction fractions, string employerReference);
     Task<IEnumerable<DasEnglishFraction>> GetAllEmployerFractions(string employerReference);
     Task<DateTime> GetLastUpdateDate();
+    Task<DateTime?> GetLastStoredCalculationDateForEmpRef(string employerReference);
     Task SetLastUpdateDate(DateTime dateUpdated);
 }

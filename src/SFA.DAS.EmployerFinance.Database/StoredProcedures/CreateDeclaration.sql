@@ -14,11 +14,22 @@
 	@InactiveTo DATETIME = NULL,
 	@EndOfYearAdjustment BIT,
 	@EndOfYearAdjustmentAmount DECIMAL(18,4),
-	@NoPaymentForPeriod BIT
+	@NoPaymentForPeriod BIT,
+	@DeclarationCreated INT = 0 OUTPUT
 AS
-	
 
-INSERT INTO [employer_financial].[LevyDeclaration] 
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+SET @DeclarationCreated = 0;
+
+IF NOT EXISTS
+(
+	SELECT 1
+	FROM [employer_financial].[LevyDeclaration] WITH (UPDLOCK, HOLDLOCK)
+	WHERE SubmissionId = @SubmissionId
+)
+BEGIN
+	INSERT INTO [employer_financial].[LevyDeclaration]
 	(
 		LevyDueYTD, 
 		EmpRef, 
@@ -56,3 +67,6 @@ VALUES
 		@HmrcSubmissionId,
 		@NoPaymentForPeriod
 	);
+
+	SET @DeclarationCreated = 1;
+END
