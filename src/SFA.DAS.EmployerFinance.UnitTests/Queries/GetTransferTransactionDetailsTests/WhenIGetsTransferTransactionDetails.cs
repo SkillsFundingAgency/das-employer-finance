@@ -25,14 +25,17 @@ class WhenAReceiverGetsTransferTransactionDetails
     private const string FirstCourseName = "Course 1";
     private const string SecondCourseName = "Course 2";
 
+    private const long CohortId = 920;
+    private const string CohortReference = "TEST1234";
+
     private GetTransferTransactionDetailsQueryHandler _handler;
     private GetTransferTransactionDetailsQuery _query;
     private Mock<EmployerFinanceDbContext> _db;
     private List<AccountTransfer> _transfers;
     private Mock<IEncodingService> _encodingService;
     private PeriodEnd _periodEnd;
-    private TransactionLineEntity _senderTranferTransaction;
-    private TransactionLineEntity _recieverTranferTransaction;
+    private TransactionLineEntity _senderTransferTransaction;
+    private TransactionLineEntity _receiverTransferTransaction;
 
     [SetUp]
     public void Assign()
@@ -51,7 +54,7 @@ class WhenAReceiverGetsTransferTransactionDetails
             PaymentsForPeriod = "Test"
         };
 
-        _senderTranferTransaction = new TransactionLineEntity
+        _senderTransferTransaction = new TransactionLineEntity
         {
             AccountId = SenderAccountId,
             TransferSenderAccountId = SenderAccountId,
@@ -61,14 +64,14 @@ class WhenAReceiverGetsTransferTransactionDetails
             TransactionType = TransactionItemType.Transfer
         };
 
-        _recieverTranferTransaction = new TransactionLineEntity
+        _receiverTransferTransaction = new TransactionLineEntity
         {
             AccountId = ReceiverAccountId,
             PeriodEnd = PeriodEnd,
             TransferSenderAccountId = SenderAccountId,
             TransferReceiverAccountId = ReceiverAccountId,
             DateCreated = DateTime.Now.AddDays(-1),
-            TransactionType = TransactionItemType.Transfer
+            TransactionType = TransactionItemType.Transfer,
         };
 
 
@@ -83,8 +86,8 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         _handler = new GetTransferTransactionDetailsQueryHandler(new Lazy<EmployerFinanceDbContext>(() => _db.Object), _encodingService.Object, Mock.Of<ILogger<GetTransferTransactionDetailsQueryHandler>>());
 
-        _transfers = new List<AccountTransfer>
-        {
+        _transfers =
+        [
             new()
             {
                 SenderAccountId = SenderAccountId,
@@ -94,9 +97,9 @@ class WhenAReceiverGetsTransferTransactionDetails
                 ApprenticeshipId = 1,
                 CourseName = "Unknown Course",
                 Amount = 123.4567M,
-                PeriodEnd = PeriodEnd
-
+                PeriodEnd = PeriodEnd,
             },
+
             new()
             {
                 SenderAccountId = SenderAccountId,
@@ -108,6 +111,7 @@ class WhenAReceiverGetsTransferTransactionDetails
                 Amount = 346.789M,
                 PeriodEnd = PeriodEnd
             },
+
             new()
             {
                 SenderAccountId = SenderAccountId,
@@ -119,7 +123,7 @@ class WhenAReceiverGetsTransferTransactionDetails
                 Amount = 234.56M,
                 PeriodEnd = PeriodEnd
             }
-        };
+        ];
 
         var payments = new List<Payment>
         {
@@ -168,19 +172,22 @@ class WhenAReceiverGetsTransferTransactionDetails
             {
                 Id = 222,
                 ApprenticeshipCourseName = FirstCourseName,
-                ApprenticeshipCourseLevel = 6
+                ApprenticeshipCourseLevel = 6,
+                CohortId = CohortId
             },
             new()
             {
                 Id = 333,
                 ApprenticeshipCourseName = SecondCourseName,
-                ApprenticeshipCourseLevel = 7
+                ApprenticeshipCourseLevel = 7,
+                CohortId = CohortId
             },
             new()
             {
                 Id = 444,
                 ApprenticeshipCourseName = SecondCourseName,
-                ApprenticeshipCourseLevel = 7
+                ApprenticeshipCourseLevel = 7,
+                CohortId = CohortId
             }
         };
 
@@ -193,8 +200,8 @@ class WhenAReceiverGetsTransferTransactionDetails
         _db.Setup(x => x.PeriodEnds).ReturnsDbSet(new List<PeriodEnd>{_periodEnd});
 
         _db.Setup(x => x.Transactions).ReturnsDbSet(new List<TransactionLineEntity>{
-            _senderTranferTransaction,
-            _recieverTranferTransaction});
+            _senderTransferTransaction,
+            _receiverTransferTransaction});
 
         _encodingService.Setup(x => x.Decode(SenderPublicHashedId, EncodingType.PublicAccountId))
             .Returns(SenderAccountId);
@@ -207,6 +214,9 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         _encodingService.Setup(x => x.Encode(ReceiverAccountId, EncodingType.PublicAccountId))
             .Returns(ReceiverPublicHashedId);
+
+        _encodingService.Setup(x => x.Encode(CohortId, EncodingType.CohortReference))
+            .Returns(CohortReference);
     }
 
     [Test]
@@ -272,9 +282,6 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         var secondCourseApprenticeCount = result.TransferDetails.Single(t => t.CourseName.Equals(SecondCourseName))
             .ApprenticeCount;
-        
-        var expectedSecondCourseApprenticeCount =
-            _transfers.Count(t => t.CourseName.Equals(SecondCourseName));
 
         firstCourseApprenticeCount.Should().Be(1);
         secondCourseApprenticeCount.Should().Be(2);
@@ -307,7 +314,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(query, CancellationToken.None);
 
         //Assert
-        result.DateCreated.Should().Be(_senderTranferTransaction.DateCreated);
+        result.DateCreated.Should().Be(_senderTransferTransaction.DateCreated);
     }
 
     [Test]
@@ -317,7 +324,7 @@ class WhenAReceiverGetsTransferTransactionDetails
         var result = await _handler.Handle(_query, CancellationToken.None);
 
         //Assert
-        result.DateCreated.Should().Be(_recieverTranferTransaction.DateCreated);
+        result.DateCreated.Should().Be(_receiverTransferTransaction.DateCreated);
     }
 
     [Test]
@@ -346,5 +353,18 @@ class WhenAReceiverGetsTransferTransactionDetails
 
         //Assert
         result.IsCurrentAccountSender.Should().BeTrue();
+    }
+
+    [Test]
+    public async Task ThenIShouldBeToGetTheCohortReference()
+    {
+        //Arrange
+        ////Act
+        var result = await _handler.Handle(_query, CancellationToken.None);
+
+        //Assert
+        result.TransferDetails.Should().HaveCount(2);
+        result.TransferDetails.ToList()[0].CohortReference.Should().Be(CohortReference);
+        result.TransferDetails.ToList()[1].CohortReference.Should().Be(CohortReference);
     }
 }

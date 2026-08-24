@@ -9,6 +9,7 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.FindEmployerAccountPaymentTr
 public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccountProviderPaymentsHandler, FindAccountProviderPaymentsQuery, FindAccountProviderPaymentsResponse>
 {
     private const string ProviderName = "Test Provider";
+    private const string SenderAccountName = "Test Sender Account";
 
     private Mock<IDasLevyService> _dasLevyService;
     private Mock<IEncodingService> _encodingService;
@@ -39,10 +40,9 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
         _dasLevyService = new Mock<IDasLevyService>();
         _dasLevyService.Setup(x => x.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
                 (It.IsAny<long>(), It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(new []
-            {
-                new PaymentTransactionLine { ProviderName = ProviderName }
-            });
+            .ReturnsAsync([
+                    new PaymentTransactionLine { ProviderName = ProviderName, SenderAccountName = SenderAccountName }
+                ]);
 
         Query = new FindAccountProviderPaymentsQuery
         {
@@ -82,7 +82,7 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
     }
 
     [Test]
-    public void ThenAnUnauhtorizedExceptionIsThrownIfTheValidationResultReturnsUnauthorized()
+    public void ThenAnUnauthorizedExceptionIsThrownIfTheValidationResultReturnsUnauthorized()
     {
         //Arrange
         RequestValidator.Setup(x => x.ValidateAsync(It.IsAny<FindAccountProviderPaymentsQuery>()))
@@ -103,16 +103,25 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
     }
 
     [Test]
+    public async Task ThenTheSenderAccountNameShouldBeAddedToTheResponse()
+    {
+        //Act
+        var actual = await RequestHandler.Handle(Query, CancellationToken.None);
+
+        //Assert
+        actual.SenderAccountName.Should().Be(SenderAccountName);
+    }
+
+    [Test]
     public async Task ThenTheTransactionDateShouldBeAddedToTheResponse()
     {
         //Arrange
         var transactionDate = DateTime.Now.AddDays(-2);
         _dasLevyService.Setup(x => x.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
                 (It.IsAny<long>(), It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(new []
-            {
+            .ReturnsAsync([
                 new PaymentTransactionLine {TransactionDate = transactionDate}
-            });
+            ]);
 
         //Act
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);
@@ -127,7 +136,7 @@ public class WhenIGetEmployerPaymentTransactionDetails : QueryBaseTest<FindAccou
         //Arrange
         _dasLevyService.Setup(x => x.GetAccountProviderPaymentsByDateRange<PaymentTransactionLine>
                 (It.IsAny<long>(), It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .ReturnsAsync(Array.Empty<PaymentTransactionLine>());
+            .ReturnsAsync([]);
 
         //Act
         var actual = await RequestHandler.Handle(Query, CancellationToken.None);

@@ -26,7 +26,8 @@ FROM (
 		p.Uln AS ApprenticeULN,
 		MAX(meta.ApprenticeNINumber) as ApprenticeNINumber,
 		SUM(CASE WHEN p.FundingSource = 2 THEN -p.Amount ELSE 0 END) as SfaCoInvestmentAmount,
-		SUM(CASE WHEN p.FundingSource = 3 THEN -p.Amount ELSE 0 END) as EmployerCoInvestmentAmount
+		SUM(CASE WHEN p.FundingSource = 3 THEN -p.Amount ELSE 0 END) as EmployerCoInvestmentAmount,
+		MAX(meta.CohortId) as CohortId
 	FROM [employer_financial].[TransactionLine] t
 		JOIN [employer_financial].[Payment] p
 			ON t.AccountId = p.AccountId AND t.PeriodEnd = p.PeriodEnd AND t.Ukprn = p.Ukprn

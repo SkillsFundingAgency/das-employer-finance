@@ -365,3 +365,7 @@
     max-height: 1.5rem;
     min-width: 1.5rem;
 }
+
+.govuk-summary-list__key--nowrap{
+    white-space: nowrap;
+}

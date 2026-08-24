@@ -9,4 +9,6 @@ public class FindAccountProviderPaymentsResponse
     public DateTime DateCreated { get; set; }
     public List<PaymentTransactionLine> Transactions { get; set; }
     public decimal Total { get; set; }
+    public string CohortReference { get; set; }
+    public string SenderAccountName { get; set; }
 }

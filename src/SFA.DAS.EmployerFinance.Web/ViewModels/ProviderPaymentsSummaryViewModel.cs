@@ -7,6 +7,7 @@ public class ProviderPaymentsSummaryViewModel
     public string HashedAccountId { get; set; }
     public long UkPrn { get; set; }
     public string ProviderName { get; set; }
+    public string SenderAccountName { get; set; }
     public DateTime PaymentDate { get; set; }
     public DateTime FromDate { get; set; }
     public DateTime ToDate { get; set; }
@@ -28,5 +29,7 @@ public class ProviderPaymentsSummaryViewModel
     public decimal PaymentsTotalCourses => CoursePayments.Sum(p => p.TotalAmount);
     public decimal PaymentsTotalApprenticeshipUnits => ApprenticeshipUnitGroupSummaries.Sum(p => p.TotalAmount);
     public decimal PaymentsTotal => PaymentsTotalCourses + PaymentsTotalApprenticeshipUnits;
-    public bool ShowNonCoInvesmentPaymentsTotal => LevyPaymentsTotal != 0 || ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy;
+    public bool ShowNonCoInvestmentPaymentsTotal => LevyPaymentsTotal != 0 || ApprenticeshipEmployerType == ApprenticeshipEmployerType.Levy;
+    public bool ShowTransferSenderName => ApprenticeshipEmployerType != ApprenticeshipEmployerType.Levy &&
+                                          !string.IsNullOrEmpty(SenderAccountName);
 }
