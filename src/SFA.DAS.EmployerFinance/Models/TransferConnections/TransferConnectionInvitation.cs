@@ -177,6 +177,8 @@ public class TransferConnectionInvitation : Entity
 
         Changes.Add(new TransferConnectionInvitationChange
         {
+            SenderAccount = SenderAccount,
+            ReceiverAccount = ReceiverAccount,
             Status = Status,
             User = senderUser,
             CreatedDate = now

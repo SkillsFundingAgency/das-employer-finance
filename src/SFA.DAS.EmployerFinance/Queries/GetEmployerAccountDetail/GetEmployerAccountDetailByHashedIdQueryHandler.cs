@@ -21,7 +21,7 @@ public class GetEmployerAccountDetailByHashedIdQueryHandler : IRequestHandler<Ge
 
     public async Task<GetEmployerAccountDetailByHashedIdResponse> Handle(GetEmployerAccountDetailByHashedIdQuery message,CancellationToken cancellationToken)
     {
-        var validationResult = _validator.Validate(message);
+        var validationResult = await _validator.ValidateAsync(message);
 
         if (!validationResult.IsValid())
         {
