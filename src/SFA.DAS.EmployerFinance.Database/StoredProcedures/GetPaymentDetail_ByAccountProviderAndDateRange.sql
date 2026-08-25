@@ -16,6 +16,7 @@ AS
 		pm.LearningType,
 		MAX(pm.ApprenticeshipCourseStartDate) AS CourseStartDate,
 		MAX(pm.ProviderName) AS ProviderName,
+        MAX(t.TransferSenderAccountName) As SenderAccountName,
 		MIN(t.DateCreated) AS DateCreated,
 		SUM(CASE WHEN p.FundingSource IN (1, 5) THEN p.Amount END) * -1 AS LineAmount,
 		SUM(CASE WHEN p.FundingSource = 2 THEN p.Amount END) * -1 AS SfaCoInvestmentAmount,

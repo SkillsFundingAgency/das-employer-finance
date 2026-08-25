@@ -9,7 +9,6 @@
     ViewBag.Section = "finance";
     ViewBag.GaData.Vpv = $"/finance/{ViewBag.PageID}";
 }
-
 @if (Model.IsCurrentAccountSender)
 {
     <h1 class="govuk-heading-xl">Levy transfer</h1>
@@ -18,7 +17,6 @@ else
 {
     <h1 class="govuk-heading-xl">Transfer received</h1>
 }
-
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
         <hr class="govuk-section-break govuk-section-break--visible">
@@ -50,6 +48,7 @@ else
     <thead class="govuk-table__head">
     <tr class="govuk-table__row">
         <th class="govuk-table__header govuk-table__header--numeric" scope="col">Course</th>
+        <th class="govuk-table__header govuk-table__header--numeric" scope="col">Cohort reference</th>
         <th class="govuk-table__header govuk-table__header--numeric" scope="col">Apprentices</th>
         <th class="govuk-table__header govuk-table__header--numeric" scope="col">Amount</th>
     </tr>
@@ -62,6 +61,9 @@ else
                 @(@transferDetail.CourseLevel.HasValue ?
                     $"{transferDetail.CourseName}: level {transferDetail.CourseLevel}" :
                     transferDetail.CourseName)
+            </td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">
+                    @transferDetail.CohortReference
             </td>
             <td class="govuk-table__cell govuk-table__cell--numeric">
                 @transferDetail.ApprenticeCount
@@ -80,9 +82,8 @@ else
             }
         </tr>
     }
-
     <tr class="govuk-table__row">
-        <td class="govuk-table__cell app-table__cell--transparent" colspan="2"> </td>
+        <td class="govuk-table__cell app-table__cell--transparent" colspan="3"> </td>
         @if (Model.IsCurrentAccountSender)
         {
             <td class="govuk-table__cell govuk-table__cell--numeric app-table__cell--total">@((Model.TransferPaymentTotal * -1).ToString("C2", culture))</td>
@@ -94,7 +95,6 @@ else
     </tr>
     </tbody>
 </table>
-
 @section breadcrumb {
     <a asp-route="@RouteNames.TransactionsView" asp-route-hashedAccountId="@Model.HashedAccountId" asp-route-year="@Model.DateCreated.Year" asp-route-month="@Model.DateCreated.Month" class="govuk-back-link">Back to transactions</a>    
 }
