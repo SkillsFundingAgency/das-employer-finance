@@ -121,6 +121,8 @@ public class TransferConnectionInvitationRepository(Lazy<EmployerFinanceDbContex
         return db.Value.TransferConnectionInvitations
             .Include(i => i.ReceiverAccount)
             .Include(i => i.SenderAccount)
+            .Include(i => i.Changes)
+            .ThenInclude(c => c.User)
             .Where(i =>
                 i.SenderAccountId == senderAccountId &&
                 i.Status == TransferConnectionInvitationStatus.Pending &&
