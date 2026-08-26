@@ -87,6 +87,34 @@ public class BulkPaymentsIngestTests
     }
 
     [Test]
+    public async Task BulkPaymentsIngest_ReturnsBadRequest_WhenValidationErrorsExist()
+    {
+        var request = new BulkPaymentsRequest
+        {
+            Payments = [new PaymentStagingModel { PaymentId = Guid.NewGuid() }]
+        };
+
+        var validationErrors = new List<string>
+        {
+            "Payments[0].ApprenticeshipId|ApprenticeshipId is mandatory and must be > 0."
+        };
+
+        _mediator
+            .Setup(m => m.Send(It.IsAny<BulkPaymentsIngestCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new BulkPaymentsIngestResponse
+            {
+                HasValidationErrors = true,
+                ValidationErrors = validationErrors
+            });
+
+        var result = await _stagingController.BulkPaymentsIngest(request);
+
+        result.Should().BeOfType<BadRequestObjectResult>();
+        var badRequest = (BadRequestObjectResult)result;
+        badRequest.Value.Should().BeEquivalentTo(validationErrors);
+    }
+
+    [Test]
     public async Task BulkPaymentsIngest_ReturnsInternalServerError_WhenOrchestratorFails()
     {
         // Arrange
