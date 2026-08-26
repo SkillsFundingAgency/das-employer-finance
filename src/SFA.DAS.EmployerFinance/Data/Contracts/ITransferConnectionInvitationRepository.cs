@@ -12,5 +12,6 @@ public interface ITransferConnectionInvitationRepository
     Task<TransferConnectionInvitation> GetLatestByReceiver(long receiverAccountId, TransferConnectionInvitationStatus status);
     Task<TransferConnectionInvitation> GetBySenderOrReceiver(int id, long accountId);
     Task<List<TransferConnectionInvitation>> GetBySenderOrReceiver(long accountId);
+    Task<List<TransferConnectionInvitation>> GetPendingBySender(long senderAccountId);
     Task<bool> AnyTransferConnectionInvitations(long senderAccountId, long receiverAccountId, List<TransferConnectionInvitationStatus> statuses);
 }

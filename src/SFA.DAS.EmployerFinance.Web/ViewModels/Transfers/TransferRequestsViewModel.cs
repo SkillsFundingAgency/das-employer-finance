@@ -9,8 +9,8 @@ public class TransferRequestsViewModel
     public IEnumerable<TransferRequestDto> TransferRequests { get; set; }
 
     public IEnumerable<TransferRequestDto> TransferSenderRequests =>
-        TransferRequests.Where(p => p.SenderAccount.Id == AccountId);
+        (TransferRequests ?? []).Where(p => p.SenderAccount.Id == AccountId);
 
     public IEnumerable<TransferRequestDto> TransferReceiverRequests =>
-        TransferRequests.Where(p => p.ReceiverAccount.Id == AccountId);
+        (TransferRequests ?? []).Where(p => p.ReceiverAccount.Id == AccountId);
 }
