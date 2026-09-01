@@ -1,0 +1,91 @@
+﻿@using System.Globalization
+@using SFA.DAS.EmployerFinance.Interfaces
+@inject IUrlActionHelper UrlHelpers;
+@model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
+@{
+    ViewBag.PageID = "finance";
+    ViewBag.Section = "finance";
+    ViewBag.Title = Model.Data.ShowLevyTransparency ? "Funding and payments" : "Finance";
+    ViewBag.GaData.Vpv = "/finance/home";
+    ViewBag.ZenDeskLabel = "eas-finance";
+
+    var culture = new CultureInfo("en-GB");
+    var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
+}
+@if (Model.Data.IsLevyEmployer)
+{
+    if (Model.Data.ShowLevyTransparency)
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                @if (Model.Data.ShowTopUpChange)
+                {
+                    <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
+                    <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
+                }
+                else
+                {
+                    <p class="govuk-body">The <b>apprenticeship levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. While employers do not own these funds, they can use them to cover apprenticeship costs.</p>
+                    <p class="govuk-body">Employers have 24 months to use funds, after which they are returned to support apprenticeship programmes.</p>
+                }
+            </div>
+        </div>
+        <div class="app-statement">
+            <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Latest summary</h2>
+            <p class="govuk-body">An overview of your account's financial activity.</p>
+            <div class="govuk-grid-row govuk-!-margin-top-6">
+                <div class="govuk-grid-column-one-third app-highlight-boxes-current-levy">
+                    <div class="app-highlight-boxes-projection__box">
+                        <p class="app-finance-figure__title" id="lbl-current-funds">Current levy funds</p>
+                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-current-funds">@balance</div>
+                    </div>
+                </div>
+            </div>
+            <div class="govuk-grid-row">
+                <div class="app-highlight-boxes">
+                    <div class="app-highlight-boxes-projection__box">
+                        <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
+                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-in">TBC</div>
+                        <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
+                    </div>
+                    <div class="app-highlight-boxes-projection__box">
+                        <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
+                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">TBC</div>
+                        <p class="govuk-!-margin-bottom-0 govuk-body-s">Payments to providers, learner costs and transfers in the past 12 months.</p>
+                    </div>
+                    <div class="app-highlight-boxes-projection__box">
+                        <p class="app-finance-figure__title" id="lbl-expired-levy">Expired levy</p>
+                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-expired-levy">TBC</div>
+                        <p class="govuk-!-margin-bottom-0 govuk-body-s">Funds returned to support Growth and Skills training in the past 12 months.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="govuk-grid-row govuk-!-margin-top-6">
+                <div class="govuk-grid-column-full">
+                    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
+                    <p class="govuk-body govuk-!-margin-top-0">Paid in monthly payments until learners complete training.</p>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    if (Model.Data.ShowLevyTransparency)
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+    }
+    else
+    {
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Finance</h1>
+    }
+}
+@section breadcrumb {
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction("teams")" class="govuk-breadcrumbs__link">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
+        </ol>
+    </div>
+}

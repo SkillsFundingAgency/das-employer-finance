@@ -1,8 +1,10 @@
 using AutoMapper;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
+using SFA.DAS.EmployerFinance.Models.FeatureToggle;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Authentication;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
@@ -19,7 +21,8 @@ public class EmployerAccountTransactionsController(
     IEmployerAccountTransactionsOrchestrator accountTransactionsOrchestrator,
     IMapper mapper,
     IMediator mediator,
-    IEncodingService encodingService)
+    IEncodingService encodingService,
+    IFeature feature)
     : Controller
 {
     [Route("finance/provider/summary")]
@@ -33,13 +36,14 @@ public class EmployerAccountTransactionsController(
     [Route("finance", Name = RouteNames.FinanceIndex)]
     public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
     {
-
         var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());
 
         if (viewModel.RedirectUrl != null)
             return Redirect(viewModel.RedirectUrl);
 
-        return View(viewModel);
+        return feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency) 
+            ? View("IndexV2", viewModel) 
+            : View(viewModel);
     }
 
     [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsGet)]
