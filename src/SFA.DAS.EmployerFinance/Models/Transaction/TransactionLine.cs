@@ -3,6 +3,7 @@
 public class TransactionLine
 {
     public long AccountId { get; set; }
+    public string TransferSourceDescription { get; set; } = null;
     public string Description { get; set; }
     public TransactionItemType TransactionType { get; set; }
     public DateTime TransactionDate { get; set; }

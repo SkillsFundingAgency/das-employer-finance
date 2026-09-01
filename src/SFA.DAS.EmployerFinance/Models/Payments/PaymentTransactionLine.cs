@@ -21,6 +21,8 @@ public class PaymentTransactionLine : TransactionLine
     public decimal SfaCoInvestmentAmount { get; set; }
     public decimal EmployerCoInvestmentAmount { get; set; }
     public LearningType? LearningType { get; set; }
+    public long? CohortId { get; set; }
+    public string SenderAccountName { get; set; }
 
     public bool IsCoInvested => SfaCoInvestmentAmount != 0 || EmployerCoInvestmentAmount != 0;
 }

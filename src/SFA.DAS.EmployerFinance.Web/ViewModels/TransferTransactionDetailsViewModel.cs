@@ -13,5 +13,4 @@ public class TransferTransactionDetailsViewModel
     public List<AccountTransferDetails> TransferDetails { get; set; }
     public decimal TransferPaymentTotal { get; set; }
     public DateTime DateCreated { get; set; }
-
 }

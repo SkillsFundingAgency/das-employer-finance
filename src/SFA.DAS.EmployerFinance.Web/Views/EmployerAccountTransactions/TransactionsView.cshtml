@@ -19,10 +19,9 @@
     var previousMonthDate = displayingMonthDate.AddMonths(-1);
     var nextMonthDate = displayingMonthDate.AddMonths(1);
 }
-
         <h1 class="govuk-heading-xl">
             Your transactions
-            <span class="govuk-caption-xl  govuk-!-margin-top-3">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
+            <span class="govuk-caption-xl govuk-!-margin-top-3">@displayingMonthDate.ToGdsFormatWithoutDay()</span>
         </h1>
 
         @if (Model.Data.IsLatestMonth && Model.Data.Account.ApprenticeshipEmployerType == nameof(ApprenticeshipEmployerType.Levy))
@@ -35,8 +34,6 @@
             </div>
     
         }
-
-
         @if (Model.Data.Model.Data.TransactionLines.All(c => c.TransactionType == TransactionItemType.Unknown))
         {
             <div class="govuk-inset-text">
@@ -88,83 +85,76 @@
                             <td class="govuk-table__cell">
                                 @aggregationLine.Description
                             </td>
-
                             @{
                                 var transactionAmount = aggregationLine.Amount;
-
-                                if (aggregationLine.TransactionType == TransactionItemType.Payment)
+                                if (aggregationLine.TransactionType == TransactionItemType.Payment && aggregationLine is PaymentTransactionLine paymentTransactionLine)
                                 {
-                                    var paymentTransaction = aggregationLine as PaymentTransactionLine;
-
-                                    if (paymentTransaction != null)
-                                    {
-                                        transactionAmount += paymentTransaction.EmployerCoInvestmentAmount +
-                                                 paymentTransaction.SfaCoInvestmentAmount;
-                                    }
+                                    transactionAmount += paymentTransactionLine.EmployerCoInvestmentAmount +
+                                                         paymentTransactionLine.SfaCoInvestmentAmount;
                                 }
                             }
-
                             <td class="govuk-table__cell govuk-table__cell--numeric">
                                 <span class="das-no-wrap">
                                     @(transactionAmount.ToString("C2", culture))
                                 </span>
                             </td>
                             <td class="govuk-table__cell govuk-table__cell--numeric">
-
-                                @if (aggregationLine.TransactionType == TransactionItemType.Declaration ||
-                                     aggregationLine.TransactionType == TransactionItemType.TopUp)
+                                @switch (aggregationLine.TransactionType)
                                 {
-                                    <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("LevyDeclarationDetail", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
-                                        View <span class="govuk-visually-hidden"> for the transaction on @date</span>
-                                    </a>
-                                }
-                                else if (aggregationLine.TransactionType == TransactionItemType.ExpiredFund)
-                                {
-                                    if (transactionAmount != 0)
-                                    {
-                                        <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ExpiredFundsDetails", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
+                                    case TransactionItemType.Declaration:
+                                    case TransactionItemType.TopUp:
+                                        <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("LevyDeclarationDetail", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
                                             View <span class="govuk-visually-hidden"> for the transaction on @date</span>
-                                        </a>    
+                                        </a>
+                                        break;
+                                    case TransactionItemType.ExpiredFund:
+                                    {
+                                        if (transactionAmount != 0)
+                                        {
+                                            <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ExpiredFundsDetails", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, fromDate, toDate})">
+                                                View <span class="govuk-visually-hidden"> for the transaction on @date</span>
+                                            </a>    
+                                        }
+
+                                        break;
                                     }
-                                }
-                                else if (aggregationLine.TransactionType == TransactionItemType.Payment)
-                                {
-                                    var paymentTransaction = aggregationLine as PaymentTransactionLine;
+                                    case TransactionItemType.Payment:
+                                    {
+                                        var paymentTransaction = aggregationLine as PaymentTransactionLine;
 
-                                    <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, ukPrn = paymentTransaction?.UkPrn, fromDate = fromDate, toDate = toDate })">
-                                        View <span class="govuk-visually-hidden"> for the transaction on @date</span>
-                                    </a>
-                                }
-                                else if (aggregationLine.TransactionType == TransactionItemType.Transfer)
-                                {
-                                    var transferTransaction = aggregationLine as TransferTransactionLine;
+                                        <a class="govuk-link" title="View details for the transaction on @date" href="@Url.Action("ProviderPaymentSummary", "EmployerAccountTransactions", new {HashedAccountId = Model.Data.Model.Data.HashedAccountId, ukPrn = paymentTransaction?.UkPrn, fromDate = fromDate, toDate = toDate })">
+                                            View <span class="govuk-visually-hidden"> for the transaction on @date</span>
+                                        </a>
+                                        break;
+                                    }
+                                    case TransactionItemType.Transfer:
+                                    {
+                                        var transferTransaction = aggregationLine as TransferTransactionLine;
 
-                                    var targetAccountPublicHashedId =
-                                        transferTransaction.TransactionAccountIsTransferSender ?
-                                            transferTransaction?.ReceiverAccountPublicHashedId :
-                                            transferTransaction?.SenderAccountPublicHashedId;
+                                        var targetAccountPublicHashedId =
+                                            transferTransaction.TransactionAccountIsTransferSender ?
+                                                transferTransaction?.ReceiverAccountPublicHashedId :
+                                                transferTransaction?.SenderAccountPublicHashedId;
 
-                                    <a class="govuk-link" title="View details for the transfer transaction on @date"
-                                       href="@Url.Action("TransferDetail", "EmployerAccountTransactions",
+                                        <a class="govuk-link" title="View details for the transfer transaction on @date"
+                                           href="@Url.Action("TransferDetail", "EmployerAccountTransactions",
                                                      new
                                                      {
                                                          HashedAccountId = Model.Data.Model.Data.HashedAccountId,
                                                          TargetAccountPublicHashedId = targetAccountPublicHashedId,
                                                          PeriodEnd = transferTransaction?.PeriodEnd
                                                      })">
-                                        View <span class="govuk-visually-hidden"> for the transfer transaction on @date</span>
-                                    </a>
-
+                                            View <span class="govuk-visually-hidden"> for the transfer transaction on @date</span>
+                                        </a>
+                                        break;
+                                    }
                                 }
-
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         }
-
-
         <nav class="govuk-pagination govuk-pagination--block" role="navigation">
             @if (!Model.Data.IsFirstMonthOfLevy && Model.Data.AccountHasPreviousTransactions)
             {
@@ -187,8 +177,6 @@
             </div>
             }
         </nav>
-
-
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
         <ol class="govuk-breadcrumbs__list">

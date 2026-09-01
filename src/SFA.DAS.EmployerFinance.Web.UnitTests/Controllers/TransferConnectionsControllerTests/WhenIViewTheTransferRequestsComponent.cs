@@ -60,7 +60,9 @@ public class WhenIViewTheTransferRequestsComponent
 
         var result = await _controller.TransferRequests(AccountId);
 
-        Assert.That(result, Is.Null);
+        result.Should().NotBeNull();
+        result.AccountId.Should().Be(AccountId);
+        result.TransferRequests.Should().BeEmpty();
 
         _logger.Verify(x => x.Log(LogLevel.Warning,0,
             It.Is<It.IsAnyType>((message, type) => message.ToString().Contains("Failed to get transfer requests") && type.Name == "FormattedLogValues"),

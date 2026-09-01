@@ -2,8 +2,6 @@ using Newtonsoft.Json;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace SFA.DAS.EmployerFinance.Infrastructure;
 
@@ -38,10 +36,8 @@ public class OuterApiClient : IOuterApiClient
     {
         var jsonBody = JsonConvert.SerializeObject(body);
 
-        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)
-        {
-            Content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json")
-        };
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url);
+        httpRequestMessage.Content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
 
         AddHeaders(httpRequestMessage);
 

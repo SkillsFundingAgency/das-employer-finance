@@ -43,5 +43,7 @@ public class PaymentMetadataConfiguration : IEntityTypeConfiguration<PaymentMeta
         builder.Property(x => x.ApprenticeshipCourseStartDate);
 
         builder.Property(x => x.IsHistoricProviderName);
+
+        builder.Property(x => x.CohortId);
     }
 }

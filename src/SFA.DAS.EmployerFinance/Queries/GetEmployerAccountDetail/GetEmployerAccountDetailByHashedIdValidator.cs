@@ -18,6 +18,6 @@ public class GetEmployerAccountDetailByHashedIdValidator : IValidator<GetEmploye
 
     public Task<ValidationResult> ValidateAsync(GetEmployerAccountDetailByHashedIdQuery item)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(Validate(item));
     }
 }

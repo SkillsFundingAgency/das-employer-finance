@@ -6,38 +6,26 @@ using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
 
-//TODO this is not tested
-public class FindAccountCoursePaymentsQueryHandler : IRequestHandler<FindAccountCoursePaymentsQuery,
-    FindAccountCoursePaymentsResponse>
+public class FindAccountCoursePaymentsQueryHandler(IValidator<FindAccountCoursePaymentsQuery> validator,
+    IDasLevyService dasLevyService,
+    IEncodingService encodingService)
+    : IRequestHandler<FindAccountCoursePaymentsQuery,
+        FindAccountCoursePaymentsResponse>
 {
-    private readonly IValidator<FindAccountCoursePaymentsQuery> _validator;
-    private readonly IDasLevyService _dasLevyService;
-    private readonly IEncodingService _encodingService;
-
-    public FindAccountCoursePaymentsQueryHandler(
-        IValidator<FindAccountCoursePaymentsQuery> validator,
-        IDasLevyService dasLevyService,
-        IEncodingService encodingService)
-    {
-        _validator = validator;
-        _dasLevyService = dasLevyService;
-        _encodingService = encodingService;
-    }
-
     public async Task<FindAccountCoursePaymentsResponse> Handle(FindAccountCoursePaymentsQuery message, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(message);
+        var validationResult = await validator.ValidateAsync(message);
 
         if (!validationResult.IsValid())
         {
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var accountId = _encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
-        var transactions = await _dasLevyService.GetAccountCoursePaymentsByDateRange<PaymentTransactionLine>
+        var accountId = encodingService.Decode(message.HashedAccountId, EncodingType.AccountId);
+        var transactions = await dasLevyService.GetAccountCoursePaymentsByDateRange<PaymentTransactionLine>
             (accountId, message.UkPrn, message.CourseName, message.CourseLevel, message.PathwayCode, message.FromDate, message.ToDate);
 
-        if (!transactions.Any())
+        if (transactions is {Length: 0})
         {
             return null;
         }
@@ -54,7 +42,15 @@ public class FindAccountCoursePaymentsQueryHandler : IRequestHandler<FindAccount
             TransactionDate = firstTransaction.TransactionDate,
             DateCreated = firstTransaction.DateCreated,
             Transactions = transactions.ToList(),
+            CohortReference = EncodeCohortReference(firstTransaction.CohortId),
             Total = transactions.Sum(c => c.LineAmount)
         };
+    }
+
+    private string EncodeCohortReference(long? cohortId)
+    {
+        return !cohortId.HasValue
+            ? null
+            : encodingService.Encode(cohortId.Value, EncodingType.CohortReference);
     }
 }
