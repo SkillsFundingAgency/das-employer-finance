@@ -36,14 +36,20 @@ public class EmployerAccountTransactionsController(
     [Route("finance", Name = RouteNames.FinanceIndex)]
     public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
     {
+        var isFeatureEnabled = feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency);
+
+        if (isFeatureEnabled)
+        {
+            var financeDashboardModelV2 = await accountTransactionsOrchestrator.Index(hashedAccountId);
+            return View("IndexV2", financeDashboardModelV2);
+        }
+        
         var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());
 
         if (viewModel.RedirectUrl != null)
             return Redirect(viewModel.RedirectUrl);
 
-        return feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency) 
-            ? View("IndexV2", viewModel) 
-            : View(viewModel);
+        return View(viewModel);
     }
 
     [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsGet)]

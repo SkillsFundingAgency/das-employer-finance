@@ -12,6 +12,7 @@ using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransact
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -30,6 +31,7 @@ public class EmployerAccountTransactionsOrchestrator(
     IEncodingService encodingService,
     IAuthenticationOrchestrator authenticationOrchestrator,
     IGovAuthEmployerAccountService accountService,
+    IOuterApiService outerApiService,
     EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
@@ -83,6 +85,27 @@ public class EmployerAccountTransactionsOrchestrator(
         };
 
          return viewModel;
+    }
+
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> Index(string hashedAccountId)
+    {
+        var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+        var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
+        var summary = await outerApiService.GetLevySummary(hashedAccountId);
+        
+        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
+        {
+            Data = new FinanceDashboardV2ViewModel
+            {
+                IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
+                HashedAccountId = hashedAccountId,
+                CurrentLevyFunds = summary.CurrentLevyFunds,
+                ShowLevyTransparency = configuration.ShowLevyTransparency,
+                ShowTopUpChange = currentTime.Now >= new DateTime(2026, 08, 01)
+            }
+        };
+
+        return viewModel;
     }
 
     public async Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(

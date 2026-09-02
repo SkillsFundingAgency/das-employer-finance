@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
@@ -10,10 +9,11 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
-using SFA.DAS.EmployerFinance.Queries.GetLevySummary;
+using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
@@ -154,9 +154,9 @@ public class FinanceOrchestrator(
         return await GetTransferAllowanceByAccountId(accountId);
     }
 
-    public async Task<LevySummary> GetLevySummary(string hashedAccountId)
+    public async Task<LevySummary> GetLevySummaryByHashedAccountId(string hashedAccountId)
     {
-        logger.LogInformation("Requesting GetLevySummary for the hashedAccountId {HashedAccountId}", hashedAccountId);
+        logger.LogInformation("Requesting GetLevySummaryByHashedAccountId for the hashedAccountId {HashedAccountId}", hashedAccountId);
 
         var response = await mediator.Send(new GetLevySummaryQuery(hashedAccountId));
 

@@ -23,6 +23,21 @@ public class FinanceLevyController(FinanceOrchestrator orchestrator) : Controlle
         return Ok(result);
     }
 
+    [HttpGet]
+    [Route("summary")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetLevySummary(string hashedAccountId)
+    {
+        var result = await orchestrator.GetLevySummaryByHashedAccountId(hashedAccountId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
     [Route("{payrollYear}/{payrollMonth}", Name = "GetLevyForPeriod")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [HttpGet]

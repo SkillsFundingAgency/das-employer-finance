@@ -2,15 +2,15 @@
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
-using SFA.DAS.EmployerFinance.Queries.GetLevySummary;
+using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.EmployerAccountsControllerTests;
+namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.FinanceLevyControllerTests;
 
 [TestFixture]
 internal class WhenIGetLevySummaryByAccountId
 {
-    private EmployerAccountsController _employerAccountsController;
+    private FinanceLevyController _controller;
     private Mock<IMediator> _mediator;
     private Mock<ILogger<FinanceOrchestrator>> _logger;
     private Mock<IMapper> _mapper;
@@ -26,7 +26,7 @@ internal class WhenIGetLevySummaryByAccountId
 
         var orchestrator = new FinanceOrchestrator(_mediator.Object, _logger.Object, _mapper.Object, _encodingService.Object);
 
-        _employerAccountsController = new EmployerAccountsController(orchestrator);
+        _controller = new FinanceLevyController(orchestrator);
     }
 
     [Test]
@@ -43,7 +43,7 @@ internal class WhenIGetLevySummaryByAccountId
         _mediator.Setup(x => x.Send(It.Is<GetLevySummaryQuery>(q => q.HashedAccountId == hashedAccountId), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
 
         //Act
-        var response = await _employerAccountsController.GetLevySummary(hashedAccountId);
+        var response = await _controller.GetLevySummary(hashedAccountId);
 
         //Assert
         response.Should().NotBeNull();

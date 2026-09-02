@@ -2,7 +2,7 @@
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.Encoding;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLevySummary;
+namespace SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 
 public class GetLevySummaryQueryHandler(IDasLevyService dasLevyService, IEncodingService encodingService) : IRequestHandler<GetLevySummaryQuery, GetLevySummaryResponse>
 {

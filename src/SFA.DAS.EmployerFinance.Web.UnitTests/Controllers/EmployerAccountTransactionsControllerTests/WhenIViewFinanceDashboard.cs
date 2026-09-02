@@ -118,13 +118,13 @@ public class WhenIViewFinanceDashboard
     public async Task Index_WhenFeatureEnabledAndNoRedirect_ShouldReturnIndexV2View()
     {
         // Arrange
-        var viewModel = new OrchestratorResponse<FinanceDashboardViewModel>
+        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
             RedirectUrl = null
         };
 
         _orchestrator
-            .Setup(o => o.Index(It.IsAny<string>(), It.IsAny<ClaimsIdentity>()))
+            .Setup(o => o.Index(It.IsAny<string>()))
             .ReturnsAsync(viewModel);
 
         _featureMock

@@ -1,6 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetLevySummary;
+namespace SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 
 public class GetLevySummaryQueryValidator : IValidator<GetLevySummaryQuery>
 {

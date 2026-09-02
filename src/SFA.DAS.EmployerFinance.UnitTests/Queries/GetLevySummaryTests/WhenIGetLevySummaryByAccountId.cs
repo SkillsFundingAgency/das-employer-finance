@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Queries.GetLevySummary;
+﻿using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.Encoding;
 

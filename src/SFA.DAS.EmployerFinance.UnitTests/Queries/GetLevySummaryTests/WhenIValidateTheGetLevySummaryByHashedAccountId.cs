@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Queries.GetLevySummary;
+﻿using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevySummaryTests;
 

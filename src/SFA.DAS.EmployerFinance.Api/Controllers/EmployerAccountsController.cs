@@ -39,21 +39,6 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
     }
 
     [HttpGet]
-    [Route("{hashedAccountId}/LevySummary")]
-    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetLevySummary(string hashedAccountId)
-    {
-        var result = await financeOrchestrator.GetLevySummary(hashedAccountId);
-
-        if (result == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
-    }
-
-    [HttpGet]
     [Route("{accountId}/transferAllowanceByAccountId")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetTransferAllowanceByAccountId(long accountId)
