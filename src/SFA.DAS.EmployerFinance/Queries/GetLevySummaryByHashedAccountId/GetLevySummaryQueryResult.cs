@@ -2,7 +2,7 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 
-public sealed record GetLevySummaryResponse
+public sealed record GetLevySummaryQueryResult
 {
-    public LevySummary Summary { get; set; }
+    public LevySummary Summary { get; init; }
 }

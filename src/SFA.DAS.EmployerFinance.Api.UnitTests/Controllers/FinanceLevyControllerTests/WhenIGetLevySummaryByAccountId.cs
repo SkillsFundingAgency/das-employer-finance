@@ -35,7 +35,7 @@ internal class WhenIGetLevySummaryByAccountId
         //Arrange
         const string hashedAccountId = "ABC1234";
 
-        var accountBalancesResponse = new GetLevySummaryResponse
+        var accountBalancesResponse = new GetLevySummaryQueryResult
         {
             Summary = new LevySummary { CurrentLevyFunds = 10 }
         };
