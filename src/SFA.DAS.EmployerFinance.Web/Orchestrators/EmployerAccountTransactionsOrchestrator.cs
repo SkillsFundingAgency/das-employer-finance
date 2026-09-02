@@ -100,6 +100,7 @@ public class EmployerAccountTransactionsOrchestrator(
                 IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = summary.CurrentLevyFunds,
+                TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 ShowLevyTransparency = configuration.ShowLevyTransparency,
                 ShowTopUpChange = currentTime.Now >= new DateTime(2026, 08, 01)
             }
