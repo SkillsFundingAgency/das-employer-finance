@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.EmployerFinance.Api.Types;
 
-public record LevySummary
+public sealed record LevySummary
 {
-    public decimal CurrentLevyFunds { get; set; }
+    public decimal CurrentLevyFunds { get; init; }
 }

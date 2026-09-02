@@ -156,7 +156,7 @@ public class FinanceOrchestrator(
 
     public async Task<LevySummary> GetLevySummaryByHashedAccountId(string hashedAccountId)
     {
-        logger.LogInformation("Requesting GetLevySummaryByHashedAccountId for the hashedAccountId {HashedAccountId}", hashedAccountId);
+        logger.LogInformation("Requesting GetLevySummaryByHashedAccountId for the hashedAccountId {AccountId}", hashedAccountId);
 
         var response = await mediator.Send(new GetLevySummaryQuery(hashedAccountId));
 
@@ -165,20 +165,20 @@ public class FinanceOrchestrator(
 
     public async Task<TransferAllowance> GetTransferAllowanceByAccountId(long accountId)
     {
-        logger.LogInformation("Requesting GetTransferAllowance for the accountId {accountId}", accountId);
+        logger.LogInformation("Requesting GetTransferAllowance for the accountId {AccountId}", accountId);
 
         var response = await mediator.Send(new GetTransferAllowanceQuery { AccountId = accountId });
 
         var result = mapper.Map<TransferAllowance>(response.TransferAllowance);
 
-        logger.LogInformation("Received response - GetTransferAllowance for the accountId {accountId}", accountId);
+        logger.LogInformation("Received response - GetTransferAllowance for the accountId {AccountId}", accountId);
 
         return result;
     }
 
     public async Task<Account> GetAccountById(long accountId)
     {
-        logger.LogInformation("Requesting Get Accounts for the accountId {accountId}", accountId);
+        logger.LogInformation("Requesting Get Accounts for the accountId {AccountId}", accountId);
 
         var response = await mediator.Send(new GetAccountByIdRequest { AccountId = accountId });
 
@@ -189,7 +189,7 @@ public class FinanceOrchestrator(
 
         var result = mapper.Map<Account>(response.Account);
 
-        logger.LogInformation("Received response - Get Account for the accountId {accountId}", accountId);
+        logger.LogInformation("Received response - Get Account for the accountId {AccountId}", accountId);
 
         return result;
     }
