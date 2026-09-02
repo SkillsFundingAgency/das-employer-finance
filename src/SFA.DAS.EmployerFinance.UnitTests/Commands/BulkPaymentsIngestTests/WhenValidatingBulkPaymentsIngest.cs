@@ -20,9 +20,39 @@ public class WhenValidatingBulkPaymentsIngest
     }
 
     [Test]
-    public void ThenRejectsMissingApprenticeshipId()
+    public void ThenAllowsNegativeAmount()
     {
         var payment = CreateValidPayment();
+        payment.Amount = -100m;
+
+        var result = _validator.Validate(new BulkPaymentsIngestCommand
+        {
+            Payments = [payment]
+        });
+
+        result.IsValid().Should().BeTrue();
+    }
+
+    [Test]
+    public void ThenAllowsZeroAmount()
+    {
+        var payment = CreateValidPayment();
+        payment.Amount = 0m;
+
+        var result = _validator.Validate(new BulkPaymentsIngestCommand
+        {
+            Payments = [payment]
+        });
+
+        result.IsValid().Should().BeTrue();
+    }
+
+    [Test]
+    public void ThenAllowsZeroUkprnUlnAndApprenticeshipId()
+    {
+        var payment = CreateValidPayment();
+        payment.Ukprn = 0;
+        payment.Uln = 0;
         payment.ApprenticeshipId = 0;
 
         var result = _validator.Validate(new BulkPaymentsIngestCommand
@@ -30,30 +60,31 @@ public class WhenValidatingBulkPaymentsIngest
             Payments = [payment]
         });
 
-        result.IsValid().Should().BeFalse();
-        result.ErrorList.Should().Contain("Payments[0].ApprenticeshipId|ApprenticeshipId is mandatory and must be > 0.");
+        result.IsValid().Should().BeTrue();
     }
 
     [Test]
-    public void ThenRejectsMissingUln()
-    {
-        var payment = CreateValidPayment();
-        payment.Uln = 0;
-
-        var result = _validator.Validate(new BulkPaymentsIngestCommand
-        {
-            Payments = [payment]
-        });
-
-        result.IsValid().Should().BeFalse();
-        result.ErrorList.Should().Contain("Payments[0].Uln|Uln is mandatory and must be > 0.");
-    }
-
-    [Test]
-    public void ThenRejectsInvalidDeliveryPeriodMonth()
+    public void ThenAllowsZeroDeliveryAndCollectionPeriodValues()
     {
         var payment = CreateValidPayment();
         payment.DeliveryPeriodMonth = 0;
+        payment.DeliveryPeriodYear = 0;
+        payment.CollectionPeriodMonth = 0;
+        payment.CollectionPeriodYear = 0;
+
+        var result = _validator.Validate(new BulkPaymentsIngestCommand
+        {
+            Payments = [payment]
+        });
+
+        result.IsValid().Should().BeTrue();
+    }
+
+    [Test]
+    public void ThenRejectsEmptyPaymentId()
+    {
+        var payment = CreateValidPayment();
+        payment.PaymentId = Guid.Empty;
 
         var result = _validator.Validate(new BulkPaymentsIngestCommand
         {
@@ -61,7 +92,37 @@ public class WhenValidatingBulkPaymentsIngest
         });
 
         result.IsValid().Should().BeFalse();
-        result.ErrorList.Should().Contain("Payments[0].DeliveryPeriodMonth|DeliveryPeriodMonth must be between 1 and 12.");
+        result.ErrorList.Should().Contain("Payments[0].PaymentId|PaymentId is mandatory.");
+    }
+
+    [Test]
+    public void ThenRejectsMissingAccountId()
+    {
+        var payment = CreateValidPayment();
+        payment.AccountId = 0;
+
+        var result = _validator.Validate(new BulkPaymentsIngestCommand
+        {
+            Payments = [payment]
+        });
+
+        result.IsValid().Should().BeFalse();
+        result.ErrorList.Should().Contain("Payments[0].AccountId|AccountId is mandatory and must be > 0.");
+    }
+
+    [Test]
+    public void ThenRejectsMissingCollectionPeriodId()
+    {
+        var payment = CreateValidPayment();
+        payment.CollectionPeriodId = " ";
+
+        var result = _validator.Validate(new BulkPaymentsIngestCommand
+        {
+            Payments = [payment]
+        });
+
+        result.IsValid().Should().BeFalse();
+        result.ErrorList.Should().Contain("Payments[0].CollectionPeriodId|CollectionPeriodId is mandatory.");
     }
 
     private static PaymentStagingModel CreateValidPayment()
