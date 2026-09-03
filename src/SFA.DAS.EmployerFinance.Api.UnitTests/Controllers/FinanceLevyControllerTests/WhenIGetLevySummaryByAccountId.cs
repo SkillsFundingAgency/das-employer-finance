@@ -35,12 +35,12 @@ internal class WhenIGetLevySummaryByAccountId
         //Arrange
         const string hashedAccountId = "ABC1234";
 
-        var accountBalancesResponse = new GetLevySummaryQueryResult
+        var accountBalancesResponse = new GetLevySummaryByHashedAccountIdQueryResult
         {
             Summary = new LevySummary { CurrentLevyFunds = 10 }
         };
 
-        _mediator.Setup(x => x.Send(It.Is<GetLevySummaryQuery>(q => q.HashedAccountId == hashedAccountId), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
+        _mediator.Setup(x => x.Send(It.Is<GetLevySummaryByHashedAccountIdQuery>(q => q.HashedAccountId == hashedAccountId), It.IsAny<CancellationToken>())).ReturnsAsync(accountBalancesResponse);
 
         //Act
         var response = await _controller.GetLevySummary(hashedAccountId);

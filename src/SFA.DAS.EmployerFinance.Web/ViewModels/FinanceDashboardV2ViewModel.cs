@@ -7,5 +7,4 @@ public class FinanceDashboardV2ViewModel
     public decimal TotalLevyDeclaredLast12Months { get; set; }
     public bool IsLevyEmployer { get; set; }
     public bool ShowLevyTransparency { get; set; }
-    public bool ShowTopUpChange { get; set; }
 }

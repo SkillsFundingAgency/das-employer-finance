@@ -36,12 +36,10 @@ public class EmployerAccountTransactionsController(
     [Route("finance", Name = RouteNames.FinanceIndex)]
     public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
     {
-        var isFeatureEnabled = feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency);
-
-        if (isFeatureEnabled)
+        // Check if the feature toggle for Levy Projection Transparency is enabled. This will determine which view to render for the Index action.
+        if (feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
         {
-            var financeDashboardModelV2 = await accountTransactionsOrchestrator.Index(hashedAccountId);
-            return View("IndexV2", financeDashboardModelV2);
+            return View("IndexV2", await accountTransactionsOrchestrator.GetFinanceDashboardV2(hashedAccountId));
         }
         
         var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());

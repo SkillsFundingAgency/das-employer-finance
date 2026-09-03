@@ -12,7 +12,7 @@ public class WhenIGetLevySummary
     private Mock<IDasLevyService> _dasLevyService;
     private Mock<IDasLevyRepository> _dasLevyRepository;
     private Mock<IEncodingService> _encodingService;
-    private GetLevySummaryQueryHandler _handler;
+    private GetLevySummaryByHashedAccountIdQueryHandler _handler;
 
     private const string ExpectedHashedAccountId = "ABC123";
     private const long ExpectedAccountId = 99887;
@@ -41,14 +41,14 @@ public class WhenIGetLevySummary
                 new LevyDeclarationItem {TotalAmount = 1500m}
             ]);
 
-        _handler = new GetLevySummaryQueryHandler(_dasLevyService.Object, _dasLevyRepository.Object, _encodingService.Object);
+        _handler = new GetLevySummaryByHashedAccountIdQueryHandler(_dasLevyService.Object, _dasLevyRepository.Object, _encodingService.Object);
     }
 
     [Test]
     public async Task ThenTheLevyServiceIsCalledWithTheDecodedAccountId()
     {
         //Act
-        await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         _dasLevyService.Verify(x => x.GetAccountBalance(ExpectedAccountId), Times.Once);
@@ -58,7 +58,7 @@ public class WhenIGetLevySummary
     public async Task ThenTheEncodingServiceIsCalledWithTheHashedAccountId()
     {
         //Act
-        await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         _encodingService.Verify(x => x.Decode(ExpectedHashedAccountId, EncodingType.AccountId), Times.Once);
@@ -68,7 +68,7 @@ public class WhenIGetLevySummary
     public async Task ThenTheResponseIsNotNull()
     {
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Should().NotBeNull();
@@ -78,7 +78,7 @@ public class WhenIGetLevySummary
     public async Task ThenTheResponseContainsTheLevySummary()
     {
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Summary.Should().NotBeNull();
@@ -88,7 +88,7 @@ public class WhenIGetLevySummary
     public async Task ThenTheCurrentLevyFundsIsSetToTheAccountBalance()
     {
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Summary.CurrentLevyFunds.Should().Be(ExpectedAccountBalance);
@@ -98,7 +98,7 @@ public class WhenIGetLevySummary
     public async Task ThenTheTwelveMonthsTotalLevyFundsIsSetToTheSumOfAllLevyDeclarations()
     {
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Summary.TotalLevyDeclaredLast12Months.Should().Be(ExpectedTotalLevyDeclaredLast12Months);
@@ -113,7 +113,7 @@ public class WhenIGetLevySummary
             .ReturnsAsync(0m);
 
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Summary.CurrentLevyFunds.Should().Be(0m);
@@ -128,7 +128,7 @@ public class WhenIGetLevySummary
             .ReturnsAsync([]);
 
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Summary.TotalLevyDeclaredLast12Months.Should().Be(0m);
@@ -138,7 +138,7 @@ public class WhenIGetLevySummary
     public async Task ThenTheLevyRepositoryIsCalledWithTheDecodedAccountIdAndTwelveMonths()
     {
         //Act
-        await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         _dasLevyRepository.Verify(x => x.GetAccountLevyDeclarationsForPreviousMonths(ExpectedAccountId, 12), Times.Once);
@@ -156,7 +156,7 @@ public class WhenIGetLevySummary
             ]);
 
         //Act
-        var result = await _handler.Handle(new GetLevySummaryQuery(ExpectedHashedAccountId), CancellationToken.None);
+        var result = await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
         result.Summary.TotalLevyDeclaredLast12Months.Should().Be(1500m);

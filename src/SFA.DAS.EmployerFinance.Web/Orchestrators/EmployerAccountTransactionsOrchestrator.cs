@@ -87,7 +87,7 @@ public class EmployerAccountTransactionsOrchestrator(
          return viewModel;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> Index(string hashedAccountId)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
         var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
@@ -102,7 +102,6 @@ public class EmployerAccountTransactionsOrchestrator(
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 ShowLevyTransparency = configuration.ShowLevyTransparency,
-                ShowTopUpChange = currentTime.Now >= new DateTime(2026, 08, 01)
             }
         };
 

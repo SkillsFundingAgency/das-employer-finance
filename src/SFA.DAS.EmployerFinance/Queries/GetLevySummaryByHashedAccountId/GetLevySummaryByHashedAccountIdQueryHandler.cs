@@ -5,20 +5,20 @@ using SFA.DAS.Encoding;
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 
-public class GetLevySummaryQueryHandler(IDasLevyService dasLevyService,
+public class GetLevySummaryByHashedAccountIdQueryHandler(IDasLevyService dasLevyService,
     IDasLevyRepository dasLevyRepository,
-    IEncodingService encodingService) : IRequestHandler<GetLevySummaryQuery, GetLevySummaryQueryResult>
+    IEncodingService encodingService) : IRequestHandler<GetLevySummaryByHashedAccountIdQuery, GetLevySummaryByHashedAccountIdQueryResult>
 {
     private const int TwelveMonths = 12;
 
-    public async Task<GetLevySummaryQueryResult> Handle(GetLevySummaryQuery request, CancellationToken cancellationToken)
+    public async Task<GetLevySummaryByHashedAccountIdQueryResult> Handle(GetLevySummaryByHashedAccountIdQuery request, CancellationToken cancellationToken)
     {
         var accountId = encodingService.Decode(request.HashedAccountId, EncodingType.AccountId);
 
         var currentAccountBalance = await dasLevyService.GetAccountBalance(accountId);
         var levyDeclarations = await dasLevyRepository.GetAccountLevyDeclarationsForPreviousMonths(accountId, TwelveMonths);
 
-        return new GetLevySummaryQueryResult
+        return new GetLevySummaryByHashedAccountIdQueryResult
         {
             Summary = new LevySummary
             {
