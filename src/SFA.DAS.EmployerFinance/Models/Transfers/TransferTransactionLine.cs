@@ -12,4 +12,5 @@ public class TransferTransactionLine : TransactionLine
     public string SenderAccountPublicHashedId { get; set; }
     public string SenderAccountName { get; set; }
     public bool TransactionAccountIsTransferSender => AccountId == SenderAccountId;
+    public string ProviderName { get; set; }
 }

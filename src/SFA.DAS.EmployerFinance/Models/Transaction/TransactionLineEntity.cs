@@ -22,6 +22,7 @@ public class TransactionLineEntity
     public string PeriodEnd { get; set; }
     public decimal SfaCoInvestmentAmount { get; set; }
     public decimal EmployerCoInvestmentAmount { get; set; }
+    public string TrainingProvider { get; set; }
 
     //Transfer fields
     public long? TransferSenderAccountId { get; set; }

@@ -84,6 +84,13 @@
                             </td>
                             <td class="govuk-table__cell">
                                 @aggregationLine.Description
+                                @if (aggregationLine.TransactionType == TransactionItemType.Transfer)
+                                {
+                                    <br/>
+                                    <span class="govuk-hint">
+                                        @aggregationLine.TransferSourceDescription
+                                    </span>
+                                }
                             </td>
                             @{
                                 var transactionAmount = aggregationLine.Amount;
