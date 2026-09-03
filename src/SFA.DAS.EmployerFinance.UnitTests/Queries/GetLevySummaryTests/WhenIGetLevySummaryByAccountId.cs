@@ -34,7 +34,7 @@ public class WhenIGetLevySummary
 
         _dasLevyRepository = new Mock<IDasLevyRepository>();
         _dasLevyRepository
-            .Setup(x => x.GetAccountLevyDeclarationsForPreviousMonths(ExpectedAccountId, 12))
+            .Setup(x => x.GetAccountLevyDeclaredForPreviousMonths(ExpectedAccountId, 12))
             .ReturnsAsync([
                 new LevyDeclarationItem {TotalAmount = 1000m},
                 new LevyDeclarationItem {TotalAmount = 2000m},
@@ -124,7 +124,7 @@ public class WhenIGetLevySummary
     {
         //Arrange
         _dasLevyRepository
-            .Setup(x => x.GetAccountLevyDeclarationsForPreviousMonths(ExpectedAccountId, 12))
+            .Setup(x => x.GetAccountLevyDeclaredForPreviousMonths(ExpectedAccountId, 12))
             .ReturnsAsync([]);
 
         //Act
@@ -141,7 +141,7 @@ public class WhenIGetLevySummary
         await _handler.Handle(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedAccountId), CancellationToken.None);
 
         //Assert
-        _dasLevyRepository.Verify(x => x.GetAccountLevyDeclarationsForPreviousMonths(ExpectedAccountId, 12), Times.Once);
+        _dasLevyRepository.Verify(x => x.GetAccountLevyDeclaredForPreviousMonths(ExpectedAccountId, 12), Times.Once);
     }
 
     [Test]
@@ -149,7 +149,7 @@ public class WhenIGetLevySummary
     {
         //Arrange
         _dasLevyRepository
-            .Setup(x => x.GetAccountLevyDeclarationsForPreviousMonths(ExpectedAccountId, 12))
+            .Setup(x => x.GetAccountLevyDeclaredForPreviousMonths(ExpectedAccountId, 12))
             .ReturnsAsync([
                 new LevyDeclarationItem { TotalAmount = 2000m },
                 new LevyDeclarationItem { TotalAmount = -500m }  // end of year adjustment / correction

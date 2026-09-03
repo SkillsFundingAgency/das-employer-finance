@@ -61,7 +61,7 @@ internal class WhenGettingLevySummary
         var result = await _outerApiService.GetLevySummary(HashedAccountId);
 
         result.Should().Be(expectedResponse);
-        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse), Times.Once);
+        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, TimeSpan.FromHours(24)), Times.Once);
     }
 
     [Test]
@@ -81,7 +81,7 @@ internal class WhenGettingLevySummary
 
         result.Should().Be(expectedResponse);
         _mockCache.Verify(x => x.Exists(It.IsAny<string>()), Times.Never);
-        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse), Times.Once);
+        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, TimeSpan.FromHours(24)), Times.Once);
     }
 
     [Test]

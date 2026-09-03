@@ -16,7 +16,7 @@ public class GetLevySummaryByHashedAccountIdQueryHandler(IDasLevyService dasLevy
         var accountId = encodingService.Decode(request.HashedAccountId, EncodingType.AccountId);
 
         var currentAccountBalance = await dasLevyService.GetAccountBalance(accountId);
-        var levyDeclarations = await dasLevyRepository.GetAccountLevyDeclarationsForPreviousMonths(accountId, TwelveMonths);
+        var levyDeclarations = await dasLevyRepository.GetAccountLevyDeclaredForPreviousMonths(accountId, TwelveMonths);
 
         return new GetLevySummaryByHashedAccountIdQueryResult
         {

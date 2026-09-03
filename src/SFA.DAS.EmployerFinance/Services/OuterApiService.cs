@@ -10,6 +10,7 @@ public class OuterApiService(
     IOuterApiClient outerApiClient,
     IInProcessCache cache) : IOuterApiService
 {
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
     private static string LevySummaryKey(string hashedAccountId) => $"LevySummary_{hashedAccountId}";
 
     public async Task<GetLevySummaryByHashedAccountIdResponse> GetLevySummary(string hashedAccountId, bool refreshCache = false)
@@ -22,7 +23,8 @@ public class OuterApiService(
         var response = await outerApiClient.Get<GetLevySummaryByHashedAccountIdResponse>(
             new GetLevySummaryByHashedAccountIdRequest(hashedAccountId));
 
-        cache.Set(key, response);
+        cache.Set(key, response, CacheDuration);
+
         return response;
     }
 }
