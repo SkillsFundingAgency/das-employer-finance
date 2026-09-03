@@ -189,7 +189,7 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		NULL																					AS LevyDeclared,
 		NULL																					AS EnglishFraction,
 		NULL																					AS TenPercentTopUp,
-		NULL																					AS TrainingProvider,
+        [employer_financial].[PaymentMetaData].ProviderName                                     AS TrainingProvider,
 		NULL																					AS Uln,
 		NULL																					AS Apprentice,
 		[employer_financial].[AccountTransfers].CourseName										AS ApprenticeTrainingCourse,
@@ -205,6 +205,12 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		[employer_financial].[AccountTransfers].[ReceiverAccountName]							AS TransferReceiverAccountName,
         NULL                                                                                    AS CohortId
 	FROM [employer_financial].[AccountTransfers]
+    INNER JOIN [employer_financial].[Payment]
+                ON [employer_financial].[Payment].[AccountId] = [employer_financial].[AccountTransfers].[ReceiverAccountId]
+                AND [employer_financial].[Payment].[ApprenticeshipId] = [employer_financial].[AccountTransfers].[ApprenticeshipId]
+                AND [employer_financial].[Payment].[PeriodEnd] = [employer_financial].[AccountTransfers].[PeriodEnd]
+    INNER JOIN [employer_financial].[PaymentMetaData]
+                ON [employer_financial].[PaymentMetaData].[id] = [employer_financial].[Payment].PaymentMetaDataId
 	WHERE [employer_financial].[AccountTransfers].[ReceiverAccountId] = @AccountId
 		AND [employer_financial].[AccountTransfers].[CreatedDate] >= @FromDate
 		AND [employer_financial].[AccountTransfers].[CreatedDate] < @ToDate

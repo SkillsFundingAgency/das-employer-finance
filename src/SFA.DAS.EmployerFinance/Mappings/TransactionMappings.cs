@@ -83,6 +83,7 @@ public class TransactionMappings : Profile
             .ForMember(d => d.SenderAccountName, o => o.MapFrom(s => s.TransferSenderAccountName))
             .ForMember(d => d.ReceiverAccountId, o => o.MapFrom(s => s.TransferReceiverAccountId ?? 0))
             .ForMember(d => d.ReceiverAccountName, o => o.MapFrom(s => s.TransferReceiverAccountName))
+            .ForMember(d => d.ProviderName, o => o.MapFrom(s => s.TrainingProvider))
             .ForMember(d => d.ReceiverAccountPublicHashedId, o => o.Ignore())
             .ForMember(d => d.SenderAccountPublicHashedId, o => o.Ignore());
 
