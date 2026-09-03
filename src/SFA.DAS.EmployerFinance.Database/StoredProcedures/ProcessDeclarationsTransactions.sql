@@ -51,6 +51,25 @@ INSERT INTO [employer_financial].LevyDeclarationTopup
 DECLARE @updatedAccountTransactions table(Amount decimal(18,4))
 
 INSERT INTO [employer_financial].TransactionLine
+(
+	AccountId,
+	DateCreated,
+	SubmissionId,
+	TransactionDate,
+	TransactionType,
+	LevyDeclared,
+	Amount,
+	EmpRef,
+	PeriodEnd,
+	Ukprn,
+	SfaCoInvestmentAmount,
+	EmployerCoInvestmentAmount,
+	EnglishFraction,
+	TransferSenderAccountId,
+	TransferSenderAccountName,
+	TransferReceiverAccountId,
+	TransferReceiverAccountName
+)
 OUTPUT INSERTED.Amount INTO @updatedAccountTransactions
 select mainUpdate.* from
 	(

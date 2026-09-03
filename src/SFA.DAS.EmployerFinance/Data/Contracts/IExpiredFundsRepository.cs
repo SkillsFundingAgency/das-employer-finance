@@ -6,6 +6,12 @@ public interface IExpiredFundsRepository
 {
     Task CreateDraft(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now, byte transactionType = 5);
     Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now, byte transactionType = 5);
+    Task Create(
+        long accountId,
+        IEnumerable<ExpiredFund> expiredFunds,
+        DateTime now,
+        byte transactionType,
+        string correlationId);
     Task<IEnumerable<ExpiredFund>> Get(long accountId);
     Task<IEnumerable<ExpiredFund>> GetDraft(long accountId);
 }

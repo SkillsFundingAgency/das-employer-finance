@@ -47,6 +47,9 @@ public class ExpireAccountFundsCommandHandler(
             var fundsIn = await levyFundsInRepository.GetLevyFundsIn(request.AccountId);
             var fundsOut = await paymentFundsOutRepository.GetPaymentFundsOut(request.AccountId);
             var existingExpiredFunds = (await expiredFundsRepository.Get(request.AccountId)).ToList();
+            var fundsWerePreviouslyExpiredForRequest = existingExpiredFunds.Any(fund =>
+                string.Equals(fund.CorrelationId, request.CorrelationId, StringComparison.Ordinal)
+                && fund.Amount != 0m);
 
             var (longTermExpiredFunds, shortTermExpiredFunds) = expiredFunds.GetExpiredFunds(
                 fundsIn.ToCalendarPeriodDictionary(),
@@ -90,7 +93,9 @@ public class ExpireAccountFundsCommandHandler(
                 await expiredFundsRepository.Create(
                     request.AccountId,
                     longTermExpiredFunds.ToExpiredFundsList(),
-                    now);
+                    now,
+                    transactionType: 5,
+                    correlationId: request.CorrelationId);
             }
 
             if (shortTermExpiredFunds.Count > 0)
@@ -99,10 +104,12 @@ public class ExpireAccountFundsCommandHandler(
                     request.AccountId,
                     shortTermExpiredFunds.ToExpiredFundsList(),
                     now,
-                    transactionType: 6);
+                    transactionType: 6,
+                    correlationId: request.CorrelationId);
             }
 
-            var fundsWereExpired = longTermExpiredFunds.Any(fund => fund.Value != 0m)
+            var fundsWereExpired = fundsWerePreviouslyExpiredForRequest
+                                   || longTermExpiredFunds.Any(fund => fund.Value != 0m)
                                    || shortTermExpiredFunds.Any(fund => fund.Value != 0m);
 
             var response = new ExpireFundsResponse
