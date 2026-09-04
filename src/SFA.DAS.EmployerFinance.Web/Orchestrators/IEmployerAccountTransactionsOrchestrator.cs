@@ -10,6 +10,8 @@ public interface IEmployerAccountTransactionsOrchestrator
 {
     Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity firstOrDefault);
 
+    Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId);
+
     Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(
         string hashedId, long ukprn, DateTime fromDate, DateTime toDate);
 

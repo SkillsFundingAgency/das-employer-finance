@@ -76,5 +76,7 @@ public static class ApplicationServiceRegistrations
         
         services.AddTransient<IAccountClaimsService, AccountClaimsService>();
         services.AddTransient<IHmrcService, HmrcService>();
+        services.AddSingleton<IFeature, Feature>();
+        services.AddSingleton<IOuterApiService, OuterApiService>();
     }
 }

@@ -1,5 +1,7 @@
 using AutoMapper;
 using SFA.DAS.EmployerFinance.Infrastructure;
+using SFA.DAS.EmployerFinance.Models.FeatureToggle;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -14,13 +16,15 @@ public class WhenIViewFinanceDashboard
 
     private EmployerAccountTransactionsController _controller;
     private Mock<IEmployerAccountTransactionsOrchestrator> _orchestrator;
-        
+    private Mock<IFeature> _featureMock;
+
     [SetUp]
     public void Arrange()
     {
+        _featureMock = new Mock<IFeature>();
         _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
         _orchestrator.Setup(o => o.Index(ExpectedHashedAccountId, It.IsAny<ClaimsIdentity>()))
-            .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
+            .ReturnsAsync(new OrchestratorResponse<FinanceDashboardViewModel>
             {
                 Data = new FinanceDashboardViewModel
                 {
@@ -30,16 +34,16 @@ public class WhenIViewFinanceDashboard
             });
 
         var user = new ClaimsPrincipal(new ClaimsIdentity(
-            new []
-            {
+            [
                 new Claim(EmployerClaims.IdamsUserIdClaimTypeIdentifier,Guid.NewGuid().ToString())
-            }
+            ]
         ));
         _controller = new EmployerAccountTransactionsController(
             _orchestrator.Object,
             Mock.Of<IMapper>(),
             Mock.Of<IMediator>(),
-            Mock.Of<IEncodingService>());
+            Mock.Of<IEncodingService>(),
+            _featureMock.Object);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext {User = user}
@@ -56,7 +60,7 @@ public class WhenIViewFinanceDashboard
         var viewResult = result as ViewResult;
         (viewResult).Should().NotBeNull();
 
-        var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
+        var model = viewResult.Model as OrchestratorResponse<FinanceDashboardViewModel>;
         (model).Should().NotBeNull();
         (model.Data).Should().NotBeNull();
         model.Data.HashedAccountId.Should().BeEquivalentTo(ExpectedHashedAccountId);
@@ -72,7 +76,7 @@ public class WhenIViewFinanceDashboard
         var viewResult = result as ViewResult;
         (viewResult).Should().NotBeNull();
 
-        var model = viewResult.Model as Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>;
+        var model = viewResult.Model as OrchestratorResponse<FinanceDashboardViewModel>;
         (model).Should().NotBeNull();
         (model.Data).Should().NotBeNull();
         model.Data.CurrentLevyFunds.Should().Be(ExpectedCurrentFunds);
@@ -85,7 +89,7 @@ public class WhenIViewFinanceDashboard
         const string redirectUrl = "http://example.com";
 
         _orchestrator.Setup(o => o.Index(It.IsAny<string>(),It.IsAny<ClaimsIdentity>()))
-            .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<FinanceDashboardViewModel>
+            .ReturnsAsync(new OrchestratorResponse<FinanceDashboardViewModel>
             {
                 RedirectUrl = redirectUrl
             });
@@ -108,5 +112,32 @@ public class WhenIViewFinanceDashboard
 
         //Assert
         result.Should().NotBeOfType<RedirectResult>();
+    }
+
+    [Test]
+    public async Task Index_WhenFeatureEnabledAndNoRedirect_ShouldReturnIndexV2View()
+    {
+        // Arrange
+        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
+        {
+            RedirectUrl = null
+        };
+
+        _orchestrator
+            .Setup(o => o.GetFinanceDashboardV2(It.IsAny<string>()))
+            .ReturnsAsync(viewModel);
+
+        _featureMock
+            .Setup(f => f.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
+            .Returns(true);
+
+        // Act
+        var result = await _controller.Index(ExpectedHashedAccountId);
+
+        // Assert
+        var viewResult = result as ViewResult;
+        Assert.That(viewResult, Is.Not.Null);
+        Assert.That(viewResult.ViewName, Is.EqualTo("IndexV2"));
+        Assert.That(viewResult.Model, Is.EqualTo(viewModel));
     }
 }

@@ -3,6 +3,7 @@ using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Messages;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -64,7 +65,7 @@ public class WhenIDownloadTransactionsByDate
         _controller = new EmployerAccountTransactionsController(
             _orchestrator.Object,
             Mock.Of<IMapper>(),
-            _mediator.Object, _encodingService.Object);
+            _mediator.Object, _encodingService.Object, Mock.Of<IFeature>());
     }
 
     [Test]

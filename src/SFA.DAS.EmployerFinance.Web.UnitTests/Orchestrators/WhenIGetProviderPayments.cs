@@ -1,13 +1,14 @@
-﻿using System.Linq.Expressions;
-using SFA.DAS.EAS.Account.Api.Client;
+﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountProviderPayments;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
+using System.Linq.Expressions;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators;
 
@@ -53,9 +54,15 @@ internal class WhenIGetProviderPayments
             }));
 
         _orchestrator =
-            new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object,
-                _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(),
-                Mock.Of<IEncodingService>(),Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>(), Mock.Of<EmployerFinanceWebConfiguration>());
+            new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object,
+                _mediator.Object,
+                _currentTime.Object,
+                Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(),
+                Mock.Of<IEncodingService>(),
+                Mock.Of<IAuthenticationOrchestrator>(),
+                Mock.Of<IGovAuthEmployerAccountService>(),
+                Mock.Of<IOuterApiService>(), 
+                Mock.Of<EmployerFinanceWebConfiguration>());
     }
 
     private Expression<Func<IMediator, Task<FindAccountProviderPaymentsResponse>>> AssertExpressionValidation()
