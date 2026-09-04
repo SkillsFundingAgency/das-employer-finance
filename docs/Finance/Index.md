@@ -19,6 +19,7 @@ This page describes the finance side of the repo and has links to subsections th
 ## Sub Sections
 
 * [Levy Declarations](LevyDeclarations/Index.md "Levy Declarations")
+* [Testing the expire-funds API](ExpireFunds/TestingExpireFundsApi.md "Testing the expire-funds API")
 
 
 ## Finance
