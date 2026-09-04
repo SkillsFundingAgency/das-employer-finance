@@ -584,6 +584,35 @@ public class DasLevyRepository(
         return result.ToList();
     }
 
+    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclaredForPreviousMonths(long accountId, int months)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@months", months, DbType.Int32);
+
+        const string sqlQuery = """
+                                SELECT
+                                    tl.Amount As TotalAmount,
+                                    tl.EmpRef,
+                                    tl.AccountId
+                                FROM
+                                    [employer_financial].[TransactionLine] tl
+                                WHERE
+                                    tl.TransactionDate >= DATEADD(month, -@months, GETDATE())
+                                    AND tl.TransactionType = 1
+                                    AND tl.AccountId = @accountId
+                                """;
+
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+            sql: sqlQuery,
+            param: parameters,
+            commandTimeout: 60,
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.Text);
+
+        return result.ToList();
+    }
+
     public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth)
     {
         var parameters = new DynamicParameters();

@@ -6,19 +6,25 @@ using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public class OuterApiService(IOuterApiClient outerApiClient, IInProcessCache cache) : IOuterApiService
+public class OuterApiService(
+    IOuterApiClient outerApiClient,
+    IInProcessCache cache) : IOuterApiService
 {
-    private const string LevySummaryKey = "LevySummary";
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
+    private static string LevySummaryKey(string hashedAccountId) => $"LevySummary_{hashedAccountId}";
 
     public async Task<GetLevySummaryByHashedAccountIdResponse> GetLevySummary(string hashedAccountId, bool refreshCache = false)
     {
-        if (!cache.Exists(LevySummaryKey) || refreshCache)
-        {
-            var response = await outerApiClient.Get<GetLevySummaryByHashedAccountIdResponse>(new GetLevySummaryByHashedAccountIdRequest(hashedAccountId));
+        var key = LevySummaryKey(hashedAccountId);
 
-            cache.Set(LevySummaryKey, response);
-        }
+        if (!refreshCache && cache.Exists(key))
+            return cache.Get<GetLevySummaryByHashedAccountIdResponse>(key);
 
-        return cache.Get<GetLevySummaryByHashedAccountIdResponse>(LevySummaryKey);        
+        var response = await outerApiClient.Get<GetLevySummaryByHashedAccountIdResponse>(
+            new GetLevySummaryByHashedAccountIdRequest(hashedAccountId));
+
+        cache.Set(key, response, CacheDuration);
+
+        return response;
     }
 }

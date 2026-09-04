@@ -124,7 +124,7 @@ public class WhenIViewFinanceDashboard
         };
 
         _orchestrator
-            .Setup(o => o.Index(It.IsAny<string>()))
+            .Setup(o => o.GetFinanceDashboardV2(It.IsAny<string>()))
             .ReturnsAsync(viewModel);
 
         _featureMock

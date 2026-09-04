@@ -158,7 +158,7 @@ public class FinanceOrchestrator(
     {
         logger.LogInformation("Requesting GetLevySummaryByHashedAccountId for the hashedAccountId {AccountId}", hashedAccountId);
 
-        var response = await mediator.Send(new GetLevySummaryQuery(hashedAccountId));
+        var response = await mediator.Send(new GetLevySummaryByHashedAccountIdQuery(hashedAccountId));
 
         return response.Summary;
     }

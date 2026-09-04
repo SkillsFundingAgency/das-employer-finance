@@ -11,6 +11,7 @@
 
     var culture = new CultureInfo("en-GB");
     var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
+    var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
 }
 @if (Model.Data.IsLevyEmployer)
 {
@@ -19,16 +20,8 @@
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                @if (Model.Data.ShowTopUpChange)
-                {
-                    <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
-                    <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
-                }
-                else
-                {
-                    <p class="govuk-body">The <b>apprenticeship levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. While employers do not own these funds, they can use them to cover apprenticeship costs.</p>
-                    <p class="govuk-body">Employers have 24 months to use funds, after which they are returned to support apprenticeship programmes.</p>
-                }
+                <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
+                <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
             </div>
         </div>
         <div class="app-statement">
@@ -46,7 +39,7 @@
                 <div class="app-highlight-boxes">
                     <div class="app-highlight-boxes-projection__box">
                         <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
-                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-in">TBC</div>
+                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-in">@totalLevyDeclaredLast12Months</div>
                         <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
                     </div>
                     <div class="app-highlight-boxes-projection__box">

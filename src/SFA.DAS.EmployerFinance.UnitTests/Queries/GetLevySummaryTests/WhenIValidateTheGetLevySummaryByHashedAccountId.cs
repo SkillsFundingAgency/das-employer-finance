@@ -4,21 +4,21 @@ namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetLevySummaryTests;
 
 internal class WhenIValidateTheGetLevySummaryByHashedAccountId
 {
-    private GetLevySummaryQueryValidator _validator;
+    private GetLevySummaryByHashedAccountIdQueryValidator _validator;
 
     private const string ExpectedHashedId = "4567";
 
     [SetUp]
     public void Arrange()
     {
-        _validator = new GetLevySummaryQueryValidator();
+        _validator = new GetLevySummaryByHashedAccountIdQueryValidator();
     }
 
     [Test]
     public async Task ThenTheResultIsValidWhenAllFieldsArePopulatedAndTheUserIsPartOfTheAccount()
     {
         //Act
-        var result = await _validator.ValidateAsync(new GetLevySummaryQuery(ExpectedHashedId));
+        var result = await _validator.ValidateAsync(new GetLevySummaryByHashedAccountIdQuery(ExpectedHashedId));
 
         //Assert
         result.IsValid().Should().BeTrue();
@@ -30,7 +30,7 @@ internal class WhenIValidateTheGetLevySummaryByHashedAccountId
     public async Task ThenTheDictionaryIsPopulatedWithValidationErrors()
     {
         //Act
-        var result = await _validator.ValidateAsync(new GetLevySummaryQuery(null));
+        var result = await _validator.ValidateAsync(new GetLevySummaryByHashedAccountIdQuery(null));
 
         //Assert
         result.IsValid().Should().BeFalse();

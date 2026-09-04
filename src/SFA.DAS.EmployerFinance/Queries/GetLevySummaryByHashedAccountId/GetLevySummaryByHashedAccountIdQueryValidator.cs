@@ -2,14 +2,14 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 
-public class GetLevySummaryQueryValidator : IValidator<GetLevySummaryQuery>
+public class GetLevySummaryByHashedAccountIdQueryValidator : IValidator<GetLevySummaryByHashedAccountIdQuery>
 {
-    public ValidationResult Validate(GetLevySummaryQuery item)
+    public ValidationResult Validate(GetLevySummaryByHashedAccountIdQuery item)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ValidationResult> ValidateAsync(GetLevySummaryQuery item)
+    public Task<ValidationResult> ValidateAsync(GetLevySummaryByHashedAccountIdQuery item)
     {
         var result = new ValidationResult();
 
@@ -18,6 +18,6 @@ public class GetLevySummaryQueryValidator : IValidator<GetLevySummaryQuery>
             result.AddError(nameof(item.HashedAccountId), "HashedAccountId has not been supplied");
         }
 
-        return result;
+        return Task.FromResult(result);
     }
 }
