@@ -12,6 +12,7 @@
     var culture = new CultureInfo("en-GB");
     var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
+    var totalLevySpentLast12Months = Model.Data.TotalLevySpentLast12Months.ToString("C0", culture);
 }
 @if (Model.Data.IsLevyEmployer)
 {
@@ -44,7 +45,7 @@
                     </div>
                     <div class="app-highlight-boxes-projection__box">
                         <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
-                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">TBC</div>
+                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">@totalLevySpentLast12Months</div>
                         <p class="govuk-!-margin-bottom-0 govuk-body-s">Payments to providers, learner costs and transfers in the past 12 months.</p>
                     </div>
                     <div class="app-highlight-boxes-projection__box">
