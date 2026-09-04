@@ -26,7 +26,7 @@ public class EmployerAccountTransactionsController(
     : Controller
 {
     [Route("finance/provider/summary")]
-    public async Task<IActionResult> ProviderPaymentSummary([FromRoute]string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
+    public async Task<IActionResult> ProviderPaymentSummary([FromRoute] string hashedAccountId, long ukprn, DateTime fromDate, DateTime toDate)
     {
         var viewModel = await accountTransactionsOrchestrator.GetProviderPaymentSummary(hashedAccountId, ukprn, fromDate, toDate);
 
@@ -34,14 +34,14 @@ public class EmployerAccountTransactionsController(
     }
 
     [Route("finance", Name = RouteNames.FinanceIndex)]
-    public async Task<IActionResult> Index([FromRoute]string hashedAccountId)
+    public async Task<IActionResult> Index([FromRoute] string hashedAccountId)
     {
         // Check if the feature toggle for Levy Projection Transparency is enabled. This will determine which view to render for the Index action.
         if (feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
         {
             return View("IndexV2", await accountTransactionsOrchestrator.GetFinanceDashboardV2(hashedAccountId));
         }
-        
+
         var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());
 
         if (viewModel.RedirectUrl != null)
@@ -58,7 +58,7 @@ public class EmployerAccountTransactionsController(
 
     [HttpPost]
     [Route("finance/downloadtransactions", Name = RouteNames.DownloadTransactionsPost)]
-    public async Task<IActionResult> TransactionsDownload([FromRoute]string hashedAccountId, TransactionDownloadViewModel model)
+    public async Task<IActionResult> TransactionsDownload([FromRoute] string hashedAccountId, TransactionDownloadViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -69,7 +69,7 @@ public class EmployerAccountTransactionsController(
         {
             var response = await mediator.Send(new GetTransactionsDownloadQuery
             {
-                AccountId = encodingService.Decode(hashedAccountId,EncodingType.AccountId),
+                AccountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId),
                 DownloadFormat = model.DownloadFormat,
                 EndDate = model.EndDate,
                 StartDate = model.StartDate,
@@ -89,14 +89,14 @@ public class EmployerAccountTransactionsController(
 
     [HttpGet]
     [Route("finance/{year}/{month}", Name = RouteNames.TransactionsView)]
-    public async Task<IActionResult> TransactionsView([FromRoute]string hashedAccountId, [FromRoute]int year, [FromRoute]int month)
+    public async Task<IActionResult> TransactionsView([FromRoute] string hashedAccountId, [FromRoute] int year, [FromRoute] int month)
     {
         var transactionViewResult = await accountTransactionsOrchestrator.GetAccountTransactions(hashedAccountId, year, month);
 
         if (transactionViewResult.Data.Account == null)
         {
-            return RedirectToAction(ControllerConstants.IndexActionName, ControllerConstants.AccessDeniedControllerName, 
-                new { hashedAccountId = hashedAccountId});
+            return RedirectToAction(ControllerConstants.IndexActionName, ControllerConstants.AccessDeniedControllerName,
+                new { hashedAccountId = hashedAccountId });
         }
 
         transactionViewResult.Data.Model.Data.HashedAccountId = hashedAccountId;
@@ -105,7 +105,7 @@ public class EmployerAccountTransactionsController(
     }
 
     [Route("finance/levyDeclaration/details")]
-    public async Task<IActionResult> LevyDeclarationDetail([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
+    public async Task<IActionResult> LevyDeclarationDetail([FromRoute] string hashedAccountId, DateTime fromDate, DateTime toDate)
     {
         var viewModel = await accountTransactionsOrchestrator.FindAccountLevyDeclarationTransactions(hashedAccountId, fromDate, toDate);
 
@@ -131,7 +131,7 @@ public class EmployerAccountTransactionsController(
     }
 
     [Route("finance/transfer/details")]
-    public async Task<IActionResult> TransferDetail([FromRoute]string hashedAccountId, GetTransferTransactionDetailsQuery query)
+    public async Task<IActionResult> TransferDetail([FromRoute] string hashedAccountId, GetTransferTransactionDetailsQuery query)
     {
         query.AccountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
         var response = await mediator.Send(query);
@@ -140,10 +140,10 @@ public class EmployerAccountTransactionsController(
         var model = mapper.Map<TransferTransactionDetailsViewModel>(response);
         return View(ControllerConstants.TransferDetailsViewName, model);
     }
-    
-    
+
+
     [Route("finance/expiredfunds/details")]
-    public async Task<IActionResult> ExpiredFundsDetails([FromRoute]string hashedAccountId, DateTime fromDate, DateTime toDate)
+    public async Task<IActionResult> ExpiredFundsDetails([FromRoute] string hashedAccountId, DateTime fromDate, DateTime toDate)
     {
         var viewModel = await accountTransactionsOrchestrator.FindAccountExpiredFunds(hashedAccountId, fromDate, toDate);
 

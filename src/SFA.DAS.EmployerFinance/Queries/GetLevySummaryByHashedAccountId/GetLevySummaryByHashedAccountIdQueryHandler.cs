@@ -17,13 +17,15 @@ public class GetLevySummaryByHashedAccountIdQueryHandler(IDasLevyService dasLevy
 
         var currentAccountBalance = await dasLevyService.GetAccountBalance(accountId);
         var levyDeclarations = await dasLevyRepository.GetAccountLevyDeclaredForPreviousMonths(accountId, TwelveMonths);
+        var levySpent = await dasLevyRepository.GetAccountLevySpentForPreviousMonths(accountId, TwelveMonths);
 
         return new GetLevySummaryByHashedAccountIdQueryResult
         {
             Summary = new LevySummary
             {
                 CurrentLevyFunds = currentAccountBalance,
-                TotalLevyDeclaredLast12Months = levyDeclarations.Sum(x => x.TotalAmount)
+                TotalLevyDeclaredLast12Months = levyDeclarations.Sum(x => x.TotalAmount),
+                TotalLevySpentLast12Months = levySpent.Sum(x => x.TotalAmount)
             }
         };
     }

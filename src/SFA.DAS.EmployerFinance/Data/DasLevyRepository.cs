@@ -610,7 +610,40 @@ public class DasLevyRepository(
             transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
 
-        return result.ToList();
+        return [.. result];
+    }
+
+    public async Task<List<LevyDeclarationItem>> GetAccountLevySpentForPreviousMonths(long accountId, int months)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@months", months, DbType.Int32);
+
+        const string sqlQuery = """
+                                SELECT
+                                    tl.Amount As TotalAmount,
+                                    tl.EmpRef,
+                                    tl.AccountId
+                                FROM
+                                    [employer_financial].[TransactionLine] tl
+                                WHERE
+                                    tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
+                                    AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+                                    AND (
+                                        (tl.TransactionType = 3 AND tl.AccountId = @accountId) -- Levy Transfer In
+                                        OR
+                                        (tl.TransactionType = 4 AND tl.TransferSenderAccountId = @accountId) -- Levy Transfer Out
+                                    )
+                                """;
+
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
+            sql: sqlQuery,
+            param: parameters,
+            commandTimeout: 60,
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.Text);
+
+        return [.. result];
     }
 
     public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth)
