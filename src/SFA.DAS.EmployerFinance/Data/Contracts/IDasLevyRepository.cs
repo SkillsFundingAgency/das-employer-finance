@@ -36,6 +36,7 @@ public interface IDasLevyRepository
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclaredForPreviousMonths(long accountId, int months);
+    Task<List<LevyDeclarationItem>> GetAccountLevySpentForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth);
     Task<List<DasEnglishFraction>> GetEnglishFractionCurrent(long accountId, string[] empRefs);
     Task<List<AccountBalance>> GetAccountBalances(List<long> accountIds);
