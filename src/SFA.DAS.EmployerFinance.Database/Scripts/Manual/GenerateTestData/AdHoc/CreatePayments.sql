@@ -190,26 +190,7 @@ AS
 
 --- Process Levy Payments ---
 INSERT INTO [employer_financial].[TransactionLine]
-(
-	AccountId,
-	DateCreated,
-	SubmissionId,
-	TransactionDate,
-	TransactionType,
-	LevyDeclared,
-	Amount,
-	EmpRef,
-	PeriodEnd,
-	Ukprn,
-	SfaCoInvestmentAmount,
-	EmployerCoInvestmentAmount,
-	EnglishFraction,
-	TransferSenderAccountId,
-	TransferSenderAccountName,
-	TransferReceiverAccountId,
-	TransferReceiverAccountName
-)
-SELECT mainUpdate.* FROM
+SELECT mainUpdate.*, NULL AS CorrelationId FROM
     (
     SELECT 
             x.AccountId AS AccountId,
