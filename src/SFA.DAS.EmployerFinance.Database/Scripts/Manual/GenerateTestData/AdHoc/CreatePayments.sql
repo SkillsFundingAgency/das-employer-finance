@@ -190,7 +190,7 @@ AS
 
 --- Process Levy Payments ---
 INSERT INTO [employer_financial].[TransactionLine]
-SELECT mainUpdate.* FROM
+SELECT mainUpdate.*, NULL AS CorrelationId FROM
     (
     SELECT 
             x.AccountId AS AccountId,
