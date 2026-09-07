@@ -100,7 +100,8 @@ public class WhenExpiringAccountFunds
                 It.IsAny<long>(),
                 It.IsAny<IEnumerable<ExpiredFund>>(),
                 It.IsAny<DateTime>(),
-                It.IsAny<byte>()),
+                It.IsAny<byte>(),
+                It.IsAny<string>()),
             Times.Never);
     }
 
@@ -140,12 +141,14 @@ public class WhenExpiringAccountFunds
                     && fund.CalendarPeriodMonth == 8
                     && fund.Amount == 0m)),
             Now,
-            5), Times.Once);
+            5,
+            "corr-123"), Times.Once);
         _expiredFundsRepository.Verify(repository => repository.Create(
             It.IsAny<long>(),
             It.IsAny<IEnumerable<ExpiredFund>>(),
             It.IsAny<DateTime>(),
-            6), Times.Never);
+            6,
+            It.IsAny<string>()), Times.Never);
     }
 
     [Test]
@@ -179,12 +182,14 @@ public class WhenExpiringAccountFunds
             123,
             It.IsAny<IEnumerable<ExpiredFund>>(),
             Now,
-            5), Times.Once);
+            5,
+            "corr-123"), Times.Once);
         _expiredFundsRepository.Verify(repository => repository.Create(
             123,
             It.Is<IEnumerable<ExpiredFund>>(funds => funds.Any(fund => fund.Amount == -20m)),
             Now,
-            6), Times.Once);
+            6,
+            "corr-123"), Times.Once);
     }
 
     [Test]
@@ -200,14 +205,16 @@ public class WhenExpiringAccountFunds
                     CalendarPeriodYear = 2026,
                     CalendarPeriodMonth = 8,
                     Amount = 0m,
-                    TransactionType = 5
+                    TransactionType = 5,
+                    CorrelationId = "corr-123"
                 },
                 new ExpiredFund
                 {
                     CalendarPeriodYear = 2026,
                     CalendarPeriodMonth = 8,
                     Amount = 0m,
-                    TransactionType = 6
+                    TransactionType = 6,
+                    CorrelationId = "corr-123"
                 }
             ]);
 
@@ -220,7 +227,84 @@ public class WhenExpiringAccountFunds
             It.IsAny<long>(),
             It.IsAny<IEnumerable<ExpiredFund>>(),
             It.IsAny<DateTime>(),
-            It.IsAny<byte>()), Times.Never);
+            It.IsAny<byte>(),
+            It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Then_A_Replay_Reports_FundsExpired_When_The_Same_Request_Previously_Persisted_Funds()
+    {
+        _expiredFundsRepository
+            .Setup(repository => repository.Get(123))
+            .ReturnsAsync(
+            [
+                new ExpiredFund
+                {
+                    CalendarPeriodYear = 2026,
+                    CalendarPeriodMonth = 7,
+                    Amount = -50m,
+                    TransactionType = 5,
+                    CorrelationId = "corr-123"
+                },
+                new ExpiredFund
+                {
+                    CalendarPeriodYear = 2026,
+                    CalendarPeriodMonth = 8,
+                    Amount = 0m,
+                    TransactionType = 5,
+                    CorrelationId = "corr-123"
+                }
+            ]);
+
+        var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        result.FundsExpired.Should().BeTrue();
+        result.LongTermExpiredFundsCount.Should().Be(0);
+        result.ShortTermExpiredFundsCount.Should().Be(0);
+        _expiredFundsRepository.Verify(repository => repository.Create(
+            It.IsAny<long>(),
+            It.IsAny<IEnumerable<ExpiredFund>>(),
+            It.IsAny<DateTime>(),
+            It.IsAny<byte>(),
+            It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Then_A_New_Request_Does_Not_Report_Funds_Expired_By_A_Previous_Request()
+    {
+        _expiredFundsRepository
+            .Setup(repository => repository.Get(123))
+            .ReturnsAsync(
+            [
+                new ExpiredFund
+                {
+                    CalendarPeriodYear = 2026,
+                    CalendarPeriodMonth = 7,
+                    Amount = -50m,
+                    TransactionType = 5,
+                    CorrelationId = "different-correlation-id"
+                },
+                new ExpiredFund
+                {
+                    CalendarPeriodYear = 2026,
+                    CalendarPeriodMonth = 8,
+                    Amount = 0m,
+                    TransactionType = 5,
+                    CorrelationId = "different-correlation-id"
+                }
+            ]);
+
+        var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        result.FundsExpired.Should().BeFalse();
+        result.LongTermExpiredFundsCount.Should().Be(0);
+        result.ShortTermExpiredFundsCount.Should().Be(0);
+        _expiredFundsRepository.Verify(repository => repository.Create(
+            It.IsAny<long>(),
+            It.IsAny<IEnumerable<ExpiredFund>>(),
+            It.IsAny<DateTime>(),
+            It.IsAny<byte>(),
+            It.IsAny<string>()), Times.Never);
     }
 
     [Test]

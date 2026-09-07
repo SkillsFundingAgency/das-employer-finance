@@ -17,6 +17,10 @@ public class ExpireAccountFundsCommandValidator : IValidator<ExpireAccountFundsC
         {
             result.AddError(nameof(command.CorrelationId), "CorrelationId is required.");
         }
+        else if (command.CorrelationId.Length > 100)
+        {
+            result.AddError(nameof(command.CorrelationId), "CorrelationId must be 100 characters or fewer.");
+        }
 
         return result;
     }

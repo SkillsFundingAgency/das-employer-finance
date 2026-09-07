@@ -34,6 +34,16 @@ public class ExpiredFundsRepository : IExpiredFundsRepository
 
     public Task Create(long accountId, IEnumerable<ExpiredFund> expiredFunds, DateTime now, byte transactionType = 5)
     {
+        return Create(accountId, expiredFunds, now, transactionType, correlationId: null);
+    }
+
+    public Task Create(
+        long accountId,
+        IEnumerable<ExpiredFund> expiredFunds,
+        DateTime now,
+        byte transactionType,
+        string correlationId)
+    {
         var expiredFundsTable = expiredFunds.ToExpiredFundsDataTable();
 
         var parameters = new DynamicParameters();
@@ -42,6 +52,7 @@ public class ExpiredFundsRepository : IExpiredFundsRepository
         parameters.Add("@expiredFunds", expiredFundsTable.AsTableValuedParameter("[employer_financial].[ExpiredFundsTable]"));
         parameters.Add("@now", now);
         parameters.Add("@transactionType", transactionType);
+        parameters.Add("@correlationId", correlationId);
 
         return _db.Value.Database.GetDbConnection().ExecuteAsync(
              sql: "[employer_financial].[CreateExpiredFunds]",
