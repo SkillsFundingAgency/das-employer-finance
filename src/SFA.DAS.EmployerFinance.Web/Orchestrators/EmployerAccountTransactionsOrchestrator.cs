@@ -91,7 +91,7 @@ public class EmployerAccountTransactionsOrchestrator(
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
         var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
-        var summary = await outerApiService.GetLevySummary(hashedAccountId);
+        var summary = await outerApiService.GetLevySummary(accountId);
         
         var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {

@@ -53,8 +53,8 @@ internal class WhenGettingFinanceDashboardV2
             });
 
         _mockOuterApiService
-            .Setup(x => x.GetLevySummary(HashedAccountId, false))
-            .ReturnsAsync(new GetLevySummaryByHashedAccountIdResponse
+            .Setup(x => x.GetLevySummary(AccountId, false))
+            .ReturnsAsync(new GetLevySummaryByAccountIdResponse
             {
                 CurrentLevyFunds = 1000M,
                 TotalLevyDeclaredLast12Months = 5000M
@@ -97,7 +97,7 @@ internal class WhenGettingFinanceDashboardV2
     {
         await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        _mockOuterApiService.Verify(x => x.GetLevySummary(HashedAccountId, false), Times.Once);
+        _mockOuterApiService.Verify(x => x.GetLevySummary(AccountId, false), Times.Once);
     }
 
     [Test]

@@ -11,17 +11,17 @@ public class OuterApiService(
     IInProcessCache cache) : IOuterApiService
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
-    private static string LevySummaryKey(string hashedAccountId) => $"LevySummary_{hashedAccountId}";
+    private static string LevySummaryKey(long accountId) => $"LevySummary_{accountId}";
 
-    public async Task<GetLevySummaryByHashedAccountIdResponse> GetLevySummary(string hashedAccountId, bool refreshCache = false)
+    public async Task<GetLevySummaryByAccountIdResponse> GetLevySummary(long accountId, bool refreshCache = false)
     {
-        var key = LevySummaryKey(hashedAccountId);
+        var key = LevySummaryKey(accountId);
 
         if (!refreshCache && cache.Exists(key))
-            return cache.Get<GetLevySummaryByHashedAccountIdResponse>(key);
+            return cache.Get<GetLevySummaryByAccountIdResponse>(key);
 
-        var response = await outerApiClient.Get<GetLevySummaryByHashedAccountIdResponse>(
-            new GetLevySummaryByHashedAccountIdRequest(hashedAccountId));
+        var response = await outerApiClient.Get<GetLevySummaryByAccountIdResponse>(
+            new GetLevySummaryByAccountIdRequest(accountId));
 
         cache.Set(key, response, CacheDuration);
 

@@ -9,7 +9,6 @@ using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndPeriod;
-using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByHashedAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
 using SFA.DAS.EmployerFinance.Queries.GetTransferAllowance;
 using SFA.DAS.Encoding;
@@ -152,15 +151,6 @@ public class FinanceOrchestrator(
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
         return await GetTransferAllowanceByAccountId(accountId);
-    }
-
-    public async Task<LevySummary> GetLevySummaryByHashedAccountId(string hashedAccountId)
-    {
-        logger.LogInformation("Requesting GetLevySummaryByHashedAccountId for the hashedAccountId {AccountId}", hashedAccountId);
-
-        var response = await mediator.Send(new GetLevySummaryByHashedAccountIdQuery(hashedAccountId));
-
-        return response.Summary;
     }
 
     public async Task<TransferAllowance> GetTransferAllowanceByAccountId(long accountId)

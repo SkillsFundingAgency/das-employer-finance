@@ -14,8 +14,8 @@ internal class WhenGettingLevySummary
     private Mock<IInProcessCache> _mockCache;
     private OuterApiService _outerApiService;
 
-    private const string HashedAccountId = "ABC123";
-    private static string CacheKey => $"LevySummary_{HashedAccountId}";
+    private const long AccountId = 123456789;
+    private static string CacheKey => $"LevySummary_{AccountId}";
 
     [SetUp]
     public void Arrange()
@@ -29,36 +29,36 @@ internal class WhenGettingLevySummary
     [Test]
     public async Task ThenWhenCacheHitTheApiIsNotCalledAndCachedResponseIsReturned()
     {
-        var expectedResponse = new GetLevySummaryByHashedAccountIdResponse();
+        var expectedResponse = new GetLevySummaryByAccountIdResponse();
 
         _mockCache
             .Setup(x => x.Exists(CacheKey))
             .Returns(true);
 
         _mockCache
-            .Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(CacheKey))
+            .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(CacheKey))
             .Returns(expectedResponse);
 
-        var result = await _outerApiService.GetLevySummary(HashedAccountId);
+        var result = await _outerApiService.GetLevySummary(AccountId);
 
         result.Should().Be(expectedResponse);
-        _mockApiClient.Verify(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(It.IsAny<GetLevySummaryByHashedAccountIdRequest>()), Times.Never);
+        _mockApiClient.Verify(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<GetLevySummaryByAccountIdRequest>()), Times.Never);
     }
 
     [Test]
     public async Task ThenWhenCacheMissTheOuterApiIsCalledAndResponseIsCachedAndReturned()
     {
-        var expectedResponse = new GetLevySummaryByHashedAccountIdResponse();
+        var expectedResponse = new GetLevySummaryByAccountIdResponse();
 
         _mockCache
             .Setup(x => x.Exists(CacheKey))
             .Returns(false);
 
         _mockApiClient
-            .Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(It.Is<GetLevySummaryByHashedAccountIdRequest>(r => r.HashedAccountId == HashedAccountId)))
+            .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(It.Is<GetLevySummaryByAccountIdRequest>(r => r.AccountId == AccountId)))
             .ReturnsAsync(expectedResponse);
 
-        var result = await _outerApiService.GetLevySummary(HashedAccountId);
+        var result = await _outerApiService.GetLevySummary(AccountId);
 
         result.Should().Be(expectedResponse);
         _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, TimeSpan.FromHours(24)), Times.Once);
@@ -67,17 +67,17 @@ internal class WhenGettingLevySummary
     [Test]
     public async Task ThenWhenRefreshCacheIsTrueTheOuterApiIsCalledRegardlessOfCacheState()
     {
-        var expectedResponse = new GetLevySummaryByHashedAccountIdResponse();
+        var expectedResponse = new GetLevySummaryByAccountIdResponse();
 
         _mockCache
             .Setup(x => x.Exists(CacheKey))
             .Returns(true);
 
         _mockApiClient
-            .Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(It.IsAny<GetLevySummaryByHashedAccountIdRequest>()))
+            .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<GetLevySummaryByAccountIdRequest>()))
             .ReturnsAsync(expectedResponse);
 
-        var result = await _outerApiService.GetLevySummary(HashedAccountId, refreshCache: true);
+        var result = await _outerApiService.GetLevySummary(AccountId, refreshCache: true);
 
         result.Should().Be(expectedResponse);
         _mockCache.Verify(x => x.Exists(It.IsAny<string>()), Times.Never);
@@ -88,38 +88,38 @@ internal class WhenGettingLevySummary
     public async Task ThenWhenRefreshCacheIsTrueCacheIsNotRead()
     {
         _mockApiClient
-            .Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(It.IsAny<GetLevySummaryByHashedAccountIdRequest>()))
-            .ReturnsAsync(new GetLevySummaryByHashedAccountIdResponse());
+            .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<GetLevySummaryByAccountIdRequest>()))
+            .ReturnsAsync(new GetLevySummaryByAccountIdResponse());
 
-        await _outerApiService.GetLevySummary(HashedAccountId, refreshCache: true);
+        await _outerApiService.GetLevySummary(AccountId, refreshCache: true);
 
-        _mockCache.Verify(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(It.IsAny<string>()), Times.Never);
+        _mockCache.Verify(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<string>()), Times.Never);
     }
 
     [Test]
     public async Task ThenDifferentHashedAccountIdsUseSeparateCacheKeys()
     {
-        const string secondHashedAccountId = "XYZ789";
+        const long secondAccountId = 987654321;
 
-        var firstResponse = new GetLevySummaryByHashedAccountIdResponse
+        var firstResponse = new GetLevySummaryByAccountIdResponse
         {
             CurrentLevyFunds = 100M,
             TotalLevyDeclaredLast12Months = 200M
         };
 
-        var secondResponse = new GetLevySummaryByHashedAccountIdResponse
+        var secondResponse = new GetLevySummaryByAccountIdResponse
         {
             CurrentLevyFunds = 300M,
             TotalLevyDeclaredLast12Months = 400M
         };
 
-        _mockCache.Setup(x => x.Exists($"LevySummary_{HashedAccountId}")).Returns(true);
-        _mockCache.Setup(x => x.Exists($"LevySummary_{secondHashedAccountId}")).Returns(true);
-        _mockCache.Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>($"LevySummary_{HashedAccountId}")).Returns(firstResponse);
-        _mockCache.Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>($"LevySummary_{secondHashedAccountId}")).Returns(secondResponse);
+        _mockCache.Setup(x => x.Exists($"LevySummary_{AccountId}")).Returns(true);
+        _mockCache.Setup(x => x.Exists($"LevySummary_{secondAccountId}")).Returns(true);
+        _mockCache.Setup(x => x.Get<GetLevySummaryByAccountIdResponse>($"LevySummary_{AccountId}")).Returns(firstResponse);
+        _mockCache.Setup(x => x.Get<GetLevySummaryByAccountIdResponse>($"LevySummary_{secondAccountId}")).Returns(secondResponse);
 
-        var result1 = await _outerApiService.GetLevySummary(HashedAccountId);
-        var result2 = await _outerApiService.GetLevySummary(secondHashedAccountId);
+        var result1 = await _outerApiService.GetLevySummary(AccountId);
+        var result2 = await _outerApiService.GetLevySummary(secondAccountId);
 
         result1.CurrentLevyFunds.Should().Be(100M);
         result2.CurrentLevyFunds.Should().Be(300M);
@@ -134,10 +134,10 @@ internal class WhenGettingLevySummary
             .Returns(false);
 
         _mockApiClient
-            .Setup(x => x.Get<GetLevySummaryByHashedAccountIdResponse>(It.IsAny<GetLevySummaryByHashedAccountIdRequest>()))
+            .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<GetLevySummaryByAccountIdRequest>()))
             .ThrowsAsync(new HttpRequestException("Service unavailable"));
 
-        var act = () => _outerApiService.GetLevySummary(HashedAccountId);
+        var act = () => _outerApiService.GetLevySummary(AccountId);
 
         await act.Should().ThrowAsync<HttpRequestException>().WithMessage("Service unavailable");
         _mockCache.Verify(x => x.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Never);
