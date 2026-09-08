@@ -16,6 +16,7 @@ public class WhenIGetLevySummaryByAccountId
     private const decimal ExpectedAccountBalance = 5000.75m;
     private const decimal ExpectedTotalLevyDeclaredLast12Months = 4500.00m;
     private const decimal ExpectedTotalLevySpentLast12Months = 3000.00m;
+    private const decimal ExpectedTotalLevyExpiredLast12Months = 1500.00m;
 
     [SetUp]
     public void Arrange()
@@ -39,6 +40,13 @@ public class WhenIGetLevySummaryByAccountId
                 new LevyDeclarationItem {TotalAmount = 1000m},
                 new LevyDeclarationItem {TotalAmount = 2000m}
             ]);
+
+        _dasLevyRepository.Setup(x => x.GetAccountExpiredLevyForPreviousMonths(ExpectedAccountId, 12))
+            .ReturnsAsync([
+                new LevyDeclarationItem {TotalAmount = 500m},
+                new LevyDeclarationItem {TotalAmount = 500m},
+                new LevyDeclarationItem {TotalAmount = 500m}
+            ]); 
 
         _handler = new GetLevySummaryByAccountIdQueryHandler(_dasLevyService.Object, _dasLevyRepository.Object);
     }
@@ -228,6 +236,95 @@ public class WhenIGetLevySummaryByAccountId
 
         //Assert
         result.Summary.TotalLevySpentLast12Months.Should().Be(7000m);
+        result.Summary.TotalLevyDeclaredLast12Months.Should().Be(ExpectedTotalLevyDeclaredLast12Months);
+    }
+
+    [Test]
+    public async Task ThenTheLevyRepositoryIsCalledWithTheDecodedAccountIdAndTwelveMonthsForLevyExpired()
+    {
+        //Act
+        await _handler.Handle(new GetLevySummaryByAccountIdQuery(ExpectedAccountId), CancellationToken.None);
+
+        //Assert
+        _dasLevyRepository.Verify(x => x.GetAccountExpiredLevyForPreviousMonths(ExpectedAccountId, 12), Times.Once);
+    }
+
+    [Test]
+    public async Task ThenTheTwelveMonthsTotalLevyExpiredIsSetToTheSumOfAllExpiredTransactions()
+    {
+        //Act
+        var result = await _handler.Handle(new GetLevySummaryByAccountIdQuery(ExpectedAccountId), CancellationToken.None);
+
+        //Assert
+        result.Summary.TotalLevyExpiredLast12Months.Should().Be(ExpectedTotalLevyExpiredLast12Months);
+    }
+
+    [Test]
+    public async Task ThenWhenThereAreNoExpiredLevyTransactionsTotalIsZero()
+    {
+        //Arrange
+        _dasLevyRepository
+            .Setup(x => x.GetAccountExpiredLevyForPreviousMonths(ExpectedAccountId, 12))
+            .ReturnsAsync([]);
+
+        //Act
+        var result = await _handler.Handle(new GetLevySummaryByAccountIdQuery(ExpectedAccountId), CancellationToken.None);
+
+        //Assert
+        result.Summary.TotalLevyExpiredLast12Months.Should().Be(0m);
+    }
+
+    [Test]
+    public async Task ThenLevyExpiredIsIndependentOfLevyDeclaredAndLevySpent()
+    {
+        //Arrange
+        _dasLevyRepository
+            .Setup(x => x.GetAccountExpiredLevyForPreviousMonths(ExpectedAccountId, 12))
+            .ReturnsAsync([]);
+
+        //Act
+        var result = await _handler.Handle(new GetLevySummaryByAccountIdQuery(ExpectedAccountId), CancellationToken.None);
+
+        //Assert
+        result.Summary.TotalLevyExpiredLast12Months.Should().Be(0m);
+        result.Summary.TotalLevyDeclaredLast12Months.Should().Be(ExpectedTotalLevyDeclaredLast12Months);
+        result.Summary.TotalLevySpentLast12Months.Should().Be(ExpectedTotalLevySpentLast12Months);
+    }
+
+    [Test]
+    public async Task ThenWhenExpiredLevyAmountsAreNegativeTheyAreIncludedInTheTotal()
+    {
+        //Arrange
+        _dasLevyRepository
+            .Setup(x => x.GetAccountExpiredLevyForPreviousMonths(ExpectedAccountId, 12))
+            .ReturnsAsync([
+                new LevyDeclarationItem { TotalAmount = -500m },
+            new LevyDeclarationItem { TotalAmount = -1000m }
+            ]);
+
+        //Act
+        var result = await _handler.Handle(new GetLevySummaryByAccountIdQuery(ExpectedAccountId), CancellationToken.None);
+
+        //Assert
+        result.Summary.TotalLevyExpiredLast12Months.Should().Be(-1500m);
+    }
+
+    [Test]
+    public async Task ThenWhenExpiredLevyExceedsLevyDeclaredBothValuesAreStillReturned()
+    {
+        //Arrange
+        _dasLevyRepository
+            .Setup(x => x.GetAccountExpiredLevyForPreviousMonths(ExpectedAccountId, 12))
+            .ReturnsAsync([
+                new LevyDeclarationItem { TotalAmount = 3000m },
+            new LevyDeclarationItem { TotalAmount = 3000m }
+            ]);
+
+        //Act
+        var result = await _handler.Handle(new GetLevySummaryByAccountIdQuery(ExpectedAccountId), CancellationToken.None);
+
+        //Assert
+        result.Summary.TotalLevyExpiredLast12Months.Should().Be(6000m);
         result.Summary.TotalLevyDeclaredLast12Months.Should().Be(ExpectedTotalLevyDeclaredLast12Months);
     }
 }

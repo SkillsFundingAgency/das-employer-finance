@@ -15,6 +15,7 @@ public class WhenIViewFinanceDashboard
     private const decimal ExpectedCurrentFunds = 123.45M;
     private const decimal ExpectedTotalLevyDeclaredLast12Months = 678.90M;
     private const decimal ExpectedTotalLevySpentLast12Months = 234.56M;
+    private const decimal ExpectedTotalLevyExpiredLast12Months = 12.34M;
 
     private EmployerAccountTransactionsController _controller;
     private Mock<IEmployerAccountTransactionsOrchestrator> _orchestrator;
@@ -33,7 +34,8 @@ public class WhenIViewFinanceDashboard
                     HashedAccountId = ExpectedHashedAccountId,
                     CurrentLevyFunds = ExpectedCurrentFunds,
                     TotalLevyDeclaredLast12Months = ExpectedTotalLevyDeclaredLast12Months,
-                    TotalLevySpentLast12Months = ExpectedTotalLevySpentLast12Months
+                    TotalLevySpentLast12Months = ExpectedTotalLevySpentLast12Months,
+                    TotalLevyExpiredLast12Months = ExpectedTotalLevyExpiredLast12Months
                 }
             });
 
@@ -151,7 +153,7 @@ public class WhenIViewFinanceDashboard
         // Assert
         var viewResult = result as ViewResult;
         Assert.That(viewResult, Is.Not.Null);
-        Assert.That(viewResult.ViewName, Is.EqualTo("IndexV2"));
+        Assert.That(viewResult.ViewName, Is.EqualTo(ViewNames.FinanceDashboard));
         Assert.That(viewResult.Model, Is.EqualTo(viewModel));
     }
 
@@ -210,7 +212,7 @@ public class WhenIViewFinanceDashboard
     }
 
     [Test]
-    public async Task Index_WhenFeatureEnabledAndOrchestratorReturnsRedirect_ShouldStillReturnIndexV2View()
+    public async Task Index_WhenFeatureEnabledAndOrchestratorReturnsRedirect_ShouldStillReturnFinanceDashboardView()
     {
         // Arrange
         _featureMock
@@ -232,7 +234,7 @@ public class WhenIViewFinanceDashboard
         // Assert
         var viewResult = result as ViewResult;
         viewResult.Should().NotBeNull();
-        viewResult!.ViewName.Should().Be("IndexV2");
+        viewResult!.ViewName.Should().Be(ViewNames.FinanceDashboard);
     }
 
     [Test]
@@ -256,6 +258,7 @@ public class WhenIViewFinanceDashboard
         model.Data.CurrentLevyFunds.Should().Be(ExpectedCurrentFunds);
         model.Data.TotalLevyDeclaredLast12Months.Should().Be(ExpectedTotalLevyDeclaredLast12Months);
         model.Data.TotalLevySpentLast12Months.Should().Be(ExpectedTotalLevySpentLast12Months);
+        model.Data.TotalLevyExpiredLast12Months.Should().Be(ExpectedTotalLevyExpiredLast12Months);
     }
 
     [Test]
@@ -279,6 +282,6 @@ public class WhenIViewFinanceDashboard
         // Assert
         var viewResult = result as ViewResult;
         viewResult.Should().NotBeNull();
-        viewResult!.ViewName.Should().BeNullOrEmpty(); // default view, not named "IndexV2"
+        viewResult!.ViewName.Should().BeNullOrEmpty(); // default view, not named "FinanceDashboard"
     }
 }

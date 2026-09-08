@@ -39,7 +39,7 @@ public class EmployerAccountTransactionsController(
         // Check if the feature toggle for Levy Projection Transparency is enabled. This will determine which view to render for the Index action.
         if (feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
         {
-            return View("IndexV2", await accountTransactionsOrchestrator.GetFinanceDashboardV2(hashedAccountId));
+            return View(ViewNames.FinanceDashboard, await accountTransactionsOrchestrator.GetFinanceDashboardV2(hashedAccountId));
         }
 
         var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());

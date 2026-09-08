@@ -14,6 +14,7 @@ public class GetLevySummaryByAccountIdQueryHandler(IDasLevyService dasLevyServic
         var currentAccountBalance = await dasLevyService.GetAccountBalance(request.AccountId);
         var levyDeclarations = await dasLevyRepository.GetAccountLevyDeclaredForPreviousMonths(request.AccountId, TwelveMonths);
         var levySpent = await dasLevyRepository.GetAccountLevySpentForPreviousMonths(request.AccountId, TwelveMonths);
+        var levyExpired = await dasLevyRepository.GetAccountExpiredLevyForPreviousMonths(request.AccountId, TwelveMonths);
 
         return new GetLevySummaryByAccountIdQueryResult
         {
@@ -21,7 +22,8 @@ public class GetLevySummaryByAccountIdQueryHandler(IDasLevyService dasLevyServic
             {
                 CurrentLevyFunds = currentAccountBalance,
                 TotalLevyDeclaredLast12Months = levyDeclarations.Sum(x => x.TotalAmount),
-                TotalLevySpentLast12Months = levySpent.Sum(x => x.TotalAmount)
+                TotalLevySpentLast12Months = levySpent.Sum(x => x.TotalAmount),
+                TotalLevyExpiredLast12Months = levyExpired.Sum(x => x.TotalAmount)
             }
         };
     }

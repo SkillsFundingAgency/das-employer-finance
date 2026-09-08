@@ -102,6 +102,7 @@ public class EmployerAccountTransactionsOrchestrator(
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
+                TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
                 ShowLevyTransparency = configuration.ShowLevyTransparency,
             }
         };
