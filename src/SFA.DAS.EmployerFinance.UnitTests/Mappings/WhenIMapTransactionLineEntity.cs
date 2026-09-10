@@ -62,8 +62,7 @@ public class WhenIMapTransactionLineEntity
             TransferSenderAccountId = 111,
             TransferSenderAccountName = "Sender Ltd",
             TransferReceiverAccountId = 222,
-            TransferReceiverAccountName = "Receiver Ltd",
-            TrainingProvider = "Provider Ltd"
+            TransferReceiverAccountName = "Receiver Ltd"
         };
 
         var result = _mapper.Map<TransferTransactionLine>(entity);
@@ -76,7 +75,6 @@ public class WhenIMapTransactionLineEntity
         result.SenderAccountName.Should().Be(entity.TransferSenderAccountName);
         result.ReceiverAccountId.Should().Be(entity.TransferReceiverAccountId.Value);
         result.ReceiverAccountName.Should().Be(entity.TransferReceiverAccountName);
-        result.ProviderName.Should().Be(entity.TrainingProvider);
     }
 
     [Test]
