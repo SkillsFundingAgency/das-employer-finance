@@ -189,7 +189,7 @@ SELECT  DATEADD(dd, DATEDIFF(dd, 0, [employer_financial].[AccountTransfers].Crea
 		NULL																					AS LevyDeclared,
 		NULL																					AS EnglishFraction,
 		NULL																					AS TenPercentTopUp,
-		NULL																					AS TrainingProvider,
+        NULL                                                                                    AS TrainingProvider,
 		NULL																					AS Uln,
 		NULL																					AS Apprentice,
 		[employer_financial].[AccountTransfers].CourseName										AS ApprenticeTrainingCourse,
