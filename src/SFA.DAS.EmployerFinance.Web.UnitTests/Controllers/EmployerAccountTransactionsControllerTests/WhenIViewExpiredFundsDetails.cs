@@ -1,5 +1,4 @@
 using AutoMapper;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
@@ -42,7 +41,7 @@ public class WhenIViewExpiredFundsDetails
             _orchestrator.Object,
             Mock.Of<IMapper>(),
             Mock.Of<IMediator>(),
-            Mock.Of<IEncodingService>(), Mock.Of<IFeature>());
+            Mock.Of<IEncodingService>());
     }
 
     [Test]

@@ -1,6 +1,5 @@
 using AutoMapper;
 using SFA.DAS.EmployerFinance.Models.Transaction;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -20,7 +19,7 @@ public class AccountTransactionControllerTests
         _orchestrator = new Mock<IEmployerAccountTransactionsOrchestrator>();
 
         _orchestrator.Setup(x => x.GetAccountTransactions(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync(new OrchestratorResponse<TransactionViewResultViewModel>
+            .ReturnsAsync(new Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>
             {
                 Data = new TransactionViewResultViewModel(DateTime.Now)
                 {
@@ -33,8 +32,8 @@ public class AccountTransactionControllerTests
                 }
             });
 
-        _controller = new EmployerAccountTransactionsController(
-            _orchestrator.Object, Mock.Of<IMapper>(), Mock.Of<IMediator>(), Mock.Of<IEncodingService>(), Mock.Of<IFeature>());
+        _controller = new Web.Controllers.EmployerAccountTransactionsController(
+            _orchestrator.Object, Mock.Of<IMapper>(), Mock.Of<IMediator>(), Mock.Of<IEncodingService>());
     }
 
     [Test]
@@ -51,13 +50,13 @@ public class AccountTransactionControllerTests
     }
 
     [Test]
-    public async Task ThenPreviousTransactionsStatusIsShown()
+    public async Task ThenPrevioussTransactionsStatusIsShown()
     {
         //Act
         var result = await _controller.TransactionsView("TEST", 2017, 1);
 
         var viewResult = result as ViewResult;
-        var viewModel = viewResult?.Model as OrchestratorResponse<TransactionViewResultViewModel>;
+        var viewModel = viewResult?.Model as Web.Orchestrators.OrchestratorResponse<TransactionViewResultViewModel>;
 
         //Assert
         (viewModel).Should().NotBeNull();

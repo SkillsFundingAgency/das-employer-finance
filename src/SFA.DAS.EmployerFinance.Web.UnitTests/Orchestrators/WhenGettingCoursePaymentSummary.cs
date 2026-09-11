@@ -4,7 +4,6 @@ using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.FindAccountCoursePayments;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -40,12 +39,7 @@ public class WhenGettingCoursePaymentSummary
             _accountApiMock.Object, 
             _mediatorMock.Object, 
             _currentTimeMock.Object,
-            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), 
-            Mock.Of<IEncodingService>(),
-            Mock.Of<IAuthenticationOrchestrator>(),
-            Mock.Of<IGovAuthEmployerAccountService>(),
-            Mock.Of<IOuterApiService>(), 
-            Mock.Of<EmployerFinanceWebConfiguration>());
+            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), Mock.Of<IEncodingService>(), Mock.Of<IAuthenticationOrchestrator>(),Mock.Of<IGovAuthEmployerAccountService>(), Mock.Of<EmployerFinanceWebConfiguration>());
     }
 
     [Test]

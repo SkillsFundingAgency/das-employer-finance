@@ -584,54 +584,6 @@ public class DasLevyRepository(
         return result.ToList();
     }
 
-    public Task<List<LevyDeclarationItem>> GetAccountLevyDeclaredForPreviousMonths(long accountId, int months) =>
-        QueryAsync<LevyDeclarationItem>("""
-                                        SELECT
-                                            tl.Amount As TotalAmount,
-                                            tl.EmpRef,
-                                            tl.AccountId
-                                        FROM
-                                            [employer_financial].[TransactionLine] tl
-                                        WHERE
-                                            tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                            AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
-                                            AND tl.TransactionType = 1
-                                            AND tl.AccountId = @accountId
-                                        """, AccountMonthsParameters(accountId, months));
-
-    public Task<List<LevyDeclarationItem>> GetAccountExpiredLevyForPreviousMonths(long accountId, int months) =>
-        QueryAsync<LevyDeclarationItem>("""
-                                  SELECT
-                                        tl.Amount As TotalAmount,
-                                        tl.EmpRef,
-                                        tl.AccountId
-                                  FROM
-                                      [employer_financial].[TransactionLine] tl
-                                  WHERE
-                                      tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                      AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
-                                      AND tl.AccountId = @accountId
-                                      AND tl.TransactionType IN (5, 6) -- ExpiredFund (24-month), ShortExpiredFund (12-month)
-                                  """, AccountMonthsParameters(accountId, months));
-
-    public Task<List<LevyDeclarationItem>> GetAccountLevySpentForPreviousMonths(long accountId, int months) =>
-        QueryAsync<LevyDeclarationItem>("""
-                                        SELECT
-                                            tl.Amount As TotalAmount,
-                                            tl.EmpRef,
-                                            tl.AccountId
-                                        FROM
-                                            [employer_financial].[TransactionLine] tl
-                                        WHERE
-                                            tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                            AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
-                                            AND (
-                                                (tl.TransactionType = 3 AND tl.AccountId = @accountId)
-                                                OR
-                                                (tl.TransactionType = 4 AND tl.TransferSenderAccountId = @accountId)
-                                            )
-                                        """, AccountMonthsParameters(accountId, months));
-
     public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId, string payrollYear, short payrollMonth)
     {
         var parameters = new DynamicParameters();
@@ -758,25 +710,5 @@ public class DasLevyRepository(
                 SubmissionId = ld.HmrcSubmissionId ?? ld.SubmissionId
             })
             .ToListAsync();
-    }
-
-    private async Task<List<T>> QueryAsync<T>(string sql, DynamicParameters parameters)
-    {
-        var result = await db.Value.Database.GetDbConnection().QueryAsync<T>(
-            sql: sql,
-            param: parameters,
-            commandTimeout: 60,
-            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-            commandType: CommandType.Text);
-
-        return [.. result];
-    }
-
-    private static DynamicParameters AccountMonthsParameters(long accountId, int months)
-    {
-        var parameters = new DynamicParameters();
-        parameters.Add("@accountId", accountId, DbType.Int64);
-        parameters.Add("@months", months, DbType.Int32);
-        return parameters;
     }
 }

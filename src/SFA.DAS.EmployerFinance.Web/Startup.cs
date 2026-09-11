@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.ApplicationInsights;
-using Microsoft.FeatureManagement;
 using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -15,7 +13,6 @@ using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.Filters;
-using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.EmployerFinance.Web.Infrastructure;
 using SFA.DAS.EmployerFinance.Web.Middleware;
 using SFA.DAS.EmployerFinance.Web.StartupExtensions;
@@ -25,6 +22,7 @@ using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
 using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 using SFA.DAS.UnitOfWork.Mvc.Extensions;
 using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
+using SFA.DAS.EmployerFinance.Web.Helpers;
 
 namespace SFA.DAS.EmployerFinance.Web;
 
@@ -34,8 +32,6 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.Replace(ServiceDescriptor.Singleton<IConfiguration>(_configuration));
-
         services.AddHttpContextAccessor();
 
         services.AddOptions();
@@ -89,7 +85,6 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                 options.Filters.Add(new ZendeskApiFilterAttribute());
             }
-            services.AddFeatureManagement(configuration.GetSection("Features"));
         });
 
         services
