@@ -1,7 +1,6 @@
 using HMRC.ESFA.Levy.Api.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
-using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.Hmrc;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
@@ -62,7 +61,6 @@ public class WhenAddingServicesToTheContainer
 
         services.AddSingleton(Mock.Of<IWebHostEnvironment>());
         services.AddSingleton(Mock.Of<IConfiguration>());
-        services.AddSingleton(Mock.Of<IInProcessCache>());
         services.AddConfigurationOptions(configuration);
         services.AddDistributedMemoryCache();
         services.AddApplicationServices(configuration);

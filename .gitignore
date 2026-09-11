@@ -280,4 +280,3 @@ src/SFA.DAS.EmployerAccounts.ReadStore/SFA.DAS.EmployerAccounts.ReadStore/SFA.DA
 /src/SFA.DAS.EmployerFinance.Api/**nlog.txt
 
 src/SFA.DAS.EmployerFinance.Api/appsettings.Development.json
-/.github/instructions

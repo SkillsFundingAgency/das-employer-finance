@@ -6,7 +6,6 @@ using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -42,7 +41,6 @@ internal class WhenFindingAccountLevyDeclarationTransactions
             Mock.Of<IEncodingService>(),
             Mock.Of<IAuthenticationOrchestrator>(),
             Mock.Of<IGovAuthEmployerAccountService>(),
-            Mock.Of<IOuterApiService>(),
             Mock.Of<EmployerFinanceWebConfiguration>());
     }
 

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
-using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Controllers;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
@@ -32,7 +31,7 @@ class WhenIViewTranferTransactions
             _orchestrator.Object,
             _mapper.Object,
             _mediator.Object,
-            Mock.Of<IEncodingService>(), Mock.Of<IFeature>());
+            Mock.Of<IEncodingService>());
 
         _query = new GetTransferTransactionDetailsQuery
         {
