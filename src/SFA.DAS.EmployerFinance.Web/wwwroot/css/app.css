@@ -23,7 +23,6 @@
 
 .app-finance-figure-no-border {
     background-color: #ffffff;
-    border-left-style: solid;
     line-height: 1;
     padding: 15px;
     font-size: 30px;
@@ -37,6 +36,25 @@
     .app-highlight-boxes-current-levy .app-highlight-boxes-projection__box {
         width: 249px;
     }
+
+.app-finance-figure--row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.app-finance-figure-commitments__label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 5px;
+}
+
+.app-finance-figure__value {
+    white-space: nowrap;
+    margin: 10px;
+}
 
 @media (min-width: 40.0625em) {
     .app-finance-figure__wrap {

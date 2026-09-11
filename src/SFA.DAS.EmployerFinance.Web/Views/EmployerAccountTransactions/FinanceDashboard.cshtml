@@ -14,6 +14,7 @@
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
     var totalLevySpentLast12Months = Model.Data.TotalLevySpentLast12Months.ToString("C0", culture);
     var totalLevyExpiredLast12Months = Model.Data.TotalLevyExpiredLast12Months.ToString("C0", culture);
+    var totalCommittedLearnerCosts = Model.Data.TotalCommittedLearnerCosts.ToString("C0", culture);
 }
 @if (Model.Data.IsLevyEmployer)
 {
@@ -59,7 +60,19 @@
             <div class="govuk-grid-row govuk-!-margin-top-6">
                 <div class="govuk-grid-column-full">
                     <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
-                    <p class="govuk-body govuk-!-margin-top-0">Paid in monthly payments until learners complete training.</p>
+                    <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-0">Paid from your levy funds in monthly instalments until learners complete their training.</p>
+                    <p class="govuk-body govuk-!-margin-top-0">
+                        If you run out of levy funds and do not receive transfers from another employer, you will need to pay co-investment.
+                    </p>
+                    <div class="app-finance-figure-no-border app-finance-figure--row">
+                        <div class="app-finance-figure-commitments__label">
+                            <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">Committed learner costs</strong>
+                            <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0">Levy funds committed to spend on your learners.</p>
+                        </div>
+                        <span class="govuk-body govuk-!-font-size-24 app-finance-figure__value">
+                            @totalCommittedLearnerCosts
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
