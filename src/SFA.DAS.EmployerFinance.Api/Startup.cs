@@ -35,6 +35,11 @@ public class Startup
     {
         services.AddApiConfigurationSections(_configuration);
 
+        services.AddHsts(options =>
+        {
+            options.MaxAge = TimeSpan.FromDays(90);
+        });
+
         var employerFinanceConfiguration = _configuration.GetSection(nameof(EmployerFinanceConfiguration)).Get<EmployerFinanceConfiguration>();
         var isDevelopment = _configuration.IsDevOrLocal();
 
