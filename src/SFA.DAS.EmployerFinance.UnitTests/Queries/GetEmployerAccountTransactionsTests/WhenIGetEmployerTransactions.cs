@@ -463,10 +463,12 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         {
             ReceiverAccountName = "Test Corp",
             TransactionType = TransactionItemType.Transfer,
-            Amount = 2035.20M
+            Amount = 2035.20M,
+            ProviderName = "Test Provider",
+            SenderAccountId = -9
         };
 
-        var expectedDescription = $"Transfer sent to {transaction.ReceiverAccountName}";
+        var expectedDescription = $"Paid using transfer from {transaction.SenderAccountName}";
 
         _dasLevyService.Setup(x =>
                 x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
@@ -481,7 +483,8 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        actualTransaction.Description.Should().Be(expectedDescription);
+        actualTransaction.TransferSourceDescription.Should().Be(expectedDescription);
+        actualTransaction.Description.Should().Be(transaction.ProviderName);
         actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
