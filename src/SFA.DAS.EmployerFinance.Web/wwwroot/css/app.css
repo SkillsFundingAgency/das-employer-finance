@@ -15,18 +15,18 @@
     border-left-style: solid;
     border-left-color: #006DD1;
     border-left-width: 10px;
-    line-height: 1;
+    line-height: 1.25 !important;
     padding: 15px;
-    font-size: 30px;
+    font-size: 1.3125rem !important;
     min-width: 159px;
 }
 
 .app-finance-figure-no-border {
     background-color: #ffffff;
     border-left-style: solid;
-    line-height: 1;
+    line-height: 1.25 !important;
     padding: 15px;
-    font-size: 30px;
+    font-size: 1.3125rem !important;
     min-width: 159px;
 }
 
