@@ -18,7 +18,7 @@
     line-height: 1.25 !important;
     padding: 15px;
     font-size: 1.3125rem !important;
-    min-width: 159px;
+    min-width: 225px;
 }
 
 .app-finance-figure-no-border {
@@ -360,7 +360,7 @@
 @media (min-width: 40.0625em) {
     .app-highlight-boxes {
         flex-direction: row;
-        gap: 50px;
+        gap: 15px;
     }
 }
 
@@ -374,7 +374,7 @@
 
 .app-highlight-boxes-projection__box {
     background: #f3f2f1;
-    padding: 15px;
+    padding: 0px 15px 10px;
     border-radius: 5px;
     flex: 1;
 }

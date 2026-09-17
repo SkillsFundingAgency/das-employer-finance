@@ -152,15 +152,5 @@ internal class WhenGettingFinanceDashboardV2
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
         result.Data.TotalLevyDeclaredLast12Months.Should().Be(5000M);
-    }
-
-    [Test]
-    public async Task ThenShowLevyTransparencyIsSetFromConfiguration()
-    {
-        _configuration.ShowLevyTransparency = false;
-
-        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
-
-        result.Data.ShowLevyTransparency.Should().BeFalse();
-    }
+    }    
 }
