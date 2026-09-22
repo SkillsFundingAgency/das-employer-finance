@@ -5,89 +5,17 @@
 @{
     ViewBag.PageID = "finance";
     ViewBag.Section = "finance";
-    ViewBag.Title = Model.Data.ShowLevyTransparency ? "Funding and payments" : "Finance";
+    ViewBag.Title = "Funding and payments";
     ViewBag.GaData.Vpv = "/finance/home";
     ViewBag.ZenDeskLabel = "eas-finance";
 
     var culture = new CultureInfo("en-GB");
     var balance = Model.Data.CurrentLevyFunds.ToString("C0", culture);
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
-    var totalLevySpentLast12Months = Model.Data.TotalLevySpentLast12Months.ToString("C0", culture);
-    var totalLevyExpiredLast12Months = Model.Data.TotalLevyExpiredLast12Months.ToString("C0", culture);
+    var totalLevySpentLast12Months = Math.Abs(Model.Data.TotalLevySpentLast12Months).ToString("C0", culture);
+    var totalLevyExpiredLast12Months = Math.Abs(Model.Data.TotalLevyExpiredLast12Months).ToString("C0", culture);
     var totalCommittedLearnerCosts = Model.Data.TotalCommittedLearnerCosts.ToString("C0", culture);
-}
-@if (Model.Data.IsLevyEmployer)
-{
-    if (Model.Data.ShowLevyTransparency)
-    {
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
-                <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
-            </div>
-        </div>
-        <div class="app-statement">
-            <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Latest summary</h2>
-            <p class="govuk-body">An overview of your account's financial activity.</p>
-            <div class="govuk-grid-row govuk-!-margin-top-6">
-                <div class="govuk-grid-column-one-third app-highlight-boxes-current-levy">
-                    <div class="app-highlight-boxes-projection__box">
-                        <p class="app-finance-figure__title" id="lbl-current-funds">Current levy funds</p>
-                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-current-funds">@balance</div>
-                    </div>
-                </div>
-            </div>
-            <div class="govuk-grid-row">
-                <div class="app-highlight-boxes">
-                    <div class="app-highlight-boxes-projection__box">
-                        <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
-                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-in">@totalLevyDeclaredLast12Months</div>
-                        <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
-                    </div>
-                    <div class="app-highlight-boxes-projection__box">
-                        <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
-                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">@totalLevySpentLast12Months</div>
-                        <p class="govuk-!-margin-bottom-0 govuk-body-s">Payments to providers, learner costs and transfers in the past 12 months.</p>
-                    </div>
-                    <div class="app-highlight-boxes-projection__box">
-                        <p class="app-finance-figure__title" id="lbl-expired-levy">Expired levy</p>
-                        <div class="govuk-body govuk-!-font-size-24 app-finance-figure-blue" aria-labelledby="lbl-expired-levy">@totalLevyExpiredLast12Months</div>
-                        <p class="govuk-!-margin-bottom-0 govuk-body-s">Funds returned to support Growth and Skills training in the past 12 months.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="govuk-grid-row govuk-!-margin-top-6">
-                <div class="govuk-grid-column-full">
-                    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
-                    <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-0">Paid from your levy funds in monthly instalments until learners complete their training.</p>
-                    <p class="govuk-body govuk-!-margin-top-0">
-                        If you run out of levy funds and do not receive transfers from another employer, you will need to pay co-investment.
-                    </p>
-                    <div class="app-finance-figure-no-border app-finance-figure--row">
-                        <div class="app-finance-figure-commitments__label">
-                            <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">Committed learner costs</strong>
-                            <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0">Levy funds committed to spend on your learners.</p>
-                        </div>
-                        <span class="govuk-body govuk-!-font-size-24 app-finance-figure__value">
-                            @totalCommittedLearnerCosts
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-}
-else
-{
-    if (Model.Data.ShowLevyTransparency)
-    {
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
-    }
-    else
-    {
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Finance</h1>
-    }
+    var totalCommittedTransferOutCosts = Model.Data.TotalCommittedTransfersCosts.ToString("C0", culture);
 }
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
@@ -96,4 +24,79 @@ else
             <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
         </ol>
     </div>
+}
+@if (Model.Data.IsLevyEmployer)
+{
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
+            <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
+        </div>
+    </div>
+    <div class="app-statement">
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Levy summary</h2>
+        <p class="govuk-body">An overview of your account's financial activity.</p>
+        <div class="govuk-grid-row govuk-!-margin-top-6">
+            <div class="govuk-grid-column-one-third app-highlight-boxes-current-levy">
+                <div class="app-highlight-boxes-projection__box">
+                    <p class="app-finance-figure__title" id="lbl-current-funds">Current levy funds</p>
+                    <div class="govuk-body govuk-!-font-size-21 govuk-!-font-weight-bold app-finance-figure-blue" aria-labelledby="lbl-current-funds">@balance</div>
+                </div>
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div class="app-highlight-boxes">
+                <div class="app-highlight-boxes-projection__box">
+                    <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
+                    <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-in">@totalLevyDeclaredLast12Months</div>
+                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
+                </div>
+                <div class="app-highlight-boxes-projection__box">
+                    <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
+                    <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">@totalLevySpentLast12Months</div>
+                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Payments to providers for learner costs and transfers in past 12 months.</p>
+                </div>
+                <div class="app-highlight-boxes-projection__box">
+                    <p class="app-finance-figure__title" id="lbl-expired-levy">Expired levy</p>
+                    <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-expired-levy">@totalLevyExpiredLast12Months</div>
+                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Funds returned to support Growth and Skills training in the past 12 months.</p>
+                </div>
+            </div>
+        </div>
+        <div class="govuk-grid-row govuk-!-margin-top-6">
+            <div class="govuk-grid-column-three-quarters">
+                <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
+                <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
+                    Paid from your levy funds in monthly instalments until learners complete their training.
+                </p>
+                <div class="app-finance-figure-no-border app-finance-figure--row govuk-!-margin-bottom-2">
+                    <div class="app-finance-figure-commitments__label">
+                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Committed learner costs</strong>
+                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
+                            Levy funds committed to spend on your learners.
+                        </p>
+                    </div>
+                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
+                        @totalCommittedLearnerCosts
+                    </span>
+                </div>
+                <div class="app-finance-figure-no-border app-finance-figure--row">
+                    <div class="app-finance-figure-commitments__label">
+                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Committed transfer costs</strong>
+                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
+                            Levy funds committed to other employers.
+                        </p>
+                    </div>
+                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
+                        @totalCommittedTransferOutCosts
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
 }

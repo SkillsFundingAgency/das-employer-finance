@@ -42,12 +42,15 @@ GO
 --                                 /\___/                                                                                                                      
 --                                 \/__/                                                                                                                       
 
-DECLARE @accountId bigint                = 1
-DECLARE @payeScheme nvarchar(50)         = '222/ZZ00002'
-DECLARE @monthlyLevy decimal(18, 4)      = 1000
+DECLARE @accountId bigint                      = 1
+DECLARE @payeScheme nvarchar(50)               = '222/ZZ00002'
+DECLARE @monthlyLevy decimal(18, 4)            = 1000
 -- last levy will be created in this month (last payroll month will be 1 month before)
-DECLARE @toDate datetime2                = GETDATE()
-DECLARE @numberOfMonthsToCreate int      = 25
+DECLARE @toDate datetime2                      = GETDATE()
+DECLARE @numberOfMonthsToCreate int            = 25
+-- When 1, updates TransactionLine dates to the levy SubmissionDate after processing,
+-- giving an organic-looking transaction history distributed over time.
+DECLARE @useHistoricalSubmissionDates bit      = 0
                                                                                                                                                                            
 --  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______  _______ 
 -- /\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\/\______\
@@ -137,6 +140,19 @@ FROM @levyDecByMonth
 ---
 
 EXEC employer_financial.processdeclarationstransactions @accountId, @payeScheme, @toDate, 24
+
+IF @useHistoricalSubmissionDates = 1
+BEGIN
+    UPDATE tl
+    SET
+        tl.TransactionDate = ld.SubmissionDate,
+        tl.DateCreated     = DATEFROMPARTS(DATEPART(yyyy, ld.SubmissionDate), DATEPART(MM, ld.SubmissionDate), DATEPART(dd, ld.SubmissionDate))
+    FROM employer_financial.TransactionLine tl
+    INNER JOIN employer_financial.LevyDeclaration ld ON ld.SubmissionId = tl.SubmissionId
+    WHERE tl.AccountId = @accountId
+      AND tl.EmpRef = @payeScheme
+      AND tl.TransactionType = 1
+END
 GO
 
 COMMIT TRANSACTION CreateLevy
