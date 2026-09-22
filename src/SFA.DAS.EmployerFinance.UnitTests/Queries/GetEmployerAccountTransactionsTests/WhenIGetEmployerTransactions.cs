@@ -483,8 +483,9 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
 
-        actualTransaction.TransferSourceDescription.Should().Be(expectedDescription);
-        actualTransaction.Description.Should().Be(transaction.ProviderName);
+        //actualTransaction.TransferSourceDescription.Should().Be(expectedDescription);
+        //actualTransaction.Description.Should().Be(transaction.ProviderName);
+        actualTransaction.Description.Should().Be($"Transfer received from {transaction.SenderAccountName}");
         actualTransaction.Amount.Should().Be(transaction.Amount);
     }
 
