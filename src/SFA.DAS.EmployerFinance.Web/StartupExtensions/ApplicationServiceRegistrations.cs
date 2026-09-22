@@ -48,7 +48,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
 
         services.AddScoped<IAccountApiClient, AccountApiClient>();
-
+        
         services.AddTransient<IExcelService, ExcelService>();
 
         services.AddTransient<IDateTimeService, DateTimeService>();
@@ -76,5 +76,7 @@ public static class ApplicationServiceRegistrations
         
         services.AddTransient<IAccountClaimsService, AccountClaimsService>();
         services.AddTransient<IHmrcService, HmrcService>();
+        services.AddSingleton<IFeature, Feature>();
+        services.AddSingleton<IOuterApiService, OuterApiService>();
     }
 }
