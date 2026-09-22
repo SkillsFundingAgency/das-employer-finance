@@ -523,6 +523,59 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
     }
 
     [Test]
+    public async Task ThenTransferSourceDescriptionIsSetWhenPaymentHasSenderAccountName()
+    {
+        //Arrange
+        var transaction = new PaymentTransactionLine
+        {
+            UkPrn = 100,
+            TransactionType = TransactionItemType.Payment,
+            Amount = 500M,
+            SenderAccountName = "Sending Employer Ltd",
+            PeriodEnd = "18-19"
+        };
+
+        _dasLevyService.Setup(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new TransactionLine[] { transaction });
+
+        _dasLevyService.Setup(x => x.GetProviderName(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<string>()))
+            .ReturnsAsync("Test Provider");
+
+        //Act
+        var actual = await RequestHandler.Handle(_request, CancellationToken.None);
+
+        //Assert
+        var actualTransaction = actual.Data.TransactionLines.First();
+        actualTransaction.TransferSourceDescription.Should().Be($"Paid using transfer from {transaction.SenderAccountName}");
+    }
+
+    [Test]
+    public async Task ThenTransferSourceDescriptionIsNullWhenPaymentHasNoSenderAccountName()
+    {
+        //Arrange
+        var transaction = new PaymentTransactionLine
+        {
+            UkPrn = 100,
+            TransactionType = TransactionItemType.Payment,
+            Amount = 500M,
+            PeriodEnd = "18-19"
+        };
+
+        _dasLevyService.Setup(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new TransactionLine[] { transaction });
+
+        _dasLevyService.Setup(x => x.GetProviderName(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<string>()))
+            .ReturnsAsync("Test Provider");
+
+        //Act
+        var actual = await RequestHandler.Handle(_request, CancellationToken.None);
+
+        //Assert
+        var actualTransaction = actual.Data.TransactionLines.First();
+        actualTransaction.TransferSourceDescription.Should().BeNull();
+    }
+
+    [Test]
     public async Task ThenIShouldGetBackCorrectExpiredFundTransactions()
     {
         //Arrange

@@ -71,16 +71,9 @@ public class GetEmployerAccountTransactionsHandler(
                 break;
 
             case TransferTransactionLine transferTransaction:
-                if (transferTransaction.TransactionAccountIsTransferSender)
-                {
-                    transaction.Description = $"Transfer sent to {transferTransaction.ReceiverAccountName}";
-                }
-                else
-                {
-                    transaction.Description = $"Transfer received from {transferTransaction.SenderAccountName}";                 
-                    // transaction.Description = transferTransaction.ProviderName;
-                    // transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}"; 
-                }
+                transaction.Description = transferTransaction.TransactionAccountIsTransferSender 
+                    ? $"Transfer sent to {transferTransaction.ReceiverAccountName}" 
+                    : $"Transfer received from {transferTransaction.SenderAccountName}";
                 break;
         }
     }
@@ -93,6 +86,10 @@ public class GetEmployerAccountTransactionsHandler(
         {
             var ukprn = Convert.ToInt32(transaction.UkPrn);
             var providerName = await dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
+            if (!string.IsNullOrEmpty(transaction.SenderAccountName))
+            {
+                transaction.TransferSourceDescription = $"Paid using transfer from {transaction.SenderAccountName}";
+            }
             if (providerName != null)
                 return $"{transactionPrefix}{providerName}";
         }
