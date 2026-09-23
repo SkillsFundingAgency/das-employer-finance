@@ -65,6 +65,11 @@ public class DasLevyService(
         return transactionRepository.GetProviderName(ukprn, accountId, periodEnd);
     }
 
+    public Task<Dictionary<long, string>> GetTransferSenderAccountNames(long accountId, string periodEnd)
+    {
+        return transactionRepository.GetTransferSenderAccountNames(accountId, periodEnd);
+    }
+
     public Task<int> GetPreviousAccountTransaction(long accountId, DateTime fromDate)
     {
         return transactionRepository.GetPreviousTransactionsCount(accountId, fromDate);

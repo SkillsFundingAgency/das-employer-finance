@@ -25,6 +25,7 @@ public interface IDasLevyService
         where T : TransactionLine;
 
     Task<string> GetProviderName(long ukprn, long accountId, string periodEnd);
+    Task<Dictionary<long, string>> GetTransferSenderAccountNames(long accountId, string periodEnd);
 
     Task<decimal> GetTotalSpendForLastYear(long accountId);
 

@@ -78,6 +78,8 @@ public class GetEmployerAccountTransactionsHandler(
         }
     }
 
+    private readonly Dictionary<string, Dictionary<long, string>> _transferSenderCache = new();
+
     private async Task<string> GetPaymentTransactionDescription(PaymentTransactionLine transaction)
     {
         var transactionPrefix = transaction.IsCoInvested ? "Co-investment - " : string.Empty;
@@ -86,10 +88,18 @@ public class GetEmployerAccountTransactionsHandler(
         {
             var ukprn = Convert.ToInt32(transaction.UkPrn);
             var providerName = await dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
-            if (!string.IsNullOrEmpty(transaction.SenderAccountName))
+
+            if (!_transferSenderCache.TryGetValue(transaction.PeriodEnd, out var sendersByUkprn))
             {
-                transaction.TransferSourceDescription = $"Paid using transfer from {transaction.SenderAccountName}";
+                sendersByUkprn = await dasLevyService.GetTransferSenderAccountNames(transaction.AccountId, transaction.PeriodEnd);
+                _transferSenderCache[transaction.PeriodEnd] = sendersByUkprn;
             }
+
+            if (sendersByUkprn.TryGetValue(transaction.UkPrn, out var senderAccountName))
+            {
+                transaction.TransferSourceDescription = $"Paid using transfer from {senderAccountName}";
+            }
+
             if (providerName != null)
                 return $"{transactionPrefix}{providerName}";
         }
