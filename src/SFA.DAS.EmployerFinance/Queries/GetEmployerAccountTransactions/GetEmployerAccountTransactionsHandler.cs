@@ -89,13 +89,14 @@ public class GetEmployerAccountTransactionsHandler(
             var ukprn = Convert.ToInt32(transaction.UkPrn);
             var providerName = await dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
 
-            if (!_transferSenderCache.TryGetValue(transaction.PeriodEnd, out var sendersByUkprn))
+            Dictionary<long, string> sendersByUkprn = null;
+            if (transaction.PeriodEnd != null && !_transferSenderCache.TryGetValue(transaction.PeriodEnd, out sendersByUkprn))
             {
                 sendersByUkprn = await dasLevyService.GetTransferSenderAccountNames(transaction.AccountId, transaction.PeriodEnd);
                 _transferSenderCache[transaction.PeriodEnd] = sendersByUkprn;
             }
 
-            if (sendersByUkprn.TryGetValue(transaction.UkPrn, out var senderAccountName))
+            if (sendersByUkprn != null && sendersByUkprn.TryGetValue(transaction.UkPrn, out var senderAccountName))
             {
                 transaction.TransferSourceDescription = $"Paid using transfer from {senderAccountName}";
             }
