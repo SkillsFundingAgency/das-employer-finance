@@ -1,5 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using NServiceBus;
+﻿using NServiceBus;
+using SFA.DAS.NServiceBus.ClientOutbox;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 
 namespace SFA.DAS.EmployerFinance.Extensions;
@@ -37,13 +37,11 @@ public static class EndpointConfigurationExtensions
     public static bool IsMessage(Type t) => IsSfaMessage(t, "Messages");
 
     public static bool IsEvent(Type t) =>
-        (t.Name != null && Regex.IsMatch(t.Name, @"Event(V\d+)?$"))
-        || (typeof(IEvent).IsAssignableFrom(t) && t != typeof(IEvent))
-        || IsSfaMessage(t, "Messages.Events");
+        (t.FullName != null && t.FullName.EndsWith("Event")) || IsSfaMessage(t, "Messages.Events");
 
     public static bool IsCommand(Type t) =>
-        (t.Name != null && Regex.IsMatch(t.Name, @"Command(V\d+)?$"))
-        || (typeof(ICommand).IsAssignableFrom(t) && t != typeof(ICommand))
+        t == typeof(ProcessClientOutboxMessageCommandV2)
+        || (t.FullName != null && t.FullName.EndsWith("Command"))
         || IsSfaMessage(t, "Messages.Commands");
 
     public static bool IsSfaMessage(Type t, string namespaceSuffix)

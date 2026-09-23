@@ -28,21 +28,21 @@ public class EndpointConfigurationExtensionsTests
     }
 
     [Test]
-    public void IsCommand_MatchesICommandWhenTheNameDoesNotEndWithCommand()
+    public void IsCommand_DoesNotMatchICommandWhenTheNameDoesNotEndWithCommand()
     {
-        EndpointConfigurationExtensions.IsCommand(typeof(MarkerCommand)).Should().BeTrue();
+        EndpointConfigurationExtensions.IsCommand(typeof(OutboxMarker)).Should().BeFalse();
     }
 
     [Test]
-    public void IsEvent_MatchesVersionedEventName()
+    public void IsEvent_DoesNotMatchAVersionedEventName()
     {
-        EndpointConfigurationExtensions.IsEvent(typeof(SampleEventV2)).Should().BeTrue();
+        EndpointConfigurationExtensions.IsEvent(typeof(SampleEventV2)).Should().BeFalse();
     }
 
     [Test]
-    public void IsEvent_MatchesIEventWhenTheNameDoesNotEndWithEvent()
+    public void IsEvent_DoesNotMatchIEventWhenTheNameDoesNotEndWithEvent()
     {
-        EndpointConfigurationExtensions.IsEvent(typeof(MarkerEvent)).Should().BeTrue();
+        EndpointConfigurationExtensions.IsEvent(typeof(PublishedMarker)).Should().BeFalse();
     }
 
     [Test]
@@ -61,11 +61,11 @@ public class EndpointConfigurationExtensionsTests
     {
     }
 
-    private class MarkerEvent : IEvent
+    private class PublishedMarker : IEvent
     {
     }
 
-    private class MarkerCommand : ICommand
+    private class OutboxMarker : ICommand
     {
     }
 
