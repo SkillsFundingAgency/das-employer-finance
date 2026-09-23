@@ -36,14 +36,20 @@ public class DasLevyRepository(
                 commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata()
+    public async Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata(int pageSize, int pageNumber)
     {
+        var parameters = new DynamicParameters();
+        parameters.Add("@PageSize", pageSize, DbType.Int32);
+        parameters.Add("@PageNumber", pageNumber, DbType.Int32);
+
         return await db.Value.Database
             .GetDbConnection()
             .QueryAsync<PaymentDetails>(
                 sql: "[employer_financial].[GetPaymentsWithMissingMetadata]",
+                param: parameters,
                 transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
-                commandType: CommandType.StoredProcedure);
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: 120);
     }
 
     public async Task CreateEmployerDeclarations(IEnumerable<DasDeclaration> declarations, string empRef, long accountId)
