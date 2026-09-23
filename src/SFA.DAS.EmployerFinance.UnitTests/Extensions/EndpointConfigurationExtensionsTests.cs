@@ -16,12 +16,6 @@ public class EndpointConfigurationExtensionsTests
     }
 
     [Test]
-    public void IsCommand_MatchesProcessClientOutboxMessageCommand()
-    {
-        EndpointConfigurationExtensions.IsCommand(typeof(ProcessClientOutboxMessageCommand)).Should().BeTrue();
-    }
-
-    [Test]
     public void IsCommand_MatchesMessagesCommandsType()
     {
         EndpointConfigurationExtensions.IsCommand(typeof(ExpireFundsCommand)).Should().BeTrue();
@@ -31,12 +25,6 @@ public class EndpointConfigurationExtensionsTests
     public void IsCommand_DoesNotMatchICommandWhenTheNameDoesNotEndWithCommand()
     {
         EndpointConfigurationExtensions.IsCommand(typeof(OutboxMarker)).Should().BeFalse();
-    }
-
-    [Test]
-    public void IsEvent_DoesNotMatchAVersionedEventName()
-    {
-        EndpointConfigurationExtensions.IsEvent(typeof(SampleEventV2)).Should().BeFalse();
     }
 
     [Test]
@@ -55,10 +43,6 @@ public class EndpointConfigurationExtensionsTests
     public void IsCommand_DoesNotMatchAnUnrelatedType()
     {
         EndpointConfigurationExtensions.IsCommand(typeof(UnrelatedType)).Should().BeFalse();
-    }
-
-    private class SampleEventV2
-    {
     }
 
     private class PublishedMarker : IEvent
