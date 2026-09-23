@@ -45,7 +45,7 @@ public interface IDasLevyRepository
     Task UpdatePaymentMetadata(PaymentDetails details);
     Task<long> UpdatePaymentMetadataStaging(Guid paymentId, PaymentMetaDataStaging updatedMetaData);
     Task<PaymentDetails> GetPaymentForPaymentDetails(Guid paymentId);
-    Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata();
+    Task<IEnumerable<PaymentDetails>> GetPaymentsWithMissingMetadata(int pageSize, int pageNumber);
     Task<GetAccountsResponse> GetAccounts(int pageSize, int pageNumber);
     Task<Account> GetAccountById(long accountId);
 

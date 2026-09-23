@@ -1,4 +1,6 @@
 ﻿CREATE PROCEDURE [employer_financial].[GetPaymentsWithMissingMetadata]
+    @PageNumber INT,
+    @PageSize INT
 AS
 
 SELECT
@@ -11,3 +13,6 @@ WHERE
     (pmd.ProviderName IS NULL
         OR
      pmd.ApprenticeName IS NULL)
+ORDER BY p.DateImported DESC
+OFFSET (@PageNumber - 1) * @PageSize ROWS
+FETCH NEXT @PageSize ROWS ONLY
