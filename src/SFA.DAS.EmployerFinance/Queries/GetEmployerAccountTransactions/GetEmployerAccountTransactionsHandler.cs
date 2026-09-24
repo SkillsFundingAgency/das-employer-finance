@@ -89,7 +89,7 @@ public class GetEmployerAccountTransactionsHandler(
             var ukprn = Convert.ToInt32(transaction.UkPrn);
             var providerName = await dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
 
-            Dictionary<long, string> sendersByUkprn = null;
+            Dictionary<long, TransferSenderInfo> sendersByUkprn = null;
             if (transaction.PeriodEnd != null && !_transferSenderCache.TryGetValue(transaction.PeriodEnd, out sendersByUkprn))
             {
                 sendersByUkprn = await dasLevyService.GetTransferSenderAccountNames(transaction.AccountId, transaction.PeriodEnd);
