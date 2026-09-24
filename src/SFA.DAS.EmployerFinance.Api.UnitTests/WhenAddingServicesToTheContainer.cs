@@ -6,6 +6,7 @@ using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.CreateAuditJob;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
 using SFA.DAS.EmployerFinance.Commands.CreateAuditWorkflowLog;
+using SFA.DAS.EmployerFinance.Commands.ExpireAccountFunds;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummary;
 using SFA.DAS.EmployerFinance.Queries.GetAuditJobLogs;
@@ -66,6 +67,7 @@ public class WhenAddingServicesToTheContainer
     [TestCase(typeof(IRequestHandler<GetTransferAllowanceQuery, GetTransferAllowanceResponse>))]
     [TestCase(typeof(IRequestHandler<GetTotalPaymentsQuery, GetTotalPaymentsResponse>))]
     [TestCase(typeof(IRequestHandler<PersistLevyDeclarationsCommand, PersistLevyDeclarationsResponse>))]
+    [TestCase(typeof(IRequestHandler<ExpireAccountFundsCommand, ExpireFundsResponse>))]
     public void Then_The_Dependencies_Are_Correctly_Resolved_For_Query_Handlers(Type toResolve)
     {
         var services = new ServiceCollection();
