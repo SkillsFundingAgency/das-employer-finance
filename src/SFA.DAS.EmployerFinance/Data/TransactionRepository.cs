@@ -140,7 +140,22 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
             param: parameters,
             transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
+    }
 
+    public async Task<Dictionary<long, TransferSenderInfo>> GetTransferSenderAccountNames(long accountId, string periodEnd)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@periodEnd", periodEnd, DbType.String);
+
+        var results = await db.Value.Database.GetDbConnection().QueryAsync<TransferSenderEntry>(
+            sql: "[employer_financial].[GetTransferSenderAccountName]",
+            param: parameters,
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+
+        return results.ToDictionary(x => x.Ukprn, x => new TransferSenderInfo(x.SenderAccountName, x.IsPartialTransfer));
     }
 
     public async Task<TransactionDownloadLine[]> GetAllTransactionDetailsForAccountByDate(long accountId, DateTime fromDate, DateTime toDate)
@@ -202,6 +217,7 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
 
         return result.ToList();
     }
+
     public async Task<TransactionLine[]> GetExistingTransactionLines(long accountId, string periodEnd, int transactionType)
     {
         var query = db.Value.Transactions.Where(t => t.AccountId == accountId
@@ -279,4 +295,6 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
 
         return table;
     }
+
+    private record TransferSenderEntry(long Ukprn, string SenderAccountName, bool IsPartialTransfer);
 }

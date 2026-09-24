@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [employer_financial].[GetTransactionLines_ByAccountId]
+CREATE PROCEDURE [employer_financial].[GetTransactionLines_ByAccountId]
     @AccountId BIGINT,
     @fromDate DATETIME,
     @toDate DATETIME
@@ -19,21 +19,10 @@ AS
         tl.TransferSenderAccountId as SenderAccountId,
         tl.TransferSenderAccountName as SenderAccountName,
         tl.TransferReceiverAccountId as ReceiverAccountId,
-        tl.TransferReceiverAccountName as ReceiverAccountName,
-        MAX(pmd.ProviderName) as ProviderName
-    FROM	[employer_financial].[TransactionLine] tl
-                LEFT JOIN [employer_financial].LevyDeclaration ld
-                          on ld.submissionid = tl.submissionid
-                LEFT JOIN [employer_financial].[AccountTransfers] transfers
-                          ON transfers.SenderAccountId = tl.TransferSenderAccountId
-                              AND transfers.ReceiverAccountId = tl.TransferReceiverAccountId
-                              AND transfers.PeriodEnd = tl.PeriodEnd
-                LEFT JOIN [employer_financial].[Payment] p
-                          ON p.AccountId = transfers.ReceiverAccountId
-                              AND p.ApprenticeshipId = transfers.ApprenticeshipId
-                              AND p.PeriodEnd = transfers.PeriodEnd
-                LEFT JOIN [employer_financial].[PaymentMetaData] pmd
-                          ON pmd.Id = p.PaymentMetaDataId
+        tl.TransferReceiverAccountName as ReceiverAccountName
+    FROM [employer_financial].[TransactionLine] tl
+        LEFT JOIN [employer_financial].[LevyDeclaration] ld
+            ON ld.submissionid = tl.submissionid
     WHERE tl.AccountId = @accountId
       AND tl.DateCreated >= @fromDate
       AND tl.DateCreated <= @toDate
@@ -51,7 +40,7 @@ AS
         tl.TransferSenderAccountName,
         tl.TransferReceiverAccountId,
         tl.TransferReceiverAccountName
-    order by
-        tl.DateCreated desc,
-        tl.TransactionType desc,
-        tl.ukprn desc
+    ORDER BY
+        tl.DateCreated DESC,
+        tl.TransactionType DESC,
+        tl.UKPRN DESC
