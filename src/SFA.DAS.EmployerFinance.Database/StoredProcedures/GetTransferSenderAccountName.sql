@@ -3,13 +3,19 @@ CREATE PROCEDURE [employer_financial].[GetTransferSenderAccountName]
     @PeriodEnd VARCHAR(50)
 AS
 
-    SELECT DISTINCT
+    SELECT
         p.Ukprn,
-        at.SenderAccountName
-    FROM [employer_financial].[AccountTransfers] at
-    INNER JOIN [employer_financial].[Payment] p
-        ON p.AccountId = at.ReceiverAccountId
-        AND p.ApprenticeshipId = at.ApprenticeshipId
-        AND p.PeriodEnd = at.PeriodEnd
-    WHERE at.ReceiverAccountId = @AccountId
-        AND at.PeriodEnd = @PeriodEnd
+        MAX(at.SenderAccountName)                                      AS SenderAccountName,
+        CAST(
+            CASE WHEN COUNT(p.PaymentId) > COUNT(at.SenderAccountId)
+                 THEN 1 ELSE 0 END
+        AS BIT)                                                        AS IsPartialTransfer
+    FROM [employer_financial].[Payment] p
+        LEFT JOIN [employer_financial].[AccountTransfers] at
+            ON at.ReceiverAccountId = p.AccountId
+            AND at.ApprenticeshipId = p.ApprenticeshipId
+            AND at.PeriodEnd = p.PeriodEnd
+    WHERE p.AccountId = @AccountId
+        AND p.PeriodEnd = @PeriodEnd
+    GROUP BY p.Ukprn
+    HAVING COUNT(at.SenderAccountId) > 0

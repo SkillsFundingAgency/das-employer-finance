@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Models.Transfers;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Extensions;
@@ -65,7 +66,7 @@ public class DasLevyService(
         return transactionRepository.GetProviderName(ukprn, accountId, periodEnd);
     }
 
-    public Task<Dictionary<long, string>> GetTransferSenderAccountNames(long accountId, string periodEnd)
+    public Task<Dictionary<long, TransferSenderInfo>> GetTransferSenderAccountNames(long accountId, string periodEnd)
     {
         return transactionRepository.GetTransferSenderAccountNames(accountId, periodEnd);
     }

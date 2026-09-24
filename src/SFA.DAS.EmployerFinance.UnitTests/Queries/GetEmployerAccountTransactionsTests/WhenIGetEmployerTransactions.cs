@@ -543,7 +543,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             .ReturnsAsync("Test Provider");
 
         _dasLevyService.Setup(x => x.GetTransferSenderAccountNames(It.IsAny<long>(), transaction.PeriodEnd))
-            .ReturnsAsync(new Dictionary<long, string> { { ukprn, senderName } });
+            .ReturnsAsync(new Dictionary<long, TransferSenderInfo> { { ukprn, new TransferSenderInfo(senderName, false) } });
 
         //Act
         var actual = await RequestHandler.Handle(_request, CancellationToken.None);
@@ -572,7 +572,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             .ReturnsAsync("Test Provider");
 
         _dasLevyService.Setup(x => x.GetTransferSenderAccountNames(It.IsAny<long>(), transaction.PeriodEnd))
-            .ReturnsAsync(new Dictionary<long, string>());
+            .ReturnsAsync(new Dictionary<long, TransferSenderInfo>());
 
         //Act
         var actual = await RequestHandler.Handle(_request, CancellationToken.None);
@@ -580,6 +580,37 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
         //Assert
         var actualTransaction = actual.Data.TransactionLines.First();
         actualTransaction.TransferSourceDescription.Should().BeNull();
+    }
+
+    [Test]
+    public async Task ThenTransferSourceDescriptionUsesPartialMessageWhenMixedTransferAndLevyPayments()
+    {
+        //Arrange
+        const long ukprn = 100;
+        const string senderName = "Sending Employer Ltd";
+        var transaction = new PaymentTransactionLine
+        {
+            UkPrn = ukprn,
+            TransactionType = TransactionItemType.Payment,
+            Amount = 500M,
+            PeriodEnd = "18-19"
+        };
+
+        _dasLevyService.Setup(x => x.GetAccountTransactionsByDateRange(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(new TransactionLine[] { transaction });
+
+        _dasLevyService.Setup(x => x.GetProviderName(It.IsAny<long>(), It.IsAny<long>(), It.IsAny<string>()))
+            .ReturnsAsync("Test Provider");
+
+        _dasLevyService.Setup(x => x.GetTransferSenderAccountNames(It.IsAny<long>(), transaction.PeriodEnd))
+            .ReturnsAsync(new Dictionary<long, TransferSenderInfo> { { ukprn, new TransferSenderInfo(senderName, true) } });
+
+        //Act
+        var actual = await RequestHandler.Handle(_request, CancellationToken.None);
+
+        //Assert
+        var actualTransaction = actual.Data.TransactionLines.First();
+        actualTransaction.TransferSourceDescription.Should().Be($"Includes transfer from {senderName}");
     }
 
     [Test]
@@ -600,7 +631,7 @@ public class WhenIGetEmployerTransactions : QueryBaseTest<GetEmployerAccountTran
             .ReturnsAsync("Test Provider");
 
         _dasLevyService.Setup(x => x.GetTransferSenderAccountNames(It.IsAny<long>(), periodEnd))
-            .ReturnsAsync(new Dictionary<long, string>());
+            .ReturnsAsync(new Dictionary<long, TransferSenderInfo>());
 
         //Act
         await RequestHandler.Handle(_request, CancellationToken.None);

@@ -142,7 +142,7 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
             commandType: CommandType.StoredProcedure);
     }
 
-    public async Task<Dictionary<long, string>> GetTransferSenderAccountNames(long accountId, string periodEnd)
+    public async Task<Dictionary<long, TransferSenderInfo>> GetTransferSenderAccountNames(long accountId, string periodEnd)
     {
         var parameters = new DynamicParameters();
 
@@ -155,7 +155,7 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
             transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
 
-        return results.ToDictionary(x => x.Ukprn, x => x.SenderAccountName);
+        return results.ToDictionary(x => x.Ukprn, x => new TransferSenderInfo(x.SenderAccountName, x.IsPartialTransfer));
     }
 
     public async Task<TransactionDownloadLine[]> GetAllTransactionDetailsForAccountByDate(long accountId, DateTime fromDate, DateTime toDate)
@@ -296,5 +296,5 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
         return table;
     }
 
-    private record TransferSenderEntry(long Ukprn, string SenderAccountName);
+    private record TransferSenderEntry(long Ukprn, string SenderAccountName, bool IsPartialTransfer);
 }

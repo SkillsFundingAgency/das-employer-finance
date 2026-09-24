@@ -78,7 +78,7 @@ public class GetEmployerAccountTransactionsHandler(
         }
     }
 
-    private readonly Dictionary<string, Dictionary<long, string>> _transferSenderCache = new();
+    private readonly Dictionary<string, Dictionary<long, TransferSenderInfo>> _transferSenderCache = new();
 
     private async Task<string> GetPaymentTransactionDescription(PaymentTransactionLine transaction)
     {
@@ -96,9 +96,11 @@ public class GetEmployerAccountTransactionsHandler(
                 _transferSenderCache[transaction.PeriodEnd] = sendersByUkprn;
             }
 
-            if (sendersByUkprn != null && sendersByUkprn.TryGetValue(transaction.UkPrn, out var senderAccountName))
+            if (sendersByUkprn != null && sendersByUkprn.TryGetValue(transaction.UkPrn, out var transferSender))
             {
-                transaction.TransferSourceDescription = $"Paid using transfer from {senderAccountName}";
+                transaction.TransferSourceDescription = transferSender.IsPartialTransfer
+                    ? $"Includes transfer from {transferSender.SenderAccountName}"
+                    : $"Paid using transfer from {transferSender.SenderAccountName}";
             }
 
             if (providerName != null)

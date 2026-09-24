@@ -13,7 +13,7 @@ public interface ITransactionRepository
     Task<TransactionLine[]> GetAccountCoursePaymentsByDateRange(long accountId, long ukprn, string courseName, int? courseLevel, int? pathwayCode, DateTime fromDate, DateTime toDate);
     Task<TransactionLine[]> GetAccountLevyTransactionsByDateRange(long accountId, DateTime fromDate, DateTime toDate);
     Task<string> GetProviderName(long ukprn, long accountId, string periodEnd);
-    Task<Dictionary<long, string>> GetTransferSenderAccountNames(long accountId, string periodEnd);
+    Task<Dictionary<long, TransferSenderInfo>> GetTransferSenderAccountNames(long accountId, string periodEnd);
     Task<TransactionDownloadLine[]> GetAllTransactionDetailsForAccountByDate(long accountId, DateTime fromDate, DateTime toDate);
     Task<decimal> GetTotalSpendForLastYear(long accountId);
 

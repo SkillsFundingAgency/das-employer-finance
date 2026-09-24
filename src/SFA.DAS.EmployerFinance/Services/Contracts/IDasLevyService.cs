@@ -1,4 +1,5 @@
 ﻿using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Models.Transfers;
 
 namespace SFA.DAS.EmployerFinance.Services.Contracts;
 
@@ -25,7 +26,7 @@ public interface IDasLevyService
         where T : TransactionLine;
 
     Task<string> GetProviderName(long ukprn, long accountId, string periodEnd);
-    Task<Dictionary<long, string>> GetTransferSenderAccountNames(long accountId, string periodEnd);
+    Task<Dictionary<long, TransferSenderInfo>> GetTransferSenderAccountNames(long accountId, string periodEnd);
 
     Task<decimal> GetTotalSpendForLastYear(long accountId);
 
