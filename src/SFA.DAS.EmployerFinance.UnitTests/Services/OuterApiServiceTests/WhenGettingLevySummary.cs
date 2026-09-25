@@ -104,13 +104,21 @@ internal class WhenGettingLevySummary
         var firstResponse = new GetLevySummaryByAccountIdResponse
         {
             CurrentLevyFunds = 100M,
-            TotalLevyDeclaredLast12Months = 200M
+            TotalLevyDeclaredLast12Months = 200M,
+            TotalCommittedLearnerCosts = 150M,
+            TotalCommittedTransfersCosts = 100M,
+            TotalLevyExpiredLast12Months = 50M,
+            TotalLevySpentLast12Months = 100M
         };
 
         var secondResponse = new GetLevySummaryByAccountIdResponse
         {
             CurrentLevyFunds = 300M,
-            TotalLevyDeclaredLast12Months = 400M
+            TotalLevyDeclaredLast12Months = 400M,
+            TotalCommittedLearnerCosts = 250M,
+            TotalCommittedTransfersCosts = 200M,
+            TotalLevyExpiredLast12Months = 150M,
+            TotalLevySpentLast12Months = 300M
         };
 
         _mockCache.Setup(x => x.Exists($"LevySummary_{AccountId}")).Returns(true);
@@ -123,6 +131,17 @@ internal class WhenGettingLevySummary
 
         result1.CurrentLevyFunds.Should().Be(100M);
         result2.CurrentLevyFunds.Should().Be(300M);
+        result1.TotalLevyDeclaredLast12Months.Should().Be(200M);
+        result2.TotalLevyDeclaredLast12Months.Should().Be(400M);    
+        result1.TotalLevyDeclaredLast12Months.Should().NotBe(result2.TotalLevyDeclaredLast12Months);
+        result2.TotalLevyDeclaredLast12Months.Should().NotBe(result1.TotalLevyDeclaredLast12Months);
+        result1.TotalLevySpentLast12Months.Should().Be(100M);
+        result2.TotalLevySpentLast12Months.Should().Be(300M);
+        result1.TotalLevyExpiredLast12Months.Should().Be(50M);
+        result2.TotalLevyExpiredLast12Months.Should().Be(150M);
+        result1.TotalLevyExpiredLast12Months.Should().NotBe(result2.TotalLevyExpiredLast12Months);
+        result1.TotalCommittedLearnerCosts.Should().Be(150M);
+        result2.TotalCommittedLearnerCosts.Should().Be(250M);
         result1.Should().NotBe(result2);
     }
 

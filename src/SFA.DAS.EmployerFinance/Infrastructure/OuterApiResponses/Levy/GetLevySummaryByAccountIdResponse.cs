@@ -6,4 +6,6 @@ public record GetLevySummaryByAccountIdResponse
     public decimal TotalLevyDeclaredLast12Months { get; set; }
     public decimal TotalLevySpentLast12Months { get; set; }
     public decimal TotalLevyExpiredLast12Months { get; set; }
+    public decimal TotalCommittedLearnerCosts { get; set; }
+    public decimal TotalCommittedTransfersCosts { get; set; }
 }

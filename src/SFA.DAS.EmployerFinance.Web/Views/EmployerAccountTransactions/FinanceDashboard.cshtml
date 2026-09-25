@@ -14,6 +14,16 @@
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
     var totalLevySpentLast12Months = Math.Abs(Model.Data.TotalLevySpentLast12Months).ToString("C0", culture);
     var totalLevyExpiredLast12Months = Math.Abs(Model.Data.TotalLevyExpiredLast12Months).ToString("C0", culture);
+    var totalCommittedLearnerCosts = Model.Data.TotalCommittedLearnerCosts.ToString("C0", culture);
+    var totalCommittedTransferOutCosts = Model.Data.TotalCommittedTransfersCosts.ToString("C0", culture);
+}
+@section breadcrumb {
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction("teams")" class="govuk-breadcrumbs__link">Home</a></li>
+            <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
+        </ol>
+    </div>
 }
 @if (Model.Data.IsLevyEmployer)
 {
@@ -55,9 +65,33 @@
             </div>
         </div>
         <div class="govuk-grid-row govuk-!-margin-top-6">
-            <div class="govuk-grid-column-full">
+            <div class="govuk-grid-column-three-quarters">
                 <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
-                <p class="govuk-body govuk-!-margin-top-0">Paid from your levy funds in monthly instalments until learners complete their training.</p>
+                <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
+                    Paid from your levy funds in monthly instalments until learners complete their training.
+                </p>
+                <div class="app-finance-figure-no-border app-finance-figure--row govuk-!-margin-bottom-2">
+                    <div class="app-finance-figure-commitments__label">
+                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Committed learner costs</strong>
+                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
+                            Levy funds committed to spend on your learners.
+                        </p>
+                    </div>
+                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
+                        @totalCommittedLearnerCosts
+                    </span>
+                </div>
+                <div class="app-finance-figure-no-border app-finance-figure--row">
+                    <div class="app-finance-figure-commitments__label">
+                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Committed transfer costs</strong>
+                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
+                            Levy funds committed to other employers.
+                        </p>
+                    </div>
+                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
+                        @totalCommittedTransferOutCosts
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -65,12 +99,4 @@
 else
 {
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
-}
-@section breadcrumb {
-    <div class="govuk-breadcrumbs">
-        <ol class="govuk-breadcrumbs__list">
-            <li class="govuk-breadcrumbs__list-item"><a href="@UrlHelpers.EmployerAccountsAction("teams")" class="govuk-breadcrumbs__link">Home</a></li>
-            <li class="govuk-breadcrumbs__list-item">@ViewBag.Title</li>
-        </ol>
-    </div>
 }
