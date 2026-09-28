@@ -11,4 +11,5 @@ public class FinanceDashboardV2ViewModel
     public decimal TotalCommittedTransfersCosts { get; set; }
     public bool IsLevyEmployer { get; set; }
     public bool ShowLevyTransparency { get; set; }
+    public EstimatesViewModel? Estimates { get; set; }
 }
