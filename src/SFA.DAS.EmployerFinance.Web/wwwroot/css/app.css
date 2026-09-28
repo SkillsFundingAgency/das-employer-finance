@@ -21,13 +21,26 @@
     min-width: 225px;
 }
 
+@media (max-width: 40.0625em) {
+    .app-finance-figure-blue {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
 .app-finance-figure-no-border {
-    background-color: #ffffff;
-    border-left-style: solid;
+    background-color: #ffffff;    
     line-height: 1.25 !important;
-    padding: 15px;
+    padding: 10px 20px;
     font-size: 1.3125rem !important;
-    min-width: 159px;
+    width: 590px;
+}
+
+@media (max-width: 40.0625em) {
+    .app-finance-figure-no-border {
+        width: 100%;
+        padding: 10px;
+    }
 }
 
 .app-highlight-boxes-current-levy {
@@ -37,6 +50,38 @@
     .app-highlight-boxes-current-levy .app-highlight-boxes-projection__box {
         width: 249px;
     }
+
+@media (max-width: 40.0625em) {
+    .app-highlight-boxes-current-levy .app-highlight-boxes-projection__box {
+        width: 100%;
+    }
+}
+
+.app-finance-figure--row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+@media (max-width: 40.0625em) {
+    .app-finance-figure--row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.app-finance-figure-commitments__label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 5px;
+}
+
+.app-finance-figure__value {
+    white-space: nowrap;
+    margin: 10px;
+}
 
 @media (min-width: 40.0625em) {
     .app-finance-figure__wrap {
