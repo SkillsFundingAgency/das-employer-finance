@@ -112,21 +112,103 @@ public class WhenValidatingStageTransfersWithAccountTransferFields
         result.IsValid().Should().BeTrue();
     }
 
+    [Test]
+    public void Then_Is_Invalid_When_Transfers_Is_Null()
+    {
+        var result = _validator.Validate(new StageTransfersCommand { Transfers = null });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain(nameof(StageTransfersCommand.Transfers));
+    }
+
+    [Test]
+    public void Then_Is_Invalid_When_Transfers_Is_Empty()
+    {
+        var result = _validator.Validate(new StageTransfersCommand { Transfers = [] });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain(nameof(StageTransfersCommand.Transfers));
+    }
+
+    [Test]
+    public void Then_Is_Invalid_When_Transfers_Exceed_1000_Items()
+    {
+        var transfers = Enumerable.Range(1, 1001).Select(i => CreateTransfer(transferId: i)).ToList();
+
+        var result = _validator.Validate(new StageTransfersCommand { Transfers = transfers });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain(nameof(StageTransfersCommand.Transfers));
+        result.ValidationDictionary[nameof(StageTransfersCommand.Transfers)].Should().Contain("cannot exceed 1000");
+    }
+
+    [Test]
+    public void Then_Is_Invalid_When_SenderAccountId_Is_Missing()
+    {
+        var result = _validator.Validate(new StageTransfersCommand
+        {
+            Transfers = [CreateTransfer(senderAccountId: 0)]
+        });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain("Transfers[0].SenderAccountId");
+    }
+
+    [Test]
+    public void Then_Is_Invalid_When_ReceiverAccountId_Is_Missing()
+    {
+        var result = _validator.Validate(new StageTransfersCommand
+        {
+            Transfers = [CreateTransfer(receiverAccountId: 0)]
+        });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain("Transfers[0].ReceiverAccountId");
+    }
+
+    [Test]
+    public void Then_Is_Invalid_When_PeriodEnd_Is_Missing()
+    {
+        var result = _validator.Validate(new StageTransfersCommand
+        {
+            Transfers = [CreateTransfer(periodEnd: " ")]
+        });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain("Transfers[0].PeriodEnd");
+    }
+
+    [Test]
+    public void Then_Is_Invalid_When_Type_Is_Missing()
+    {
+        var result = _validator.Validate(new StageTransfersCommand
+        {
+            Transfers = [CreateTransfer(type: null)]
+        });
+
+        result.IsValid().Should().BeFalse();
+        result.ValidationDictionary.Keys.Should().Contain("Transfers[0].Type");
+    }
+
     private static TransferStaging CreateTransfer(
         long transferId = 1,
         decimal amount = 100,
         long apprenticeshipId = 99,
-        Guid? requiredPaymentId = null)
+        Guid? requiredPaymentId = null,
+        long senderAccountId = 10,
+        long receiverAccountId = 20,
+        string periodEnd = "2526-R01",
+        string type = "Levy")
     {
         return new TransferStaging
         {
             TransferId = transferId,
-            SenderAccountId = 10,
-            ReceiverAccountId = 20,
+            SenderAccountId = senderAccountId,
+            ReceiverAccountId = receiverAccountId,
             Amount = amount,
-            PeriodEnd = "2526-R01",
+            PeriodEnd = periodEnd,
             ApprenticeshipId = apprenticeshipId,
-            Type = "Levy",
+            Type = type,
             RequiredPaymentId = requiredPaymentId ?? Guid.NewGuid()
         };
     }
