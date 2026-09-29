@@ -2,9 +2,23 @@
 
 <p class="govuk-body">This timeline shows estimated payments based on your current funds and commitments. These payments may change and do not include future breaks in learning.</p>
 
-@* @if (Model is null) *@
-@* { *@
-@*     return; *@
-@* } *@
+@if (Model is not { MonthEstimates: { Count: > 0 } })
+{
+    return;
+}
 
-@* @foreach (var month in Model.MonthEstimates) *@
+<div class="govuk-column-two-thirds govuk-body">
+    @foreach (var month in Model.MonthEstimates)
+    {
+        <estimates-row text="@month.Period" provisional=@month.IsProvisional>
+            <estimates-month-card balance="@month.ClosingBalance.ToString("C0")" class="govuk-!-margin-bottom-4">
+                <line-item text="Levy in" value="@month.LevyIn.ToString("C0")" />
+                <line-item text="Levy out" value="@month.LevyOut.ToString("C0")">
+                    <sub-item text="Expired levy" value="@month.ExpiredLevy.ToString("C0")"/>
+                    <sub-item text="Commited learner costs" value="@month.CommittedLearnerCosts.ToString("C0")"/>
+                    <sub-item text="Commited transfer costs" value="@month.CommittedLearnerCosts.ToString("C0")"/>
+                </line-item>
+            </estimates-month-card>
+        </estimates-row>
+    }
+</div>
