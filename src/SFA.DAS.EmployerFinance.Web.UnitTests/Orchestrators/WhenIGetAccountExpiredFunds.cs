@@ -1,12 +1,13 @@
-using System.Linq.Expressions;
-using System.Net;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountExpiredFunds;
+using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
+using System.Linq.Expressions;
+using System.Net;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators;
 
@@ -44,6 +45,7 @@ internal class WhenIGetAccountExpiredFunds
             Mock.Of<IEncodingService>(),
             Mock.Of<IAuthenticationOrchestrator>(),
             Mock.Of<IGovAuthEmployerAccountService>(),
+            Mock.Of<IOuterApiService>(),
             Mock.Of<EmployerFinanceWebConfiguration>());
     }
 

@@ -86,11 +86,51 @@ public class WhenIViewTheTransfersPage
         var result = await _controller.Index("ABC123") as ViewResult;
 
         // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.ViewName, Is.Null);
-        Assert.That(result.Model, Is.Not.Null);
+        result.Should().NotBeNull();
+        result.ViewName.Should().BeNull();
+        result.Model.Should().NotBeNull();
     }
 
+    [Test]
+    public async Task ThenThePageStillRendersWhenTransferRequestsFailToLoad()
+    {
+        var fixture = new Fixture();
+        _mediatorMock
+            .Setup(mock => mock.Send(It.Is<GetTransferAllowanceQuery>(c => c.AccountId == AccountId), CancellationToken.None))
+            .ReturnsAsync(new GetTransferAllowanceResponse { TransferAllowance = new TransferAllowance { RemainingTransferAllowance = 0, StartingTransferAllowance = 0 }, TransferAllowancePercentage = TransferAllowancePercentage });
+        _mediatorMock
+            .Setup(mock => mock.Send(It.IsAny<GetTransferConnectionInvitationAuthorizationQuery>(), CancellationToken.None))
+            .ReturnsAsync(new GetTransferConnectionInvitationAuthorizationResponse { });
+        _mediatorMock
+            .Setup(mock => mock.Send(It.IsAny<GetTransferConnectionInvitationsQuery>(), CancellationToken.None))
+            .ReturnsAsync(fixture.Create<GetTransferConnectionInvitationsResponse>());
+        _mediatorMock
+            .Setup(mock => mock.Send(It.IsAny<GetTransferRequestsQuery>(), CancellationToken.None))
+            .ThrowsAsync(new InvalidOperationException("commitments transfer requests failed"));
+        _mediatorMock
+            .Setup(mock => mock.Send(It.IsAny<GetEmployerAccountDetailByHashedIdQuery>(), CancellationToken.None))
+            .ReturnsAsync(new GetEmployerAccountDetailByHashedIdResponse
+            {
+                AccountDetail = new AccountDetailDto
+                {
+                    ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy
+                }
+            });
+        _mapper.Setup(x => x.Map<TransferAllowanceViewModel>(It.IsAny<GetTransferAllowanceResponse>()))
+            .Returns(new TransferAllowanceViewModel());
+        _mapper.Setup(x => x.Map<TransferConnectionInvitationAuthorizationViewModel>(It.IsAny<GetTransferConnectionInvitationAuthorizationResponse>()))
+            .Returns(new TransferConnectionInvitationAuthorizationViewModel());
+        _mapper.Setup(x => x.Map<TransferConnectionInvitationsViewModel>(It.IsAny<GetTransferConnectionInvitationsResponse>()))
+            .Returns(new TransferConnectionInvitationsViewModel());
+
+        var result = await _controller.Index("ABC123") as ViewResult;
+
+        result.Should().NotBeNull();
+        var model = result.Model.Should().BeOfType<TransferViewModel>().Subject;
+        model.TransferRequest.Should().NotBeNull();
+        model.TransferRequest.AccountId.Should().Be(AccountId);
+        model.TransferRequest.TransferRequests.Should().BeEmpty();
+    }
 
     [Test]
     public async Task ThenUserDetailsAreUpserted()

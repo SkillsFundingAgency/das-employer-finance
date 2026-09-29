@@ -1,11 +1,12 @@
-﻿using SFA.DAS.EmployerFinance.Interfaces;
-using SFA.DAS.EmployerFinance.Models.Account;
-using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
-using SFA.DAS.EmployerFinance.Web.Orchestrators;
-using SFA.DAS.EAS.Account.Api.Client;
+﻿using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EAS.Account.Api.Types;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Interfaces;
+using SFA.DAS.EmployerFinance.Models.Account;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+using SFA.DAS.EmployerFinance.Queries.GetEmployerAccount;
+using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
 
@@ -63,7 +64,15 @@ public class WhenGettingFinanceIndex
         });
         _configuration = new Mock<EmployerFinanceWebConfiguration>();
 
-        _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object, _mediator.Object, _currentTime.Object, Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(), _encodingService.Object, _authenticationService.Object, _userAccountService.Object, _configuration.Object);
+        _orchestrator = new EmployerAccountTransactionsOrchestrator(_accountApiClient.Object,
+            _mediator.Object,
+            _currentTime.Object,
+            Mock.Of<ILogger<EmployerAccountTransactionsOrchestrator>>(),
+            _encodingService.Object,
+            _authenticationService.Object,
+            _userAccountService.Object,
+            Mock.Of<IOuterApiService>(), 
+            _configuration.Object);
     }
 
     [TestCase("0", false, TestName = "Non-Levy Employer returned")]

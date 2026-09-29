@@ -161,7 +161,42 @@ public class TransferConnectionInvitation : Entity
             RejectorUserRef = rejectorUser.Ref,
             SenderAccountId = SenderAccount.Id,
             SenderAccountName = SenderAccount.Name,
-            TransferConnectionRequestId = Id
+            TransferConnectionRequestId = Id,
+            WithdrawnBySender = false
+        });
+    }
+
+    public void WithdrawBySender(Account.Account senderAccount, User senderUser)
+    {
+        RequiresSenderAccountIsTheSenderAccount(senderAccount);
+        RequiresTransferConnectionInvitationIsPending();
+
+        var now = DateTime.UtcNow;
+
+        Status = TransferConnectionInvitationStatus.Rejected;
+
+        Changes.Add(new TransferConnectionInvitationChange
+        {
+            SenderAccount = SenderAccount,
+            ReceiverAccount = ReceiverAccount,
+            Status = Status,
+            User = senderUser,
+            CreatedDate = now
+        });
+
+        Publish(() => new RejectedTransferConnectionRequestEvent
+        {
+            Created = now,
+            ReceiverAccountHashedId = ReceiverAccount.HashedId,
+            ReceiverAccountId = ReceiverAccount.Id,
+            ReceiverAccountName = ReceiverAccount.Name,
+            RejectorUserId = senderUser.Id,
+            RejectorUserName = "System",
+            RejectorUserRef = senderUser.Ref,
+            SenderAccountId = SenderAccount.Id,
+            SenderAccountName = SenderAccount.Name,
+            TransferConnectionRequestId = Id,
+            WithdrawnBySender = true
         });
     }
 
@@ -207,6 +242,12 @@ public class TransferConnectionInvitation : Entity
     {
         if (rejectorAccount.Id != ReceiverAccount.Id)
             throw new InvalidOperationException("Requires rejector account is the receiver account");
+    }
+
+    private void RequiresSenderAccountIsTheSenderAccount(Account.Account senderAccount)
+    {
+        if (senderAccount.Id != SenderAccount.Id)
+            throw new InvalidOperationException("Requires sender account is the sender account");
     }
 
     private void RequiresTransferConnectionInvitationIsPending()

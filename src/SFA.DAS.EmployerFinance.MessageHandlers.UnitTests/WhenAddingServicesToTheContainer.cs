@@ -32,7 +32,8 @@ using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
 using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetPeriodEnds;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
-using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.Pipeline;
+using SFA.DAS.UnitOfWork.Pipeline;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.UnitTests;
 
@@ -121,6 +122,17 @@ public class WhenAddingServicesToTheContainer
         type.Should().NotBeNull();
     }
 
+    [Test]
+    public void Then_EntityFramework_UnitOfWork_Is_Registered()
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+
+        services.Should().Contain(descriptor =>
+            descriptor.ServiceType == typeof(IUnitOfWork) &&
+            descriptor.ImplementationType == typeof(UnitOfWork<EmployerFinanceDbContext>));
+    }
+
     private static void SetupServiceCollection(IServiceCollection services)
     {
         var configuration = GenerateConfiguration();
@@ -134,7 +146,7 @@ public class WhenAddingServicesToTheContainer
         services.AddDatabaseRegistration();
         services.AddMediatR(x => x.RegisterServicesFromAssembly(typeof(RenameAccountCommand).Assembly));
         services.AddAutoMapper(typeof(TransactionRepository));
-        services.AddUnitOfWork();
+        services.AddDasUnitOfWork();
         services.AddMediatorValidators();
         services.AddLogging(_ => { });
         services.AddHmrcServices();

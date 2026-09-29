@@ -44,13 +44,34 @@ public class RejectedTransferConnectionRequestEventNotificationHandlerTests
     }
 
     [Test]
-    public async Task Handle_WhenSentTransferConnectionRequestEventIsHandled_ThenShouldEncodeSenderAccountId()
+    public async Task Handle_WhenRejectedTransferConnectionRequestEventIsHandled_ThenShouldEncodeSenderAccountId()
     {
         var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture();
 
         await fixture.Handle();
 
         fixture.EncodingService.Verify(encodingService => encodingService.Encode(It.Is<long>(x => x == fixture.SenderAccount.Id), EncodingType.AccountId), Times.Once);
+    }
+
+    [Test]
+    public async Task Handle_WhenWithdrawnBySender_ThenShouldNotSendEmail()
+    {
+        var fixture = new RejectedTransferConnectionRequestEventNotificationHandlerTestsFixture
+        {
+            Event =
+            {
+                WithdrawnBySender = true
+            }
+        };
+
+        await fixture.Handle();
+
+        fixture.NotificationsService.Verify(
+            r => r.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, string>>()),
+            Times.Never);
     }
 }
 
@@ -89,7 +110,8 @@ public class RejectedTransferConnectionRequestEventNotificationHandlerTestsFixtu
         {
             ReceiverAccountId = ReceiverAccount.Id,
             ReceiverAccountName = ReceiverAccount.Name,
-            SenderAccountId = SenderAccount.Id
+            SenderAccountId = SenderAccount.Id,
+            SenderAccountName = SenderAccount.Name
         };
 
         return this;

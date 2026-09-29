@@ -9,6 +9,7 @@ using SFA.DAS.EmployerFinance.MessageHandlers.Startup;
 using SFA.DAS.EmployerFinance.ServiceRegistration;
 using SFA.DAS.EmployerFinance.Services;
 using SFA.DAS.UnitOfWork.DependencyResolution.Microsoft;
+using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
 
@@ -83,7 +84,7 @@ public static class HostExtensions
             services.AddDatabaseRegistration();
             services.AddMediatR(x=> x.RegisterServicesFromAssembly(typeof(RenameAccountCommand).Assembly));
             services.AddAutoMapper(typeof(TransactionRepository));
-            services.AddUnitOfWork();
+            services.AddDasUnitOfWork();
             services.AddMediatorValidators();
             services.AddHmrcServices();
             services.AddProviderServices();
@@ -93,5 +94,12 @@ public static class HostExtensions
         });
 
         return hostBuilder;
+    }
+
+    public static IServiceCollection AddDasUnitOfWork(this IServiceCollection services)
+    {
+        services.AddEntityFrameworkUnitOfWork<EmployerFinanceDbContext>();
+        services.AddUnitOfWork();
+        return services;
     }
 }

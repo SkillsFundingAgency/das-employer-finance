@@ -149,7 +149,11 @@ public class TransferConnectionsController : Controller
         {
             _logger.LogWarning(ex, "Failed to get transfer requests");
 
-            return null;
+            return new TransferRequestsViewModel
+            {
+                AccountId = accountId,
+                TransferRequests = []
+            };
         }
     }
         

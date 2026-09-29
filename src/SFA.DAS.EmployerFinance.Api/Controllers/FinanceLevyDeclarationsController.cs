@@ -55,6 +55,21 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         return Ok(result);
     }
 
+    [HttpGet]
+    [Route("{accountId:long}/summary")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetLevySummary(long accountId)
+    {
+        var result = await orchestrator.GetLevySummaryByAccountId(accountId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
     private static string DecodeEmpRef(string empRef) =>
         string.IsNullOrEmpty(empRef) ? empRef : Uri.UnescapeDataString(empRef);
 
