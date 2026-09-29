@@ -2,6 +2,7 @@
 
 public class EstimatesViewModel
 {
+    public DateTime? LastUpdated { get; set; }
     public List<MonthEstimateViewModel> MonthEstimates { get; set; }
 }
 
