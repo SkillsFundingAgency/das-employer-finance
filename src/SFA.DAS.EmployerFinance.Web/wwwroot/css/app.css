@@ -450,9 +450,55 @@
     white-space: nowrap;
 }
 
+/* Estimates timeline */
+
+.estimates-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.estimates-row .month {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.estimates-row .month :first-child {
+    width: 150px;
+}
+
+.estimates-row .month .provisional {
+    align-items: center;
+    background: #BBD4EA;
+    color: #0F304D;
+    display: inline-flex;
+    font-size: 16px;
+    justify-content: flex-start;
+    letter-spacing: 1px;
+    padding: 5px 8px;
+}
+
+.estimates-row .divider {
+    flex-direction: column; align-items: center; display: flex
+}
+
+.divider .circle {
+    width: 15px; height: 15px; background: #0B0C0C; border-radius: 9999px
+}
+
+.divider .line {
+    flex: 1 1 0; display: flex
+}
+.divider .line :first-child {
+    outline: 1px black solid; background: #0B0C0C
+}
+
 .estimates-card {
     border-radius: 10px;
     outline: 1px #B1B4B6 solid;
+    width: 100%;
 }
 
 .estimates-card .card-header {
