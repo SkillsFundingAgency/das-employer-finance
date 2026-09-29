@@ -242,7 +242,7 @@ public class FinanceOrchestrator(
 
     public Task<ExpireFundsResponse> ExpireFunds(long accountId, string correlationId)
     {
-        return _mediator.Send(new ExpireAccountFundsCommand
+        return mediator.Send(new ExpireAccountFundsCommand
         {
             AccountId = accountId,
             CorrelationId = correlationId
