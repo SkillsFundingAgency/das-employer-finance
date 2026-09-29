@@ -5,8 +5,10 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
+using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
+using static SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy.GetLevyProjectionsByAccountIdResponse;
 using ApprenticeshipEmployerType = SFA.DAS.Common.Domain.Types.ApprenticeshipEmployerType;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators.EmployerAccountOrchestratorTests;
@@ -58,6 +60,36 @@ internal class WhenGettingFinanceDashboardV2
             {
                 CurrentLevyFunds = 1000M,
                 TotalLevyDeclaredLast12Months = 5000M
+            });
+
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, 12))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections = new List<MonthlyBreakdown>
+                {
+                    new()
+                    {
+                        LevyIn = 1000M,
+                        CalendarMonthName = "August",
+                        CalendarPeriodMonth = 8,
+                        CalendarPeriodYear = 2026
+                    },
+                    new()
+                    {
+                        LevyIn = 2000M,
+                        CalendarMonthName = "September",
+                        CalendarPeriodMonth = 9,
+                        CalendarPeriodYear = 2026
+                    },
+                    new()
+                    {
+                        LevyIn = 3000M,
+                        CalendarMonthName = "October",
+                        CalendarPeriodMonth = 10,
+                        CalendarPeriodYear = 2026
+                    }
+                }
             });
 
         _mockCurrentTime
@@ -152,5 +184,91 @@ internal class WhenGettingFinanceDashboardV2
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
         result.Data.TotalLevyDeclaredLast12Months.Should().Be(5000M);
-    }    
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Count_Matches_Projections()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates.Should().HaveCount(3);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Are_Mapped_From_Projections()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates.Should().BeEquivalentTo(
+        [
+            new MonthEstimateViewModel { Period = "August",    LevyIn = 1000M },
+            new MonthEstimateViewModel { Period = "September", LevyIn = 2000M },
+            new MonthEstimateViewModel { Period = "October",   LevyIn = 3000M }
+        ], options => options.WithStrictOrdering());
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Preserves_Order_From_Projections()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates[0].Period.Should().Be("August");
+        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September");
+        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October");
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Maps_LevyIn_Correctly()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates[0].LevyIn.Should().Be(1000M);
+        result.Data.Estimates.MonthEstimates[1].LevyIn.Should().Be(2000M);
+        result.Data.Estimates.MonthEstimates[2].LevyIn.Should().Be(3000M);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Maps_MonthName_Correctly()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates[0].Period.Should().Be("August");
+        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September");
+        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October");
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Is_Empty_When_No_Projections()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, 12))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections = []
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Maps_Single_Projection_Correctly()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, 12))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new() { LevyIn = 500M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 }
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.MonthEstimates.Should().HaveCount(1);
+        result.Data.Estimates.MonthEstimates[0].Should().BeEquivalentTo(
+            new MonthEstimateViewModel { Period = "August", LevyIn = 500M });
+    }
 }
