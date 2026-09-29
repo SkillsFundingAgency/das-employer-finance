@@ -7,12 +7,12 @@ public class EstimatesViewModel
 
 public class MonthEstimateViewModel
 {
-    public int Month { get; set; }
-    public string MonthName { get; set; }
+    public bool IsProvisional { get; set; }
+    public string Period { get; set; }
     public decimal ClosingBalance { get; set; }
     public decimal LevyIn { get; set; }
     public decimal LevyOut { get; set; }
     public decimal ExpiredLevy { get; set; }
-    public decimal CommitedLearnerCosts { get; set; }
-    public decimal CommitedTransfersCosts { get; set; }
+    public decimal CommittedLearnerCosts { get; set; }
+    public decimal CommittedTransfersCosts { get; set; }
 }
