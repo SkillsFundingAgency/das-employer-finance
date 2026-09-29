@@ -27,12 +27,17 @@ namespace SFA.DAS.EmployerFinance.Commands.BulkPaymentsIngest
 
                 if (!validationResult.IsValid())
                 {
+                    var validationErrors = validationResult.ErrorList;
+
+                    _logger.LogWarning(
+                        "Payment staging validation failed. ErrorCount: {ErrorCount}. Errors: {ValidationErrors}",
+                        validationErrors.Count,
+                        string.Join("; ", validationErrors));
+
                     return new BulkPaymentsIngestResponse
                     {
                         HasValidationErrors = true,
-                        ValidationErrors = validationResult.ValidationDictionary
-                            .Select(e => e.Value)
-                            .ToList()
+                        ValidationErrors = validationErrors
                     };
                 }
 

@@ -9,42 +9,36 @@ public class StageTransfersCommandValidator : IValidator<StageTransfersCommand>
         var result = new ValidationResult();
 
         if (command.Transfers == null || !command.Transfers.Any())
-            result.AddError(nameof(command.Transfers), "Transfers array must contain 1–1000 items");
+        {
+            result.AddError(nameof(command.Transfers), "Transfers array must contain 1-1000 items");
+            return result;
+        }
 
         if (command.Transfers.Count > 1000)
-            result.AddError(nameof(command.Transfers), "Transfers array cannot exceed 1000 items");
-
-        foreach (var t in command.Transfers)
         {
-            if (t.TransferId == 0)
-                result.AddError(nameof(t.TransferId), "TransferId is required");
+            result.AddError(nameof(command.Transfers), "Transfers array cannot exceed 1000 items");
+            return result;
+        }
+
+        for (var i = 0; i < command.Transfers.Count; i++)
+        {
+            var t = command.Transfers[i];
+            var prefix = $"Transfers[{i}]";
 
             if (t.TransferId <= 0)
-                result.AddError(nameof(t.TransferId), "TransferId must be greater than 0");
+                result.AddError($"{prefix}.TransferId", "TransferId must be greater than 0");
 
-            if (t.Amount <= 0)
-                result.AddError(nameof(t.Amount), "Amount must be greater than 0");
-
-            if (t.SenderAccountId == 0)
-                result.AddError(nameof(t.SenderAccountId), "SenderAccountId is required");
-
-            if (t.ReceiverAccountId == 0)
-                result.AddError(nameof(t.ReceiverAccountId), "ReceiverAccountId is required");
+            if (t.SenderAccountId <= 0)
+                result.AddError($"{prefix}.SenderAccountId", "SenderAccountId is required");
 
             if (t.ReceiverAccountId <= 0)
-                result.AddError(nameof(t.ReceiverAccountId), "ReceiverAccountId must be greater than 0");
+                result.AddError($"{prefix}.ReceiverAccountId", "ReceiverAccountId must be greater than 0");
 
             if (string.IsNullOrWhiteSpace(t.PeriodEnd))
-                result.AddError(nameof(t.PeriodEnd), "PeriodEnd is required");
-
-            if (t.ApprenticeshipId <= 0)
-                result.AddError(nameof(t.ApprenticeshipId), "ApprenticeshipId must be greater than 0");
+                result.AddError($"{prefix}.PeriodEnd", "PeriodEnd is required");
 
             if (string.IsNullOrWhiteSpace(t.Type))
-                result.AddError(nameof(t.Type), "Type is required");
-
-            if (t.RequiredPaymentId == Guid.Empty)
-                result.AddError(nameof(t.RequiredPaymentId), "RequiredPaymentId is required");
+                result.AddError($"{prefix}.Type", "Type is required");
         }
 
         return result;
