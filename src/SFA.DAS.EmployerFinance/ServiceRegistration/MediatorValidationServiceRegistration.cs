@@ -2,6 +2,7 @@
 using SFA.DAS.EmployerFinance.Commands.CreateEnglishFractionCalculationDate;
 using SFA.DAS.EmployerFinance.Commands.CreateNewPeriodEnd;
 using SFA.DAS.EmployerFinance.Commands.CreateTransferTransactions;
+using SFA.DAS.EmployerFinance.Commands.ExpireAccountFunds;
 using SFA.DAS.EmployerFinance.Commands.PersistEnglishFractions;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
 using SFA.DAS.EmployerFinance.Commands.RefreshAccountTransfers;
@@ -64,6 +65,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<TransferStagedToOperationalCommand>, TransferStagedToOperationalCommandValidator>();
         services.AddTransient<IValidator<UpdatePaymentMetadataStagingCommand>, UpdatePaymentMetadataStagingCommandValidator>();
         services.AddTransient<IValidator<CreateTransferTransactionsCommand>, CreateTransferTransactionsCommandValidator>();
+        services.AddTransient<IValidator<ExpireAccountFundsCommand>, ExpireAccountFundsCommandValidator>();
         services.AddTransient<IValidator<PersistEnglishFractionsCommand>, PersistEnglishFractionsCommandValidator>();
         services.AddTransient<IValidator<PersistLevyDeclarationsCommand>, PersistLevyDeclarationsCommandValidator>();
         services.AddTransient<IValidator<RefreshAccountTransfersCommand>, RefreshAccountTransfersCommandValidator>();
