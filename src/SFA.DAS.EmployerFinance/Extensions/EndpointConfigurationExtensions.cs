@@ -1,4 +1,5 @@
 ﻿using NServiceBus;
+using SFA.DAS.NServiceBus.ClientOutbox;
 using SFA.DAS.NServiceBus.Configuration.AzureServiceBus;
 
 namespace SFA.DAS.EmployerFinance.Extensions;
@@ -38,8 +39,10 @@ public static class EndpointConfigurationExtensions
     public static bool IsEvent(Type t) =>
         (t.FullName != null && t.FullName.EndsWith("Event")) || IsSfaMessage(t, "Messages.Events");
 
-    public static bool IsCommand(Type t) => (t.FullName != null && t.FullName.EndsWith("Command")) ||
-                                            IsSfaMessage(t, "Messages.Commands");
+    public static bool IsCommand(Type t) =>
+        t == typeof(ProcessClientOutboxMessageCommandV2)
+        || (t.FullName != null && t.FullName.EndsWith("Command"))
+        || IsSfaMessage(t, "Messages.Commands");
 
     public static bool IsSfaMessage(Type t, string namespaceSuffix)
         => t.Namespace != null &&

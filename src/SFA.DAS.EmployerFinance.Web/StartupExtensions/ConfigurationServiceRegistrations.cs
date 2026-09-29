@@ -1,3 +1,4 @@
+using Microsoft.FeatureManagement;
 using Newtonsoft.Json;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
@@ -28,6 +29,9 @@ public static class ConfigurationServiceRegistrations
         var encodingConfigJson = configuration.GetSection(ConfigurationKeys.EncodingConfig).Value;
         var encodingConfig = JsonConvert.DeserializeObject<EncodingConfig>(encodingConfigJson);
         services.AddSingleton(encodingConfig);
+
+        services.AddFeatureToggle(configuration);
+        services.AddFeatureManagement(configuration.GetSection("Features"));
 
         return services;
     }
