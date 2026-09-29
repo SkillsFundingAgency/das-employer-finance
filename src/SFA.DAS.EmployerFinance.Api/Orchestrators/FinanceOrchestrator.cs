@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Models.Transaction;
 using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
 using SFA.DAS.EmployerFinance.Queries.GetAccounts;
+using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummaryByDate;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionCurrent;
 using SFA.DAS.EmployerFinance.Queries.GetEnglishFractionHistory;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
@@ -258,5 +260,18 @@ public class FinanceOrchestrator(
             EmpRef = empRef,
             LastSubmissionDate = submissionDate
         };
+    }
+
+    public async Task<TransactionLine[]> GetTransactions(long accountId, DateTime fromDate, DateTime toDate)
+    {
+        logger.LogInformation("Requesting transactions for accountId {AccountId} from {FromDate} to {ToDate}", accountId, fromDate, toDate);
+        var response = await mediator.Send(new GetAccountTransactionSummaryByDateQuery(accountId, fromDate, toDate));
+        if (response?.Data == null)
+        {
+            return null;
+        }
+        var result = response.Data.Select(x => mapper.Map<TransactionLine>(x)).ToArray();
+        logger.LogInformation("Received transactions for accountId {AccountId} from {FromDate} to {ToDate}: {Count}", accountId, fromDate, toDate, result.Length);
+        return result;
     }
 }
