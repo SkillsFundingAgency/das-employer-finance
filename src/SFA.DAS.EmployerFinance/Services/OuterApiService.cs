@@ -12,6 +12,7 @@ public class OuterApiService(
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
     private static string LevySummaryKey(long accountId) => $"LevySummary_{accountId}";
+    private static string LevyProjectionsKey(long accountId, int months) => $"LevyProjections_{accountId}_{months}";
 
     public async Task<GetLevySummaryByAccountIdResponse> GetLevySummary(long accountId, bool refreshCache = false)
     {
@@ -22,6 +23,21 @@ public class OuterApiService(
 
         var response = await outerApiClient.Get<GetLevySummaryByAccountIdResponse>(
             new GetLevySummaryByAccountIdRequest(accountId));
+
+        cache.Set(key, response, CacheDuration);
+
+        return response;
+    }
+
+    public async Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId, int months = 12, bool refreshCache = false)
+    {
+        var key = LevyProjectionsKey(accountId, months);
+
+        if (!refreshCache && cache.Exists(key))
+            return cache.Get<GetLevyProjectionsByAccountIdResponse>(key);
+
+        var response = await outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(
+            new GetLevyProjectionsByAccountIdRequest(accountId, months));
 
         cache.Set(key, response, CacheDuration);
 
