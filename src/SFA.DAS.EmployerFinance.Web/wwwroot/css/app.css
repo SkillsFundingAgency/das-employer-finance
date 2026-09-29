@@ -449,3 +449,56 @@
 .govuk-summary-list__key--nowrap{
     white-space: nowrap;
 }
+
+.estimates-card {
+    border-radius: 10px;
+    outline: 1px #B1B4B6 solid;
+}
+
+.estimates-card .card-header {
+    align-self: stretch;
+    background: #E2E1E0;
+    border-bottom: 1px #B1B4B6 solid;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    font-weight: 700;
+    gap: 30px;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.estimates-card .card-body {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: flex-start;
+    padding: 10px;
+}
+
+.card-body .line-item {
+    align-self: stretch;
+    display: flex;
+    font-size: 16px;
+    font-weight: 700;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+.card-body .line-item-container {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.line-item-container .sub-item {
+    color: #505A5F;
+    display: flex;
+    font-size: 16px;
+    gap: 30px;
+    justify-content: space-between;
+    padding-left: 8px;
+}
