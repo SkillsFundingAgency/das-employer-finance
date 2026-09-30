@@ -64,6 +64,7 @@ public class GetEmployerAccountTransactionsHandler(
 
             case PaymentTransactionLine paymentTransaction:
                 transaction.Description = await GetPaymentTransactionDescription(paymentTransaction);
+                transaction.TransferSourceDescription = await GetTransferSourceDescription(paymentTransaction);
                 break;
 
             case ExpiredFundTransactionLine:
@@ -71,20 +72,41 @@ public class GetEmployerAccountTransactionsHandler(
                 break;
 
             case TransferTransactionLine transferTransaction:
-                if (transferTransaction.TransactionAccountIsTransferSender)
-                {
-                    transaction.Description = $"Transfer sent to {transferTransaction.ReceiverAccountName}";
-                }
-                else
-                {
-                    transaction.Description = $"Transfer received from {transferTransaction.SenderAccountName}";                 
-                    // transaction.Description = transferTransaction.ProviderName;
-                    // transaction.TransferSourceDescription = $"Paid using transfer from {transferTransaction.SenderAccountName}"; 
-                }
+                transaction.Description = transferTransaction.TransactionAccountIsTransferSender 
+                    ? $"Transfer sent to {transferTransaction.ReceiverAccountName}" 
+                    : $"Transfer received from {transferTransaction.SenderAccountName}";
                 break;
         }
     }
 
+    private readonly Dictionary<string, Dictionary<long, TransferSenderInfo>> _transferSenderCache = new();
+
+    private async Task<string?> GetTransferSourceDescription(PaymentTransactionLine transaction)
+    {
+        try
+        {
+            Dictionary<long, TransferSenderInfo> sendersByUkprn = null;
+            if (transaction.PeriodEnd != null && !_transferSenderCache.TryGetValue(transaction.PeriodEnd, out sendersByUkprn))
+            {
+                sendersByUkprn = await dasLevyService.GetTransferSenderAccountNames(transaction.AccountId, transaction.PeriodEnd);
+                _transferSenderCache[transaction.PeriodEnd] = sendersByUkprn;
+            }
+
+            if (sendersByUkprn != null && sendersByUkprn.TryGetValue(transaction.UkPrn, out var transferSender))
+            {
+                return transferSender.IsPartialTransfer
+                    ? $"Includes transfer from {transferSender.SenderAccountName}"
+                    : $"Paid using transfer from {transferSender.SenderAccountName}";
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation("Unable to set transfer source description:{TransactionUkPrn} - {ExMessage}", transaction.UkPrn, ex.Message);
+        }
+        
+        return null;
+    }
+    
     private async Task<string> GetPaymentTransactionDescription(PaymentTransactionLine transaction)
     {
         var transactionPrefix = transaction.IsCoInvested ? "Co-investment - " : string.Empty;
@@ -93,6 +115,7 @@ public class GetEmployerAccountTransactionsHandler(
         {
             var ukprn = Convert.ToInt32(transaction.UkPrn);
             var providerName = await dasLevyService.GetProviderName(ukprn, transaction.AccountId, transaction.PeriodEnd);
+
             if (providerName != null)
                 return $"{transactionPrefix}{providerName}";
         }
