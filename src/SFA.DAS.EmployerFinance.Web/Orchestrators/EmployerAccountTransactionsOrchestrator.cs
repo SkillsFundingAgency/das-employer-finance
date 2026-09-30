@@ -115,7 +115,7 @@ public class EmployerAccountTransactionsOrchestrator(
                 ShowLevyTransparency = configuration.ShowLevyTransparency,
                 Estimates = new EstimatesViewModel
                 {
-                    LastUpdatedUtc = DateTime.UtcNow,
+                    LastUpdatedUtc = projections.LastRefreshDateTime,
                     MonthEstimates =
                     [
                         .. projections.Projections.Select(x => new MonthEstimateViewModel

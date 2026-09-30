@@ -5,6 +5,7 @@ using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
 using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByAccountId;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclarationByAccountId;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
@@ -72,6 +73,27 @@ public class LevyDeclarationOrchestrator(IMediator mediator, ILogger<LevyDeclara
         }
 
         logger.LogInformation("Received last levy declaration submission date for empRef {EmpRef}", empRef);
+
+        return new LastSubmissionDateResult
+        {
+            LastSumissionDate = dateFrom
+        };
+    }
+
+    public async Task<LastSubmissionDateResult> GetLastSubmissionDate(long accountId)
+    {
+        logger.LogInformation("Requesting last levy declaration submission date for accountId {AccountId}", accountId);
+
+        var existingDeclaration = await mediator.Send(new GetLastLevyDeclarationByAccountIdQuery(accountId));
+
+        DateTime? dateFrom = null;
+        if (existingDeclaration?.Transaction?.SubmissionDate != null &&
+            existingDeclaration.Transaction.SubmissionDate != DateTime.MinValue)
+        {
+            dateFrom = existingDeclaration.Transaction.SubmissionDate.AddDays(-1);
+        }
+
+        logger.LogInformation("Received last levy declaration submission date for accountId {AccountId}", accountId);
 
         return new LastSubmissionDateResult
         {
