@@ -30,6 +30,8 @@ internal class WhenGettingFinanceDashboardV2
     private const string HashedAccountId = "ABC123";
     private const long AccountId = 123L;
 
+    private DateTime LastRefreshDateTime;
+
     [SetUp]
     public void Arrange()
     {
@@ -42,6 +44,7 @@ internal class WhenGettingFinanceDashboardV2
         _mockAccountService = new Mock<IGovAuthEmployerAccountService>();
         _mockOuterApiService = new Mock<IOuterApiService>();
         _configuration = new EmployerFinanceWebConfiguration { ShowLevyTransparency = true };
+        LastRefreshDateTime = DateTime.UtcNow;
 
         _mockEncodingService
             .Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId))
@@ -89,7 +92,8 @@ internal class WhenGettingFinanceDashboardV2
                         CalendarPeriodMonth = 10,
                         CalendarPeriodYear = 2026
                     }
-                }
+                },
+                LastRefreshDateTime = LastRefreshDateTime,
             });
 
         _mockCurrentTime
@@ -201,9 +205,9 @@ internal class WhenGettingFinanceDashboardV2
 
         result.Data.Estimates.MonthEstimates.Should().BeEquivalentTo(
         [
-            new MonthEstimateViewModel { Period = "August",    LevyIn = 1000M },
-            new MonthEstimateViewModel { Period = "September", LevyIn = 2000M },
-            new MonthEstimateViewModel { Period = "October",   LevyIn = 3000M }
+            new MonthEstimateViewModel { Period = "August 2026",    LevyIn = 1000M },
+            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 2000M },
+            new MonthEstimateViewModel { Period = "October 2026",   LevyIn = 3000M }
         ], options => options.WithStrictOrdering());
     }
 
@@ -212,9 +216,9 @@ internal class WhenGettingFinanceDashboardV2
     {
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        result.Data.Estimates.MonthEstimates[0].Period.Should().Be("August");
-        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September");
-        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October");
+        result.Data.Estimates.MonthEstimates[0].Period.Should().Be("August 2026");
+        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September 2026");
+        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October 2026");
     }
 
     [Test]
@@ -232,9 +236,17 @@ internal class WhenGettingFinanceDashboardV2
     {
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        result.Data.Estimates.MonthEstimates[0].Period.Should().Be("August");
-        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September");
-        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October");
+        result.Data.Estimates.MonthEstimates[0].Period.Should().Be("August 2026");
+        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September 2026");
+        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October 2026");
+    }
+
+    [Test]
+    public async Task Then_DateTimeNow_Maps_LastRefreshDate_Correctly()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates.LastUpdatedUtc.Should().Be(LastRefreshDateTime);
     }
 
     [Test]
@@ -269,6 +281,6 @@ internal class WhenGettingFinanceDashboardV2
 
         result.Data.Estimates.MonthEstimates.Should().HaveCount(1);
         result.Data.Estimates.MonthEstimates[0].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "August", LevyIn = 500M });
+            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M });
     }
 }

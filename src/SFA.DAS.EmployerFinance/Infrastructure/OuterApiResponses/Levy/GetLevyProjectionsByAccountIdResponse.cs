@@ -3,6 +3,7 @@
 public sealed record GetLevyProjectionsByAccountIdResponse
 {
     public IReadOnlyList<MonthlyBreakdown> Projections { get; set; } = [];
+    public DateTime LastRefreshDateTime { get; set; }
 
     public sealed record MonthlyBreakdown
     {
