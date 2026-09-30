@@ -55,6 +55,14 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         return Ok(result);
     }
 
+    [HttpGet("{accountId:long}/last-submission-date")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetLastSubmissionDate(long accountId)
+    {
+        var result = await orchestrator.GetLastSubmissionDate(accountId);
+        return Ok(new { lastSubmissionDate = result.LastSumissionDate });
+    }
+
     [HttpGet]
     [Route("{accountId:long}/summary")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
