@@ -95,7 +95,7 @@ public class EmployerAccountTransactionsOrchestrator(
         var (accountDetail, summary, projections) = await (
             accountApiClient.GetAccount(accountId),
             outerApiService.GetLevySummary(accountId),
-            outerApiService.GetLevyProjections(accountId, months: 12)
+            outerApiService.GetLevyProjections(accountId, months: 6)
         ).WhenAll();
 
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
