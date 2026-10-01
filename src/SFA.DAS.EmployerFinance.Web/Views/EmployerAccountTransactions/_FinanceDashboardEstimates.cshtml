@@ -11,7 +11,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            <div class="govuk-!-margin-bottom-4">Last updated: @($"{Model.LastUpdatedUtc.ToGmtStandardTime().ToGdsFormatFull()} at {Model.LastUpdatedUtc.ToGmtStandardTime().ToGdsTimeFormatFull()}")</div>
+            <div class="govuk-!-margin-bottom-4">Updated at @($"{Model.LastUpdatedUtc.ToGmtStandardTime().ToGdsTimeFormatFull()} on {Model.LastUpdatedUtc.ToGmtStandardTime().ToGdsFormatFull()}")</div>
             @foreach (var month in Model.MonthEstimates)
             {
                 <estimates-row text="@month.Period" provisional=@month.IsProvisional>
