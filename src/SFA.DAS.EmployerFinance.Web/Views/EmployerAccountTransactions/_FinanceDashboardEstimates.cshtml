@@ -4,7 +4,7 @@
 
     <p class="govuk-!-margin-bottom-8">This timeline shows estimated payments based on your current funds and commitments. These payments may change and do not include future breaks in learning.</p>
 
-    @if (Model is not { MonthEstimates: { Count: > 0 } })
+    @if (Model is not { MonthEstimates.Count: > 0})
     {
         return;
     }

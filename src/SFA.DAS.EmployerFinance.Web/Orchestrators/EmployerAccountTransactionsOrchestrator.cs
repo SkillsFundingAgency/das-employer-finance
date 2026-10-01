@@ -121,7 +121,8 @@ public class EmployerAccountTransactionsOrchestrator(
                         .. projections.Projections.Select(x => new MonthEstimateViewModel
                         {
                             Period = $"{x.CalendarMonthName} {x.CalendarPeriodYear}",
-                            LevyIn = x.LevyIn
+                            LevyIn = x.LevyIn,
+                            ExpiredLevy = x.ExpiredLevy
                         })
                     ]
                 }
