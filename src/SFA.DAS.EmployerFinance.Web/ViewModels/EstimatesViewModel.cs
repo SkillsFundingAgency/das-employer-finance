@@ -8,7 +8,6 @@ public class EstimatesViewModel
 
 public class MonthEstimateViewModel
 {
-    public bool IsProvisional { get; set; }
     public string Period { get; set; }
     public decimal ClosingBalance { get; set; }
     public decimal LevyIn { get; set; }
