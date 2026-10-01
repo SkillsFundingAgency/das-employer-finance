@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Levy;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Services;
 using System.Net.Http;
@@ -12,6 +13,7 @@ internal class WhenGettingLevySummary
 {
     private Mock<IOuterApiClient> _mockApiClient;
     private Mock<IInProcessCache> _mockCache;
+    private Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>> _mockInvalidationRule;
     private OuterApiService _outerApiService;
 
     private const long AccountId = 123456789;
@@ -22,8 +24,9 @@ internal class WhenGettingLevySummary
     {
         _mockApiClient = new Mock<IOuterApiClient>();
         _mockCache = new Mock<IInProcessCache>();
+        _mockInvalidationRule = new Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>>();
 
-        _outerApiService = new OuterApiService(_mockApiClient.Object, _mockCache.Object);
+        _outerApiService = new OuterApiService(_mockApiClient.Object, _mockCache.Object, [_mockInvalidationRule.Object]);
     }
 
     [Test]

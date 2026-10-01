@@ -13,6 +13,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -90,14 +91,20 @@ public class EmployerAccountTransactionsOrchestrator(
     public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
-        var summary = await outerApiService.GetLevySummary(accountId);
-        
-        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
+
+        var (accountDetail, summary, projections) = await (
+            accountApiClient.GetAccount(accountId),
+            outerApiService.GetLevySummary(accountId),
+            outerApiService.GetLevyProjections(accountId, months: 6)
+        ).WhenAll();
+
+        Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
+
+        return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
             Data = new FinanceDashboardV2ViewModel
             {
-                IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
+                IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
@@ -106,10 +113,20 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts,
                 TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts,
                 ShowLevyTransparency = configuration.ShowLevyTransparency,
+                Estimates = new EstimatesViewModel
+                {
+                    LastUpdatedUtc = projections.LastRefreshDateTime,
+                    MonthEstimates =
+                    [
+                        .. projections.Projections.Select(x => new MonthEstimateViewModel
+                        {
+                            Period = $"{x.CalendarMonthName} {x.CalendarPeriodYear}",
+                            LevyIn = x.LevyIn
+                        })
+                    ]
+                }
             }
         };
-
-        return viewModel;
     }
 
     public async Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(

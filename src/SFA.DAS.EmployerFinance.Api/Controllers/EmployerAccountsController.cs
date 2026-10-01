@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
@@ -107,5 +108,23 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
         }
 
         return Ok(result);
+    }
+
+    [HttpGet("{accountId:long}/transaction-summary")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetAccountTransactionSummaryByDate(long accountId,
+        [FromQuery, Required] DateOnly fromDate,
+        [FromQuery, Required] DateOnly toDate)
+    {
+        var result = await financeOrchestrator.GetTransactions(accountId,
+            fromDate.ToDateTime(TimeOnly.MinValue),
+            toDate.ToDateTime(TimeOnly.MinValue));
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result.ToList());
     }
 }

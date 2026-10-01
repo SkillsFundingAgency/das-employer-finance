@@ -20,6 +20,7 @@ using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountExpiredFunds;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
+using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummaryByDate;
 using SFA.DAS.EmployerFinance.Queries.GetContent;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
@@ -73,6 +74,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<RefreshPaymentMetadataCommand>, RefreshPaymentMetadataCommandValidator>();
         services.AddTransient<IValidator<BulkPaymentsIngestCommand>, BulkPaymentsIngestCommandValidator>();
         services.AddTransient<IValidator<TransactionLineStagingCommand>, TransactionLineStagingCommandValidator>();
+        services.AddTransient<IValidator<GetAccountTransactionSummaryByDateQuery>, GetAccountTransactionSummaryByDateQueryValidator>();
     }
 
     public static void AddWebMediatorValidators(this IServiceCollection services)
