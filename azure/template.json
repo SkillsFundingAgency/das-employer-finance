@@ -208,6 +208,10 @@
         },
         "automationAccountName": {
             "type": "string"
+        },
+        "vnetRouteAllEnabled": {
+            "type": "bool",
+            "defaultValue": false
         }
     },
     "variables": {
@@ -341,6 +345,9 @@
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('frontEndAccessRestrictions')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
                     }
                 }
             }
@@ -481,6 +488,9 @@
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('backEndAccessRestrictions')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
                     }
                 }
             }
@@ -669,6 +679,9 @@
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('workerAccessRestrictions')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
                     }
                 }
             },
