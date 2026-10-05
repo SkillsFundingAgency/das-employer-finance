@@ -18,7 +18,10 @@ internal class WhenGettingLevyProjections
     private OuterApiService _outerApiService;
 
     private const long AccountId = 123456789;
-    private const int Months = 12;
+    private const int Months = 6;
+
+    private static readonly TimeSpan CacheDuration30Days = TimeSpan.FromDays(30);
+
     private static string CacheKey => $"LevyProjections_{AccountId}_{Months}";
 
     [SetUp]
@@ -87,7 +90,7 @@ internal class WhenGettingLevyProjections
         var result = await _outerApiService.GetLevyProjections(AccountId, Months);
 
         result.Should().Be(freshResponse);
-        _mockCache.Verify(x => x.Set(CacheKey, freshResponse, TimeSpan.FromDays(30)), Times.Once);
+        _mockCache.Verify(x => x.Set(CacheKey, freshResponse, CacheDuration30Days), Times.Once);
     }
 
     [Test]
@@ -107,7 +110,7 @@ internal class WhenGettingLevyProjections
         var result = await _outerApiService.GetLevyProjections(AccountId, Months);
 
         result.Should().Be(expectedResponse);
-        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, TimeSpan.FromDays(30)), Times.Once);
+        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, CacheDuration30Days), Times.Once);
 
         // Rules should not be consulted when there is nothing in the cache
         _mockInvalidationRule.Verify(
@@ -154,11 +157,11 @@ internal class WhenGettingLevyProjections
 
         var firstResponse = new GetLevyProjectionsByAccountIdResponse
         {
-            Projections = [new() { LevyIn = 1000M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 }]
+            Projections = [new GetLevyProjectionsByAccountIdResponse.MonthlyBreakdown { LevyIn = 1000M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 }]
         };
         var secondResponse = new GetLevyProjectionsByAccountIdResponse
         {
-            Projections = [new() { LevyIn = 2000M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 }]
+            Projections = [new GetLevyProjectionsByAccountIdResponse.MonthlyBreakdown { LevyIn = 2000M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 }]
         };
 
         _mockCache.Setup(x => x.Exists($"LevyProjections_{AccountId}_{Months}")).Returns(true);

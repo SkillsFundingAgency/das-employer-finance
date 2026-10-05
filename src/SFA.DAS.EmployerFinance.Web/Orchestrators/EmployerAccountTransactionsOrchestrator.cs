@@ -36,6 +36,8 @@ public class EmployerAccountTransactionsOrchestrator(
     EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
+    private const short Months = 6;
+
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
         //TODO this storing of user details should be removed from this applications database
@@ -88,14 +90,14 @@ public class EmployerAccountTransactionsOrchestrator(
          return viewModel;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
         var (accountDetail, summary, projections) = await (
             accountApiClient.GetAccount(accountId),
-            outerApiService.GetLevySummary(accountId),
-            outerApiService.GetLevyProjections(accountId, months: 6)
+            outerApiService.GetLevySummary(accountId, refreshCache),
+            outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache)
         ).WhenAll();
 
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
@@ -122,7 +124,9 @@ public class EmployerAccountTransactionsOrchestrator(
                         {
                             Period = $"{x.CalendarMonthName} {x.CalendarPeriodYear}",
                             LevyIn = x.LevyIn,
-                            ExpiredLevy = x.ExpiredLevy
+                            ExpiredLevy = x.ExpiredLevy,
+                            CommittedLearnerCosts = x.CommittedLearnerCosts,
+                            CommittedTransferCosts = x.CommittedTransferCosts,
                         })
                     ]
                 }
