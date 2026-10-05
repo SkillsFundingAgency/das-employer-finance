@@ -16,6 +16,6 @@ public class LevyDeclarationDateChangedRule(IOuterApiClient outerApiClient)
         var response = await outerApiClient.Get<GetLevyLastSubmissionDateResponse>(
             new GetLevyLastSubmissionDateRequest(context.AccountId));
 
-        return cached.LastRefreshDateTime != response.LatestLevyDeclarationInDate;
+        return response.LatestLevyDeclarationInDate > cached.LastRefreshDateTime;
     }
 }

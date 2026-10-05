@@ -12,5 +12,7 @@ public sealed record GetLevyProjectionsByAccountIdResponse
         public string CalendarMonthName { get; init; } = string.Empty;
         public decimal LevyIn { get; init; } = 0;
         public decimal ExpiredLevy { get; init; } = 0;
+        public decimal CommittedLearnerCosts { get; init; } = 0;
+        public decimal CommittedTransferCosts { get; init; } = 0;
     }
 }

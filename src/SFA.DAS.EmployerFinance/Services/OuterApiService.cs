@@ -51,8 +51,8 @@ public class OuterApiService(
         var response = await outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(
             new GetLevyProjectionsByAccountIdRequest(accountId, months));
 
-        cache.Set(key, response, CacheDuration30Days);
         response.LastRefreshDateTime = DateTime.UtcNow; // Set the last refresh time to now since we just fetched fresh data
+        cache.Set(key, response, CacheDuration30Days);
         return response;
     }
 }
