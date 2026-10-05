@@ -277,9 +277,9 @@ internal class WhenGettingFinanceDashboardV2
             {
                 Projections =
                 [
-                    new MonthlyBreakdown { LevyIn = 500M, ExpiredLevy = 100M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 },
-                    new MonthlyBreakdown { LevyIn = 1000M, ExpiredLevy = 200M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 },
-                    new MonthlyBreakdown { LevyIn = 1500M, ExpiredLevy = 300M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M, CalendarMonthName = "October", CalendarPeriodMonth = 10, CalendarPeriodYear = 2026 }
+                    new MonthlyBreakdown { LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevy = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 },
+                    new MonthlyBreakdown { LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevy = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 },
+                    new MonthlyBreakdown { LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevy = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M, CalendarMonthName = "October", CalendarPeriodMonth = 10, CalendarPeriodYear = 2026 }
                 ]
             });
 
@@ -287,15 +287,10 @@ internal class WhenGettingFinanceDashboardV2
 
         result.Data.Estimates!.MonthEstimates.Should().HaveCount(3);
         result.Data.Estimates.MonthEstimates[0].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M, ExpiredLevy = 100M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M });
+            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevy = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M });
         result.Data.Estimates.MonthEstimates[1].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 1000M, ExpiredLevy = 200M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M });
+            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevy = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M });
         result.Data.Estimates.MonthEstimates[2].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "October 2026", LevyIn = 1500M, ExpiredLevy = 300M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M });
-
-        result.Data.Estimates.MonthEstimates.ForEach(x =>
-        {
-            x.LevyOut.Should().Be(x.ExpiredLevy + x.CommittedLearnerCosts + x.CommittedTransferCosts);
-        });
+            new MonthEstimateViewModel { Period = "October 2026", LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevy = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M });
     }
 }

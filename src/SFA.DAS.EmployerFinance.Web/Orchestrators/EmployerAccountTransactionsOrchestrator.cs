@@ -125,6 +125,8 @@ public class EmployerAccountTransactionsOrchestrator(
                             Period = $"{x.CalendarMonthName} {x.CalendarPeriodYear}",
                             LevyIn = x.LevyIn,
                             ExpiredLevy = x.ExpiredLevy,
+                            LevyOut = x.LevyOut,
+                            ClosingLevy = x.ClosingLevy,
                             CommittedLearnerCosts = x.CommittedLearnerCosts,
                             CommittedTransferCosts = x.CommittedTransferCosts,
                         })
