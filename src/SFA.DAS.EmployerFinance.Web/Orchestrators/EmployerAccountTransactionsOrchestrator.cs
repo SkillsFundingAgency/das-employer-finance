@@ -94,8 +94,6 @@ public class EmployerAccountTransactionsOrchestrator(
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
-        //accountId = 59580;
-
         var (accountDetail, summary, projections) = await (
             accountApiClient.GetAccount(accountId),
             outerApiService.GetLevySummary(accountId, refreshCache, cancellationToken),
