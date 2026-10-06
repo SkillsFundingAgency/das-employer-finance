@@ -10,7 +10,7 @@ public interface IEmployerAccountTransactionsOrchestrator
 {
     Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity firstOrDefault);
 
-    Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false);
+    Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false, CancellationToken cancellationToken = default);
 
     Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(
         string hashedId, long ukprn, DateTime fromDate, DateTime toDate);

@@ -34,12 +34,12 @@ public class EmployerAccountTransactionsController(
     }
 
     [Route("finance", Name = RouteNames.FinanceIndex)]
-    public async Task<IActionResult> Index([FromRoute] string hashedAccountId, [FromQuery] bool refreshCache = false)
+    public async Task<IActionResult> Index([FromRoute] string hashedAccountId, [FromQuery] bool refreshCache = false, CancellationToken cancellationToken = default)
     {
         // Check if the feature toggle for Levy Projection Transparency is enabled. This will determine which view to render for the Index action.
         if (feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
         {
-            return View(ViewNames.FinanceDashboard, await accountTransactionsOrchestrator.GetFinanceDashboardV2(hashedAccountId, refreshCache));
+            return View(ViewNames.FinanceDashboard, await accountTransactionsOrchestrator.GetFinanceDashboardV2(hashedAccountId, refreshCache, cancellationToken));
         }
 
         var viewModel = await accountTransactionsOrchestrator.Index(hashedAccountId, HttpContext.User.Identities.FirstOrDefault());

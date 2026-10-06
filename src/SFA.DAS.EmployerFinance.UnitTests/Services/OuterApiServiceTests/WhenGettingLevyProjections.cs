@@ -15,6 +15,7 @@ internal class WhenGettingLevyProjections
     private Mock<IOuterApiClient> _mockApiClient;
     private Mock<IInProcessCache> _mockCache;
     private Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>> _mockInvalidationRule;
+    private Mock<ILogger<OuterApiService>> _mockLogger;
     private OuterApiService _outerApiService;
 
     private const long AccountId = 123456789;
@@ -30,11 +31,13 @@ internal class WhenGettingLevyProjections
         _mockApiClient = new Mock<IOuterApiClient>();
         _mockCache = new Mock<IInProcessCache>();
         _mockInvalidationRule = new Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>>();
+        _mockLogger = new Mock<ILogger<OuterApiService>>();
 
         _outerApiService = new OuterApiService(
             _mockApiClient.Object,
             _mockCache.Object,
-            [_mockInvalidationRule.Object]);
+            [_mockInvalidationRule.Object], 
+            _mockLogger.Object);
     }
 
     [Test]
@@ -128,7 +131,8 @@ internal class WhenGettingLevyProjections
         _outerApiService = new OuterApiService(
             _mockApiClient.Object,
             _mockCache.Object,
-            [_mockInvalidationRule.Object, secondRule.Object]);
+            [_mockInvalidationRule.Object, secondRule.Object],
+            _mockLogger.Object);
 
         _mockCache.Setup(x => x.Exists(CacheKey)).Returns(true);
         _mockCache.Setup(x => x.Get<GetLevyProjectionsByAccountIdResponse>(CacheKey)).Returns(cachedResponse);
@@ -200,9 +204,8 @@ internal class WhenGettingLevyProjections
             .Setup(x => x.Get<GetLevyProjectionsByAccountIdResponse>(It.IsAny<GetLevyProjectionsByAccountIdRequest>()))
             .ThrowsAsync(new HttpRequestException("Service unavailable"));
 
-        var act = () => _outerApiService.GetLevyProjections(AccountId);
+        var result = await _outerApiService.GetLevyProjections(AccountId);
 
-        await act.Should().ThrowAsync<HttpRequestException>().WithMessage("Service unavailable");
-        _mockCache.Verify(x => x.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Never);
+        result.Should().BeEquivalentTo(new GetLevyProjectionsByAccountIdResponse());
     }
 }

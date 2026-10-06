@@ -90,14 +90,16 @@ public class EmployerAccountTransactionsOrchestrator(
          return viewModel;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false, CancellationToken cancellationToken = default)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
+        //accountId = 59580;
+
         var (accountDetail, summary, projections) = await (
             accountApiClient.GetAccount(accountId),
-            outerApiService.GetLevySummary(accountId, refreshCache),
-            outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache)
+            outerApiService.GetLevySummary(accountId, refreshCache, cancellationToken),
+            outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache, cancellationToken: cancellationToken)
         ).WhenAll();
 
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
@@ -126,7 +128,7 @@ public class EmployerAccountTransactionsOrchestrator(
                             LevyIn = x.LevyIn,
                             ExpiredLevy = x.ExpiredLevy,
                             LevyOut = x.LevyOut,
-                            ClosingLevy = x.ClosingLevy,
+                            ClosingLevyBalance = x.ClosingLevyBalance,
                             CommittedLearnerCosts = x.CommittedLearnerCosts,
                             CommittedTransferCosts = x.CommittedTransferCosts,
                         })
