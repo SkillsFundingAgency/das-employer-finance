@@ -34,7 +34,7 @@ public class OuterApiService(
         return response;
     }
 
-    public async Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId, int months = 12, bool refreshCache = false)
+    public async Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId, int months = 6, bool refreshCache = false)
     {
         var key = LevyProjectionsKey(accountId, months);
 
