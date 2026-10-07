@@ -43,6 +43,12 @@ public static class ApplicationServiceRegistrations
         services.AddHttpClient<IOuterApiClient, OuterApiClient>()
             .AddStandardResilienceHandler(options =>
         {
+            // Total time allowed for the entire request, including all retries
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
+
+            // Time allowed for a single attempt (must be less than TotalRequestTimeout)
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(15);
+
             options.Retry.MaxRetryAttempts = 3;
             options.Retry.Delay = TimeSpan.FromMilliseconds(300);
             options.Retry.BackoffType = DelayBackoffType.Exponential;
@@ -60,7 +66,7 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<IApprenticeshipInfoServiceWrapper, ApprenticeshipInfoServiceWrapper>();
 
         services.AddScoped<IAccountApiClient, AccountApiClient>();
-
+        
         services.AddTransient<IExcelService, ExcelService>();
 
         services.AddTransient<IDateTimeService, DateTimeService>();
