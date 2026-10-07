@@ -15,7 +15,7 @@ public class GetAccountTransactionSummaryByDateQueryHandler(ITransactionReposito
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var result = await transactionRepository.GetAccountLevyTransactionsByDateRange(request.AccountId, request.FromDate, request.ToDate);
+        var result = await transactionRepository.GetAccountTransactionsByDateRange(request.AccountId, request.FromDate, request.ToDate);
         return new GetAccountTransactionSummaryByDateQueryResult(result);
     }
 }

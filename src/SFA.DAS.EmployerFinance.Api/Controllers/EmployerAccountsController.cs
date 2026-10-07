@@ -116,6 +116,11 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
         [FromQuery, Required] DateOnly fromDate,
         [FromQuery, Required] DateOnly toDate)
     {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         var result = await financeOrchestrator.GetTransactions(accountId,
             fromDate.ToDateTime(TimeOnly.MinValue),
             toDate.ToDateTime(TimeOnly.MinValue));
