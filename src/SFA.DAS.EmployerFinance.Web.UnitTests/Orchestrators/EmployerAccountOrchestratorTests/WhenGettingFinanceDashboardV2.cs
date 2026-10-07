@@ -29,6 +29,7 @@ internal class WhenGettingFinanceDashboardV2
 
     private const string HashedAccountId = "ABC123";
     private const long AccountId = 123L;
+    private const short Months = 6;
 
     private DateTime _lastRefreshDateTime;
 
@@ -66,7 +67,7 @@ internal class WhenGettingFinanceDashboardV2
             });
 
         _mockOuterApiService
-            .Setup(x => x.GetLevyProjections(AccountId, 6))
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
                 Projections = new List<MonthlyBreakdown>
@@ -256,7 +257,7 @@ internal class WhenGettingFinanceDashboardV2
     public async Task Then_MonthEstimates_Is_Empty_When_No_Projections()
     {
         _mockOuterApiService
-            .Setup(x => x.GetLevyProjections(AccountId, 6))
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
                 Projections = []
@@ -271,14 +272,14 @@ internal class WhenGettingFinanceDashboardV2
     public async Task Then_MonthEstimates_Maps_Single_Projection_Correctly()
     {
         _mockOuterApiService
-            .Setup(x => x.GetLevyProjections(AccountId, 6))
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
                 Projections =
                 [
-                    new MonthlyBreakdown { LevyIn = 500M, ExpiredLevy = 100M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 },
-                    new MonthlyBreakdown { LevyIn = 1000M, ExpiredLevy = 200M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 },
-                    new MonthlyBreakdown { LevyIn = 1500M, ExpiredLevy = 300M, CalendarMonthName = "October", CalendarPeriodMonth = 10, CalendarPeriodYear = 2026 }
+                    new MonthlyBreakdown { LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevyBalance = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 },
+                    new MonthlyBreakdown { LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevyBalance = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 },
+                    new MonthlyBreakdown { LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevyBalance = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M, CalendarMonthName = "October", CalendarPeriodMonth = 10, CalendarPeriodYear = 2026 }
                 ]
             });
 
@@ -286,10 +287,10 @@ internal class WhenGettingFinanceDashboardV2
 
         result.Data.Estimates!.MonthEstimates.Should().HaveCount(3);
         result.Data.Estimates.MonthEstimates[0].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M, ExpiredLevy = 100M });
+            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevyBalance = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M });
         result.Data.Estimates.MonthEstimates[1].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 1000M, ExpiredLevy = 200M });
+            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevyBalance = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M });
         result.Data.Estimates.MonthEstimates[2].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "October 2026", LevyIn = 1500M, ExpiredLevy = 300M });
+            new MonthEstimateViewModel { Period = "October 2026", LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevyBalance = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M });
     }
 }

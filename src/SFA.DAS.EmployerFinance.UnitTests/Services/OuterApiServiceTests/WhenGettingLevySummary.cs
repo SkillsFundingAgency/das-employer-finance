@@ -14,6 +14,7 @@ internal class WhenGettingLevySummary
     private Mock<IOuterApiClient> _mockApiClient;
     private Mock<IInProcessCache> _mockCache;
     private Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>> _mockInvalidationRule;
+    private Mock<ILogger<OuterApiService>> _mockLogger;
     private OuterApiService _outerApiService;
 
     private const long AccountId = 123456789;
@@ -25,8 +26,9 @@ internal class WhenGettingLevySummary
         _mockApiClient = new Mock<IOuterApiClient>();
         _mockCache = new Mock<IInProcessCache>();
         _mockInvalidationRule = new Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>>();
+        _mockLogger = new Mock<ILogger<OuterApiService>>();
 
-        _outerApiService = new OuterApiService(_mockApiClient.Object, _mockCache.Object, [_mockInvalidationRule.Object]);
+        _outerApiService = new OuterApiService(_mockApiClient.Object, _mockCache.Object, [_mockInvalidationRule.Object], _mockLogger.Object);
     }
 
     [Test]
@@ -159,9 +161,8 @@ internal class WhenGettingLevySummary
             .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<GetLevySummaryByAccountIdRequest>()))
             .ThrowsAsync(new HttpRequestException("Service unavailable"));
 
-        var act = () => _outerApiService.GetLevySummary(AccountId);
+        var result = await _outerApiService.GetLevySummary(AccountId);
 
-        await act.Should().ThrowAsync<HttpRequestException>().WithMessage("Service unavailable");
-        _mockCache.Verify(x => x.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Never);
+        result.Should().BeEquivalentTo(new GetLevySummaryByAccountIdResponse());
     }
 }

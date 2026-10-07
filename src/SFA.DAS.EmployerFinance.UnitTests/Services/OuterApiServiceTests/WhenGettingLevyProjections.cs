@@ -15,10 +15,14 @@ internal class WhenGettingLevyProjections
     private Mock<IOuterApiClient> _mockApiClient;
     private Mock<IInProcessCache> _mockCache;
     private Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>> _mockInvalidationRule;
+    private Mock<ILogger<OuterApiService>> _mockLogger;
     private OuterApiService _outerApiService;
 
     private const long AccountId = 123456789;
-    private const int Months = 12;
+    private const int Months = 6;
+
+    private static readonly TimeSpan CacheDuration30Days = TimeSpan.FromDays(30);
+
     private static string CacheKey => $"LevyProjections_{AccountId}_{Months}";
 
     [SetUp]
@@ -27,11 +31,13 @@ internal class WhenGettingLevyProjections
         _mockApiClient = new Mock<IOuterApiClient>();
         _mockCache = new Mock<IInProcessCache>();
         _mockInvalidationRule = new Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>>();
+        _mockLogger = new Mock<ILogger<OuterApiService>>();
 
         _outerApiService = new OuterApiService(
             _mockApiClient.Object,
             _mockCache.Object,
-            [_mockInvalidationRule.Object]);
+            [_mockInvalidationRule.Object], 
+            _mockLogger.Object);
     }
 
     [Test]
@@ -87,7 +93,7 @@ internal class WhenGettingLevyProjections
         var result = await _outerApiService.GetLevyProjections(AccountId, Months);
 
         result.Should().Be(freshResponse);
-        _mockCache.Verify(x => x.Set(CacheKey, freshResponse, TimeSpan.FromDays(30)), Times.Once);
+        _mockCache.Verify(x => x.Set(CacheKey, freshResponse, CacheDuration30Days), Times.Once);
     }
 
     [Test]
@@ -107,7 +113,7 @@ internal class WhenGettingLevyProjections
         var result = await _outerApiService.GetLevyProjections(AccountId, Months);
 
         result.Should().Be(expectedResponse);
-        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, TimeSpan.FromDays(30)), Times.Once);
+        _mockCache.Verify(x => x.Set(CacheKey, expectedResponse, CacheDuration30Days), Times.Once);
 
         // Rules should not be consulted when there is nothing in the cache
         _mockInvalidationRule.Verify(
@@ -125,7 +131,8 @@ internal class WhenGettingLevyProjections
         _outerApiService = new OuterApiService(
             _mockApiClient.Object,
             _mockCache.Object,
-            [_mockInvalidationRule.Object, secondRule.Object]);
+            [_mockInvalidationRule.Object, secondRule.Object],
+            _mockLogger.Object);
 
         _mockCache.Setup(x => x.Exists(CacheKey)).Returns(true);
         _mockCache.Setup(x => x.Get<GetLevyProjectionsByAccountIdResponse>(CacheKey)).Returns(cachedResponse);
@@ -154,11 +161,11 @@ internal class WhenGettingLevyProjections
 
         var firstResponse = new GetLevyProjectionsByAccountIdResponse
         {
-            Projections = [new() { LevyIn = 1000M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 }]
+            Projections = [new GetLevyProjectionsByAccountIdResponse.MonthlyBreakdown { LevyIn = 1000M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 }]
         };
         var secondResponse = new GetLevyProjectionsByAccountIdResponse
         {
-            Projections = [new() { LevyIn = 2000M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 }]
+            Projections = [new GetLevyProjectionsByAccountIdResponse.MonthlyBreakdown { LevyIn = 2000M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 }]
         };
 
         _mockCache.Setup(x => x.Exists($"LevyProjections_{AccountId}_{Months}")).Returns(true);
@@ -197,9 +204,8 @@ internal class WhenGettingLevyProjections
             .Setup(x => x.Get<GetLevyProjectionsByAccountIdResponse>(It.IsAny<GetLevyProjectionsByAccountIdRequest>()))
             .ThrowsAsync(new HttpRequestException("Service unavailable"));
 
-        var act = () => _outerApiService.GetLevyProjections(AccountId);
+        var result = await _outerApiService.GetLevyProjections(AccountId);
 
-        await act.Should().ThrowAsync<HttpRequestException>().WithMessage("Service unavailable");
-        _mockCache.Verify(x => x.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Never);
+        result.Should().BeEquivalentTo(new GetLevyProjectionsByAccountIdResponse());
     }
 }
