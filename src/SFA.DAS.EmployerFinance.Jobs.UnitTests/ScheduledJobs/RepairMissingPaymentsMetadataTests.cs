@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture.NUnit4;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NServiceBus;
@@ -23,7 +24,7 @@ public class RepairMissingPaymentsMetadataTests
         RepairMissingPaymentsMetadata sut)
     {
         levyRepository
-            .Setup(x => x.GetPaymentsWithMissingMetadata())
+            .Setup(x => x.GetPaymentsWithMissingMetadata(RepairMissingPaymentsMetadata.PageSize, RepairMissingPaymentsMetadata.PageNumber))
             .ReturnsAsync(() => null)
             .Verifiable();
 
@@ -42,7 +43,7 @@ public class RepairMissingPaymentsMetadataTests
         RepairMissingPaymentsMetadata sut)
     {
         levyRepository
-            .Setup(x => x.GetPaymentsWithMissingMetadata())
+            .Setup(x => x.GetPaymentsWithMissingMetadata(RepairMissingPaymentsMetadata.PageSize, RepairMissingPaymentsMetadata.PageNumber))
             .ReturnsAsync(() => [])
             .Verifiable();
 
@@ -62,7 +63,7 @@ public class RepairMissingPaymentsMetadataTests
         RepairMissingPaymentsMetadata sut)
     {
         levyRepository
-            .Setup(x => x.GetPaymentsWithMissingMetadata())
+            .Setup(x => x.GetPaymentsWithMissingMetadata(RepairMissingPaymentsMetadata.PageSize, RepairMissingPaymentsMetadata.PageNumber))
             .ReturnsAsync(() => paymentDetailsList)
             .Verifiable();
 
@@ -79,5 +80,12 @@ public class RepairMissingPaymentsMetadataTests
                 ), It.IsAny<SendOptions>()),
                 Times.Once);
         }
+    }
+
+    [Test]
+    public void PageSizeIsDrivenFromCode()
+    {
+        RepairMissingPaymentsMetadata.PageSize.Should().Be(500);
+        RepairMissingPaymentsMetadata.PageNumber.Should().Be(1);
     }
 }
