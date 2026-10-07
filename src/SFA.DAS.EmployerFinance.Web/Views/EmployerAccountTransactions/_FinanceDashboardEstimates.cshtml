@@ -1,4 +1,8 @@
-﻿@model EstimatesViewModel
+﻿@using System.Globalization
+@model EstimatesViewModel
+@{
+    var culture = new CultureInfo("en-GB");
+}
 <div class="govuk-body">
     <p class="govuk-!-margin-bottom-8">This timeline shows estimated payments based on your current funds and commitments. These payments may change and do not include future breaks in learning.</p>
     @if (Model is not { MonthEstimates.Count: > 0 })
@@ -11,12 +15,12 @@
             @foreach (var month in Model.MonthEstimates)
             {
                 <estimates-row text="@month.Period" provisional=@(month == Model.MonthEstimates.First())>
-                    <estimates-month-card balance="@month.ClosingLevyBalance.ToString("C0")" class="govuk-!-margin-bottom-4">
-                        <line-item text="Levy in" value="@month.LevyIn.ToString("C0")" />
-                        <line-item text="Levy out" value="@month.LevyOut.ToString("C0")">
-                            <sub-item text="Expired levy" value="@month.ExpiredLevy.ToString("C0")" />
-                            <sub-item text="Commited learner costs" value="@month.CommittedLearnerCosts.ToString("C0")" />
-                            <sub-item text="Commited transfer costs" value="@month.CommittedTransferCosts.ToString("C0")" />
+                    <estimates-month-card balance="@month.ClosingLevyBalance.ToString("C0", culture)" class="govuk-!-margin-bottom-4">
+                        <line-item text="Levy in" value="@month.LevyIn.ToString("C0", culture)" />
+                        <line-item text="Levy out" value="@month.LevyOut.ToString("C0", culture)">
+                            <sub-item text="Expired levy" value="@month.ExpiredLevy.ToString("C0", culture)" />
+                            <sub-item text="Commited learner costs" value="@month.CommittedLearnerCosts.ToString("C0", culture)" />
+                            <sub-item text="Commited transfer costs" value="@month.CommittedTransferCosts.ToString("C0", culture)" />
                         </line-item>
                     </estimates-month-card>
                 </estimates-row>
