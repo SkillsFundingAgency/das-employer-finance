@@ -15,12 +15,12 @@
             @foreach (var month in Model.MonthEstimates)
             {
                 <estimates-row text="@month.Period" provisional=@(month == Model.MonthEstimates.First())>
-                    <estimates-month-card balance="@month.ClosingLevyBalance.ToString("C0", culture)" class="govuk-!-margin-bottom-4">
-                        <line-item text="Levy in" value="@month.LevyIn.ToString("C0", culture)" />
-                        <line-item text="Levy out" value="@month.LevyOut.ToString("C0", culture)">
-                            <sub-item text="Expired levy" value="@month.ExpiredLevy.ToString("C0", culture)" />
-                            <sub-item text="Commited learner costs" value="@month.CommittedLearnerCosts.ToString("C0", culture)" />
-                            <sub-item text="Commited transfer costs" value="@month.CommittedTransferCosts.ToString("C0", culture)" />
+                    <estimates-month-card balance="@Math.Ceiling(month.ClosingLevyBalance).ToString("C0", culture)" class="govuk-!-margin-bottom-4">
+                        <line-item text="Levy in" value="@Math.Ceiling(month.LevyIn).ToString("C0", culture)" />
+                        <line-item text="Levy out" value="@Math.Ceiling(month.LevyOut).ToString("C0", culture)">
+                            <sub-item text="Expired levy" value="@Math.Ceiling(month.ExpiredLevy).ToString("C0", culture)" />
+                            <sub-item text="Commited learner costs" value="@Math.Ceiling(month.CommittedLearnerCosts).ToString("C0", culture)" />
+                            <sub-item text="Commited transfer costs" value="@Math.Ceiling(month.CommittedTransferCosts).ToString("C0", culture)" />
                         </line-item>
                     </estimates-month-card>
                 </estimates-row>
