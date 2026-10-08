@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Models.Transaction;
+using SFA.DAS.EmployerFinance.Commands.ExpireAccountFunds;
 using SFA.DAS.EmployerFinance.Queries.GetAccount;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountPaymentIds;
@@ -239,6 +240,15 @@ public class FinanceOrchestrator(
         logger.LogInformation("Received response - PAYE schemes for accountId {AccountId}: {Count}", accountId, result.Count);
 
         return result;
+    }
+
+    public Task<ExpireFundsResponse> ExpireFunds(long accountId, string correlationId)
+    {
+        return mediator.Send(new ExpireAccountFundsCommand
+        {
+            AccountId = accountId,
+            CorrelationId = correlationId
+        });
     }
 
     public async Task<PayeSchemeLastSubmissionDate> GetLastSubmissionDateForPayeScheme(string empRef)
