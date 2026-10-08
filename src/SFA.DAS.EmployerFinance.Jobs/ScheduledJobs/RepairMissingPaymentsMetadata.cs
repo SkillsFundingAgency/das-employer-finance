@@ -8,11 +8,17 @@ namespace SFA.DAS.EmployerFinance.Jobs.ScheduledJobs;
 
 public class RepairMissingPaymentsMetadata(IMessageSession messageSession, IDasLevyRepository levyRepository)
 {
+    public const int PageSize = 500;
+    public const int PageNumber = 1;
+
     public async Task Run([TimerTrigger("0 0 2 * * *")] TimerInfo timer, ILogger logger)
     {
-        logger.LogInformation("{TypeName}: Starting processing.", nameof(RepairMissingPaymentsMetadata));
+        logger.LogInformation("{TypeName}: Starting processing. PageNumber={PageNumber} PageSize={PageSize}.",
+            nameof(RepairMissingPaymentsMetadata),
+            PageNumber,
+            PageSize);
 
-        var payments = (await levyRepository.GetPaymentsWithMissingMetadata())?.ToList();
+        var payments = (await levyRepository.GetPaymentsWithMissingMetadata(PageSize, PageNumber))?.ToList();
 
         if (payments == null || payments.Count == 0)
         {
