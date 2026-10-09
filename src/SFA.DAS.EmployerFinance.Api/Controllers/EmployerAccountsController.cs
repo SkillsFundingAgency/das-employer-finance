@@ -111,29 +111,6 @@ public class EmployerAccountsController(FinanceOrchestrator financeOrchestrator)
         return Ok(result);
     }
 
-    [HttpGet("{accountId:long}/transaction-summary")]
-    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
-    public async Task<IActionResult> GetAccountTransactionSummaryByDate(long accountId,
-        [FromQuery, Required] DateOnly fromDate,
-        [FromQuery, Required] DateOnly toDate)
-    {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        var result = await financeOrchestrator.GetTransactions(accountId,
-            fromDate.ToDateTime(TimeOnly.MinValue),
-            toDate.ToDateTime(TimeOnly.MinValue));
-
-        if (result == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(result.ToList());
-    }
-
     [HttpPost("{accountId}/expire-funds")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> ExpireFunds(

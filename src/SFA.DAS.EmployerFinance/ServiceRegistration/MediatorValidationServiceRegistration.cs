@@ -21,7 +21,6 @@ using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountExpiredFunds;
 using SFA.DAS.EmployerFinance.Queries.FindEmployerAccountLevyDeclarationTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetAccountBalances;
 using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
-using SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummaryByDate;
 using SFA.DAS.EmployerFinance.Queries.GetContent;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountDetail;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
@@ -33,6 +32,7 @@ using SFA.DAS.EmployerFinance.Queries.GetHMRCLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLastEnglishFractionCalculationDate;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclaration;
+using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndDateRange;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemesByEmployerId;
@@ -76,7 +76,7 @@ public static class MediatorValidationServiceRegistration
         services.AddTransient<IValidator<RefreshPaymentMetadataCommand>, RefreshPaymentMetadataCommandValidator>();
         services.AddTransient<IValidator<BulkPaymentsIngestCommand>, BulkPaymentsIngestCommandValidator>();
         services.AddTransient<IValidator<TransactionLineStagingCommand>, TransactionLineStagingCommandValidator>();
-        services.AddTransient<IValidator<GetAccountTransactionSummaryByDateQuery>, GetAccountTransactionSummaryByDateQueryValidator>();
+        services.AddTransient<IValidator<GetLevyDeclarationsByAccountAndDateRangeQuery>, GetLevyDeclarationsByAccountAndDateRangeValidator>();
     }
 
     public static void AddWebMediatorValidators(this IServiceCollection services)

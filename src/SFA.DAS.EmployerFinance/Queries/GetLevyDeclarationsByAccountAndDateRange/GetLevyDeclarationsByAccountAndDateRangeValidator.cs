@@ -1,15 +1,15 @@
 ﻿using SFA.DAS.EmployerFinance.Validation;
 
-namespace SFA.DAS.EmployerFinance.Queries.GetAccountTransactionSummaryByDate;
+namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndDateRange;
 
-public sealed record GetAccountTransactionSummaryByDateQueryValidator : IValidator<GetAccountTransactionSummaryByDateQuery>
+public sealed record GetLevyDeclarationsByAccountAndDateRangeValidator : IValidator<GetLevyDeclarationsByAccountAndDateRangeQuery>
 {
-    public ValidationResult Validate(GetAccountTransactionSummaryByDateQuery item)
+    public ValidationResult Validate(GetLevyDeclarationsByAccountAndDateRangeQuery item)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ValidationResult> ValidateAsync(GetAccountTransactionSummaryByDateQuery item)
+    public Task<ValidationResult> ValidateAsync(GetLevyDeclarationsByAccountAndDateRangeQuery item)
     {
         try
         {

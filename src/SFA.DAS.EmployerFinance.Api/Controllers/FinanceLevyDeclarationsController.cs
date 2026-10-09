@@ -68,7 +68,7 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetLevySummary(long accountId)
     {
-        var result = await orchestrator.GetLevySummaryByAccountId(accountId);
+        ar result = await orchestrator.GetLevySummaryByAccountId(accountId);
 
         if (result == null)
         {
@@ -76,6 +76,26 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         }
 
         return Ok(result);
+    }
+
+    [HttpGet("{accountId:long}/summaryByDate")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    public async Task<IActionResult> GetLevyDeclarationSummaryByDate(long accountId,
+        [FromQuery, Required] DateOnly fromDate,
+        [FromQuery, Required] DateOnly toDate)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var result = await orchestrator.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result.ToList());
     }
 
     private static string DecodeEmpRef(string empRef) =>
