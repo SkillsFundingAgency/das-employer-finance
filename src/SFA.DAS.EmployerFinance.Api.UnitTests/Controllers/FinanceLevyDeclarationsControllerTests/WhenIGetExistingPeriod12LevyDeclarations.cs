@@ -1,4 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Api.Controllers;
+﻿using AutoMapper;
+using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Queries.GetExistingPeriod12LevyDeclarations;
@@ -10,14 +11,16 @@ public class WhenIGetExistingPeriod12LevyDeclarations
     private FinanceLevyDeclarationsController _controller;
     private Mock<IMediator> _mediator;
     private Mock<ILogger<LevyDeclarationOrchestrator>> _logger;
+    private Mock<IMapper> _mapper;
 
     [SetUp]
     public void Arrange()
     {
         _mediator = new Mock<IMediator>();
+        _mapper = new Mock<IMapper>();
         _logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
 
-        var orchestrator = new LevyDeclarationOrchestrator(_mediator.Object, _logger.Object);
+        var orchestrator = new LevyDeclarationOrchestrator(_mediator.Object, _mapper.Object, _logger.Object);
         _controller = new FinanceLevyDeclarationsController(orchestrator);
     }
 

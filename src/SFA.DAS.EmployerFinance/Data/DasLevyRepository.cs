@@ -554,31 +554,34 @@ public class DasLevyRepository(
         return result.ToList();
     }
     
-    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsForPreviousMonths(long accountId, int months)
+    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsByDateRange(long accountId, DateOnly fromDate, DateOnly toDate)
     {
         var parameters = new DynamicParameters();
 
         parameters.Add("@accountId", accountId, DbType.Int64);
-        parameters.Add("@months", months, DbType.Int32);
+       
+        const string sqlQuery = """
 
-        const string sqlQuery = @"
-                                SELECT
-	                                EmpRef
-	                                ,TotalAmount
-	                                ,PayrollYear
-	                                ,PayrollMonth
-                                FROM [employer_financial].[GetLevyDeclarationAndTopUp]
-                                WHERE EmpRef IN
-                                (
-	                                SELECT
-		                                EmpRef
-	                                FROM [employer_financial].LevyDeclaration
-	                                WHERE AccountId = @AccountId
-                                )
-                                AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
-                                AND AccountId = @AccountId
-                                AND SubmissionDate >= DATEADD(month, -@months, GETDATE())
-                                ORDER BY SubmissionDate ASC"; 
+                                                                SELECT
+                                	                                EmpRef
+                                	                                ,TotalAmount
+                                                                    ,TopUp
+                                	                                ,PayrollYear
+                                	                                ,PayrollMonth
+                                	                                ,SubmissionDate
+                                	                                ,CreatedDate
+                                                                FROM [employer_financial].[GetLevyDeclarationAndTopUp]
+                                                                WHERE EmpRef IN
+                                                                (
+                                	                                SELECT
+                                		                                EmpRef
+                                	                                FROM [employer_financial].LevyDeclaration
+                                	                                WHERE AccountId = @AccountId
+                                                                )
+                                                                AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
+                                                                AND AccountId = @AccountId
+                                                                ORDER BY SubmissionDate ASC
+                                """; 
 
         var result = await db.Value.Database.GetDbConnection().QueryAsync<LevyDeclarationItem>(
             sql: sqlQuery,
@@ -587,7 +590,10 @@ public class DasLevyRepository(
             transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.Text);
 
-        return result.ToList();
+        var from = fromDate.ToDateTime(TimeOnly.MinValue);
+        var to = toDate.ToDateTime(TimeOnly.MaxValue);
+
+        return [.. result.Where(x => x.PayrollDate() is not null && x.PayrollDate() is { } date && date >= from && date <= to)];
     }
 
     public Task<List<LevyDeclarationItem>> GetAccountLevyDeclaredForPreviousMonths(long accountId, int months) =>
@@ -599,8 +605,8 @@ public class DasLevyRepository(
                                         FROM
                                             [employer_financial].[TransactionLine] tl
                                         WHERE
-                                            tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                            AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+                                            tl.DateCreated >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
+                                            AND tl.DateCreated < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
                                             AND tl.TransactionType = 1
                                             AND tl.AccountId = @accountId
                                         """, AccountMonthsParameters(accountId, months));
@@ -614,8 +620,8 @@ public class DasLevyRepository(
                                   FROM
                                       [employer_financial].[TransactionLine] tl
                                   WHERE
-                                      tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                      AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+                                      tl.DateCreated >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
+                                      AND tl.DateCreated < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
                                       AND tl.AccountId = @accountId
                                       AND tl.TransactionType IN (5, 6) -- ExpiredFund (24-month), ShortExpiredFund (12-month)
                                   """, AccountMonthsParameters(accountId, months));
@@ -629,8 +635,8 @@ public class DasLevyRepository(
                                         FROM
                                             [employer_financial].[TransactionLine] tl
                                         WHERE
-                                            tl.TransactionDate >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                            AND tl.TransactionDate < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+                                            tl.DateCreated >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
+                                            AND tl.DateCreated < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
                                             AND (
                                                 (tl.TransactionType = 3 AND tl.AccountId = @accountId)
                                                 OR

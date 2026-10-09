@@ -1,0 +1,30 @@
+﻿@using System.Globalization
+@model EstimatesViewModel
+@{
+    var culture = new CultureInfo("en-GB");
+}
+<div class="govuk-body">
+    <p class="govuk-!-margin-bottom-8">This timeline shows estimated payments based on your current funds and commitments. These payments may change and do not include future breaks in learning.</p>
+    @if (Model is not { MonthEstimates.Count: > 0 })
+    {
+        return;
+    }
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <div class="govuk-!-margin-bottom-4">@Model.LastUpdatedUtcLabel</div>
+            @foreach (var month in Model.MonthEstimates)
+            {
+                <estimates-row text="@month.Period" provisional=@(month == Model.MonthEstimates.First())>
+                    <estimates-month-card balance="@Math.Ceiling(month.ClosingLevyBalance).ToString("C0", culture)" class="govuk-!-margin-bottom-4">
+                        <line-item text="Levy in" value="@Math.Ceiling(month.LevyIn).ToString("C0", culture)" />
+                        <line-item text="Levy out" value="@Math.Ceiling(month.LevyOut).ToString("C0", culture)">
+                            <sub-item text="Expired levy" value="@Math.Ceiling(month.ExpiredLevy).ToString("C0", culture)" />
+                            <sub-item text="Commited learner costs" value="@Math.Ceiling(month.CommittedLearnerCosts).ToString("C0", culture)" />
+                            <sub-item text="Commited transfer costs" value="@Math.Ceiling(month.CommittedTransferCosts).ToString("C0", culture)" />
+                        </line-item>
+                    </estimates-month-card>
+                </estimates-row>
+            }
+        </div>
+    </div>
+</div>

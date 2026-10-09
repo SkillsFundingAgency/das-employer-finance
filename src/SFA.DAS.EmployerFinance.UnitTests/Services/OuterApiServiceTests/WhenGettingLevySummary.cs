@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.Caches;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Levy;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Services;
 using System.Net.Http;
@@ -12,6 +13,8 @@ internal class WhenGettingLevySummary
 {
     private Mock<IOuterApiClient> _mockApiClient;
     private Mock<IInProcessCache> _mockCache;
+    private Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>> _mockInvalidationRule;
+    private Mock<ILogger<OuterApiService>> _mockLogger;
     private OuterApiService _outerApiService;
 
     private const long AccountId = 123456789;
@@ -22,8 +25,10 @@ internal class WhenGettingLevySummary
     {
         _mockApiClient = new Mock<IOuterApiClient>();
         _mockCache = new Mock<IInProcessCache>();
+        _mockInvalidationRule = new Mock<ICacheInvalidationRule<GetLevyProjectionsByAccountIdResponse>>();
+        _mockLogger = new Mock<ILogger<OuterApiService>>();
 
-        _outerApiService = new OuterApiService(_mockApiClient.Object, _mockCache.Object);
+        _outerApiService = new OuterApiService(_mockApiClient.Object, _mockCache.Object, [_mockInvalidationRule.Object], _mockLogger.Object);
     }
 
     [Test]
@@ -104,13 +109,21 @@ internal class WhenGettingLevySummary
         var firstResponse = new GetLevySummaryByAccountIdResponse
         {
             CurrentLevyFunds = 100M,
-            TotalLevyDeclaredLast12Months = 200M
+            TotalLevyDeclaredLast12Months = 200M,
+            TotalCommittedLearnerCosts = 150M,
+            TotalCommittedTransfersCosts = 100M,
+            TotalLevyExpiredLast12Months = 50M,
+            TotalLevySpentLast12Months = 100M
         };
 
         var secondResponse = new GetLevySummaryByAccountIdResponse
         {
             CurrentLevyFunds = 300M,
-            TotalLevyDeclaredLast12Months = 400M
+            TotalLevyDeclaredLast12Months = 400M,
+            TotalCommittedLearnerCosts = 250M,
+            TotalCommittedTransfersCosts = 200M,
+            TotalLevyExpiredLast12Months = 150M,
+            TotalLevySpentLast12Months = 300M
         };
 
         _mockCache.Setup(x => x.Exists($"LevySummary_{AccountId}")).Returns(true);
@@ -123,6 +136,17 @@ internal class WhenGettingLevySummary
 
         result1.CurrentLevyFunds.Should().Be(100M);
         result2.CurrentLevyFunds.Should().Be(300M);
+        result1.TotalLevyDeclaredLast12Months.Should().Be(200M);
+        result2.TotalLevyDeclaredLast12Months.Should().Be(400M);    
+        result1.TotalLevyDeclaredLast12Months.Should().NotBe(result2.TotalLevyDeclaredLast12Months);
+        result2.TotalLevyDeclaredLast12Months.Should().NotBe(result1.TotalLevyDeclaredLast12Months);
+        result1.TotalLevySpentLast12Months.Should().Be(100M);
+        result2.TotalLevySpentLast12Months.Should().Be(300M);
+        result1.TotalLevyExpiredLast12Months.Should().Be(50M);
+        result2.TotalLevyExpiredLast12Months.Should().Be(150M);
+        result1.TotalLevyExpiredLast12Months.Should().NotBe(result2.TotalLevyExpiredLast12Months);
+        result1.TotalCommittedLearnerCosts.Should().Be(150M);
+        result2.TotalCommittedLearnerCosts.Should().Be(250M);
         result1.Should().NotBe(result2);
     }
 
@@ -137,9 +161,8 @@ internal class WhenGettingLevySummary
             .Setup(x => x.Get<GetLevySummaryByAccountIdResponse>(It.IsAny<GetLevySummaryByAccountIdRequest>()))
             .ThrowsAsync(new HttpRequestException("Service unavailable"));
 
-        var act = () => _outerApiService.GetLevySummary(AccountId);
+        var result = await _outerApiService.GetLevySummary(AccountId);
 
-        await act.Should().ThrowAsync<HttpRequestException>().WithMessage("Service unavailable");
-        _mockCache.Verify(x => x.Set(It.IsAny<string>(), It.IsAny<object>()), Times.Never);
+        result.Should().BeEquivalentTo(new GetLevySummaryByAccountIdResponse());
     }
 }

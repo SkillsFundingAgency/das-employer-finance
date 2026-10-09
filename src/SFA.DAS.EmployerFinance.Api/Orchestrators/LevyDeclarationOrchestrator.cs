@@ -1,14 +1,19 @@
-﻿using SFA.DAS.EmployerFinance.Api.Types;
+﻿using AutoMapper;
+using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
 using SFA.DAS.EmployerFinance.Queries.GetExistingPeriod12LevyDeclarations;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
+using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclarationByAccountId;
+using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndDateRange;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
 using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByAccountId;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
-public class LevyDeclarationOrchestrator(IMediator mediator, ILogger<LevyDeclarationOrchestrator> logger)
+public class LevyDeclarationOrchestrator(IMediator mediator,
+    IMapper mapper,
+    ILogger<LevyDeclarationOrchestrator> logger)
 {
     public async Task<PersistLevyDeclarationsResponse> PersistLevyDeclarations(PersistLevyDeclarationRequestData request)
     {
@@ -79,6 +84,27 @@ public class LevyDeclarationOrchestrator(IMediator mediator, ILogger<LevyDeclara
         };
     }
 
+    public async Task<LastSubmissionDateResult> GetLastSubmissionDate(long accountId)
+    {
+        logger.LogInformation("Requesting last levy declaration submission date for accountId {AccountId}", accountId);
+
+        var existingDeclaration = await mediator.Send(new GetLastLevyDeclarationByAccountIdQuery(accountId));
+
+        DateTime? dateFrom = null;
+        if (existingDeclaration?.Transaction?.SubmissionDate != null &&
+            existingDeclaration.Transaction.SubmissionDate != DateTime.MinValue)
+        {
+            dateFrom = existingDeclaration.Transaction.SubmissionDate.AddDays(-1);
+        }
+
+        logger.LogInformation("Received last levy declaration submission date for accountId {AccountId}", accountId);
+
+        return new LastSubmissionDateResult
+        {
+            LastSumissionDate = dateFrom
+        };
+    }
+
     public async Task<LevySummary> GetLevySummaryByAccountId(long accountId)
     {
         logger.LogInformation("Requesting GetLevySummaryByAccountId for the AccountId {AccountId}", accountId);
@@ -86,5 +112,18 @@ public class LevyDeclarationOrchestrator(IMediator mediator, ILogger<LevyDeclara
         var response = await mediator.Send(new GetLevySummaryByAccountIdQuery(accountId));
 
         return response.Summary;
+    }
+
+    public async Task<List<LevyDeclaration>> GetLevyDeclarationsByAccountIdAndDateRange(long accountId, DateOnly fromDate, DateOnly toDate)
+    {
+        logger.LogInformation("Requesting levy declarations for accountId {AccountId} from {FromDate} to {ToDate}", accountId, fromDate, toDate);
+        var response = await mediator.Send(new GetLevyDeclarationsByAccountAndDateRangeQuery(accountId, fromDate, toDate));
+        if (response?._ == null)
+        {
+            return null;
+        }
+        var levyDeclarations = response._.Select(mapper.Map<LevyDeclaration>).ToList();
+        logger.LogInformation("Received levy declarations for accountId {AccountId} from {FromDate} to {ToDate}: {Count}", accountId, fromDate, toDate, levyDeclarations.Count);
+        return levyDeclarations;
     }
 }
