@@ -68,7 +68,7 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetLevySummary(long accountId)
     {
-        ar result = await orchestrator.GetLevySummaryByAccountId(accountId);
+        var result = await orchestrator.GetLevySummaryByAccountId(accountId);
 
         if (result == null)
         {
