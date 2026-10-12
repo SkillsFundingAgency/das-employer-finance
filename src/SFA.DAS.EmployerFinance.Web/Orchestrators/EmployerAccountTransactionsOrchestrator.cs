@@ -122,13 +122,14 @@ public class EmployerAccountTransactionsOrchestrator(
                     [
                         .. projections.Projections.Select(x => new MonthEstimateViewModel
                         {
-                            Period = $"{x.CalendarMonthName} {x.CalendarPeriodYear}",
-                            LevyIn = x.LevyIn,
-                            ExpiredLevy = x.ExpiredLevy,
-                            LevyOut = x.LevyOut,
-                            ClosingLevyBalance = x.ClosingLevyBalance,
-                            CommittedLearnerCosts = x.CommittedLearnerCosts,
-                            CommittedTransferCosts = x.CommittedTransferCosts,
+                            Period = $"{new DateOnly(x.Year, x.Month, 1).ToString("MMMM")} {x.Year}",
+                            LevyIn = x.LevyInSummary.Total,
+                            LevyOut = x.LevyOutSummary.Total,
+                            CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost,
+                            CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut,
+                            CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost,
+                            ExpiredLevy = x.LevyOutSummary.ExpiredLevy,
+                            ClosingLevyBalance = x.ClosingBalance,
                         })
                     ]
                 }
