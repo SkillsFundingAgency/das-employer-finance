@@ -1,3 +1,4 @@
+using Polly;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.Api.Common.Interfaces;
 using SFA.DAS.EAS.Account.Api.Client;
@@ -20,6 +21,7 @@ using SFA.DAS.EmployerFinance.Web.Helpers;
 using SFA.DAS.Encoding;
 using SFA.DAS.NServiceBus.Services;
 using SFA.DAS.TokenService.Api.Client;
+using System.Net.Http;
 
 namespace SFA.DAS.EmployerFinance.Web.StartupExtensions;
 
@@ -38,7 +40,23 @@ public static class ApplicationServiceRegistrations
         services.AddScoped<IProviderService, ProviderServiceCache>();
         services.AddScoped<IProviderService, ProviderServiceFromDb>();
 
-        services.AddHttpClient<IOuterApiClient, OuterApiClient>();
+        services.AddHttpClient<IOuterApiClient, OuterApiClient>()
+            .AddStandardResilienceHandler(options =>
+        {
+            // Total time allowed for the entire request, including all retries
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
+
+            // Time allowed for a single attempt (must be less than TotalRequestTimeout)
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(15);
+
+            options.Retry.MaxRetryAttempts = 3;
+            options.Retry.Delay = TimeSpan.FromMilliseconds(300);
+            options.Retry.BackoffType = DelayBackoffType.Exponential;
+            // Only retry on transient HTTP errors (5xx, 408, 429)
+            options.Retry.ShouldHandle = args => ValueTask.FromResult(
+                args.Outcome.Exception is HttpRequestException ||
+                args.Outcome.Result?.IsSuccessStatusCode == false);
+        }); 
         services.AddHttpClient<ICommitmentsV2ApiClient, CommitmentsV2ApiClient>();
 
         services.AddTransient<IDasAccountService, DasAccountService>();

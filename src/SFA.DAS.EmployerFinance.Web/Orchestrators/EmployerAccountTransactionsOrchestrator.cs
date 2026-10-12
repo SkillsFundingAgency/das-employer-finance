@@ -13,6 +13,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -35,6 +36,8 @@ public class EmployerAccountTransactionsOrchestrator(
     EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
+    private const short Months = 6;
+
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
         //TODO this storing of user details should be removed from this applications database
@@ -87,26 +90,50 @@ public class EmployerAccountTransactionsOrchestrator(
          return viewModel;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false, CancellationToken cancellationToken = default)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
-        var summary = await outerApiService.GetLevySummary(accountId);
-        
-        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
+
+        var (accountDetail, summary, projections) = await (
+            accountApiClient.GetAccount(accountId),
+            outerApiService.GetLevySummary(accountId, refreshCache, cancellationToken),
+            outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache, cancellationToken: cancellationToken)
+        ).WhenAll();
+
+        Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
+
+        return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
             Data = new FinanceDashboardV2ViewModel
             {
-                IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
+                IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts,
+                ShowLevyTransparency = configuration.ShowLevyTransparency,
+                Estimates = new EstimatesViewModel
+                {
+                    LastUpdatedUtc = projections.LastRefreshDateTime,
+                    MonthEstimates =
+                    [
+                        .. projections.Projections.Select(x => new MonthEstimateViewModel
+                        {
+                            Period = $"{x.CalendarMonthName} {x.CalendarPeriodYear}",
+                            LevyIn = x.LevyIn,
+                            ExpiredLevy = x.ExpiredLevy,
+                            LevyOut = x.LevyOut,
+                            ClosingLevyBalance = x.ClosingLevyBalance,
+                            CommittedLearnerCosts = x.CommittedLearnerCosts,
+                            CommittedTransferCosts = x.CommittedTransferCosts,
+                        })
+                    ]
+                }
             }
         };
-
-        return viewModel;
     }
 
     public async Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(

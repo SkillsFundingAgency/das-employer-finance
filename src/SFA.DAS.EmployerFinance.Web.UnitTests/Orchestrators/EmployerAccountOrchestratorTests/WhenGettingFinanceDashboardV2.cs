@@ -5,8 +5,10 @@ using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 using SFA.DAS.EmployerFinance.Web.Orchestrators;
+using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
+using static SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy.GetLevyProjectionsByAccountIdResponse;
 using ApprenticeshipEmployerType = SFA.DAS.Common.Domain.Types.ApprenticeshipEmployerType;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators.EmployerAccountOrchestratorTests;
@@ -27,6 +29,9 @@ internal class WhenGettingFinanceDashboardV2
 
     private const string HashedAccountId = "ABC123";
     private const long AccountId = 123L;
+    private const short Months = 6;
+
+    private DateTime _lastRefreshDateTime;
 
     [SetUp]
     public void Arrange()
@@ -40,6 +45,7 @@ internal class WhenGettingFinanceDashboardV2
         _mockAccountService = new Mock<IGovAuthEmployerAccountService>();
         _mockOuterApiService = new Mock<IOuterApiService>();
         _configuration = new EmployerFinanceWebConfiguration { ShowLevyTransparency = true };
+        _lastRefreshDateTime = DateTime.UtcNow;
 
         _mockEncodingService
             .Setup(x => x.Decode(HashedAccountId, EncodingType.AccountId))
@@ -49,7 +55,7 @@ internal class WhenGettingFinanceDashboardV2
             .Setup(x => x.GetAccount(AccountId))
             .ReturnsAsync(new AccountDetailViewModel
             {
-                ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy.ToString()
+                ApprenticeshipEmployerType = nameof(ApprenticeshipEmployerType.Levy)
             });
 
         _mockOuterApiService
@@ -58,6 +64,40 @@ internal class WhenGettingFinanceDashboardV2
             {
                 CurrentLevyFunds = 1000M,
                 TotalLevyDeclaredLast12Months = 5000M
+            });
+
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections = new List<MonthlyBreakdown>
+                {
+                    new()
+                    {
+                        LevyIn = 1000M,
+                        ExpiredLevy = 200M,
+                        CalendarMonthName = "August",
+                        CalendarPeriodMonth = 8,
+                        CalendarPeriodYear = 2026
+                    },
+                    new()
+                    {
+                        LevyIn = 2000M,
+                        ExpiredLevy = 400M,
+                        CalendarMonthName = "September",
+                        CalendarPeriodMonth = 9,
+                        CalendarPeriodYear = 2026
+                    },
+                    new()
+                    {
+                        LevyIn = 3000M,
+                        ExpiredLevy = 600M,
+                        CalendarMonthName = "October",
+                        CalendarPeriodMonth = 10,
+                        CalendarPeriodYear = 2026
+                    }
+                },
+                LastRefreshDateTime = _lastRefreshDateTime,
             });
 
         _mockCurrentTime
@@ -107,7 +147,7 @@ internal class WhenGettingFinanceDashboardV2
             .Setup(x => x.GetAccount(AccountId))
             .ReturnsAsync(new AccountDetailViewModel
             {
-                ApprenticeshipEmployerType = ApprenticeshipEmployerType.Levy.ToString()
+                ApprenticeshipEmployerType = nameof(ApprenticeshipEmployerType.Levy)
             });
 
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
@@ -122,7 +162,7 @@ internal class WhenGettingFinanceDashboardV2
             .Setup(x => x.GetAccount(AccountId))
             .ReturnsAsync(new AccountDetailViewModel
             {
-                ApprenticeshipEmployerType = ApprenticeshipEmployerType.NonLevy.ToString()
+                ApprenticeshipEmployerType = nameof(ApprenticeshipEmployerType.NonLevy)
             });
 
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
@@ -152,5 +192,105 @@ internal class WhenGettingFinanceDashboardV2
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
         result.Data.TotalLevyDeclaredLast12Months.Should().Be(5000M);
-    }    
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Count_Matches_Projections()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Should().HaveCount(3);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Are_Mapped_From_Projections()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Should().BeEquivalentTo(
+        [
+            new MonthEstimateViewModel { Period = "August 2026",    LevyIn = 1000M, ExpiredLevy = 200M},
+            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 2000M, ExpiredLevy = 400M },
+            new MonthEstimateViewModel { Period = "October 2026",   LevyIn = 3000M, ExpiredLevy = 600M }
+        ], options => options.WithStrictOrdering());
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Preserves_Order_From_Projections()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates[0].Period.Should().Be("August 2026");
+        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September 2026");
+        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October 2026");
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Maps_LevyIn_Correctly()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates[0].LevyIn.Should().Be(1000M);
+        result.Data.Estimates.MonthEstimates[1].LevyIn.Should().Be(2000M);
+        result.Data.Estimates.MonthEstimates[2].LevyIn.Should().Be(3000M);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Maps_MonthName_Correctly()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates[0].Period.Should().Be("August 2026");
+        result.Data.Estimates.MonthEstimates[1].Period.Should().Be("September 2026");
+        result.Data.Estimates.MonthEstimates[2].Period.Should().Be("October 2026");
+    }
+
+    [Test]
+    public async Task Then_DateTimeNow_Maps_LastRefreshDate_Correctly()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.LastUpdatedUtc.Should().Be(_lastRefreshDateTime);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Is_Empty_When_No_Projections()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections = []
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Maps_Single_Projection_Correctly()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyBreakdown { LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevyBalance = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 },
+                    new MonthlyBreakdown { LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevyBalance = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 },
+                    new MonthlyBreakdown { LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevyBalance = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M, CalendarMonthName = "October", CalendarPeriodMonth = 10, CalendarPeriodYear = 2026 }
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Should().HaveCount(3);
+        result.Data.Estimates.MonthEstimates[0].Should().BeEquivalentTo(
+            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevyBalance = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M });
+        result.Data.Estimates.MonthEstimates[1].Should().BeEquivalentTo(
+            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevyBalance = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M });
+        result.Data.Estimates.MonthEstimates[2].Should().BeEquivalentTo(
+            new MonthEstimateViewModel { Period = "October 2026", LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevyBalance = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M });
+    }
 }

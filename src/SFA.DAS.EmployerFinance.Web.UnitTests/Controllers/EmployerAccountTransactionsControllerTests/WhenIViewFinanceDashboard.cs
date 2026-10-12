@@ -16,6 +16,8 @@ public class WhenIViewFinanceDashboard
     private const decimal ExpectedTotalLevyDeclaredLast12Months = 678.90M;
     private const decimal ExpectedTotalLevySpentLast12Months = 234.56M;
     private const decimal ExpectedTotalLevyExpiredLast12Months = 12.34M;
+    private const decimal ExpectedTotalCommittedLearnerCosts = 56.78M;
+    private const decimal ExpectedTotalCommittedTransfersCosts = 90.12M;
 
     private EmployerAccountTransactionsController _controller;
     private Mock<IEmployerAccountTransactionsOrchestrator> _orchestrator;
@@ -35,7 +37,9 @@ public class WhenIViewFinanceDashboard
                     CurrentLevyFunds = ExpectedCurrentFunds,
                     TotalLevyDeclaredLast12Months = ExpectedTotalLevyDeclaredLast12Months,
                     TotalLevySpentLast12Months = ExpectedTotalLevySpentLast12Months,
-                    TotalLevyExpiredLast12Months = ExpectedTotalLevyExpiredLast12Months
+                    TotalLevyExpiredLast12Months = ExpectedTotalLevyExpiredLast12Months,
+                    TotalCommittedLearnerCosts = ExpectedTotalCommittedLearnerCosts,
+                    TotalCommittedTransfersCosts = ExpectedTotalCommittedTransfersCosts
                 }
             });
 
@@ -259,6 +263,8 @@ public class WhenIViewFinanceDashboard
         model.Data.TotalLevyDeclaredLast12Months.Should().Be(ExpectedTotalLevyDeclaredLast12Months);
         model.Data.TotalLevySpentLast12Months.Should().Be(ExpectedTotalLevySpentLast12Months);
         model.Data.TotalLevyExpiredLast12Months.Should().Be(ExpectedTotalLevyExpiredLast12Months);
+        model.Data.TotalCommittedLearnerCosts.Should().Be(ExpectedTotalCommittedLearnerCosts);
+        model.Data.TotalCommittedTransfersCosts.Should().Be(ExpectedTotalCommittedTransfersCosts);
     }
 
     [Test]
