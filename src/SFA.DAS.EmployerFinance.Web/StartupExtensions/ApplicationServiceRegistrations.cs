@@ -47,7 +47,7 @@ public static class ApplicationServiceRegistrations
             options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
 
             // Time allowed for a single attempt (must be less than TotalRequestTimeout)
-            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(15);
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(30);
 
             options.Retry.MaxRetryAttempts = 3;
             options.Retry.Delay = TimeSpan.FromMilliseconds(300);
