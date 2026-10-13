@@ -9,7 +9,12 @@ FROM
 	FROM
 		(SELECT 
 			ld.*,
-			ld.LevyDueYTD - ISNULL(y.LevyDueYTD, 0) AS LevyDeclaredInMonth
+			-- End of year adjustments are a delta against the effective P12 declaration, not the previous month,
+			-- so use the stored (inverted) adjustment amount as ProcessDeclarationsTransactions does
+			CASE WHEN ld.EndOfYearAdjustment = 1
+				THEN -ld.EndOfYearAdjustmentAmount
+				ELSE ld.LevyDueYTD - ISNULL(y.LevyDueYTD, 0)
+			END AS LevyDeclaredInMonth
 		FROM [employer_financial].[GetLevyDeclaration] ld
 		outer apply
 		(
