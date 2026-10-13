@@ -114,7 +114,6 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
                 TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts,
                 TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts,
-                ShowLevyTransparency = configuration.ShowLevyTransparency,
                 Estimates = new EstimatesViewModel
                 {
                     LastUpdatedUtc = projections.LastRefreshDateTime,
