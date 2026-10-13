@@ -34,7 +34,7 @@ public interface IDasLevyRepository
     Task<int> TransferStagedToOperational(long accountId, string periodEndRef);
     Task<string> FindHistoricalProviderName(long ukprn);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId);
-    Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsForPreviousMonths(long accountId, int months);
+    Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsByDateRange(long accountId, DateOnly fromDate, DateOnly toDate);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclaredForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountLevySpentForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountExpiredLevyForPreviousMonths(long accountId, int months);

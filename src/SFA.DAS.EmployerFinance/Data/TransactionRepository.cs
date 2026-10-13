@@ -119,7 +119,7 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
         parameters.Add("@toDate", new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59), DbType.DateTime);
 
         var result = await db.Value.Database.GetDbConnection().QueryAsync<TransactionEntity>(
-            sql: "[employer_financial].[GetLevyDetail_ByAccountIdAndDateRange]",
+            sql: "[employer_financial].[GetTransactionLines_ByAccountId]",
             param: parameters,
             transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
             commandType: CommandType.StoredProcedure);
