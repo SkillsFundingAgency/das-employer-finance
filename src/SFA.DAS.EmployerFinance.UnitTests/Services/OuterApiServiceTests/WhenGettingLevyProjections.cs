@@ -161,11 +161,11 @@ internal class WhenGettingLevyProjections
 
         var firstResponse = new GetLevyProjectionsByAccountIdResponse
         {
-            Projections = [new GetLevyProjectionsByAccountIdResponse.MonthlyBreakdown { LevyIn = 1000M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 }]
+            Projections = [new MonthlyFundingBreakdown { Month = 8, Year = 2026, LevyInSummary = new LevyInSummary { LevyIn = 1000M, Total = 1000M }, LevyOutSummary = new LevyOutSummary() }]
         };
         var secondResponse = new GetLevyProjectionsByAccountIdResponse
         {
-            Projections = [new GetLevyProjectionsByAccountIdResponse.MonthlyBreakdown { LevyIn = 2000M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 }]
+            Projections = [new MonthlyFundingBreakdown { Month = 9, Year = 2026, LevyInSummary = new LevyInSummary { LevyIn = 2000M, Total = 2000M }, LevyOutSummary = new LevyOutSummary() }]
         };
 
         _mockCache.Setup(x => x.Exists($"LevyProjections_{AccountId}_{Months}")).Returns(true);
@@ -182,8 +182,10 @@ internal class WhenGettingLevyProjections
         var result2 = await _outerApiService.GetLevyProjections(secondAccountId, Months);
 
         result1.Should().NotBeSameAs(result2);
-        result1.Projections[0].LevyIn.Should().Be(1000M);
-        result2.Projections[0].LevyIn.Should().Be(2000M);
+        result1.Projections[0].LevyInSummary.LevyIn.Should().Be(1000M);
+        result1.Projections[0].LevyInSummary.Total.Should().Be(1000M);
+        result2.Projections[0].LevyInSummary.LevyIn.Should().Be(2000M);
+        result2.Projections[0].LevyInSummary.Total.Should().Be(2000M);
 
         _mockApiClient.Verify(
             x => x.Get<GetLevyProjectionsByAccountIdResponse>(It.IsAny<GetLevyProjectionsByAccountIdRequest>()),

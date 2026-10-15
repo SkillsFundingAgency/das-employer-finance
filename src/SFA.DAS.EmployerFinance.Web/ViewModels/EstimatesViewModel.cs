@@ -18,4 +18,5 @@ public class MonthEstimateViewModel
     public decimal ExpiredLevy { get; set; } = 0;
     public decimal CommittedLearnerCosts { get; set; } = 0;
     public decimal CommittedTransferCosts { get; set; } = 0;
+    public decimal CommittedLearnerFinalPaymentCost { get; init; }
 }

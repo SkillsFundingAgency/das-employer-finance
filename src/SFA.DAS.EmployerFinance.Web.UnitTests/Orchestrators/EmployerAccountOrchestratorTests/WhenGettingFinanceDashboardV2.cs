@@ -8,7 +8,6 @@ using SFA.DAS.EmployerFinance.Web.Orchestrators;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
-using static SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy.GetLevyProjectionsByAccountIdResponse;
 using ApprenticeshipEmployerType = SFA.DAS.Common.Domain.Types.ApprenticeshipEmployerType;
 
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators.EmployerAccountOrchestratorTests;
@@ -70,31 +69,49 @@ internal class WhenGettingFinanceDashboardV2
             .Setup(x => x.GetLevyProjections(AccountId, Months))
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
-                Projections = new List<MonthlyBreakdown>
+                Projections = new List<MonthlyFundingBreakdown>
                 {
                     new()
                     {
-                        LevyIn = 1000M,
-                        ExpiredLevy = 200M,
-                        CalendarMonthName = "August",
-                        CalendarPeriodMonth = 8,
-                        CalendarPeriodYear = 2026
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary
+                        {
+                            LevyIn = 1000M,
+                            Total = 1000M,
+                        },
+                        LevyOutSummary = new LevyOutSummary
+                        {
+                            ExpiredLevy = 200M,
+                        }
                     },
                     new()
                     {
-                        LevyIn = 2000M,
-                        ExpiredLevy = 400M,
-                        CalendarMonthName = "September",
-                        CalendarPeriodMonth = 9,
-                        CalendarPeriodYear = 2026
+                        Month = 9,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary
+                        {
+                            LevyIn = 2000M,
+                            Total = 2000M,
+                        },
+                        LevyOutSummary = new LevyOutSummary
+                        {
+                            ExpiredLevy = 400M,
+                        }
                     },
                     new()
                     {
-                        LevyIn = 3000M,
-                        ExpiredLevy = 600M,
-                        CalendarMonthName = "October",
-                        CalendarPeriodMonth = 10,
-                        CalendarPeriodYear = 2026
+                        Month = 10,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary
+                        {
+                            LevyIn = 3000M,
+                            Total = 3000M,
+                        },
+                        LevyOutSummary = new LevyOutSummary
+                        {
+                            ExpiredLevy = 600M,
+                        }
                     }
                 },
                 LastRefreshDateTime = _lastRefreshDateTime,
@@ -277,20 +294,40 @@ internal class WhenGettingFinanceDashboardV2
             {
                 Projections =
                 [
-                    new MonthlyBreakdown { LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevyBalance = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M, CalendarMonthName = "August", CalendarPeriodMonth = 8, CalendarPeriodYear = 2026 },
-                    new MonthlyBreakdown { LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevyBalance = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M, CalendarMonthName = "September", CalendarPeriodMonth = 9, CalendarPeriodYear = 2026 },
-                    new MonthlyBreakdown { LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevyBalance = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M, CalendarMonthName = "October", CalendarPeriodMonth = 10, CalendarPeriodYear = 2026 }
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary
+                        {
+                            LevyIn = 500M,
+                            Total = 500M,
+                        },
+                        LevyOutSummary = new LevyOutSummary
+                        {
+                            Total = 175M,
+                            ExpiredLevy = 100M,
+                            CommittedLearnerCost = 50M,
+                            CommittedTransferOut = 25M,
+                        },
+                        ClosingBalance = 350M,
+                    },
                 ]
             });
 
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
-
-        result.Data.Estimates!.MonthEstimates.Should().HaveCount(3);
+        
+        result.Data.Estimates!.MonthEstimates.Should().HaveCount(1);
         result.Data.Estimates.MonthEstimates[0].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "August 2026", LevyIn = 500M, ExpiredLevy = 100M, LevyOut = 150M, ClosingLevyBalance = 350M, CommittedLearnerCosts = 50M, CommittedTransferCosts = 25M });
-        result.Data.Estimates.MonthEstimates[1].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 1000M, ExpiredLevy = 200M, LevyOut = 300M, ClosingLevyBalance = 500M, CommittedLearnerCosts = 100M, CommittedTransferCosts = 50M });
-        result.Data.Estimates.MonthEstimates[2].Should().BeEquivalentTo(
-            new MonthEstimateViewModel { Period = "October 2026", LevyIn = 1500M, ExpiredLevy = 300M, LevyOut = 450M, ClosingLevyBalance = 750M, CommittedLearnerCosts = 150M, CommittedTransferCosts = 75M });
+            new MonthEstimateViewModel
+            {
+                Period = "August 2026",
+                LevyIn = 500M,
+                ExpiredLevy = 100M,
+                LevyOut = 175M,
+                ClosingLevyBalance = 350M,
+                CommittedLearnerCosts = 50M,
+                CommittedTransferCosts = 25M
+            });
     }
 }
