@@ -22,7 +22,8 @@ public class PaymentOrchestrator(IMediator mediator)
             CollectionPeriodId = p.CollectionPeriodId,
             CollectionPeriodMonth = p.CollectionPeriodMonth,
             CollectionPeriodYear = p.CollectionPeriodYear,
-            Amount = p.Amount
+            Amount = p.Amount,
+            DateImported = p.DateImported
         });
     }
 }

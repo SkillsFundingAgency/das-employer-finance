@@ -13,4 +13,5 @@ public sealed record PaymentResponse
     public int CollectionPeriodMonth { get; set; }
     public int CollectionPeriodYear { get; set; }
     public decimal Amount { get; set; }
+    public DateTime DateImported { get; set; }
 }

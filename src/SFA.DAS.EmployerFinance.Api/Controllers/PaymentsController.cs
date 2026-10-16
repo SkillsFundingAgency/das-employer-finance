@@ -1,6 +1,8 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Models.PaymentStaging;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,7 +45,7 @@ public class PaymentsController(StagingOrchestrator stagingOrchestrator,
         CancellationToken cancellationToken)
     {
         var payments = await paymentOrchestrator.GetPayments(accountId, apprenticeshipId, cancellationToken);
-        return StatusCode(200, new
+        return StatusCode(StatusCodes.Status200OK, new
         {
             Payments = payments
         });

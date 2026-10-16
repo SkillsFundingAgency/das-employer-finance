@@ -1,5 +1,4 @@
-﻿using SFA.DAS.Common.Domain.Types;
-using SFA.DAS.Provider.Events.Api.Types;
+﻿using SFA.DAS.Provider.Events.Api.Types;
 using LearningType = SFA.DAS.Common.Domain.Types.LearningType;
 
 namespace SFA.DAS.EmployerFinance.Models.Payments;
@@ -31,6 +30,7 @@ public class Payment
     public LearningType LearningType { get; set; }
     public string CourseCode { get; set; }
     public long CohortId { get; set; }
+    public DateTime DateImported { get; set; }
     public override bool Equals(object obj)
     {
         var payment = obj as Payment;
