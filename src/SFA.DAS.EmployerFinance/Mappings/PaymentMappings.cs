@@ -21,6 +21,7 @@ public class PaymentMappings : Profile
             .ForMember(dest =>dest.PathwayName, opt => opt.Ignore())
             .ForMember(dest =>dest.PaymentMetaDataId, opt => opt.Ignore())
             .ForMember(dest =>dest.LearningType, opt => opt.Ignore())
-            .ForMember(dest =>dest.CohortId, opt => opt.Ignore());
+            .ForMember(dest =>dest.CohortId, opt => opt.Ignore())
+            .ForMember(dest=>dest.DateImported, opt => opt.Ignore());
     }
 }
