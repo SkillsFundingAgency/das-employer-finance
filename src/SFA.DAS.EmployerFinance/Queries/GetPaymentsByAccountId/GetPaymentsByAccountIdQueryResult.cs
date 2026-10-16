@@ -2,7 +2,4 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountId;
 
-public sealed record GetPaymentsByAccountIdQueryResult
-{
-    public IEnumerable<Payment> Payments { get; init; } = Array.Empty<Payment>();
-}
+public sealed record GetPaymentsByAccountIdQueryResult(Payment Payment);

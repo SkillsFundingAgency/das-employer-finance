@@ -5,6 +5,7 @@ using SFA.DAS.EmployerFinance.Models.PaymentStaging;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 
@@ -39,15 +40,13 @@ public class PaymentsController(StagingOrchestrator stagingOrchestrator,
     }
 
     [HttpGet]
-    [Route($"account/{{accountId:long}}/apprenticeship/{{apprenticeshipId:long}}", Name = "GetPaymentsByAccountId")]
-    public async Task<IActionResult> GetPaymentsByAccountId([FromRoute] long accountId,
+    [Route($"account/{{accountId:long}}/apprenticeship/{{apprenticeshipId:long}}", Name = "GetPaymentDetails")]
+    [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaymentDetails([FromRoute] long accountId,
         [FromRoute] long apprenticeshipId,
         CancellationToken cancellationToken)
     {
-        var payments = await paymentOrchestrator.GetPayments(accountId, apprenticeshipId, cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, new
-        {
-            Payments = payments
-        });
+        var payment = await paymentOrchestrator.GetPaymentDetails(accountId, apprenticeshipId, cancellationToken);
+        return StatusCode(StatusCodes.Status200OK, payment);
     }
 }

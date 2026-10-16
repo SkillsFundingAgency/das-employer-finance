@@ -31,6 +31,7 @@ public class Payment
     public string CourseCode { get; set; }
     public long CohortId { get; set; }
     public DateTime DateImported { get; set; }
+    public string PeriodEnd { get; set; }
     public override bool Equals(object obj)
     {
         var payment = obj as Payment;

@@ -9,9 +9,8 @@ public sealed record PaymentResponse
     public long ApprenticeshipId { get; set; }
     public int DeliveryPeriodMonth { get; set; }
     public int DeliveryPeriodYear { get; set; }
-    public string CollectionPeriodId { get; set; }
     public int CollectionPeriodMonth { get; set; }
     public int CollectionPeriodYear { get; set; }
     public decimal Amount { get; set; }
-    public DateTime DateImported { get; set; }
+    public DateTime LastUpdatedDate { get; set; }
 }

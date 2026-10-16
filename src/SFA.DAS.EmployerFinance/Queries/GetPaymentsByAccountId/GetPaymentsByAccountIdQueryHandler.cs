@@ -6,7 +6,7 @@ public class GetPaymentsByAccountIdQueryHandler(IPaymentRepository paymentReposi
 {
     public async Task<GetPaymentsByAccountIdQueryResult> Handle(GetPaymentsByAccountIdQuery request, CancellationToken cancellationToken)
     {
-        var result = await paymentRepository.GetPayments(request.AccountId, request.ApprenticeshipId, cancellationToken);
-        return new GetPaymentsByAccountIdQueryResult { Payments = result };
+        var result = await paymentRepository.GetPayment(request.AccountId, request.ApprenticeshipId, cancellationToken);
+        return new GetPaymentsByAccountIdQueryResult(result);
     }
 }
