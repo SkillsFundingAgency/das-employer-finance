@@ -2,4 +2,4 @@
 
 namespace SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountId;
 
-public sealed record GetPaymentsByAccountIdQueryResult(Payment Payment);
+public sealed record GetPaymentsByAccountIdQueryResult(IReadOnlyCollection<Payment> Payments);

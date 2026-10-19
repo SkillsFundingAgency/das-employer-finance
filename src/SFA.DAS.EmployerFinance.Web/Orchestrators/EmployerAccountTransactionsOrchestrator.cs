@@ -1,6 +1,7 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -94,23 +95,19 @@ public class EmployerAccountTransactionsOrchestrator(
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
-        var (accountDetail, summary, projections) = await (
+        var (accountDetail, projections) = await (
             accountApiClient.GetAccount(accountId),
-            outerApiService.GetLevySummary(accountId, refreshCache, cancellationToken),
             outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache, cancellationToken: cancellationToken)
         ).WhenAll();
 
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
+
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
 
-        decimal totalCommittedLearnerCosts = 0;
-        decimal totalCommittedTransfersCosts = 0;
         var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
 
         foreach (var x in projections.Projections)
         {
-            totalCommittedLearnerCosts += x.LevyOutSummary.CommittedLearnerCost;
-            totalCommittedTransfersCosts += x.LevyOutSummary.CommittedTransferOut;
-
             monthEstimates.Add(new MonthEstimateViewModel
             {
                 Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
@@ -134,8 +131,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
-                TotalCommittedLearnerCosts = totalCommittedLearnerCosts,
-                TotalCommittedTransfersCosts = totalCommittedTransfersCosts,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts,
                 Estimates = new EstimatesViewModel
                 {
                     LastUpdatedUtc = projections.LastRefreshDateTime,

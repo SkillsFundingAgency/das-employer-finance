@@ -7,22 +7,22 @@ namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
 public class PaymentOrchestrator(IMediator mediator)
 {
-    public async Task<PaymentResponse> GetPaymentDetails(long accountId, long apprenticeshipId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<PaymentResponse>> GetPaymentDetails(long accountId, long apprenticeshipId, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetPaymentsByAccountIdQuery(accountId, apprenticeshipId), cancellationToken);
-        return new PaymentResponse
+        return result.Payments.Select(p => new PaymentResponse
         {
-            Id = result.Payment.Id,
-            Ukprn = result.Payment.Ukprn,
-            Uln = result.Payment.Uln,
-            EmployerAccountId = result.Payment.EmployerAccountId,
-            ApprenticeshipId = result.Payment.ApprenticeshipId,
-            DeliveryPeriodMonth = result.Payment.DeliveryPeriodMonth,
-            DeliveryPeriodYear = result.Payment.DeliveryPeriodYear,
-            CollectionPeriodMonth = result.Payment.CollectionPeriodMonth,
-            CollectionPeriodYear = result.Payment.CollectionPeriodYear,
-            Amount = result.Payment.Amount,
-            LastUpdatedDate = result.Payment.DateImported
-        };
+            Id = p.Id,
+            Ukprn = p.Ukprn,
+            Uln = p.Uln,
+            EmployerAccountId = p.EmployerAccountId,
+            ApprenticeshipId = p.ApprenticeshipId,
+            DeliveryPeriodMonth = p.DeliveryPeriodMonth,
+            DeliveryPeriodYear = p.DeliveryPeriodYear,
+            CollectionPeriodMonth = p.CollectionPeriodMonth,
+            CollectionPeriodYear = p.CollectionPeriodYear,
+            Amount = p.Amount,
+            LastUpdatedDate = p.DateImported
+        }).ToList();
     }
 }

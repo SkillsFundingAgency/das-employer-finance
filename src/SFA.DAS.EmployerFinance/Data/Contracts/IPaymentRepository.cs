@@ -4,5 +4,5 @@ namespace SFA.DAS.EmployerFinance.Data.Contracts;
 
 public interface IPaymentRepository
 {
-    Task<Payment> GetPayment(long accountId, long apprenticeshipId, CancellationToken cancellationToken);
+    Task<List<Payment>> GetPayments(long accountId, long apprenticeshipId, CancellationToken cancellationToken);
 }

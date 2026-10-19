@@ -41,12 +41,12 @@ public class PaymentsController(StagingOrchestrator stagingOrchestrator,
 
     [HttpGet]
     [Route($"account/{{accountId:long}}/apprenticeship/{{apprenticeshipId:long}}", Name = "GetPaymentDetails")]
-    [ProducesResponseType(typeof(PaymentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<PaymentResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPaymentDetails([FromRoute] long accountId,
         [FromRoute] long apprenticeshipId,
         CancellationToken cancellationToken)
     {
-        var payment = await paymentOrchestrator.GetPaymentDetails(accountId, apprenticeshipId, cancellationToken);
-        return StatusCode(StatusCodes.Status200OK, payment);
+        var payments = await paymentOrchestrator.GetPaymentDetails(accountId, apprenticeshipId, cancellationToken);
+        return Ok(payments);
     }
 }
