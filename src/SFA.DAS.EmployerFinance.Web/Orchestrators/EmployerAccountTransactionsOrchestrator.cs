@@ -113,10 +113,10 @@ public class EmployerAccountTransactionsOrchestrator(
                 Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
                 LevyIn = x.LevyInSummary.Total,
                 LevyOut = x.LevyOutSummary.Total,
-                CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost,
-                CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut,
-                CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost,
-                ExpiredLevy = x.LevyOutSummary.ExpiredLevy,
+                CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
+                CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
+                CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
+                ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
                 ClosingLevyBalance = x.ClosingBalance,
             });
         }
@@ -131,8 +131,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
-                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts,
-                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
                 Estimates = new EstimatesViewModel
                 {
                     LastUpdatedUtc = projections.LastRefreshDateTime,
