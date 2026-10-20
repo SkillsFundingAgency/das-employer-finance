@@ -1,4 +1,6 @@
-﻿using SFA.DAS.EmployerFinance.Api.Types;
+﻿using SFA.DAS.EmployerFinance.Api.Extensions;
+using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Queries.GetPaymentFundsOutByAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountId;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,5 +26,11 @@ public class PaymentOrchestrator(IMediator mediator)
             Amount = p.Amount,
             LastUpdatedDate = p.DateImported
         }).ToList();
+    }
+
+    public async Task<List<CalendarPeriodAmount>> GetPaymentFundsOut(long accountId, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetPaymentFundsOutByAccountIdQuery(accountId), cancellationToken);
+        return result.FundsOut.ToCalendarPeriodAmounts();
     }
 }

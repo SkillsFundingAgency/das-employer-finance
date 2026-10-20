@@ -1,5 +1,7 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Models.PaymentStaging;
 using System.Net;
@@ -48,5 +50,15 @@ public class PaymentsController(StagingOrchestrator stagingOrchestrator,
     {
         var payments = await paymentOrchestrator.GetPaymentDetails(accountId, apprenticeshipId, cancellationToken);
         return Ok(payments);
+    }
+
+    [HttpGet]
+    [Route("account/{accountId:long}/funds-out", Name = "GetPaymentFundsOut")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [ProducesResponseType(typeof(List<CalendarPeriodAmount>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaymentFundsOutForCalendarPeriods([FromRoute] long accountId, CancellationToken cancellationToken)
+    {
+        var result = await paymentOrchestrator.GetPaymentFundsOut(accountId, cancellationToken);
+        return Ok(result);
     }
 }
