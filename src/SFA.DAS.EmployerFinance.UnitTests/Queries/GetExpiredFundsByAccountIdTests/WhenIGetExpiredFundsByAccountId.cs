@@ -1,4 +1,4 @@
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.ExpiredFunds;
 using SFA.DAS.EmployerFinance.Queries.GetExpiredFundsByAccountId;
 using SFA.DAS.EmployerFinance.Types.Models;
@@ -52,5 +52,19 @@ public class WhenIGetExpiredFundsByAccountId
 
         result.LongTermExpiredFunds.Should().BeEmpty();
         result.ShortTermExpiredFunds.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task Then_An_Empty_Short_Term_Dictionary_Is_Returned_When_Only_Long_Term_Funds_Have_Expired()
+    {
+        _expiredFundsRepository.Setup(x => x.Get(AccountId)).ReturnsAsync(new List<ExpiredFund>
+        {
+            new() { CalendarPeriodYear = 2026, CalendarPeriodMonth = 5, Amount = -100, TransactionType = 5 }
+        });
+
+        var result = await _handler.Handle(new GetExpiredFundsByAccountIdQuery(AccountId), CancellationToken.None);
+
+        result.LongTermExpiredFunds.Should().HaveCount(1);
+        result.ShortTermExpiredFunds.Should().NotBeNull().And.BeEmpty();
     }
 }
