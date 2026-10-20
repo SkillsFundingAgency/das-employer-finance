@@ -95,31 +95,32 @@ public class EmployerAccountTransactionsOrchestrator(
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
-        var (accountDetail, projections) = await (
-            accountApiClient.GetAccount(accountId),
-            outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache, cancellationToken: cancellationToken)
-        ).WhenAll();
+        var accountDetailTask = accountApiClient.GetAccount(accountId);
+        var levyProjectionsTask = outerApiService.GetLevyProjections(accountId, months: Months,
+            refreshCache: refreshCache, cancellationToken: cancellationToken);
+
+        await Task.WhenAll(accountDetailTask, levyProjectionsTask);
+
+        var accountDetail = accountDetailTask.Result;
+        var projections = levyProjectionsTask.Result;
 
         var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
 
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
 
         var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
-
-        foreach (var x in projections.Projections)
+        
+        monthEstimates.AddRange(projections.Projections.Select(x => new MonthEstimateViewModel
         {
-            monthEstimates.Add(new MonthEstimateViewModel
-            {
-                Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
-                LevyIn = x.LevyInSummary.Total,
-                LevyOut = x.LevyOutSummary.Total,
-                CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
-                CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
-                CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
-                ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
-                ClosingLevyBalance = x.ClosingBalance,
-            });
-        }
+            Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
+            LevyIn = x.LevyInSummary.Total,
+            LevyOut = x.LevyOutSummary.Total,
+            CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
+            CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
+            CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
+            ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
+            ClosingLevyBalance = x.ClosingBalance,
+        }));
 
         return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
