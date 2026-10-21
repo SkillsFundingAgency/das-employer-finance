@@ -1,20 +1,37 @@
-﻿namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
+﻿using System.Text.Json.Serialization;
+
+namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 
 public sealed record GetLevyProjectionsByAccountIdResponse
 {
-    public IReadOnlyList<MonthlyBreakdown> Projections { get; init; } = [];
+    public long AccountId { get; init; }
+    [JsonPropertyName("latestLevyDeclarationInDate")]
     public DateTime LastRefreshDateTime { get; set; }
+    public GetLevySummaryByAccountIdResponse Summary { get; set; }
+    public List<MonthlyFundingBreakdown> Projections { get; init; } = [];
+}
 
-    public sealed record MonthlyBreakdown
-    {
-        public int CalendarPeriodMonth { get; init; } = 0;
-        public int CalendarPeriodYear { get; init; } = 0;
-        public string CalendarMonthName { get; init; } = string.Empty;
-        public decimal LevyIn { get; init; } = 0;
-        public decimal LevyOut { get; init; } = 0;
-        public decimal ClosingLevyBalance { get; init; } = 0;
-        public decimal ExpiredLevy { get; init; } = 0;
-        public decimal CommittedLearnerCosts { get; init; } = 0;
-        public decimal CommittedTransferCosts { get; init; } = 0;
-    }
+public sealed record MonthlyFundingBreakdown
+{
+    public long EmployerAccountId { get; init; }
+    public int Month { get; init; }
+    public int Year { get; init; }
+    public decimal ClosingBalance { get; set; }
+    public required LevyInSummary LevyInSummary { get; init; }
+    public required LevyOutSummary LevyOutSummary { get; init; }
+}
+
+public sealed record LevyOutSummary
+{
+    public decimal Total { get; init; } = 0m;
+    public decimal CommittedLearnerCost { get; init; } = 0m;
+    public decimal CommittedLearnerFinalPaymentCost { get; init; } = 0m;
+    public decimal CommittedTransferOut { get; init; } = 0m;
+    public decimal ExpiredLevy { get; init; } = 0m;
+}
+
+public sealed record LevyInSummary
+{
+    public decimal Total { get; init; } = 0m;
+    public decimal LevyIn { get; init; } = 0m;
 }
