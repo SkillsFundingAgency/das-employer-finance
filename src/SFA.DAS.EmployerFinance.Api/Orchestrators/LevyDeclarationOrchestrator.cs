@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
 using SFA.DAS.EmployerFinance.Queries.GetExistingPeriod12LevyDeclarations;
@@ -6,6 +7,7 @@ using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclarationByAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndDateRange;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
+using SFA.DAS.EmployerFinance.Queries.GetLevyFundsInByAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByAccountId;
 using System.Threading.Tasks;
 
@@ -125,5 +127,14 @@ public class LevyDeclarationOrchestrator(IMediator mediator,
         var levyDeclarations = response._.Select(mapper.Map<LevyDeclaration>).ToList();
         logger.LogInformation("Received levy declarations for accountId {AccountId} from {FromDate} to {ToDate}: {Count}", accountId, fromDate, toDate, levyDeclarations.Count);
         return levyDeclarations;
+    }
+
+    public async Task<List<CalendarPeriodAmount>> GetLevyFundsIn(long accountId)
+    {
+        logger.LogInformation("Requesting levy funds in for accountId {AccountId}", accountId);
+
+        var result = await mediator.Send(new GetLevyFundsInByAccountIdQuery(accountId));
+
+        return result.FundsIn.ToCalendarPeriodAmounts();
     }
 }

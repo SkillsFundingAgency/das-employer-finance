@@ -606,7 +606,6 @@ public class DasLevyRepository(
                                             [employer_financial].[TransactionLine] tl
                                         WHERE
                                             tl.DateCreated >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                            AND tl.DateCreated < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
                                             AND tl.TransactionType = 1
                                             AND tl.AccountId = @accountId
                                         """, AccountMonthsParameters(accountId, months));
@@ -621,7 +620,6 @@ public class DasLevyRepository(
                                       [employer_financial].[TransactionLine] tl
                                   WHERE
                                       tl.DateCreated >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                      AND tl.DateCreated < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
                                       AND tl.AccountId = @accountId
                                       AND tl.TransactionType IN (5, 6) -- ExpiredFund (24-month), ShortExpiredFund (12-month)
                                   """, AccountMonthsParameters(accountId, months));
@@ -636,7 +634,6 @@ public class DasLevyRepository(
                                             [employer_financial].[TransactionLine] tl
                                         WHERE
                                             tl.DateCreated >= DATEFROMPARTS(YEAR(DATEADD(MONTH, -@months, GETDATE())), MONTH(DATEADD(MONTH, -@months, GETDATE())), 1)
-                                            AND tl.DateCreated < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
                                             AND (
                                                 (tl.TransactionType = 3 AND tl.AccountId = @accountId)
                                                 OR

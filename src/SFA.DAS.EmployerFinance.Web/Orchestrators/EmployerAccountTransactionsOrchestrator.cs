@@ -1,6 +1,7 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -94,35 +95,32 @@ public class EmployerAccountTransactionsOrchestrator(
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
-        var (accountDetail, summary, projections) = await (
-            accountApiClient.GetAccount(accountId),
-            outerApiService.GetLevySummary(accountId, refreshCache, cancellationToken),
-            outerApiService.GetLevyProjections(accountId, months: Months, refreshCache: refreshCache, cancellationToken: cancellationToken)
-        ).WhenAll();
+        var accountDetailTask = accountApiClient.GetAccount(accountId);
+        var levyProjectionsTask = outerApiService.GetLevyProjections(accountId, months: Months,
+            refreshCache: refreshCache, cancellationToken: cancellationToken);
+
+        await Task.WhenAll(accountDetailTask, levyProjectionsTask);
+
+        var accountDetail = accountDetailTask.Result;
+        var projections = levyProjectionsTask.Result;
+
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
 
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
 
-        decimal totalCommittedLearnerCosts = 0;
-        decimal totalCommittedTransfersCosts = 0;
         var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
-
-        foreach (var x in projections.Projections)
+        
+        monthEstimates.AddRange(projections.Projections.Select(x => new MonthEstimateViewModel
         {
-            totalCommittedLearnerCosts += x.LevyOutSummary.CommittedLearnerCost;
-            totalCommittedTransfersCosts += x.LevyOutSummary.CommittedTransferOut;
-
-            monthEstimates.Add(new MonthEstimateViewModel
-            {
-                Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
-                LevyIn = x.LevyInSummary.Total,
-                LevyOut = x.LevyOutSummary.Total,
-                CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost,
-                CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut,
-                CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost,
-                ExpiredLevy = x.LevyOutSummary.ExpiredLevy,
-                ClosingLevyBalance = x.ClosingBalance,
-            });
-        }
+            Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
+            LevyIn = x.LevyInSummary.Total,
+            LevyOut = x.LevyOutSummary.Total,
+            CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
+            CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
+            CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
+            ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
+            ClosingLevyBalance = x.ClosingBalance,
+        }));
 
         return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
@@ -134,8 +132,8 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
-                TotalCommittedLearnerCosts = totalCommittedLearnerCosts,
-                TotalCommittedTransfersCosts = totalCommittedTransfersCosts,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
                 Estimates = new EstimatesViewModel
                 {
                     LastUpdatedUtc = projections.LastRefreshDateTime,

@@ -58,17 +58,16 @@ internal class WhenGettingFinanceDashboardV2
             });
 
         _mockOuterApiService
-            .Setup(x => x.GetLevySummary(AccountId, false))
-            .ReturnsAsync(new GetLevySummaryByAccountIdResponse
-            {
-                CurrentLevyFunds = 1000M,
-                TotalLevyDeclaredLast12Months = 5000M
-            });
-
-        _mockOuterApiService
             .Setup(x => x.GetLevyProjections(AccountId, Months))
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
+                Summary = new GetLevySummaryByAccountIdResponse
+                {
+                    CurrentLevyFunds = 1000M,
+                    TotalLevyDeclaredLast12Months = 5000M,
+                    TotalCommittedLearnerCosts = 7500M,
+                    TotalCommittedTransfersCosts = 2500M
+                },
                 Projections = new List<MonthlyFundingBreakdown>
                 {
                     new()
@@ -150,11 +149,12 @@ internal class WhenGettingFinanceDashboardV2
     }
 
     [Test]
-    public async Task ThenTheLevySummaryIsRetrievedUsingTheHashedAccountId()
+    public async Task ThenTheLevyProjectionsAreRetrievedOnceUsingTheDecodedAccountId()
     {
         await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        _mockOuterApiService.Verify(x => x.GetLevySummary(AccountId, false), Times.Once);
+        _mockOuterApiService.Verify(x => x.GetLevyProjections(AccountId, Months, false, It.IsAny<CancellationToken>()), Times.Once);
+        _mockOuterApiService.VerifyNoOtherCalls();
     }
 
     [Test]
@@ -212,6 +212,69 @@ internal class WhenGettingFinanceDashboardV2
     }
 
     [Test]
+    public async Task ThenTheTotalCommittedCostsAreSetFromTheLevySummary()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.TotalCommittedLearnerCosts.Should().Be(-7500M);
+        result.Data.TotalCommittedTransfersCosts.Should().Be(-2500M);
+    }
+
+    [Test]
+    public async Task ThenTheTotalCommittedCostsAreNotTheSumOfTheMonthlyProjections()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Summary = new GetLevySummaryByAccountIdResponse
+                {
+                    TotalCommittedLearnerCosts = 7500M,
+                    TotalCommittedTransfersCosts = 2500M
+                },
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary { CommittedLearnerCost = 100M, CommittedTransferOut = 50M }
+                    },
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 9,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary { CommittedLearnerCost = 200M, CommittedTransferOut = 75M }
+                    }
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        // the totals cover all remaining committed costs, not just those within the projected months
+        result.Data.TotalCommittedLearnerCosts.Should().Be(-7500M).And.NotBe(-300M);
+        result.Data.TotalCommittedTransfersCosts.Should().Be(-2500M).And.NotBe(-125M);
+    }
+
+    [Test]
+    public async Task ThenTheSummaryValuesDefaultToZeroWhenTheProjectionsHaveNoSummary()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse());
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.CurrentLevyFunds.Should().Be(0);
+        result.Data.TotalLevyDeclaredLast12Months.Should().Be(0);
+        result.Data.TotalCommittedLearnerCosts.Should().Be(0);
+        result.Data.TotalCommittedTransfersCosts.Should().Be(0);
+        result.Data.Estimates!.MonthEstimates.Should().BeEmpty();
+    }
+
+    [Test]
     public async Task Then_MonthEstimates_Count_Matches_Projections()
     {
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
@@ -226,9 +289,9 @@ internal class WhenGettingFinanceDashboardV2
 
         result.Data.Estimates!.MonthEstimates.Should().BeEquivalentTo(
         [
-            new MonthEstimateViewModel { Period = "August 2026",    LevyIn = 1000M, ExpiredLevy = 200M},
-            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 2000M, ExpiredLevy = 400M },
-            new MonthEstimateViewModel { Period = "October 2026",   LevyIn = 3000M, ExpiredLevy = 600M }
+            new MonthEstimateViewModel { Period = "August 2026",    LevyIn = 1000M, ExpiredLevy = -200M },
+            new MonthEstimateViewModel { Period = "September 2026", LevyIn = 2000M, ExpiredLevy = -400M },
+            new MonthEstimateViewModel { Period = "October 2026",   LevyIn = 3000M, ExpiredLevy = -600M }
         ], options => options.WithStrictOrdering());
     }
 
@@ -323,11 +386,126 @@ internal class WhenGettingFinanceDashboardV2
             {
                 Period = "August 2026",
                 LevyIn = 500M,
-                ExpiredLevy = 100M,
+                ExpiredLevy = -100M,
                 LevyOut = 175M,
                 ClosingLevyBalance = 350M,
-                CommittedLearnerCosts = 50M,
-                CommittedTransferCosts = 25M
+                CommittedLearnerCosts = -50M,
+                CommittedTransferCosts = -25M
             });
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Costs_Are_Displayed_As_Negative()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary
+                        {
+                            CommittedLearnerCost = 50M,
+                            CommittedTransferOut = 25M,
+                            CommittedLearnerFinalPaymentCost = 10M,
+                            ExpiredLevy = 100M,
+                        },
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        var estimate = result.Data.Estimates!.MonthEstimates.Single();
+        estimate.CommittedLearnerCosts.Should().Be(-50M);
+        estimate.CommittedTransferCosts.Should().Be(-25M);
+        estimate.CommittedLearnerFinalPaymentCost.Should().Be(-10M);
+        estimate.ExpiredLevy.Should().Be(-100M);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_LevyIn_LevyOut_And_ClosingBalance_Keep_Their_Sign()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary { Total = 500M },
+                        LevyOutSummary = new LevyOutSummary { Total = 175M },
+                        ClosingBalance = 350M,
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        var estimate = result.Data.Estimates!.MonthEstimates.Single();
+        estimate.LevyIn.Should().Be(500M);
+        estimate.LevyOut.Should().Be(175M);
+        estimate.ClosingLevyBalance.Should().Be(350M);
+    }
+
+    [Test]
+    public async Task Then_MonthEstimates_Zero_Costs_Are_Displayed_As_Zero()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary(),
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        var estimate = result.Data.Estimates!.MonthEstimates.Single();
+        estimate.CommittedLearnerCosts.Should().Be(0);
+        estimate.CommittedTransferCosts.Should().Be(0);
+        estimate.CommittedLearnerFinalPaymentCost.Should().Be(0);
+        estimate.ExpiredLevy.Should().Be(0);
+    }
+
+    [Test]
+    public async Task ThenTheOtherSummaryTotalsKeepTheirSign()
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Summary = new GetLevySummaryByAccountIdResponse
+                {
+                    CurrentLevyFunds = 1000M,
+                    TotalLevyDeclaredLast12Months = 5000M,
+                    TotalLevySpentLast12Months = 3000M,
+                    TotalLevyExpiredLast12Months = 1500M
+                },
+                Projections = []
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.CurrentLevyFunds.Should().Be(1000M);
+        result.Data.TotalLevyDeclaredLast12Months.Should().Be(5000M);
+        result.Data.TotalLevySpentLast12Months.Should().Be(3000M);
+        result.Data.TotalLevyExpiredLast12Months.Should().Be(1500M);
     }
 }

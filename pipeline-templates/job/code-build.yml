@@ -66,3 +66,4 @@ jobs:
       parameters:
         DotNetStandardPackagesToPack: |
           src/SFA.DAS.EmployerFinance.Messages/SFA.DAS.EmployerFinance.Messages.csproj;
+          src/SFA.DAS.EmployerFinance.Types/SFA.DAS.EmployerFinance.Types.csproj;

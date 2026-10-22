@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
@@ -96,6 +97,15 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         }
 
         return Ok(result.ToList());
+    }
+
+    [HttpGet("{accountId:long}/funds-in")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [ProducesResponseType(typeof(List<CalendarPeriodAmount>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetLevyFundsInForCalendarPeriods(long accountId)
+    {
+        var result = await orchestrator.GetLevyFundsIn(accountId);
+        return Ok(result);
     }
 
     private static string DecodeEmpRef(string empRef) =>
