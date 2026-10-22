@@ -1,6 +1,7 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -13,6 +14,7 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Services.Contracts;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -35,6 +37,8 @@ public class EmployerAccountTransactionsOrchestrator(
     EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
+    private const short Months = 6;
+
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
         //TODO this storing of user details should be removed from this applications database
@@ -87,26 +91,56 @@ public class EmployerAccountTransactionsOrchestrator(
          return viewModel;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false, CancellationToken cancellationToken = default)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
-        var summary = await outerApiService.GetLevySummary(accountId);
+
+        var accountDetailTask = accountApiClient.GetAccount(accountId);
+        var levyProjectionsTask = outerApiService.GetLevyProjections(accountId, months: Months,
+            refreshCache: refreshCache, cancellationToken: cancellationToken);
+
+        await Task.WhenAll(accountDetailTask, levyProjectionsTask);
+
+        var accountDetail = accountDetailTask.Result;
+        var projections = levyProjectionsTask.Result;
+
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
+
+        Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
+
+        var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
         
-        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
+        monthEstimates.AddRange(projections.Projections.Select(x => new MonthEstimateViewModel
+        {
+            Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
+            LevyIn = x.LevyInSummary.Total,
+            LevyOut = x.LevyOutSummary.Total,
+            CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
+            CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
+            CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
+            ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
+            ClosingLevyBalance = x.ClosingBalance,
+        }));
+
+        return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
             Data = new FinanceDashboardV2ViewModel
             {
-                IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
+                IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
+                Estimates = new EstimatesViewModel
+                {
+                    LastUpdatedUtc = projections.LastRefreshDateTime,
+                    MonthEstimates = monthEstimates
+                }
             }
         };
-
-        return viewModel;
     }
 
     public async Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(

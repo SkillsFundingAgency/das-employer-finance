@@ -1,10 +1,14 @@
-﻿using SFA.DAS.EmployerFinance.Api.Orchestrators;
+﻿using AutoFixture.NUnit4;
+using AutoMapper;
+using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
 using SFA.DAS.EmployerFinance.Models.Levy;
 using SFA.DAS.EmployerFinance.Queries.GetExistingPeriod12LevyDeclarations;
 using SFA.DAS.EmployerFinance.Queries.GetLastLevyDeclaration;
+using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndDateRange;
 using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
+using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Orchestrators;
 
@@ -30,12 +34,13 @@ public class LevyDeclarationOrchestratorTests
         };
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
+        var mapper = new Mock<IMapper>();
 
         mediator
             .Setup(x => x.Send(It.Is<PersistLevyDeclarationsCommand>(c => c.Data == request), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
+        var sut = new LevyDeclarationOrchestrator(mediator.Object, mapper.Object, logger.Object);
 
         var result = await sut.PersistLevyDeclarations(request);
 
@@ -61,13 +66,14 @@ public class LevyDeclarationOrchestratorTests
         };
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
+        var mapper = new Mock<IMapper>();
 
         mediator.Setup(x => x.Send(
                 It.Is<GetExistingPeriod12LevyDeclarationsQuery>(q => q.EmpRef == empRef),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
+        var sut = new LevyDeclarationOrchestrator(mediator.Object, mapper.Object, logger.Object);
 
         var result = await sut.GetExistingPeriod12LevyDeclarations(empRef);
 
@@ -82,13 +88,14 @@ public class LevyDeclarationOrchestratorTests
         var expectedIds = new List<string> { "10", "20", "30" };
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
+        var mapper = new Mock<IMapper>();
 
         mediator.Setup(x => x.Send(
                 It.Is<GetLevyDeclarationSubmissionIdsQuery>(q => q.EmpRef == empRef),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(mediatorIds);
 
-        var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
+        var sut = new LevyDeclarationOrchestrator(mediator.Object, mapper.Object, logger.Object);
 
         var result = await sut.GetSubmissionIds(empRef);
 
@@ -102,6 +109,7 @@ public class LevyDeclarationOrchestratorTests
         var submissionDate = new DateTime(2026, 4, 10);
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
+        var mapper = new Mock<IMapper>();
 
         mediator.Setup(x => x.Send(
                 It.Is<GetLastLevyDeclarationQuery>(q => q.EmpRef == empRef),
@@ -111,7 +119,7 @@ public class LevyDeclarationOrchestratorTests
                 Transaction = new DasDeclaration { SubmissionDate = submissionDate }
             });
 
-        var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
+        var sut = new LevyDeclarationOrchestrator(mediator.Object, mapper.Object, logger.Object);
 
         var result = await sut.GetLastSubmissionDate(empRef);
 
@@ -125,13 +133,14 @@ public class LevyDeclarationOrchestratorTests
         var empRef = "123/AB12345";
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
+        var mapper = new Mock<IMapper>();
 
         mediator.Setup(x => x.Send(
                 It.Is<GetLastLevyDeclarationQuery>(q => q.EmpRef == empRef),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((GetLastLevyDeclarationResponse)null!);
 
-        var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
+        var sut = new LevyDeclarationOrchestrator(mediator.Object, mapper.Object, logger.Object);
 
         var result = await sut.GetLastSubmissionDate(empRef);
 
@@ -145,6 +154,7 @@ public class LevyDeclarationOrchestratorTests
         var empRef = "123/AB12345";
         var mediator = new Mock<IMediator>();
         var logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
+        var mapper = new Mock<IMapper>();
 
         mediator.Setup(x => x.Send(
                 It.Is<GetLastLevyDeclarationQuery>(q => q.EmpRef == empRef),
@@ -154,11 +164,96 @@ public class LevyDeclarationOrchestratorTests
                 Transaction = new DasDeclaration { SubmissionDate = DateTime.MinValue }
             });
 
-        var sut = new LevyDeclarationOrchestrator(mediator.Object, logger.Object);
+        var sut = new LevyDeclarationOrchestrator(mediator.Object, mapper.Object, logger.Object);
 
         var result = await sut.GetLastSubmissionDate(empRef);
 
         result.Should().NotBeNull();
         result.LastSumissionDate.Should().BeNull();
+    }
+
+    [Test, MoqAutoData]
+    public async Task ThenReturnsDeclarations(
+        long accountId,
+        DateOnly fromDate,
+        DateOnly toDate,
+        GetLevyDeclarationsByAccountAndDateRangeQueryResult queryResult,
+        List<LevyDeclaration> mappedDeclarations,
+        [Frozen] Mock<IMediator> mediator,
+        [Frozen] Mock<IMapper> mapper,
+        [Greedy] LevyDeclarationOrchestrator sut)
+    {
+        // Arrange
+        mediator
+            .Setup(x => x.Send(
+                It.Is<GetLevyDeclarationsByAccountAndDateRangeQuery>(q =>
+                    q.AccountId == accountId &&
+                    q.FromDate == fromDate &&
+                    q.ToDate == toDate),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(queryResult);
+
+        for (var i = 0; i < queryResult._.Count; i++)
+        {
+            var item = queryResult._[i];
+            mapper
+                .Setup(x => x.Map<LevyDeclaration>(item))
+                .Returns(mappedDeclarations[i]);
+        }
+
+        // Act
+        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(mappedDeclarations);
+    }
+
+    [Test, MoqAutoData]
+    public async Task ThenReturnsNullWhenResponseIsNull(
+        long accountId,
+        DateOnly fromDate,
+        DateOnly toDate,
+        [Frozen] Mock<IMediator> mediator,
+        [Frozen] Mock<IMapper> mapper,
+        [Greedy] LevyDeclarationOrchestrator sut)
+    {
+        // Arrange
+        mediator
+            .Setup(x => x.Send(
+                It.IsAny<GetLevyDeclarationsByAccountAndDateRangeQuery>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((GetLevyDeclarationsByAccountAndDateRangeQueryResult)null);
+
+        // Act
+        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test, MoqAutoData]
+    public async Task ThenReturnsNullWhenDeclarationsIsNull(
+        long accountId,
+        DateOnly fromDate,
+        DateOnly toDate,
+        [Frozen] Mock<IMediator> mediator,
+        [Frozen] Mock<IMapper> mapper,
+        [Greedy] LevyDeclarationOrchestrator sut)
+    {
+        // Arrange
+        var queryResult = new GetLevyDeclarationsByAccountAndDateRangeQueryResult(null);
+
+        mediator
+            .Setup(x => x.Send(
+                It.IsAny<GetLevyDeclarationsByAccountAndDateRangeQuery>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(queryResult);
+
+        // Act
+        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+
+        // Assert
+        result.Should().BeNull();
     }
 }
