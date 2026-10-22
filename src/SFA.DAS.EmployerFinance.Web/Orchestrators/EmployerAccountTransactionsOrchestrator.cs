@@ -114,7 +114,7 @@ public class EmployerAccountTransactionsOrchestrator(
         {
             Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
             LevyIn = x.LevyInSummary.Total,
-            LevyOut = x.LevyOutSummary.Total,
+            LevyOut = x.LevyOutSummary.Total * -1,
             CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
             CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
             CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
