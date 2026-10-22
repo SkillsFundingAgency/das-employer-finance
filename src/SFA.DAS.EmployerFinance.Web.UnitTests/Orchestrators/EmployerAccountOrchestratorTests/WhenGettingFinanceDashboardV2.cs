@@ -387,7 +387,7 @@ internal class WhenGettingFinanceDashboardV2
                 Period = "August 2026",
                 LevyIn = 500M,
                 ExpiredLevy = -100M,
-                LevyOut = 175M,
+                LevyOut = -175M,
                 ClosingLevyBalance = 350M,
                 CommittedLearnerCosts = -50M,
                 CommittedTransferCosts = -25M
@@ -452,7 +452,7 @@ internal class WhenGettingFinanceDashboardV2
 
         var estimate = result.Data.Estimates!.MonthEstimates.Single();
         estimate.LevyIn.Should().Be(500M);
-        estimate.LevyOut.Should().Be(175M);
+        estimate.LevyOut.Should().Be(-175M);
         estimate.ClosingLevyBalance.Should().Be(350M);
     }
 
