@@ -120,6 +120,7 @@ public class EmployerAccountTransactionsOrchestrator(
             CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
             ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
             ClosingLevyBalance = x.ClosingBalance,
+            CoInvestmentCosts = x.CoInvestmentCosts,
         }));
 
         return new OrchestratorResponse<FinanceDashboardV2ViewModel>
