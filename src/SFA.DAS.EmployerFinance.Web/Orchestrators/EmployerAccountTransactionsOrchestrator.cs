@@ -113,13 +113,13 @@ public class EmployerAccountTransactionsOrchestrator(
         monthEstimates.AddRange(projections.Projections.Select(x => new MonthEstimateViewModel
         {
             Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
-            LevyIn = x.LevyInSummary.Total,
-            LevyOut = x.LevyOutSummary.Total * -1,
-            CommittedLearnerCosts = x.LevyOutSummary.CommittedLearnerCost * -1,
-            CommittedTransferCosts = x.LevyOutSummary.CommittedTransferOut * -1,
-            CommittedLearnerFinalPaymentCost = x.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
-            ExpiredLevy = x.LevyOutSummary.ExpiredLevy * -1,
-            ClosingLevyBalance = x.ClosingBalance,
+            LevyIn = Math.Ceiling(x.LevyInSummary.Total),
+            LevyOut = Math.Ceiling(x.LevyOutSummary.Total) * -1,
+            CommittedLearnerCosts = Math.Ceiling(x.LevyOutSummary.CommittedLearnerCost) * -1,
+            CommittedTransferCosts = Math.Ceiling(x.LevyOutSummary.CommittedTransferOut) * -1,
+            CommittedLearnerFinalPaymentCost = Math.Ceiling(x.LevyOutSummary.CommittedLearnerFinalPaymentCost) * -1,
+            ExpiredLevy = Math.Ceiling(x.LevyOutSummary.ExpiredLevy) * -1,
+            ClosingLevyBalance = Math.Ceiling(x.ClosingBalance),
         }));
 
         return new OrchestratorResponse<FinanceDashboardV2ViewModel>
