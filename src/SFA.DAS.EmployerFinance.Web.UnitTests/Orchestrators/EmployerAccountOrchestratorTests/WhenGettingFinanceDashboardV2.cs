@@ -412,6 +412,7 @@ internal class WhenGettingFinanceDashboardV2
                         {
                             CommittedLearnerCost = 50M,
                             CommittedTransferOut = 25M,
+                            CommittedTransferOutFinalPaymentCost = 5m,
                             CommittedLearnerFinalPaymentCost = 10M,
                             ExpiredLevy = 100M,
                         },
@@ -423,7 +424,7 @@ internal class WhenGettingFinanceDashboardV2
 
         var estimate = result.Data.Estimates!.MonthEstimates.Single();
         estimate.CommittedLearnerCosts.Should().Be(-50M);
-        estimate.CommittedTransferCosts.Should().Be(-25M);
+        estimate.CommittedTransferCosts.Should().Be(-30M);
         estimate.CommittedLearnerFinalPaymentCost.Should().Be(-10M);
         estimate.ExpiredLevy.Should().Be(-100M);
     }
