@@ -3,7 +3,7 @@ using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountId;
+using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountIdAndApprenticeshipId;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.PaymentControllerTests;
 
@@ -32,9 +32,9 @@ public class GetPaymentDetails
         };
         _mediator
             .Setup(m => m.Send(
-                It.Is<GetPaymentsByAccountIdQuery>(q => q.AccountId == AccountId && q.ApprenticeshipId == ApprenticeshipId),
+                It.Is<GetPaymentsByAccountIdAndApprenticeshipIdQuery>(q => q.AccountId == AccountId && q.ApprenticeshipId == ApprenticeshipId),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetPaymentsByAccountIdQueryResult(payments));
+            .ReturnsAsync(new GetPaymentsByAccountIdAndApprenticeshipIdQueryResult(payments));
 
         var result = await _controller.GetPaymentDetails(AccountId, ApprenticeshipId, CancellationToken.None);
 
@@ -49,8 +49,8 @@ public class GetPaymentDetails
     public async Task Then_Returns_Ok_With_An_Empty_List_When_There_Are_No_Payments()
     {
         _mediator
-            .Setup(m => m.Send(It.IsAny<GetPaymentsByAccountIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetPaymentsByAccountIdQueryResult([]));
+            .Setup(m => m.Send(It.IsAny<GetPaymentsByAccountIdAndApprenticeshipIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetPaymentsByAccountIdAndApprenticeshipIdQueryResult([]));
 
         var result = await _controller.GetPaymentDetails(AccountId, ApprenticeshipId, CancellationToken.None);
 

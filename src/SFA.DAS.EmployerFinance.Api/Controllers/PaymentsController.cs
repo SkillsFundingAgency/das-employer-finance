@@ -1,13 +1,11 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.EmployerFinance.Api.Authorization;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
+using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Models.PaymentStaging;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using SFA.DAS.EmployerFinance.Api.Types;
 
 namespace SFA.DAS.EmployerFinance.Api.Controllers;
 

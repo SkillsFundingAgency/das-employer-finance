@@ -153,7 +153,7 @@ internal class WhenGettingFinanceDashboardV2
     {
         await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        _mockOuterApiService.Verify(x => x.GetLevyProjections(AccountId, Months, false, It.IsAny<CancellationToken>()), Times.Once);
+        _mockOuterApiService.Verify(x => x.GetLevyProjections(AccountId, Months, It.IsAny<CancellationToken>()), Times.Once);
         _mockOuterApiService.VerifyNoOtherCalls();
     }
 
