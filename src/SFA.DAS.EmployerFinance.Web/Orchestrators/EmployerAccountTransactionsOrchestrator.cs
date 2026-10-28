@@ -96,8 +96,7 @@ public class EmployerAccountTransactionsOrchestrator(
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
         var accountDetailTask = accountApiClient.GetAccount(accountId);
-        var levyProjectionsTask = outerApiService.GetLevyProjections(accountId, months: Months,
-            refreshCache: refreshCache, cancellationToken: cancellationToken);
+        var levyProjectionsTask = outerApiService.GetLevyProjections(accountId, months: Months, cancellationToken: cancellationToken);
 
         await Task.WhenAll(accountDetailTask, levyProjectionsTask);
 
