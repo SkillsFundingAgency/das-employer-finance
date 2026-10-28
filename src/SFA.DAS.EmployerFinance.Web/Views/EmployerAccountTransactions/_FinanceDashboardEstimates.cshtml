@@ -22,6 +22,12 @@
                             <sub-item text="Commited learner costs" value="@Math.Ceiling(month.CommittedLearnerCosts).ToString("C0", culture)" />
                             <sub-item text="Commited transfer costs" value="@Math.Ceiling(month.CommittedTransferCosts).ToString("C0", culture)" />
                         </line-item>
+            
+                        @if (month.InCoInvestment)
+                        {
+                            <hr class="govuk-section-break govuk-section-break--visible" />
+                            <line-item text="Co-investment payment" value="@Math.Ceiling(month.CoInvestmentCosts).ToString("C0", culture)" />
+                        }
                     </estimates-month-card>
                 </estimates-row>
             }
