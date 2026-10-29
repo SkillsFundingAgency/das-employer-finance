@@ -114,7 +114,6 @@ public class EmployerAccountTransactionsOrchestrator(
         {
             Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
             LevyIn = Math.Ceiling(x.LevyInSummary.Total),
-            LevyOut = Math.Ceiling(x.LevyOutSummary.Total) * -1,
             CommittedLearnerCosts = Math.Ceiling(x.LevyOutSummary.CommittedLearnerCost) * -1,
             CommittedTransferCosts = Math.Ceiling(x.LevyOutSummary.CommittedTransferOut + x.LevyOutSummary.CommittedTransferOutFinalPaymentCost) * -1,
             CommittedLearnerFinalPaymentCost = Math.Ceiling(x.LevyOutSummary.CommittedLearnerFinalPaymentCost) * -1,
