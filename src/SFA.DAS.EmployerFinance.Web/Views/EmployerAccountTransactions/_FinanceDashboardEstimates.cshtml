@@ -18,7 +18,7 @@
     {
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-three-quarters">
-                <div class="govuk-!-margin-bottom-4">@Model.LastUpdatedUtcLabel</div>
+                <div class="govuk-!-margin-bottom-4"><p class="govuk-body-s">@Model.LastUpdatedUtcLabel</p></div>
                 @foreach (var month in Model.MonthEstimates)
                 {
                     <estimates-row text="@month.Period" provisional=@(month == Model.MonthEstimates.First())>
