@@ -1,4 +1,4 @@
-﻿using SFA.DAS.EmployerFinance.Web.Extensions;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels;
 
@@ -13,7 +13,8 @@ public class MonthEstimateViewModel
 {
     public string Period { get; set; }
     public decimal LevyIn { get; set; }
-    public decimal LevyOut { get; set; }
+    //This is for UI only and will slightly differ from whats in the database.
+    public decimal LevyOut => ExpiredLevy + CommittedLearnerFinalPaymentCost + CommittedTransferCosts + CommittedLearnerCosts;
     public bool InCoInvestment => CoInvestmentCosts > 0;
     public decimal ClosingLevyBalance { get; set; } = 0;
     public decimal ExpiredLevy { get; set; } = 0;

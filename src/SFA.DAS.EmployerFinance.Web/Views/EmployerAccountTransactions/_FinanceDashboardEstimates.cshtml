@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+@using System.Globalization
 @model EstimatesViewModel
 @{
     var culture = new CultureInfo("en-GB");
@@ -14,31 +14,32 @@
             <p><strong>You are expected to go into co-investment in @(Model.MonthEstimates.First(c=>c.InCoInvestment).Period)</strong> Depending on when learners started, you will pay up to 25% of learner costs until your levy funds cover them.</p>
         </div>
     }
-
     @if (Model.MonthEstimates.Any())
     {
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-three-quarters">
-                <div class="govuk-!-margin-bottom-4"><p class="govuk-body-s">@Model.LastUpdatedUtcLabel</p></div>
+                <div class="govuk-!-margin-bottom-4">@Model.LastUpdatedUtcLabel</div>
                 @foreach (var month in Model.MonthEstimates)
                 {
                     <estimates-row text="@month.Period" provisional=@(month == Model.MonthEstimates.First())>
-                        <estimates-month-card balance="@Math.Ceiling(month.ClosingLevyBalance).ToString("C0", culture)" class="govuk-!-margin-bottom-4">
-                            <line-item text="Levy in" value="@Math.Ceiling(month.LevyIn).ToString("C0", culture)"/>
-                            <line-item text="Levy out" value="@Math.Ceiling(month.LevyOut).ToString("C0", culture)">
-                                <sub-item text="Expired levy" value="@Math.Ceiling(month.ExpiredLevy).ToString("C0", culture)"/>
-                                <sub-item text="Commited learner costs" value="@Math.Ceiling(month.CommittedLearnerCosts).ToString("C0", culture)"/>
-                                <sub-item text="Commited transfer costs" value="@Math.Ceiling(month.CommittedTransferCosts).ToString("C0", culture)"/>
+                        <estimates-month-card balance="@month.ClosingLevyBalance.ToString("C0", culture)" class="govuk-!-margin-bottom-4">
+                            <line-item text="Levy in" value="@month.LevyIn.ToString("C0", culture)" />
+                            <line-item text="Levy out" value="@month.LevyOut.ToString("C0", culture)">
+                                <sub-item text="Learner costs" value="@month.CommittedLearnerCosts.ToString("C0", culture)" />
+                                <sub-item text="Completion payments" value="@month.CommittedLearnerFinalPaymentCost.ToString("C0", culture)" />
+                                <sub-item text="Transfer costs" value="@month.CommittedTransferCosts.ToString("C0", culture)" />
+                                <sub-item text="Expired levy" value="@month.ExpiredLevy.ToString("C0", culture)" />
                             </line-item>
 
                             @if (month.InCoInvestment)
                             {
                                 <hr class="govuk-section-break govuk-section-break--visible"/>
-                                <line-item text="Co-investment payment" value="@Math.Ceiling(month.CoInvestmentCosts).ToString("C0", culture)"/>
-                            }
+                                <line-item text="Co-investment payment" value="@month.CoInvestmentCosts.ToString("C0", culture)"/>
+                            }   
+
                         </estimates-month-card>
                     </estimates-row>
-                }
+                }                                           
             </div>
         </div>
     }
