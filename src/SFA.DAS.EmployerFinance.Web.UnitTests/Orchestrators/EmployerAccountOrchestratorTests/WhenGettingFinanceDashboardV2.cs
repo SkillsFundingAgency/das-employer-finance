@@ -374,6 +374,7 @@ internal class WhenGettingFinanceDashboardV2
                             CommittedTransferOut = 25M,
                         },
                         ClosingBalance = 350M,
+                        CoInvestmentCosts = 80m
                     },
                 ]
             });
@@ -389,7 +390,8 @@ internal class WhenGettingFinanceDashboardV2
                 ExpiredLevy = -100M,
                 ClosingLevyBalance = 350M,
                 CommittedLearnerCosts = -50M,
-                CommittedTransferCosts = -25M
+                CommittedTransferCosts = -25M,
+                CoInvestmentCosts = 80m,
             });
     }
 

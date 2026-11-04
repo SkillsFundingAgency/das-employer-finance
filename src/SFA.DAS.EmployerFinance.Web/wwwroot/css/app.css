@@ -548,3 +548,9 @@
     justify-content: space-between;
     padding-left: 8px;
 }
+
+.card-body hr {
+    width: stretch;
+    margin: 5px 0;
+    border-bottom-color: #B1B4B6;
+}

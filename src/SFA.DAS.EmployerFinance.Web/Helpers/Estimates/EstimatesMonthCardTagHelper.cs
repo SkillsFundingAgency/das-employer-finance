@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace SFA.DAS.EmployerFinance.Web.Helpers.Estimates;
 
-[HtmlTargetElement("estimates-month-card"), RestrictChildren("line-item")]
+[HtmlTargetElement("estimates-month-card"), RestrictChildren("line-item", "hr")]
 public class EstimatesMonthCardTagHelper : TagHelper
 {
     [HtmlAttributeName("balance")]
