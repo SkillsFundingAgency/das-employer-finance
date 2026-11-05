@@ -1,6 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountId;
+using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountIdAndApprenticeshipId;
 
 namespace SFA.DAS.EmployerFinance.UnitTests.Queries.GetPaymentsByAccountIdTests;
 
@@ -10,13 +10,13 @@ public class WhenIGetPaymentsByAccountId
     private const long ApprenticeshipId = 678;
 
     private Mock<IPaymentRepository> _paymentRepository;
-    private GetPaymentsByAccountIdQueryHandler _handler;
+    private GetPaymentsByAccountIdAndApprenticeshipIdQueryHandler _handler;
 
     [SetUp]
     public void Setup()
     {
         _paymentRepository = new Mock<IPaymentRepository>();
-        _handler = new GetPaymentsByAccountIdQueryHandler(_paymentRepository.Object);
+        _handler = new GetPaymentsByAccountIdAndApprenticeshipIdQueryHandler(_paymentRepository.Object);
     }
 
     [Test]
@@ -33,7 +33,7 @@ public class WhenIGetPaymentsByAccountId
             .ReturnsAsync(payments);
 
         // Act
-        var result = await _handler.Handle(new GetPaymentsByAccountIdQuery(AccountId, ApprenticeshipId), CancellationToken.None);
+        var result = await _handler.Handle(new GetPaymentsByAccountIdAndApprenticeshipIdQuery(AccountId, ApprenticeshipId), CancellationToken.None);
 
         // Assert
         result.Payments.Should().BeEquivalentTo(payments);
@@ -49,7 +49,7 @@ public class WhenIGetPaymentsByAccountId
             .ReturnsAsync([]);
 
         // Act
-        var result = await _handler.Handle(new GetPaymentsByAccountIdQuery(AccountId, ApprenticeshipId), CancellationToken.None);
+        var result = await _handler.Handle(new GetPaymentsByAccountIdAndApprenticeshipIdQuery(AccountId, ApprenticeshipId), CancellationToken.None);
 
         // Assert
         result.Payments.Should().BeEmpty();
