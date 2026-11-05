@@ -16,6 +16,9 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Ignore(a => a.ProgrammeType);
         builder.Ignore(a => a.PathwayCode);
         builder.Ignore(a => a.PathwayName);
+        builder.Ignore(a => a.CourseCode);
+        builder.Ignore(a => a.LearningType);
+        builder.Ignore(a => a.CohortId);
 
         builder.Property(p => p.FundingSource)
        .HasConversion<string>();
