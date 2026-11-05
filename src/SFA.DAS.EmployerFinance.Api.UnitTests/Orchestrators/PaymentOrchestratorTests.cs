@@ -1,7 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Models.Payments;
-using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountId;
+using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountIdAndApprenticeshipId;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Orchestrators;
 
@@ -20,9 +20,9 @@ public class PaymentOrchestratorTests
 
         mediator
             .Setup(x => x.Send(
-                It.Is<GetPaymentsByAccountIdQuery>(q => q.AccountId == AccountId && q.ApprenticeshipId == ApprenticeshipId),
+                It.Is<GetPaymentsByAccountIdAndApprenticeshipIdQuery>(q => q.AccountId == AccountId && q.ApprenticeshipId == ApprenticeshipId),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetPaymentsByAccountIdQueryResult([first, second]));
+            .ReturnsAsync(new GetPaymentsByAccountIdAndApprenticeshipIdQueryResult([first, second]));
 
         var result = (await orchestrator.GetPaymentDetails(AccountId, ApprenticeshipId, CancellationToken.None)).ToList();
 
@@ -38,8 +38,8 @@ public class PaymentOrchestratorTests
         var orchestrator = new PaymentOrchestrator(mediator.Object);
 
         mediator
-            .Setup(x => x.Send(It.IsAny<GetPaymentsByAccountIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GetPaymentsByAccountIdQueryResult([]));
+            .Setup(x => x.Send(It.IsAny<GetPaymentsByAccountIdAndApprenticeshipIdQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetPaymentsByAccountIdAndApprenticeshipIdQueryResult([]));
 
         var result = await orchestrator.GetPaymentDetails(AccountId, ApprenticeshipId, CancellationToken.None);
 
