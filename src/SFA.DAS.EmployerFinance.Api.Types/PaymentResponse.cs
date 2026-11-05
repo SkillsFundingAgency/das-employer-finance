@@ -11,6 +11,8 @@ public sealed record PaymentResponse
     public int DeliveryPeriodYear { get; set; }
     public int CollectionPeriodMonth { get; set; }
     public int CollectionPeriodYear { get; set; }
+    public int FundingSource { get; set; }
+    public int TransactionType { get; set; }
     public decimal Amount { get; set; }
     public DateTime LastUpdatedDate { get; set; }
 }

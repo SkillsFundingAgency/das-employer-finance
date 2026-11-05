@@ -1,5 +1,6 @@
 ﻿using SFA.DAS.EmployerFinance.Api.Extensions;
 using SFA.DAS.EmployerFinance.Api.Types;
+using SFA.DAS.EmployerFinance.Queries.GetCollectionPeriodPaymentsByAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetPaymentFundsOutByAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetPaymentsByAccountIdAndApprenticeshipId;
 using System.Threading;
@@ -25,10 +26,27 @@ public class PaymentOrchestrator(IMediator mediator)
                 DeliveryPeriodYear = p.DeliveryPeriodYear,
                 CollectionPeriodMonth = p.CollectionPeriodMonth,
                 CollectionPeriodYear = p.CollectionPeriodYear,
+                FundingSource = (int)p.FundingSource,
+                TransactionType = (int)p.TransactionType,
                 Amount = p.Amount,
                 LastUpdatedDate = p.DateImported
             })
         ];
+    }
+
+    public async Task<CollectionPeriodPaymentsResponse> GetCollectionPeriodPayments(long accountId, int year, int month, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetCollectionPeriodPaymentsByAccountIdQuery(accountId, year, month), cancellationToken);
+        return new CollectionPeriodPaymentsResponse
+        {
+            PeriodEndCompleted = result.PeriodEndCompleted,
+            Payments = [.. result.Payments.Select(p => new CollectionPeriodPaymentTotalResponse
+            {
+                FundingSource = (int)p.FundingSource,
+                TransactionType = (int)p.TransactionType,
+                Amount = p.Amount
+            })]
+        };
     }
 
     public async Task<List<CalendarPeriodAmount>> GetPaymentFundsOut(long accountId, CancellationToken cancellationToken)

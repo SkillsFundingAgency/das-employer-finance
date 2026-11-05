@@ -1,11 +1,11 @@
-﻿using SFA.DAS.EmployerFinance.Web.Extensions;
+using SFA.DAS.EmployerFinance.Web.Extensions;
 
 namespace SFA.DAS.EmployerFinance.Web.ViewModels;
 
 public class EstimatesViewModel
 {
     public DateTime LastUpdatedUtc { get; set; }
-    public string LastUpdatedUtcLabel => $"Updated at {LastUpdatedUtc.ToGmtStandardTime().ToGdsTimeFormatFull()} on {LastUpdatedUtc.ToGmtStandardTime().ToGdsFormatFull()}";
+    public string LastUpdatedUtcLabel => $"Last updated at {LastUpdatedUtc.ToGmtStandardTime().ToGdsTimeFormatFull()} on {LastUpdatedUtc.ToGmtStandardTime().ToGdsFormatFull()}";
     public List<MonthEstimateViewModel> MonthEstimates { get; set; }
 }
 

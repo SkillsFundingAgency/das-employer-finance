@@ -51,6 +51,19 @@ public class PaymentsController(StagingOrchestrator stagingOrchestrator,
     }
 
     [HttpGet]
+    [Route("account/{accountId:long}/collection-period/{year:int}/{month:int:range(1,12)}", Name = "GetCollectionPeriodPayments")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [ProducesResponseType(typeof(CollectionPeriodPaymentsResponse), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCollectionPeriodPayments([FromRoute] long accountId,
+        [FromRoute] int year,
+        [FromRoute] int month,
+        CancellationToken cancellationToken)
+    {
+        var result = await paymentOrchestrator.GetCollectionPeriodPayments(accountId, year, month, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet]
     [Route("account/{accountId:long}/funds-out", Name = "GetPaymentFundsOut")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     [ProducesResponseType(typeof(List<CalendarPeriodAmount>), StatusCodes.Status200OK)]

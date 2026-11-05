@@ -31,11 +31,36 @@ public class PaymentRepository(Lazy<EmployerFinanceDbContext> db) : IPaymentRepo
                 DeliveryPeriodYear = payment.DeliveryPeriodYear,
                 CollectionPeriodMonth = payment.CollectionPeriodMonth,
                 CollectionPeriodYear = payment.CollectionPeriodYear,
+                FundingSource = payment.FundingSource,
+                TransactionType = payment.TransactionType,
                 Amount = payment.Amount,
                 DateImported = transactions
                     .Where(t => t.UkPrn == payment.Ukprn && t.PeriodEnd == payment.PeriodEnd)
                     .Max(t => (DateTime?)t.TransactionDate) ?? (DateTime?)payment.DateImported ?? DateTime.MinValue
             })
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<PeriodEnd> GetPeriodEnd(int calendarPeriodYear, int calendarPeriodMonth, CancellationToken cancellationToken) =>
+        db.Value.PeriodEnds
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.CalendarPeriodYear == calendarPeriodYear && p.CalendarPeriodMonth == calendarPeriodMonth, cancellationToken);
+
+    public Task<List<Payment>> GetAccountPaymentsForPeriodEnd(long accountId, string periodEndId, CancellationToken cancellationToken) =>
+        db.Value.Payments
+            .AsNoTracking()
+            .Where(p => p.EmployerAccountId == accountId && p.PeriodEnd == periodEndId)
+            .ToListAsync(cancellationToken);
+
+    public Task<List<Payment>> GetTransferOutPaymentsForPeriodEnd(long senderAccountId, string periodEndId, CancellationToken cancellationToken)
+    {
+        var apprenticeshipIds = db.Value.AccountTransfers
+            .Where(t => t.SenderAccountId == senderAccountId && t.PeriodEnd == periodEndId)
+            .Select(t => t.ApprenticeshipId);
+
+        return db.Value.Payments
+            .AsNoTracking()
+            .Where(p => p.PeriodEnd == periodEndId && apprenticeshipIds.Contains(p.ApprenticeshipId))
             .ToListAsync(cancellationToken);
     }
 }
