@@ -5,6 +5,7 @@ using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Formatters;
+using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads.Csv;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDownloads.Excel;
@@ -94,6 +95,9 @@ public static class ApplicationServiceRegistrations
         services.AddTransient<ITransactionFormatter, NonLevyCsvTransactionFormatter>();
         services.AddTransient<ITransactionFormatter, LevyExcelTransactionFormatter>();
         services.AddTransient<ITransactionFormatter, NonLevyExcelTransactionFormatter>();
+
+        services.AddTransient<IEstimatesFormatter, CsvEstimatesFormatter>();
+        services.AddTransient<IEstimatesFormatter, ExcelEstimatesFormatter>();
         
         services.AddTransient<IAccountClaimsService, AccountClaimsService>();
         services.AddTransient<IHmrcService, HmrcService>();
