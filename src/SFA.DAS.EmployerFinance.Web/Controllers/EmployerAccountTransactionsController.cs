@@ -1,7 +1,9 @@
 using AutoMapper;
 using SFA.DAS.Employer.Shared.UI;
 using SFA.DAS.Employer.Shared.UI.Attributes;
+using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Models.FeatureToggle;
+using SFA.DAS.EmployerFinance.Queries.GetEstimatesDownload;
 using SFA.DAS.EmployerFinance.Queries.GetTransactionsDownload;
 using SFA.DAS.EmployerFinance.Queries.GetTransferTransactionDetails;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -85,6 +87,27 @@ public class EmployerAccountTransactionsController(
             }
             return View(model);
         }
+    }
+
+    [HttpPost]
+    [Route("finance/downloadestimates", Name = RouteNames.DownloadEstimatesPost)]
+    public async Task<IActionResult> EstimatesDownload([FromRoute] string hashedAccountId, [FromForm] DownloadFormatType? downloadFormat, CancellationToken cancellationToken)
+    {
+        if (!feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
+        {
+            return NotFound();
+        }
+
+        if (downloadFormat is null)
+        {
+            return RedirectToRoute(RouteNames.FinanceIndex, new { hashedAccountId });
+        }
+
+        var response = await mediator.Send(new GetEstimatesDownloadQuery(
+            encodingService.Decode(hashedAccountId, EncodingType.AccountId),
+            downloadFormat.Value), cancellationToken);
+
+        return File(response.FileData, response.MimeType, $"esfaEstimates_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
     }
 
     [HttpGet]

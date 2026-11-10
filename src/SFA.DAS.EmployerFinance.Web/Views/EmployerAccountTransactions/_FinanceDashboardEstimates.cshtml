@@ -1,7 +1,9 @@
 @using System.Globalization
+@using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
 @model EstimatesViewModel
 @{
     var culture = new CultureInfo("en-GB");
+    var hashedAccountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]?.ToString();
 }
 <div class="govuk-body">
     <p>This timeline is based on your current funds and commitments. The figures are estimates and are not final.</p>
