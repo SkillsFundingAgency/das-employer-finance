@@ -140,4 +140,40 @@ public class WhenIHandleTheCommand
             x => x.BulkInsertPaymentsAsync(It.IsAny<List<PaymentStagingModel>>()),
             Times.Once);
     }
+
+    [Test]
+    public async Task ThenReturnsPropertyQualifiedValidationErrorsWhenInvalid()
+    {
+        var command = new BulkPaymentsIngestCommand
+        {
+            Payments = [new PaymentStagingModel { PaymentId = Guid.NewGuid() }]
+        };
+
+        var validationResult = new ValidationResult();
+        validationResult.AddError("Payments[0].ApprenticeshipId", "ApprenticeshipId is mandatory and must be > 0.");
+        validationResult.AddError("Payments[0].Uln", "Uln is mandatory and must be > 0.");
+
+        _validator
+            .Setup(v => v.Validate(It.IsAny<BulkPaymentsIngestCommand>()))
+            .Returns(validationResult);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        result.HasValidationErrors.Should().BeTrue();
+        result.IsSuccess.Should().BeFalse();
+        result.ValidationErrors.Should().BeEquivalentTo(validationResult.ErrorList);
+        _logger.Verify(
+            logger => logger.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) =>
+                    state.ToString()!.Contains("Payment staging validation failed")
+                    && state.ToString()!.Contains("Payments[0].ApprenticeshipId")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+        _paymentStagingRepository.Verify(
+            x => x.BulkInsertPaymentsAsync(It.IsAny<List<PaymentStagingModel>>()),
+            Times.Never);
+    }
 }
