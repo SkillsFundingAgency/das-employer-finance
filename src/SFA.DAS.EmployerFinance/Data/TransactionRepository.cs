@@ -55,6 +55,18 @@ public class TransactionRepository(IMapper mapper, Lazy<EmployerFinanceDbContext
             commandType: CommandType.Text);
     }
 
+    public Task<IEnumerable<LatestTransactionTypeTransactionId>> GetLatestTransactionTypeTransactionIdsForAccount(long accountId)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@AccountId", accountId, DbType.Int64);
+
+        return db.Value.Database.GetDbConnection().QueryAsync<LatestTransactionTypeTransactionId>(
+            sql: "[employer_financial].[GetLatestTransactionTypeTransactionIdsForAccount]",
+            param: parameters,
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.StoredProcedure);
+    }
+
     public async Task<TransactionLine[]> GetAccountTransactionsByDateRange(long accountId, DateTime fromDate, DateTime toDate)
     {
         var parameters = new DynamicParameters();
