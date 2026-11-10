@@ -17,7 +17,8 @@
     [TransferSenderAccountId] BIGINT NULL, 
     [TransferSenderAccountName] NVARCHAR(100) NULL,
     [TransferReceiverAccountId] BIGINT NULL, 
-    [TransferReceiverAccountName] NVARCHAR(100) NULL
+    [TransferReceiverAccountName] NVARCHAR(100) NULL,
+    [CorrelationId] NVARCHAR(100) NULL
 )
 GO
 

@@ -54,4 +54,18 @@ public class WhenValidatingExpireAccountFunds
             nameof(ExpireAccountFundsCommand.CorrelationId),
             "CorrelationId is required.");
     }
+
+    [Test]
+    public void Then_CorrelationId_Must_Fit_The_Persisted_Request_Identifier()
+    {
+        var result = _validator.Validate(new ExpireAccountFundsCommand
+        {
+            AccountId = 123,
+            CorrelationId = new string('c', 101)
+        });
+
+        result.ValidationDictionary.Should().Contain(
+            nameof(ExpireAccountFundsCommand.CorrelationId),
+            "CorrelationId must be 100 characters or fewer.");
+    }
 }

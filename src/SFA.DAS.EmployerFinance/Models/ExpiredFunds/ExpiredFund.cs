@@ -7,4 +7,5 @@ public class ExpiredFund
     public int CalendarPeriodMonth { get; set; }
     public decimal Amount { get; set; }
     public byte TransactionType { get; set; }
+    public string CorrelationId { get; set; }
 }
