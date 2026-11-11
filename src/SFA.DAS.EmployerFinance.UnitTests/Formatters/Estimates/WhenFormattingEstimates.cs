@@ -67,20 +67,28 @@ public class WhenFormattingEstimates
         formatter.FileExtension.Should().Be("xlsx");
     }
 
-    [TestCase(0)]
-    [TestCase(0.004)]
-    [TestCase(-10)]
-    public void ThenCoInvestmentIsLeftEmptyWhenThereIsNone(decimal coInvestment)
+    [Test]
+    public void ThenCoInvestmentIsLeftEmptyWhenThereIsNone()
     {
-        var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = coInvestment };
+        var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = null };
 
         var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
         var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
 
         currencyValues[^1].Should().BeEmpty();
-        currencyValues[1].Should().Be("£0.00");
         numberValues[^1].Should().BeEmpty();
-        numberValues[1].Should().Be("0.00");
+    }
+
+    [Test]
+    public void ThenCoInvestmentIsShownWhenTheEmployerHasNothingToPay()
+    {
+        var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = 0m };
+
+        var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
+        var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
+
+        currencyValues[^1].Should().Be("£0.00");
+        numberValues[^1].Should().Be("0.00");
     }
 
     [Test]

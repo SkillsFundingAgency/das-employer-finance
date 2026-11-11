@@ -32,7 +32,7 @@ public class WhenIGetEstimatesDownload
                 [
                     CreateProjection(11, 2026, levyIn: 500.10m, learnerCost: 300.20m, completionCost: 100.30m, transferCost: 50.40m, transferCompletionCost: 10m, expiredLevy: 20.50m, closingBalance: 1019.20m),
                     CreateProjection(12, 2026, levyIn: 0m, learnerCost: 1500m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: -480.80m, coInvestment: 120.25m),
-                    CreateProjection(1, 2027, levyIn: 600m, learnerCost: 0m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: 119.20m),
+                    CreateProjection(1, 2027, levyIn: 600m, learnerCost: 0m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: 119.20m, coInvestment: 0m),
                 ]
             });
 
@@ -87,11 +87,11 @@ public class WhenIGetEstimatesDownload
     }
 
     [Test]
-    public async Task ThenCoInvestmentIsShownAsAPositiveAmountLikeTheTimeline()
+    public async Task ThenCoInvestmentIsPassedThroughIncludingWhenThereIsNone()
     {
         await _handler.Handle(new GetEstimatesDownloadQuery(AccountId, DownloadFormatType.CSV), CancellationToken.None);
 
-        _lines.Select(x => x.CoInvestmentCosts).Should().Equal(0m, 120.25m, 0m);
+        _lines.Select(x => x.CoInvestmentCosts).Should().Equal(null, 120.25m, 0m);
     }
 
     [Test]
@@ -117,7 +117,7 @@ public class WhenIGetEstimatesDownload
     }
 
     private static MonthlyFundingBreakdown CreateProjection(int month, int year, decimal levyIn, decimal learnerCost, decimal completionCost,
-        decimal transferCost, decimal transferCompletionCost, decimal expiredLevy, decimal closingBalance, decimal coInvestment = 0m) => new()
+        decimal transferCost, decimal transferCompletionCost, decimal expiredLevy, decimal closingBalance, decimal? coInvestment = null) => new()
     {
         Month = month,
         Year = year,

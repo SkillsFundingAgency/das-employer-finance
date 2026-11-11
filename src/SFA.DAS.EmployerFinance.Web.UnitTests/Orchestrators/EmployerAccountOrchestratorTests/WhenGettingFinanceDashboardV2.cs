@@ -395,6 +395,35 @@ internal class WhenGettingFinanceDashboardV2
             });
     }
 
+    [TestCase(null, false)]
+    [TestCase(0, true)]
+    [TestCase(80, true)]
+    public async Task Then_MonthEstimates_Are_In_CoInvestment_When_There_Is_A_CoInvestment_Value(int? coInvestment, bool expectedInCoInvestment)
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary(),
+                        CoInvestmentCosts = coInvestment
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        var estimate = result.Data.Estimates!.MonthEstimates.Single();
+        estimate.CoInvestmentCosts.Should().Be(coInvestment);
+        estimate.InCoInvestment.Should().Be(expectedInCoInvestment);
+    }
+
     [Test]
     public async Task Then_MonthEstimates_Costs_Are_Displayed_As_Negative()
     {

@@ -36,7 +36,7 @@
                             @if (month.InCoInvestment)
                             {
                                 <hr class="govuk-section-break govuk-section-break--visible"/>
-                                <line-item text="Co-investment payment" value="@month.CoInvestmentCosts.ToString("C0", culture)"/>
+                                <line-item text="Co-investment payment" value="@month.CoInvestmentCosts.Value.ToString("C0", culture)"/>
                             }   
 
                         </estimates-month-card>

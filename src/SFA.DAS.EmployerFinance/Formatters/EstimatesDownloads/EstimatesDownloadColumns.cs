@@ -26,10 +26,8 @@ public static class EstimatesDownloadColumns
         Format(estimate.CompletionPayments, moneyFormat),
         Format(estimate.ExpiredLevy, moneyFormat),
         Format(estimate.LevyBalanceEndOfMonth, moneyFormat),
-        FormatCoInvestment(estimate.CoInvestmentCosts, moneyFormat)
+        estimate.CoInvestmentCosts?.ToString(moneyFormat, Culture) ?? string.Empty
     ];
 
     private static string Format(decimal value, string moneyFormat) => value.ToString(moneyFormat, Culture);
-
-    private static string FormatCoInvestment(decimal value, string moneyFormat) => Math.Round(value, 2) > 0 ? Format(value, moneyFormat) : string.Empty;
 }

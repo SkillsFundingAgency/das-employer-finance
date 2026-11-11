@@ -10,5 +10,5 @@ public class EstimatesDownloadLine
     public decimal TransferCosts { get; set; }
     public decimal ExpiredLevy { get; set; }
     public decimal LevyBalanceEndOfMonth { get; set; }
-    public decimal CoInvestmentCosts { get; set; }
+    public decimal? CoInvestmentCosts { get; set; }
 }
