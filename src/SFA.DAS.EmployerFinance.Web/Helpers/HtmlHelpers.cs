@@ -5,18 +5,17 @@ namespace SFA.DAS.EmployerFinance.Web.Helpers;
 
 public interface IHtmlHelpers
 {
-    HtmlString GetContentByType(string type);
+    Task<HtmlString> GetContentByTypeAsync(string type);
 }
 
 public class HtmlHelpers(IMediator mediator) : IHtmlHelpers
 {
-
-    public HtmlString GetContentByType(string type)
+    public async Task<HtmlString> GetContentByTypeAsync(string type)
     {
-        var userResponse = mediator.Send(new GetContentQuery
+        var userResponse = await mediator.Send(new GetContentQuery
         {
             ContentType = type
-        }).GetAwaiter().GetResult();
+        });
 
         return new HtmlString(userResponse.Content);
     }
