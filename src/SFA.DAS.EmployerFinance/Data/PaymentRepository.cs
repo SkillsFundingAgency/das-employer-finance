@@ -13,20 +13,24 @@ public class PaymentRepository(Lazy<EmployerFinanceDbContext> db) : IPaymentRepo
         long apprenticeshipId,
         CancellationToken cancellationToken)
     {
-        var transactions = db.Value.Transactions
-            .Where(t => t.AccountId == accountId && t.TransactionType == TransactionItemType.Payment);
-
         // Transfer payments are recorded against the receiving account, so the sending account
         // gets the levy transfer payments for the apprenticeships it funds
-        var isTransferSender = await db.Value.AccountTransfers
-            .AnyAsync(t => t.SenderAccountId == accountId && t.ApprenticeshipId == apprenticeshipId, cancellationToken);
+        var transferSender = await db.Value.AccountTransfers
+            .FirstOrDefaultAsync(t => t.SenderAccountId == accountId && t.ApprenticeshipId == apprenticeshipId, cancellationToken);
 
+        if (transferSender != null)
+        {
+            accountId = transferSender.ReceiverAccountId;
+        }
+        
+        var transactions = db.Value.Transactions
+            .Where(t => t.AccountId == accountId && t.TransactionType == TransactionItemType.Payment);
+        
         // An apprenticeship has a payment per period, and DateImported comes from the matching
         // provider payment transaction. A subquery rather than a join keeps one row per payment.
         return await db.Value.Payments
             .Where(p => p.ApprenticeshipId == apprenticeshipId
-                        && (p.EmployerAccountId == accountId
-                            || (isTransferSender && p.FundingSource == FundingSource.LevyTransfer)))
+                        && p.EmployerAccountId == accountId)
             .Select(payment => new Payment
             {
                 Id = payment.Id,
