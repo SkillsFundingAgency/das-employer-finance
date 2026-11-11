@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -13,21 +13,22 @@ public class WhenFormattingEstimates
     {
         Month = new DateOnly(2026, 11, 1),
         LevyBalanceStartOfMonth = 10000m,
-        LevyIn = 1500m,
+        LevyIn = 1500.5m,
         LearnerCosts = -400m,
         CompletionPayments = -100m,
-        TransferCosts = -250m,
+        TransferCosts = -250.25m,
         ExpiredLevy = -50m,
-        LevyBalanceEndOfMonth = 10700m
+        LevyBalanceEndOfMonth = 10700.25m,
+        CoInvestmentCosts = 75m
     };
 
     private static readonly string[] ExpectedHeaders =
     [
-        "Month", "Levy balance start of month", "Levy in", "Learner costs", "Completion payments",
-        "Transfer costs", "Expired levy", "Levy balance end of month"
+        "Month", "Starting levy", "Levy in", "Paid by levy", "Transfers sent",
+        "Completion payments", "Expiry", "Remaining levy", "Co-investment"
     ];
 
-    private static readonly string[] ExpectedValues = ["November 2026", "10000", "1500", "-400", "-100", "-250", "-50", "10700"];
+    private static readonly string[] ExpectedValues = ["Nov-26", "£10,000.00", "£1,500.50", "-£400.00", "-£250.25", "-£100.00", "-£50.00", "£10,700.25", "£75.00"];
 
     [Test]
     public void ThenTheCsvHasTheHeadersAndOneRowPerMonthInOrder()
@@ -39,7 +40,7 @@ public class WhenFormattingEstimates
 
         lines.Should().HaveCount(2);
         lines[0].Should().Be(string.Join(",", ExpectedHeaders));
-        lines[1].Should().Be(string.Join(",", ExpectedValues));
+        lines[1].Should().Be("Nov-26,10000.00,1500.50,-400.00,-250.25,-100.00,-50.00,10700.25,75.00");
         formatter.DownloadFormatType.Should().Be(DownloadFormatType.CSV);
         formatter.FileExtension.Should().Be("csv");
     }
@@ -64,5 +65,35 @@ public class WhenFormattingEstimates
         worksheets["Estimates"][1].Should().Equal(ExpectedValues);
         formatter.DownloadFormatType.Should().Be(DownloadFormatType.Excel);
         formatter.FileExtension.Should().Be("xlsx");
+    }
+
+    [TestCase(0)]
+    [TestCase(0.004)]
+    [TestCase(-10)]
+    public void ThenCoInvestmentIsLeftEmptyWhenThereIsNone(decimal coInvestment)
+    {
+        var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = coInvestment };
+
+        var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
+        var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
+
+        currencyValues[^1].Should().BeEmpty();
+        currencyValues[1].Should().Be("£0.00");
+        numberValues[^1].Should().BeEmpty();
+        numberValues[1].Should().Be("0.00");
+    }
+
+    [Test]
+    public void ThenMoneyIsShownToTwoDecimalPlaces()
+    {
+        var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), LevyIn = 10.005m, LearnerCosts = -20.3333m };
+
+        var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
+        var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
+
+        currencyValues[2].Should().Be("£10.01");
+        currencyValues[3].Should().Be("-£20.33");
+        numberValues[2].Should().Be("10.01");
+        numberValues[3].Should().Be("-20.33");
     }
 }

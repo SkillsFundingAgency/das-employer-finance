@@ -1,4 +1,4 @@
-using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
+﻿using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Models.Estimates;
 using SFA.DAS.EmployerFinance.Services.Contracts;
@@ -36,12 +36,13 @@ public class GetEstimatesDownloadQueryHandler(
             {
                 Month = new DateOnly(projection.Year, projection.Month, 1),
                 LevyBalanceStartOfMonth = NotBelowZero(startOfMonthBalance),
-                LevyIn = Math.Ceiling(projection.LevyInSummary.Total),
-                LearnerCosts = Math.Ceiling(projection.LevyOutSummary.CommittedLearnerCost) * -1,
-                CompletionPayments = Math.Ceiling(projection.LevyOutSummary.CommittedLearnerFinalPaymentCost) * -1,
-                TransferCosts = Math.Ceiling(projection.LevyOutSummary.CommittedTransferOut + projection.LevyOutSummary.CommittedTransferOutFinalPaymentCost) * -1,
-                ExpiredLevy = Math.Ceiling(projection.LevyOutSummary.ExpiredLevy) * -1,
-                LevyBalanceEndOfMonth = NotBelowZero(projection.ClosingBalance)
+                LevyIn = projection.LevyInSummary.Total,
+                LearnerCosts = projection.LevyOutSummary.CommittedLearnerCost * -1,
+                CompletionPayments = projection.LevyOutSummary.CommittedLearnerFinalPaymentCost * -1,
+                TransferCosts = (projection.LevyOutSummary.CommittedTransferOut + projection.LevyOutSummary.CommittedTransferOutFinalPaymentCost) * -1,
+                ExpiredLevy = projection.LevyOutSummary.ExpiredLevy * -1,
+                LevyBalanceEndOfMonth = NotBelowZero(projection.ClosingBalance),
+                CoInvestmentCosts = projection.CoInvestmentCosts
             });
 
             startOfMonthBalance = projection.ClosingBalance;
@@ -50,5 +51,5 @@ public class GetEstimatesDownloadQueryHandler(
         return lines;
     }
 
-    private static decimal NotBelowZero(decimal balance) => Math.Max(0m, Math.Ceiling(balance));
+    private static decimal NotBelowZero(decimal balance) => Math.Max(0m, balance);
 }

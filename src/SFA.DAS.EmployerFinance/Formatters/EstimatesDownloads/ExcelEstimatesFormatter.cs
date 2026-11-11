@@ -18,7 +18,7 @@ public class ExcelEstimatesFormatter(IExcelService excelService) : IEstimatesFor
     {
         var excelRows = new List<string[]> { EstimatesDownloadColumns.Headers };
 
-        excelRows.AddRange(estimates.Select(EstimatesDownloadColumns.GetValues));
+        excelRows.AddRange(estimates.Select(estimate => EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat)));
 
         return excelService.CreateExcelFile(new Dictionary<string, string[][]>
         {

@@ -1,4 +1,4 @@
-using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
+﻿using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
 using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
@@ -31,7 +31,7 @@ public class WhenIGetEstimatesDownload
                 Projections =
                 [
                     CreateProjection(11, 2026, levyIn: 500.10m, learnerCost: 300.20m, completionCost: 100.30m, transferCost: 50.40m, transferCompletionCost: 10m, expiredLevy: 20.50m, closingBalance: 1019.20m),
-                    CreateProjection(12, 2026, levyIn: 0m, learnerCost: 1500m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: -480.80m),
+                    CreateProjection(12, 2026, levyIn: 0m, learnerCost: 1500m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: -480.80m, coInvestment: 120.25m),
                     CreateProjection(1, 2027, levyIn: 600m, learnerCost: 0m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: 119.20m),
                 ]
             });
@@ -68,13 +68,13 @@ public class WhenIGetEstimatesDownload
         _lines[0].Should().BeEquivalentTo(new EstimatesDownloadLine
         {
             Month = new DateOnly(2026, 11, 1),
-            LevyBalanceStartOfMonth = 1001m,
-            LevyIn = 501m,
-            LearnerCosts = -301m,
-            CompletionPayments = -101m,
-            TransferCosts = -61m,
-            ExpiredLevy = -21m,
-            LevyBalanceEndOfMonth = 1020m
+            LevyBalanceStartOfMonth = 1000.40m,
+            LevyIn = 500.10m,
+            LearnerCosts = -300.20m,
+            CompletionPayments = -100.30m,
+            TransferCosts = -60.40m,
+            ExpiredLevy = -20.50m,
+            LevyBalanceEndOfMonth = 1019.20m
         });
     }
 
@@ -87,13 +87,21 @@ public class WhenIGetEstimatesDownload
     }
 
     [Test]
+    public async Task ThenCoInvestmentIsShownAsAPositiveAmountLikeTheTimeline()
+    {
+        await _handler.Handle(new GetEstimatesDownloadQuery(AccountId, DownloadFormatType.CSV), CancellationToken.None);
+
+        _lines.Select(x => x.CoInvestmentCosts).Should().Equal(0m, 120.25m, 0m);
+    }
+
+    [Test]
     public async Task ThenBalancesBelowZeroAreShownAsZero()
     {
         await _handler.Handle(new GetEstimatesDownloadQuery(AccountId, DownloadFormatType.CSV), CancellationToken.None);
 
         _lines[1].LevyBalanceEndOfMonth.Should().Be(0m);
         _lines[2].LevyBalanceStartOfMonth.Should().Be(0m);
-        _lines[2].LevyBalanceEndOfMonth.Should().Be(120m);
+        _lines[2].LevyBalanceEndOfMonth.Should().Be(119.20m);
     }
 
     private Mock<IEstimatesFormatter> CreateFormatter(DownloadFormatType format, string extension)
@@ -109,7 +117,7 @@ public class WhenIGetEstimatesDownload
     }
 
     private static MonthlyFundingBreakdown CreateProjection(int month, int year, decimal levyIn, decimal learnerCost, decimal completionCost,
-        decimal transferCost, decimal transferCompletionCost, decimal expiredLevy, decimal closingBalance) => new()
+        decimal transferCost, decimal transferCompletionCost, decimal expiredLevy, decimal closingBalance, decimal coInvestment = 0m) => new()
     {
         Month = month,
         Year = year,
@@ -122,6 +130,7 @@ public class WhenIGetEstimatesDownload
             CommittedTransferOutFinalPaymentCost = transferCompletionCost,
             ExpiredLevy = expiredLevy
         },
-        ClosingBalance = closingBalance
+        ClosingBalance = closingBalance,
+        CoInvestmentCosts = coInvestment
     };
 }
