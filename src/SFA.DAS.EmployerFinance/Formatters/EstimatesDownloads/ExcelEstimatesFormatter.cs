@@ -7,6 +7,14 @@ namespace SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
 public class ExcelEstimatesFormatter(IExcelService excelService) : IEstimatesFormatter
 {
     private const string WorksheetName = "Estimates";
+    private const string MonthFormat = "mmm-yy";
+    private const string CurrencyFormat = "\"£\"#,##0.00;-\"£\"#,##0.00";
+
+    private static readonly IReadOnlyList<ExcelColumn> Columns =
+    [
+        new(EstimatesDownloadColumns.Headers[0], MonthFormat),
+        .. EstimatesDownloadColumns.Headers.Skip(1).Select(header => new ExcelColumn(header, CurrencyFormat))
+    ];
 
     public string MimeType => "text/xlsx";
 
@@ -16,13 +24,6 @@ public class ExcelEstimatesFormatter(IExcelService excelService) : IEstimatesFor
 
     public byte[] GetFileData(IEnumerable<EstimatesDownloadLine> estimates)
     {
-        var excelRows = new List<string[]> { EstimatesDownloadColumns.Headers };
-
-        excelRows.AddRange(estimates.Select(estimate => EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat)));
-
-        return excelService.CreateExcelFile(new Dictionary<string, string[][]>
-        {
-            { WorksheetName, excelRows.ToArray() }
-        });
+        return excelService.CreateExcelFile(WorksheetName, Columns, estimates.Select(EstimatesDownloadColumns.GetCellValues));
     }
 }

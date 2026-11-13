@@ -20,7 +20,7 @@ public class CsvEstimatesFormatter : IEstimatesFormatter
 
         foreach (var estimate in estimates)
         {
-            builder.AppendLine(string.Join(",", EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat)));
+            builder.AppendLine(string.Join(",", EstimatesDownloadColumns.GetValues(estimate)));
         }
 
         return System.Text.Encoding.UTF8.GetBytes(builder.ToString());

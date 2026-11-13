@@ -5,8 +5,7 @@ namespace SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
 
 public static class EstimatesDownloadColumns
 {
-    public const string CurrencyFormat = "C2";
-    public const string NumberFormat = "0.00";
+    private const string NumberFormat = "0.00";
 
     private static readonly CultureInfo Culture = new("en-GB");
 
@@ -16,18 +15,31 @@ public static class EstimatesDownloadColumns
         "Completion payments", "Expiry", "Remaining levy", "Co-investment"
     ];
 
-    public static string[] GetValues(EstimatesDownloadLine estimate, string moneyFormat) =>
+    public static string[] GetValues(EstimatesDownloadLine estimate) =>
     [
         estimate.Month.ToString("MMM-yy", CultureInfo.InvariantCulture),
-        Format(estimate.LevyBalanceStartOfMonth, moneyFormat),
-        Format(estimate.LevyIn, moneyFormat),
-        Format(estimate.LearnerCosts, moneyFormat),
-        Format(estimate.TransferCosts, moneyFormat),
-        Format(estimate.CompletionPayments, moneyFormat),
-        Format(estimate.ExpiredLevy, moneyFormat),
-        Format(estimate.LevyBalanceEndOfMonth, moneyFormat),
-        estimate.CoInvestmentCosts?.ToString(moneyFormat, Culture) ?? string.Empty
+        Format(estimate.LevyBalanceStartOfMonth),
+        Format(estimate.LevyIn),
+        Format(estimate.LearnerCosts),
+        Format(estimate.TransferCosts),
+        Format(estimate.CompletionPayments),
+        Format(estimate.ExpiredLevy),
+        Format(estimate.LevyBalanceEndOfMonth),
+        estimate.CoInvestmentCosts?.ToString(NumberFormat, Culture) ?? string.Empty
     ];
 
-    private static string Format(decimal value, string moneyFormat) => value.ToString(moneyFormat, Culture);
+    public static object[] GetCellValues(EstimatesDownloadLine estimate) =>
+    [
+        estimate.Month.ToDateTime(TimeOnly.MinValue),
+        estimate.LevyBalanceStartOfMonth,
+        estimate.LevyIn,
+        estimate.LearnerCosts,
+        estimate.TransferCosts,
+        estimate.CompletionPayments,
+        estimate.ExpiredLevy,
+        estimate.LevyBalanceEndOfMonth,
+        estimate.CoInvestmentCosts
+    ];
+
+    private static string Format(decimal value) => value.ToString(NumberFormat, Culture);
 }

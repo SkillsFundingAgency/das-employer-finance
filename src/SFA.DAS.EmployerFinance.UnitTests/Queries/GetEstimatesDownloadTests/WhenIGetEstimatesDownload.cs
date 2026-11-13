@@ -16,6 +16,7 @@ public class WhenIGetEstimatesDownload
     private Mock<IOuterApiService> _outerApiService;
     private Mock<IEstimatesFormatter> _csvFormatter;
     private Mock<IEstimatesFormatter> _excelFormatter;
+    private Mock<IEstimatesFormatterFactory> _estimatesFormatterFactory;
     private List<EstimatesDownloadLine> _lines;
     private GetEstimatesDownloadQueryHandler _handler;
 
@@ -39,7 +40,11 @@ public class WhenIGetEstimatesDownload
         _csvFormatter = CreateFormatter(DownloadFormatType.CSV, "csv");
         _excelFormatter = CreateFormatter(DownloadFormatType.Excel, "xlsx");
 
-        _handler = new GetEstimatesDownloadQueryHandler(_outerApiService.Object, [_csvFormatter.Object, _excelFormatter.Object]);
+        _estimatesFormatterFactory = new Mock<IEstimatesFormatterFactory>();
+        _estimatesFormatterFactory.Setup(x => x.GetEstimatesFormatterByType(DownloadFormatType.CSV)).Returns(_csvFormatter.Object);
+        _estimatesFormatterFactory.Setup(x => x.GetEstimatesFormatterByType(DownloadFormatType.Excel)).Returns(_excelFormatter.Object);
+
+        _handler = new GetEstimatesDownloadQueryHandler(_outerApiService.Object, _estimatesFormatterFactory.Object);
     }
 
     [TestCase(DownloadFormatType.CSV, "csv")]

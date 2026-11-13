@@ -46,23 +46,25 @@ public class WhenFormattingEstimates
     }
 
     [Test]
-    public void ThenTheExcelWorksheetHasTheHeadersAndOneRowPerMonthInOrder()
+    public void ThenTheExcelWorksheetHasTypedValuesInColumnOrder()
     {
         var excelService = new Mock<IExcelService>();
-        Dictionary<string, string[][]> worksheets = null;
+        IReadOnlyList<ExcelColumn> columns = null;
+        List<object[]> rows = null;
         excelService
-            .Setup(x => x.CreateExcelFile(It.IsAny<Dictionary<string, string[][]>>()))
-            .Callback<Dictionary<string, string[][]>>(x => worksheets = x)
+            .Setup(x => x.CreateExcelFile("Estimates", It.IsAny<IReadOnlyList<ExcelColumn>>(), It.IsAny<IEnumerable<object[]>>()))
+            .Callback<string, IReadOnlyList<ExcelColumn>, IEnumerable<object[]>>((_, c, r) => { columns = c; rows = r.ToList(); })
             .Returns([1, 2, 3]);
         var formatter = new ExcelEstimatesFormatter(excelService.Object);
 
         var result = formatter.GetFileData([Estimate]);
 
         result.Should().BeEquivalentTo(new byte[] { 1, 2, 3 });
-        worksheets.Should().ContainKey("Estimates");
-        worksheets["Estimates"].Should().HaveCount(2);
-        worksheets["Estimates"][0].Should().Equal(ExpectedHeaders);
-        worksheets["Estimates"][1].Should().Equal(ExpectedValues);
+        columns.Select(x => x.Header).Should().Equal(ExpectedHeaders);
+        columns[0].NumberFormat.Should().Be("mmm-yy");
+        columns.Skip(1).Should().AllSatisfy(x => x.NumberFormat.Should().Be("\"£\"#,##0.00;-\"£\"#,##0.00"));
+        rows.Should().ContainSingle();
+        rows[0].Should().Equal(new DateTime(2026, 11, 1), 10000m, 1500.5m, -400m, -250.25m, -100m, -50m, 10700.25m, 75m);
         formatter.DownloadFormatType.Should().Be(DownloadFormatType.Excel);
         formatter.FileExtension.Should().Be("xlsx");
     }
@@ -72,11 +74,8 @@ public class WhenFormattingEstimates
     {
         var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = null };
 
-        var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
-        var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
-
-        currencyValues[^1].Should().BeEmpty();
-        numberValues[^1].Should().BeEmpty();
+        EstimatesDownloadColumns.GetValues(estimate)[^1].Should().BeEmpty();
+        EstimatesDownloadColumns.GetCellValues(estimate)[^1].Should().BeNull();
     }
 
     [Test]
@@ -84,11 +83,8 @@ public class WhenFormattingEstimates
     {
         var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = 0m };
 
-        var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
-        var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
-
-        currencyValues[^1].Should().Be("£0.00");
-        numberValues[^1].Should().Be("0.00");
+        EstimatesDownloadColumns.GetValues(estimate)[^1].Should().Be("0.00");
+        EstimatesDownloadColumns.GetCellValues(estimate)[^1].Should().Be(0m);
     }
 
     [Test]
@@ -96,12 +92,9 @@ public class WhenFormattingEstimates
     {
         var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), LevyIn = 10.005m, LearnerCosts = -20.3333m };
 
-        var currencyValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.CurrencyFormat);
-        var numberValues = EstimatesDownloadColumns.GetValues(estimate, EstimatesDownloadColumns.NumberFormat);
+        var values = EstimatesDownloadColumns.GetValues(estimate);
 
-        currencyValues[2].Should().Be("£10.01");
-        currencyValues[3].Should().Be("-£20.33");
-        numberValues[2].Should().Be("10.01");
-        numberValues[3].Should().Be("-20.33");
+        values[2].Should().Be("10.01");
+        values[3].Should().Be("-20.33");
     }
 }
