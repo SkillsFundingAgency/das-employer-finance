@@ -19,20 +19,20 @@ public class OuterApiClient : IOuterApiClient
         _httpClient.BaseAddress = new Uri(_config.BaseUrl);
     }
 
-    public async Task<TResponse> Get<TResponse>(IGetApiRequest request)
+    public async Task<TResponse> Get<TResponse>(IGetApiRequest request, CancellationToken cancellationToken = default)
     {
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, request.GetUrl);
             
         AddHeaders(httpRequestMessage);
 
-        var response = await _httpClient.SendAsync(httpRequestMessage).ConfigureAwait(false);
+        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
         response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         return JsonConvert.DeserializeObject<TResponse>(json);
     }
 
-    public async Task<TResponse> Post<TResponse>(string url, object body)
+    public async Task<TResponse> Post<TResponse>(string url, object body, CancellationToken cancellationToken = default)
     {
         var jsonBody = JsonConvert.SerializeObject(body);
 
@@ -41,11 +41,11 @@ public class OuterApiClient : IOuterApiClient
 
         AddHeaders(httpRequestMessage);
 
-        var response = await _httpClient.SendAsync(httpRequestMessage).ConfigureAwait(false);
+        var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
         response.EnsureSuccessStatusCode();
 
-        var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         return JsonConvert.DeserializeObject<TResponse>(json);
     }
 

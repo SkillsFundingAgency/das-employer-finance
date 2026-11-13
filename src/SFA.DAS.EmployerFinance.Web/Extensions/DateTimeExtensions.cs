@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.EmployerFinance.Web.Extensions;
+﻿using System.Globalization;
+
+namespace SFA.DAS.EmployerFinance.Web.Extensions;
 
 public static class DateTimeExtensions
 {
@@ -37,5 +39,13 @@ public static class DateTimeExtensions
     public static DateTime ToGmtStandardTime(this DateTime date)
     {
         return TimeZoneInfo.ConvertTime(date, TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time"));
+    }
+    
+    public static string ToGdsTimeFormatFull(this DateTime date)
+    {
+        var dateTimeFormatInfo = (DateTimeFormatInfo)CultureInfo.CurrentCulture.DateTimeFormat.Clone();
+        dateTimeFormatInfo.AMDesignator = dateTimeFormatInfo.AMDesignator.ToLower();
+        dateTimeFormatInfo.PMDesignator = dateTimeFormatInfo.PMDesignator.ToLower();
+        return date.ToString("h:mmtt", dateTimeFormatInfo);
     }
 }
