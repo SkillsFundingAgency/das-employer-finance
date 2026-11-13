@@ -554,11 +554,12 @@ public class DasLevyRepository(
         return result.ToList();
     }
     
-    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsByDateRange(long accountId, DateOnly fromDate, DateOnly toDate)
+    public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsByDateRange(long accountId, DateOnly fromDate, DateOnly toDate, List<string> emprefs)
     {
         var parameters = new DynamicParameters();
 
         parameters.Add("@accountId", accountId, DbType.Int64);
+        parameters.Add("@emprefs", emprefs);
        
         const string sqlQuery = """
 
@@ -571,13 +572,7 @@ public class DasLevyRepository(
                                 	                                ,SubmissionDate
                                 	                                ,CreatedDate
                                                                 FROM [employer_financial].[GetLevyDeclarationAndTopUp]
-                                                                WHERE EmpRef IN
-                                                                (
-                                	                                SELECT
-                                		                                EmpRef
-                                	                                FROM [employer_financial].LevyDeclaration
-                                	                                WHERE AccountId = @AccountId
-                                                                )
+                                                                WHERE EmpRef IN @emprefs
                                                                 AND (LastSubmission = 1 OR EndOfYearAdjustment = 1)
                                                                 AND AccountId = @AccountId
                                                                 ORDER BY SubmissionDate ASC

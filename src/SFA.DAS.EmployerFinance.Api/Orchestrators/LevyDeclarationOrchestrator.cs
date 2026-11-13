@@ -116,10 +116,10 @@ public class LevyDeclarationOrchestrator(IMediator mediator,
         return response.Summary;
     }
 
-    public async Task<List<LevyDeclaration>> GetLevyDeclarationsByAccountIdAndDateRange(long accountId, DateOnly fromDate, DateOnly toDate)
+    public async Task<List<LevyDeclaration>> GetLevyDeclarationsByAccountIdAndDateRange(long accountId, DateOnly fromDate, DateOnly toDate, List<string> emprefs)
     {
         logger.LogInformation("Requesting levy declarations for accountId {AccountId} from {FromDate} to {ToDate}", accountId, fromDate, toDate);
-        var response = await mediator.Send(new GetLevyDeclarationsByAccountAndDateRangeQuery(accountId, fromDate, toDate));
+        var response = await mediator.Send(new GetLevyDeclarationsByAccountAndDateRangeQuery(accountId, fromDate, toDate, emprefs));
         if (response?._ == null)
         {
             return null;

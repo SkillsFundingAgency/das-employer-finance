@@ -1,5 +1,5 @@
-﻿using SFA.DAS.EmployerFinance.Formatters.EstimatesDownloads;
-using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
+﻿using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
+using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models.Estimates;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 
@@ -7,14 +7,14 @@ namespace SFA.DAS.EmployerFinance.Queries.GetEstimatesDownload;
 
 public class GetEstimatesDownloadQueryHandler(
     IOuterApiService outerApiService,
-    IEnumerable<IEstimatesFormatter> formatters)
+    IEstimatesFormatterFactory estimatesFormatterFactory)
     : IRequestHandler<GetEstimatesDownloadQuery, GetEstimatesDownloadResponse>
 {
     public async Task<GetEstimatesDownloadResponse> Handle(GetEstimatesDownloadQuery message, CancellationToken cancellationToken)
     {
         var projections = await outerApiService.GetLevyProjectionsForDownload(message.AccountId, cancellationToken);
 
-        var formatter = formatters.Single(x => x.DownloadFormatType == message.DownloadFormat);
+        var formatter = estimatesFormatterFactory.GetEstimatesFormatterByType(message.DownloadFormat);
 
         return new GetEstimatesDownloadResponse
         {

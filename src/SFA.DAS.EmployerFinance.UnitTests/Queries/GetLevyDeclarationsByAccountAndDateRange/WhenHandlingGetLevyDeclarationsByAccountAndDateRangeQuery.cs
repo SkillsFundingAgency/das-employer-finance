@@ -36,7 +36,7 @@ internal class WhenIHandleGetLevyDeclarationsByAccountAndDateRangeQuery
             .ReturnsAsync(new ValidationResult());
 
         _dasLevyRepository
-            .Setup(x => x.GetAccountLevyDeclarationsByDateRange(query.AccountId, query.FromDate, query.ToDate))
+            .Setup(x => x.GetAccountLevyDeclarationsByDateRange(query.AccountId, query.FromDate, query.ToDate, query.Emprefs))
             .ReturnsAsync(levyDeclarations);
 
         // Act
@@ -86,7 +86,8 @@ internal class WhenIHandleGetLevyDeclarationsByAccountAndDateRangeQuery
             x => x.GetAccountLevyDeclarationsByDateRange(
                 It.IsAny<long>(),
                 It.IsAny<DateOnly>(),
-                It.IsAny<DateOnly>()),
+                It.IsAny<DateOnly>(),
+                It.IsAny<List<string>>()),
             Times.Never);
     }
 }

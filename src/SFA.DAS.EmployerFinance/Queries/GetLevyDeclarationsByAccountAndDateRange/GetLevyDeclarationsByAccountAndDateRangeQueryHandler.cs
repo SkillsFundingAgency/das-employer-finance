@@ -16,7 +16,7 @@ public class GetLevyDeclarationsByAccountAndDateRangeQueryHandler(IDasLevyReposi
             throw new ValidationException(validationResult.ConvertToDataAnnotationsValidationResult(), null, null);
         }
 
-        var result = await dasLevyRepository.GetAccountLevyDeclarationsByDateRange(request.AccountId, request.FromDate, request.ToDate);
+        var result = await dasLevyRepository.GetAccountLevyDeclarationsByDateRange(request.AccountId, request.FromDate, request.ToDate, request.Emprefs);
         return new GetLevyDeclarationsByAccountAndDateRangeQueryResult(result);
     }
 }
