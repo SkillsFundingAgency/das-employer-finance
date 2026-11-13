@@ -1,4 +1,4 @@
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using FundingSource = SFA.DAS.Provider.Events.Api.Types.FundingSource;
 
@@ -7,7 +7,7 @@ namespace SFA.DAS.EmployerFinance.Queries.GetCollectionPeriodPaymentsByAccountId
 public class GetCollectionPeriodPaymentsByAccountIdQueryHandler(IPaymentRepository paymentRepository)
     : IRequestHandler<GetCollectionPeriodPaymentsByAccountIdQuery, GetCollectionPeriodPaymentsByAccountIdQueryResult>
 {
-    private static readonly FundingSource[] AccountFundingSources = [FundingSource.Levy, FundingSource.CoInvestedEmployer];
+    private static readonly FundingSource[] AccountFundingSources = [FundingSource.Levy, FundingSource.CoInvestedEmployer, FundingSource.CoInvestedSfa];
 
     public async Task<GetCollectionPeriodPaymentsByAccountIdQueryResult> Handle(GetCollectionPeriodPaymentsByAccountIdQuery request, CancellationToken cancellationToken)
     {

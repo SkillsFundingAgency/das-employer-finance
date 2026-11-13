@@ -79,18 +79,19 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         return Ok(result);
     }
 
-    [HttpGet("{accountId:long}/summaryByDate")]
+    [HttpPost("{accountId:long}/summaryByDate")]
     [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
     public async Task<IActionResult> GetLevyDeclarationSummaryByDate(long accountId,
         [FromQuery, Required] DateOnly fromDate,
-        [FromQuery, Required] DateOnly toDate)
+        [FromQuery, Required] DateOnly toDate,
+        [FromBody] List<string> emprefs)
     {
         if (!ModelState.IsValid)
         {
             return ValidationProblem(ModelState);
         }
 
-        var result = await orchestrator.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+        var result = await orchestrator.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate, emprefs);
         if (result == null)
         {
             return NotFound();

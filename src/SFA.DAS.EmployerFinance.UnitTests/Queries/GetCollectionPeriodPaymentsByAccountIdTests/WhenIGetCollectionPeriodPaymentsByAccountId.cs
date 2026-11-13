@@ -1,4 +1,4 @@
-using SFA.DAS.EmployerFinance.Data.Contracts;
+﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Queries.GetCollectionPeriodPaymentsByAccountId;
 using FundingSource = SFA.DAS.Provider.Events.Api.Types.FundingSource;
@@ -66,7 +66,9 @@ public class WhenIGetCollectionPeriodPaymentsByAccountId
             CreatePayment(FundingSource.Levy, TransactionType.Learning, 150),
             CreatePayment(FundingSource.Levy, TransactionType.Completion, 300),
             CreatePayment(FundingSource.CoInvestedEmployer, TransactionType.Learning, 5),
-            CreatePayment(FundingSource.CoInvestedEmployer, TransactionType.Learning, 10));
+            CreatePayment(FundingSource.CoInvestedEmployer, TransactionType.Learning, 10),
+            CreatePayment(FundingSource.CoInvestedSfa, TransactionType.Learning, 95),
+            CreatePayment(FundingSource.CoInvestedSfa, TransactionType.Learning, 190));
 
         // Act
         var result = await _handler.Handle(_query, CancellationToken.None);
@@ -78,10 +80,10 @@ public class WhenIGetCollectionPeriodPaymentsByAccountId
             new CollectionPeriodPaymentTotal(FundingSource.Levy, TransactionType.Learning, 250),
             new CollectionPeriodPaymentTotal(FundingSource.Levy, TransactionType.Completion, 300),
             new CollectionPeriodPaymentTotal(FundingSource.CoInvestedEmployer, TransactionType.Learning, 15),
+            new CollectionPeriodPaymentTotal(FundingSource.CoInvestedSfa, TransactionType.Learning, 285),
         });
     }
 
-    [TestCase(FundingSource.CoInvestedSfa)]
     [TestCase(FundingSource.FullyFundedSfa)]
     [TestCase(FundingSource.LevyTransfer)]
     public async Task Then_The_Account_Does_Not_See_Its_Own_Payments_From_Other_Funding_Sources(FundingSource fundingSource)

@@ -179,6 +179,7 @@ public class LevyDeclarationOrchestratorTests
         DateOnly toDate,
         GetLevyDeclarationsByAccountAndDateRangeQueryResult queryResult,
         List<LevyDeclaration> mappedDeclarations,
+        List<string> empRefs,
         [Frozen] Mock<IMediator> mediator,
         [Frozen] Mock<IMapper> mapper,
         [Greedy] LevyDeclarationOrchestrator sut)
@@ -189,7 +190,8 @@ public class LevyDeclarationOrchestratorTests
                 It.Is<GetLevyDeclarationsByAccountAndDateRangeQuery>(q =>
                     q.AccountId == accountId &&
                     q.FromDate == fromDate &&
-                    q.ToDate == toDate),
+                    q.ToDate == toDate &&
+                    q.Emprefs == empRefs),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResult);
 
@@ -202,7 +204,7 @@ public class LevyDeclarationOrchestratorTests
         }
 
         // Act
-        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate, empRefs);
 
         // Assert
         result.Should().NotBeNull();
@@ -214,6 +216,7 @@ public class LevyDeclarationOrchestratorTests
         long accountId,
         DateOnly fromDate,
         DateOnly toDate,
+        List<string> empRefs,
         [Frozen] Mock<IMediator> mediator,
         [Frozen] Mock<IMapper> mapper,
         [Greedy] LevyDeclarationOrchestrator sut)
@@ -226,7 +229,7 @@ public class LevyDeclarationOrchestratorTests
             .ReturnsAsync((GetLevyDeclarationsByAccountAndDateRangeQueryResult)null);
 
         // Act
-        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate, empRefs);
 
         // Assert
         result.Should().BeNull();
@@ -237,6 +240,7 @@ public class LevyDeclarationOrchestratorTests
         long accountId,
         DateOnly fromDate,
         DateOnly toDate,
+        List<string> empRefs,
         [Frozen] Mock<IMediator> mediator,
         [Frozen] Mock<IMapper> mapper,
         [Greedy] LevyDeclarationOrchestrator sut)
@@ -251,7 +255,7 @@ public class LevyDeclarationOrchestratorTests
             .ReturnsAsync(queryResult);
 
         // Act
-        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate);
+        var result = await sut.GetLevyDeclarationsByAccountIdAndDateRange(accountId, fromDate, toDate, empRefs);
 
         // Assert
         result.Should().BeNull();

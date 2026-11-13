@@ -30,6 +30,7 @@ internal class WhenIGetLevySummaryByDate
     public async Task ThenReturnTheSummaryReturned(long accountId,
         DateOnly fromDate,
         DateOnly toDate,
+        List<string> emprefs,
         GetLevyDeclarationsByAccountAndDateRangeQueryResult queryResult,
         List<LevyDeclaration> mappedDeclarations)
     {
@@ -53,7 +54,7 @@ internal class WhenIGetLevySummaryByDate
         }
 
         // Act
-        var result = await _controller.GetLevyDeclarationSummaryByDate(accountId, fromDate, toDate) as OkObjectResult;
+        var result = await _controller.GetLevyDeclarationSummaryByDate(accountId, fromDate, toDate, emprefs) as OkObjectResult;
 
         // Assert
         result.Should().NotBeNull();

@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.EmployerFinance.Data.Contracts;
 using SFA.DAS.EmployerFinance.Models.Payments;
 using SFA.DAS.EmployerFinance.Models.Transaction;
+using FundingSource = SFA.DAS.Provider.Events.Api.Types.FundingSource;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.EmployerFinance.Data;
@@ -12,13 +13,24 @@ public class PaymentRepository(Lazy<EmployerFinanceDbContext> db) : IPaymentRepo
         long apprenticeshipId,
         CancellationToken cancellationToken)
     {
+        // Transfer payments are recorded against the receiving account, so the sending account
+        // gets the levy transfer payments for the apprenticeships it funds
+        var transferSender = await db.Value.AccountTransfers
+            .FirstOrDefaultAsync(t => t.SenderAccountId == accountId && t.ApprenticeshipId == apprenticeshipId, cancellationToken);
+
+        if (transferSender != null)
+        {
+            accountId = transferSender.ReceiverAccountId;
+        }
+        
         var transactions = db.Value.Transactions
             .Where(t => t.AccountId == accountId && t.TransactionType == TransactionItemType.Payment);
-
+        
         // An apprenticeship has a payment per period, and DateImported comes from the matching
         // provider payment transaction. A subquery rather than a join keeps one row per payment.
         return await db.Value.Payments
-            .Where(p => p.EmployerAccountId == accountId && p.ApprenticeshipId == apprenticeshipId)
+            .Where(p => p.ApprenticeshipId == apprenticeshipId
+                        && p.EmployerAccountId == accountId)
             .Select(payment => new Payment
             {
                 Id = payment.Id,

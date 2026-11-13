@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
 @using SFA.DAS.EmployerFinance.Interfaces
 @inject IUrlActionHelper UrlHelpers;
 @model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<FinanceDashboardV2ViewModel>
@@ -103,6 +104,19 @@
     <div class="app-statement">
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Estimates</h2>
         <partial name="_FinanceDashboardEstimates" model="Model.Data.Estimates" />
+    </div>
+
+    <div class="app-statement">
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Download Estimates</h2>
+        <p>Download a report showing your monthly commitments, expiring levy funds and potential co-investment payments. The report covers at least the next 12 months or until all current learners complete their training.</p>
+        <p>This report contains estimates and costs based on your current learner and funding data. The figures are not final and may change if learner or funding details are updated, including breaks in learning and withdrawals.</p>
+        <form method="post" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="download-estimates-format">Select format</label>
+                <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
+            </div>
+            <button type="submit" class="govuk-button" data-module="govuk-button">Download estimates</button>
+        </form>
     </div>
 }
 else

@@ -118,7 +118,7 @@ public class EmployerAccountTransactionsOrchestrator(
             CommittedLearnerFinalPaymentCost = Math.Ceiling(x.LevyOutSummary.CommittedLearnerFinalPaymentCost) * -1,
             ExpiredLevy = Math.Ceiling(x.LevyOutSummary.ExpiredLevy) * -1,
             ClosingLevyBalance = Math.Ceiling(x.ClosingBalance),
-            CoInvestmentCosts = Math.Ceiling(x.CoInvestmentCosts)
+            CoInvestmentCosts = x.CoInvestmentCosts.HasValue ? Math.Ceiling(x.CoInvestmentCosts.Value) : null
         }));
 
         return new OrchestratorResponse<FinanceDashboardV2ViewModel>

@@ -15,4 +15,10 @@ public class OuterApiService(IOuterApiClient outerApiClient) : IOuterApiService
             response.LastRefreshDateTime = DateTime.UtcNow; // Set the last refresh time to now since we just fetched fresh data
             return response;
     }
+
+    public Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjectionsForDownload(long accountId,
+        CancellationToken cancellationToken = default)
+    {
+        return outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(new GetLevyProjectionsForDownloadByAccountIdRequest(accountId), cancellationToken);
+    }
 }

@@ -1,4 +1,4 @@
 ﻿namespace SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationsByAccountAndDateRange;
 
-public sealed record GetLevyDeclarationsByAccountAndDateRangeQuery(long AccountId, DateOnly FromDate, DateOnly ToDate)
+public sealed record GetLevyDeclarationsByAccountAndDateRangeQuery(long AccountId, DateOnly FromDate, DateOnly ToDate, List<string> Emprefs)
     : IRequest<GetLevyDeclarationsByAccountAndDateRangeQueryResult>;

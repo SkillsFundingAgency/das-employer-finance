@@ -7,4 +7,7 @@ public interface IOuterApiService
     Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId,
         int months = 6,
         CancellationToken cancellationToken = default);
+
+    Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjectionsForDownload(long accountId,
+        CancellationToken cancellationToken = default);
 }
