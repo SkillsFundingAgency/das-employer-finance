@@ -1,9 +1,8 @@
 @using System.Globalization
-@using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
+
 @model EstimatesViewModel
 @{
     var culture = new CultureInfo("en-GB");
-    var hashedAccountId = ViewContext.RouteData.Values[RouteValueKeys.HashedAccountId]?.ToString();
 }
 <div class="govuk-body">
     <p>This timeline is based on your current funds and commitments. The figures are estimates and are not final.</p>
@@ -36,7 +35,7 @@
                             @if (month.InCoInvestment)
                             {
                                 <hr class="govuk-section-break govuk-section-break--visible"/>
-                                <line-item text="Co-investment payment" value="@month.CoInvestmentCosts.Value.ToString("C0", culture)"/>
+                                <line-item text="Co-investment payment" value="@month.CoInvestmentCosts!.Value.ToString("C0", culture)"/>
                             }   
 
                         </estimates-month-card>
