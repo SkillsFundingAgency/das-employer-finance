@@ -22,4 +22,5 @@ public class MonthEstimateViewModel
     public decimal CommittedTransferCosts { get; set; } = 0;
     public decimal CommittedLearnerFinalPaymentCost { get; set; } = 0;
     public decimal? CoInvestmentCosts { get; set; }
+    public decimal DfeCoInvestmentCost { get; set; }
 }

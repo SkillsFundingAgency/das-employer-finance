@@ -374,7 +374,8 @@ internal class WhenGettingFinanceDashboardV2
                             CommittedTransferOut = 25M,
                         },
                         ClosingBalance = 350M,
-                        CoInvestmentCosts = 80m
+                        CoInvestmentCosts = 80m,
+                        DfeCoInvestmentCost = 720m
                     },
                 ]
             });
@@ -392,7 +393,38 @@ internal class WhenGettingFinanceDashboardV2
                 CommittedLearnerCosts = -50M,
                 CommittedTransferCosts = -25M,
                 CoInvestmentCosts = 80m,
+                DfeCoInvestmentCost = 720m,
             });
+    }
+
+    [TestCase(0, 0)]
+    [TestCase(720, 720)]
+    [TestCase(1234.56, 1235)]
+    [TestCase(1234.40, 1235)]
+    public async Task Then_MonthEstimates_Maps_DfeCoInvestmentCost_Rounded_Up_From_Projection(decimal dfeCoInvestmentCost, decimal expected)
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary(),
+                        CoInvestmentCosts = 80m,
+                        DfeCoInvestmentCost = dfeCoInvestmentCost
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        var estimate = result.Data.Estimates!.MonthEstimates.Single();
+        estimate.DfeCoInvestmentCost.Should().Be(expected);
     }
 
     [TestCase(null, false)]
