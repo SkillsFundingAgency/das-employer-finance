@@ -42,7 +42,8 @@ public class GetEstimatesDownloadQueryHandler(
                 TransferCosts = (projection.LevyOutSummary.CommittedTransferOut + projection.LevyOutSummary.CommittedTransferOutFinalPaymentCost) * -1,
                 ExpiredLevy = projection.LevyOutSummary.ExpiredLevy * -1,
                 LevyBalanceEndOfMonth = NotBelowZero(projection.ClosingBalance),
-                CoInvestmentCosts = projection.CoInvestmentCosts
+                CoInvestmentCosts = projection.CoInvestmentCosts,
+                DfeCoInvestmentCost = projection.CoInvestmentCosts.HasValue ? projection.DfeCoInvestmentCost : null
             });
 
             startOfMonthBalance = projection.ClosingBalance;

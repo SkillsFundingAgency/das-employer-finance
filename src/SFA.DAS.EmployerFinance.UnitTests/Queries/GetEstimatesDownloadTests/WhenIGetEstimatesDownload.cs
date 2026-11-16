@@ -31,8 +31,8 @@ public class WhenIGetEstimatesDownload
                 Summary = new GetLevySummaryByAccountIdResponse { CurrentLevyFunds = 1000.40m },
                 Projections =
                 [
-                    CreateProjection(11, 2026, levyIn: 500.10m, learnerCost: 300.20m, completionCost: 100.30m, transferCost: 50.40m, transferCompletionCost: 10m, expiredLevy: 20.50m, closingBalance: 1019.20m),
-                    CreateProjection(12, 2026, levyIn: 0m, learnerCost: 1500m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: -480.80m, coInvestment: 120.25m),
+                    CreateProjection(11, 2026, levyIn: 500.10m, learnerCost: 300.20m, completionCost: 100.30m, transferCost: 50.40m, transferCompletionCost: 10m, expiredLevy: 20.50m, closingBalance: 1019.20m, dfeCoInvestment: 999m),
+                    CreateProjection(12, 2026, levyIn: 0m, learnerCost: 1500m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: -480.80m, coInvestment: 120.25m, dfeCoInvestment: 1082.25m),
                     CreateProjection(1, 2027, levyIn: 600m, learnerCost: 0m, completionCost: 0m, transferCost: 0m, transferCompletionCost: 0m, expiredLevy: 0m, closingBalance: 119.20m, coInvestment: 0m),
                 ]
             });
@@ -100,6 +100,15 @@ public class WhenIGetEstimatesDownload
     }
 
     [Test]
+    public async Task ThenDfeCoInvestmentIsPassedThroughOnlyForMonthsInCoInvestment()
+    {
+        await _handler.Handle(new GetEstimatesDownloadQuery(AccountId, DownloadFormatType.CSV), CancellationToken.None);
+
+        // the first month has a DfE value from the API but no co-investment, so it is left empty
+        _lines.Select(x => x.DfeCoInvestmentCost).Should().Equal(null, 1082.25m, 0m);
+    }
+
+    [Test]
     public async Task ThenBalancesBelowZeroAreShownAsZero()
     {
         await _handler.Handle(new GetEstimatesDownloadQuery(AccountId, DownloadFormatType.CSV), CancellationToken.None);
@@ -122,7 +131,7 @@ public class WhenIGetEstimatesDownload
     }
 
     private static MonthlyFundingBreakdown CreateProjection(int month, int year, decimal levyIn, decimal learnerCost, decimal completionCost,
-        decimal transferCost, decimal transferCompletionCost, decimal expiredLevy, decimal closingBalance, decimal? coInvestment = null) => new()
+        decimal transferCost, decimal transferCompletionCost, decimal expiredLevy, decimal closingBalance, decimal? coInvestment = null, decimal dfeCoInvestment = 0m) => new()
     {
         Month = month,
         Year = year,
@@ -136,6 +145,7 @@ public class WhenIGetEstimatesDownload
             ExpiredLevy = expiredLevy
         },
         ClosingBalance = closingBalance,
-        CoInvestmentCosts = coInvestment
+        CoInvestmentCosts = coInvestment,
+        DfeCoInvestmentCost = dfeCoInvestment
     };
 }

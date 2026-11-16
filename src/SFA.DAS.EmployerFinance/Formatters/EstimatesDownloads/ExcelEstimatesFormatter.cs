@@ -10,12 +10,6 @@ public class ExcelEstimatesFormatter(IExcelService excelService) : IEstimatesFor
     private const string MonthFormat = "mmm-yy";
     private const string CurrencyFormat = "\"£\"#,##0.00;-\"£\"#,##0.00";
 
-    private static readonly IReadOnlyList<ExcelColumn> Columns =
-    [
-        new(EstimatesDownloadColumns.Headers[0], MonthFormat),
-        .. EstimatesDownloadColumns.Headers.Skip(1).Select(header => new ExcelColumn(header, CurrencyFormat))
-    ];
-
     public string MimeType => "text/xlsx";
 
     public string FileExtension => "xlsx";
@@ -24,6 +18,23 @@ public class ExcelEstimatesFormatter(IExcelService excelService) : IEstimatesFor
 
     public byte[] GetFileData(IEnumerable<EstimatesDownloadLine> estimates)
     {
-        return excelService.CreateExcelFile(WorksheetName, Columns, estimates.Select(EstimatesDownloadColumns.GetCellValues));
+        var lines = estimates.ToList();
+        var includeCoInvestment = EstimatesDownloadColumns.HasCoInvestment(lines);
+
+        return excelService.CreateExcelFile(
+            WorksheetName,
+            GetColumns(includeCoInvestment),
+            lines.Select(x => EstimatesDownloadColumns.GetCellValues(x, includeCoInvestment)));
+    }
+
+    private static List<ExcelColumn> GetColumns(bool includeCoInvestment)
+    {
+        var headers = EstimatesDownloadColumns.GetHeaders(includeCoInvestment);
+
+        return
+        [
+            new(headers[0], MonthFormat),
+            .. headers.Skip(1).Select(header => new ExcelColumn(header, CurrencyFormat))
+        ];
     }
 }

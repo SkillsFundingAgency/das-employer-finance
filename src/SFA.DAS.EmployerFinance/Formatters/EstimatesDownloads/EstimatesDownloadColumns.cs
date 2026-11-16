@@ -9,37 +9,45 @@ public static class EstimatesDownloadColumns
 
     private static readonly CultureInfo Culture = new("en-GB");
 
-    public static readonly string[] Headers =
+    // the co-investment columns are only included when at least one month in the download is in co-investment
+    public static bool HasCoInvestment(IEnumerable<EstimatesDownloadLine> estimates) =>
+        estimates.Any(x => x.CoInvestmentCosts.HasValue);
+
+    public static string[] GetHeaders(bool includeCoInvestment) =>
     [
-        "Month", "Starting levy", "Levy in", "Paid by levy", "Transfers sent",
-        "Completion payments", "Expiry", "Remaining levy", "Co-investment"
+        "Month", "Levy balance start of month", "Learner costs",
+        "Completion payments", "Transfer costs",
+        .. includeCoInvestment ? ["Co-investment", "DfE co-investment contribution"] : Array.Empty<string>(),
+        "Levy in", "Expired levy", "Levy balance end of month"
     ];
 
-    public static string[] GetValues(EstimatesDownloadLine estimate) =>
+    public static string[] GetValues(EstimatesDownloadLine estimate, bool includeCoInvestment) =>
     [
         estimate.Month.ToString("MMM-yy", CultureInfo.InvariantCulture),
         Format(estimate.LevyBalanceStartOfMonth),
-        Format(estimate.LevyIn),
         Format(estimate.LearnerCosts),
-        Format(estimate.TransferCosts),
         Format(estimate.CompletionPayments),
+        Format(estimate.TransferCosts),
+        .. includeCoInvestment ? [FormatOptional(estimate.CoInvestmentCosts), FormatOptional(estimate.DfeCoInvestmentCost)] : Array.Empty<string>(),
+        Format(estimate.LevyIn),
         Format(estimate.ExpiredLevy),
-        Format(estimate.LevyBalanceEndOfMonth),
-        estimate.CoInvestmentCosts?.ToString(NumberFormat, Culture) ?? string.Empty
+        Format(estimate.LevyBalanceEndOfMonth)
     ];
 
-    public static object[] GetCellValues(EstimatesDownloadLine estimate) =>
+    public static object[] GetCellValues(EstimatesDownloadLine estimate, bool includeCoInvestment) =>
     [
         estimate.Month.ToDateTime(TimeOnly.MinValue),
         estimate.LevyBalanceStartOfMonth,
-        estimate.LevyIn,
         estimate.LearnerCosts,
-        estimate.TransferCosts,
         estimate.CompletionPayments,
+        estimate.TransferCosts,
+        .. includeCoInvestment ? [estimate.CoInvestmentCosts, estimate.DfeCoInvestmentCost] : Array.Empty<object>(),
+        estimate.LevyIn,
         estimate.ExpiredLevy,
-        estimate.LevyBalanceEndOfMonth,
-        estimate.CoInvestmentCosts
+        estimate.LevyBalanceEndOfMonth
     ];
 
     private static string Format(decimal value) => value.ToString(NumberFormat, Culture);
+
+    private static string FormatOptional(decimal? value) => value?.ToString(NumberFormat, Culture) ?? string.Empty;
 }

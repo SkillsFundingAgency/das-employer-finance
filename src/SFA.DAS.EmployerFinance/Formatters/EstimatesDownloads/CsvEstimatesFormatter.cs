@@ -14,13 +14,16 @@ public class CsvEstimatesFormatter : IEstimatesFormatter
 
     public byte[] GetFileData(IEnumerable<EstimatesDownloadLine> estimates)
     {
+        var lines = estimates.ToList();
+        var includeCoInvestment = EstimatesDownloadColumns.HasCoInvestment(lines);
+
         var builder = new StringBuilder();
 
-        builder.AppendLine(string.Join(",", EstimatesDownloadColumns.Headers));
+        builder.AppendLine(string.Join(",", EstimatesDownloadColumns.GetHeaders(includeCoInvestment)));
 
-        foreach (var estimate in estimates)
+        foreach (var estimate in lines)
         {
-            builder.AppendLine(string.Join(",", EstimatesDownloadColumns.GetValues(estimate)));
+            builder.AppendLine(string.Join(",", EstimatesDownloadColumns.GetValues(estimate, includeCoInvestment)));
         }
 
         return System.Text.Encoding.UTF8.GetBytes(builder.ToString());
