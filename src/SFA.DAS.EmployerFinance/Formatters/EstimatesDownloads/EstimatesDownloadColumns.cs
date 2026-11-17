@@ -17,7 +17,7 @@ public static class EstimatesDownloadColumns
     [
         "Month", "Levy balance start of month", "Learner costs",
         "Completion payments", "Transfer costs",
-        .. includeCoInvestment ? ["Co-investment", "DfE co-investment contribution"] : Array.Empty<string>(),
+        .. includeCoInvestment ? ["Co-investment", "Government contribution"] : Array.Empty<string>(),
         "Levy in", "Expired levy", "Levy balance end of month"
     ];
 

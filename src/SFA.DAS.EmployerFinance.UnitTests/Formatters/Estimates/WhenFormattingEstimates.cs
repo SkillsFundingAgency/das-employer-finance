@@ -26,11 +26,11 @@ public class WhenFormattingEstimates
     private static readonly string[] ExpectedHeaders =
     [
         "Month", "Levy balance start of month", "Learner costs",
-        "Completion payments", "Transfer costs", "Co-investment", "DfE co-investment contribution",
+        "Completion payments", "Transfer costs", "Co-investment", "Government contribution",
         "Levy in", "Expired levy", "Levy balance end of month"
     ];
 
-    private static readonly string[] CoInvestmentHeaders = ["Co-investment", "DfE co-investment contribution"];
+    private static readonly string[] CoInvestmentHeaders = ["Co-investment", "Government contribution"];
 
     private static readonly string[] ExpectedValues = ["Nov-26", "£10,000.00", "-£400.00", "-£100.00", "-£250.25", "£75.00", "£675.00", "£1,500.50", "-£50.00", "£10,700.25"];
 
