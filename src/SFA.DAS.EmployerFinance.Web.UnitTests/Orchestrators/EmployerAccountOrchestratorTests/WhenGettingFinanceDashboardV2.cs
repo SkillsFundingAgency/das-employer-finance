@@ -428,6 +428,35 @@ internal class WhenGettingFinanceDashboardV2
     }
 
     [TestCase(null, false)]
+    [TestCase(-10, false)]
+    [TestCase(0, false)]
+    [TestCase(1, true)]
+    [TestCase(80, true)]
+    public async Task Then_MonthEstimates_Show_CoInvestment_Banner_Only_When_The_CoInvestment_Value_Is_Above_Zero(int? coInvestment, bool expectedShowBanner)
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary(),
+                        CoInvestmentCosts = coInvestment
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Single().ShowCoInvestmentBanner.Should().Be(expectedShowBanner);
+    }
+
+    [TestCase(null, false)]
     [TestCase(0, true)]
     [TestCase(80, true)]
     public async Task Then_MonthEstimates_Are_In_CoInvestment_When_There_Is_A_CoInvestment_Value(int? coInvestment, bool expectedInCoInvestment)
@@ -454,6 +483,36 @@ internal class WhenGettingFinanceDashboardV2
         var estimate = result.Data.Estimates!.MonthEstimates.Single();
         estimate.CoInvestmentCosts.Should().Be(coInvestment);
         estimate.InCoInvestment.Should().Be(expectedInCoInvestment);
+    }
+
+    [TestCase(null, 0, 0)]
+    [TestCase(null, 500, 500)]
+    [TestCase(0, 500, 500)]
+    [TestCase(80, 0, 80)]
+    [TestCase(80, 720, 800)]
+    public async Task Then_MonthEstimates_CoInvestmentTotal_Is_The_Sum_Of_CoInvestment_And_DfeCoInvestment(int? coInvestment, int dfeCoInvestment, int expectedTotal)
+    {
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
+            {
+                Projections =
+                [
+                    new MonthlyFundingBreakdown
+                    {
+                        Month = 8,
+                        Year = 2026,
+                        LevyInSummary = new LevyInSummary(),
+                        LevyOutSummary = new LevyOutSummary(),
+                        CoInvestmentCosts = coInvestment,
+                        DfeCoInvestmentCost = dfeCoInvestment
+                    },
+                ]
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Single().CoInvestmentTotal.Should().Be(expectedTotal);
     }
 
     [Test]

@@ -93,6 +93,23 @@ public class WhenFormattingEstimates
     }
 
     [Test]
+    public void ThenTheCsvKeepsTheCoInvestmentColumnsWhenTheOnlyCoInvestmentIsZero()
+    {
+        var formatter = new CsvEstimatesFormatter();
+        var estimates = new[]
+        {
+            new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = 0m, DfeCoInvestmentCost = 0m }
+        };
+
+        var lines = System.Text.Encoding.UTF8.GetString(formatter.GetFileData(estimates))
+            .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+        lines.Should().Equal(
+            string.Join(",", ExpectedHeaders),
+            "Nov-26,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00");
+    }
+
+    [Test]
     public void ThenTheCsvKeepsTheCoInvestmentColumnsWhenAnyMonthIsInCoInvestment()
     {
         var formatter = new CsvEstimatesFormatter();

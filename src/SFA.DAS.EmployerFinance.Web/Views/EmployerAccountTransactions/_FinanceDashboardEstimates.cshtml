@@ -9,7 +9,7 @@
     <p class="govuk-!-margin-bottom-8">Levy in is estimated using your declaration for the same month last year. Levy out is estimated on information currently recorded in your account and does not include changes to learner activity or funding.</p>
     
     
-    @if (Model.MonthEstimates.Any(c => c.InCoInvestment))
+    @if (Model.MonthEstimates.Any(c => c.ShowCoInvestmentBanner))
     {
         <div class="govuk-inset-text app-finance-figure-no-border govuk-!-margin-bottom-8">
             <p><strong>You are expected to go into co-investment in @(Model.MonthEstimates.First(c=>c.InCoInvestment).Period)</strong> Depending on when learners started, you will pay up to 25% of learner costs until your levy funds cover them.</p>
@@ -35,8 +35,10 @@
                             @if (month.InCoInvestment)
                             {
                                 <hr class="govuk-section-break govuk-section-break--visible"/>
-                                <line-item text="Co-investment payment" value="@month.CoInvestmentCosts!.Value.ToString("C0", culture)"/>
-                                <line-item text="Government contribution" value="@month.DfeCoInvestmentCost.ToString("C0", culture)"/>
+                                <line-item text="Co-investment payments" value="@month.CoInvestmentTotal.ToString("C0", culture)">
+                                    <sub-item text="Government contribution" value="@month.DfeCoInvestmentCost.ToString("C0", culture)"/>
+                                    <sub-item text="Your payment" value="@month.CoInvestmentCosts!.Value.ToString("C0", culture)"/>
+                                </line-item>
                             }   
 
                         </estimates-month-card>
