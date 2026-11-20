@@ -21,7 +21,8 @@ namespace SFA.DAS.EmployerFinance.Api.ServiceRegistrations
             services.AddTransient<TransactionLineStagingOrchestrator>();
             services.AddTransient<TransferOrchestrator>();
             services.AddTransient<TransferStagingOrchestrator>();
-
+            services.AddTransient<PaymentOrchestrator>();
+            services.AddTransient<ExpiredLevyOrchestrator>();
             return services;
         }
     }

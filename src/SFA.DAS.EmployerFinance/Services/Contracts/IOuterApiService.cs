@@ -4,5 +4,10 @@ namespace SFA.DAS.EmployerFinance.Services.Contracts;
 
 public interface IOuterApiService
 {
-    Task<GetLevySummaryByAccountIdResponse> GetLevySummary(long accountId, bool refreshCache = false);
+    Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId,
+        int months = 6,
+        CancellationToken cancellationToken = default);
+
+    Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjectionsForDownload(long accountId,
+        CancellationToken cancellationToken = default);
 }

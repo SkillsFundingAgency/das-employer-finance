@@ -59,4 +59,42 @@ public class ExcelService : IExcelService
         
         return stream.ToArray();
     }
+
+    public byte[] CreateExcelFile(string worksheetName, IReadOnlyList<ExcelColumn> columns, IEnumerable<object[]> rows)
+    {
+        using var stream = new MemoryStream();
+        using (var workbook = new XLWorkbook())
+        {
+            var worksheet = workbook.Worksheets.Add(worksheetName);
+
+            for (var columnIndex = 0; columnIndex < columns.Count; columnIndex++)
+            {
+                worksheet.Cell(1, columnIndex + 1).Value = columns[columnIndex].Header;
+            }
+
+            var rowNumber = 2;
+            foreach (var row in rows)
+            {
+                for (var columnIndex = 0; columnIndex < row.Length; columnIndex++)
+                {
+                    var cell = worksheet.Cell(rowNumber, columnIndex + 1);
+                    cell.Value = XLCellValue.FromObject(row[columnIndex]);
+
+                    if (columns[columnIndex].NumberFormat is { } numberFormat)
+                    {
+                        cell.Style.NumberFormat.Format = numberFormat;
+                    }
+                }
+
+                rowNumber++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+            workbook.SaveAs(stream);
+        }
+
+        stream.Position = 0;
+
+        return stream.ToArray();
+    }
 }
