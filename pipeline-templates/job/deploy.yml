@@ -67,7 +67,6 @@ jobs:
             TableName: Configuration
             ConfigurationSecrets:
               DefaultSessionRedisConnectionString: $(DefaultSessionRedisConnectionString)
-              EASMessageServiceBusString: $(EASMessageServiceBusString)
               EmployerFinanceApimSubscriptionKey: $(EmployerFinanceApimSubscriptionKey)
               EmployerSharedServiceBusString: $(EmployerSharedServiceBusString)
               Hashstring: $(Hashstring)
