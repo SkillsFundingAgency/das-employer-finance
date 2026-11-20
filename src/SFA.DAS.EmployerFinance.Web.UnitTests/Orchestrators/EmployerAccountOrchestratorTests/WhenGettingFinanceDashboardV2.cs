@@ -487,9 +487,9 @@ internal class WhenGettingFinanceDashboardV2
 
     [TestCase(null, 0, 0)]
     [TestCase(null, 500, 500)]
-    [TestCase(0, 500, 500)]
+    [TestCase(0, 500, 0)]
     [TestCase(80, 0, 80)]
-    [TestCase(80, 720, 800)]
+    [TestCase(80, 720, 80)]
     public async Task Then_MonthEstimates_CoInvestmentTotal_Is_The_Sum_Of_CoInvestment_And_DfeCoInvestment(int? coInvestment, int dfeCoInvestment, int expectedTotal)
     {
         _mockOuterApiService
