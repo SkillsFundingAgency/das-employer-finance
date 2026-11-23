@@ -153,7 +153,7 @@ internal class WhenGettingFinanceDashboardV2
     {
         await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        _mockOuterApiService.Verify(x => x.GetLevyProjections(AccountId, Months, It.IsAny<CancellationToken>()), Times.Once);
+        _mockOuterApiService.Verify(x => x.GetLevyProjections(AccountId, Months, true, It.IsAny<CancellationToken>()), Times.Once);
         _mockOuterApiService.VerifyNoOtherCalls();
     }
 
@@ -326,7 +326,7 @@ internal class WhenGettingFinanceDashboardV2
     }
 
     [Test]
-    public async Task Then_DateTimeNow_Maps_LastRefreshDate_Correctly()
+    public async Task Then_The_Last_Refresh_Date_From_The_Projections_Is_The_Estimates_Last_Updated_Date()
     {
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
