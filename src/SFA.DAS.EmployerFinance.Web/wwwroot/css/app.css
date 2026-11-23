@@ -554,3 +554,6 @@
     margin: 5px 0;
     border-bottom-color: #B1B4B6;
 }
+.js-enabled .app-js-hidden {
+    display: none;
+}

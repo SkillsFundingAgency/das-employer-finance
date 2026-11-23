@@ -29,3 +29,38 @@ if (printLinks.length > 0) {
         });
     }
 }
+
+const financeEstimates = document.getElementById("finance-estimates");
+
+if (financeEstimates) {
+    const estimatesRefreshDelays = [2000, 5000, 10000, 15000, 20000];
+    let estimatesRefreshAttempt = 0;
+
+    const checkForUpdatedEstimates = () => {
+        const url = new URL(financeEstimates.dataset.estimatesUrl, window.location.origin);
+        url.searchParams.set("lastUpdated", financeEstimates.dataset.lastUpdated);
+
+        fetch(url, { credentials: "same-origin", headers: { "X-Requested-With": "XMLHttpRequest" } })
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.text().then((html) => {
+                        financeEstimates.innerHTML = html;
+                    });
+                }
+
+                if (response.status === 204) {
+                    scheduleEstimatesRefresh();
+                }
+            })
+            .catch(() => {
+            });
+    };
+
+    const scheduleEstimatesRefresh = () => {
+        if (estimatesRefreshAttempt < estimatesRefreshDelays.length) {
+            setTimeout(checkForUpdatedEstimates, estimatesRefreshDelays[estimatesRefreshAttempt++]);
+        }
+    };
+
+    scheduleEstimatesRefresh();
+}
