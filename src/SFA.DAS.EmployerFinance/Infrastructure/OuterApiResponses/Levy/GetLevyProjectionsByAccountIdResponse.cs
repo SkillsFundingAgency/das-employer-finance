@@ -1,11 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 
 public sealed record GetLevyProjectionsByAccountIdResponse
 {
     public long AccountId { get; init; }
-    [JsonPropertyName("latestLevyDeclarationInDate")]
+    [JsonProperty("lastSuccessfulImportDate")]
     public DateTime LastRefreshDateTime { get; set; }
     public GetLevySummaryByAccountIdResponse Summary { get; set; }
     public List<MonthlyFundingBreakdown> Projections { get; init; } = [];

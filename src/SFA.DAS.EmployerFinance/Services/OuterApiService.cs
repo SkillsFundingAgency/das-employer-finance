@@ -7,13 +7,18 @@ namespace SFA.DAS.EmployerFinance.Services;
 
 public class OuterApiService(IOuterApiClient outerApiClient) : IOuterApiService
 {
-    public async Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId,
+    public Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId,
         int months = 6,
+        bool triggerRefresh = true,
         CancellationToken cancellationToken = default)
     {
-            var response = await outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(new GetLevyProjectionsByAccountIdRequest(accountId, months), cancellationToken);
-            response.LastRefreshDateTime = DateTime.UtcNow; // Set the last refresh time to now since we just fetched fresh data
-            return response;
+        return outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(new GetLevyProjectionsByAccountIdRequest(accountId, months, triggerRefresh), cancellationToken);
+    }
+
+    public Task<GetLevyProjectionsStatusByAccountIdResponse> GetLevyProjectionsStatus(long accountId,
+        CancellationToken cancellationToken = default)
+    {
+        return outerApiClient.Get<GetLevyProjectionsStatusByAccountIdResponse>(new GetLevyProjectionsStatusByAccountIdRequest(accountId), cancellationToken);
     }
 
     public Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjectionsForDownload(long accountId,
