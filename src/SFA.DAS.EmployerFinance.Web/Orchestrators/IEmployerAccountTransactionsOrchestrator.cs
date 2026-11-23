@@ -12,6 +12,8 @@ public interface IEmployerAccountTransactionsOrchestrator
 
     Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false, CancellationToken cancellationToken = default);
 
+    Task<EstimatesViewModel> GetEstimatesIfUpdated(string hashedAccountId, long lastUpdatedTicks, CancellationToken cancellationToken = default);
+
     Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(
         string hashedId, long ukprn, DateTime fromDate, DateTime toDate);
 
