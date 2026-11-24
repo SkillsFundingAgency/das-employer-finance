@@ -37,8 +37,8 @@ public class WhenIViewFinanceEstimates
     public async Task ThenNoContentIsReturnedWhenTheEstimatesHaveNotBeenUpdated()
     {
         _orchestrator
-            .Setup(x => x.GetEstimatesIfUpdated(HashedAccountId, LastUpdated, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((EstimatesViewModel)null);
+            .Setup(x => x.GetProjectionIfUpdated(HashedAccountId, LastUpdated, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((FinanceDashboardV2ViewModel)null);
 
         var result = await _controller.FinanceEstimates(HashedAccountId, LastUpdated, CancellationToken.None);
 
@@ -46,18 +46,22 @@ public class WhenIViewFinanceEstimates
     }
 
     [Test]
-    public async Task ThenTheEstimatesPartialIsReturnedWhenTheEstimatesHaveBeenUpdated()
+    public async Task ThenTheRefreshPartialIsReturnedWhenTheProjectionHasBeenUpdated()
     {
-        var estimates = new EstimatesViewModel { LastUpdatedUtc = DateTime.UtcNow, MonthEstimates = [] };
+        var projection = new FinanceDashboardV2ViewModel
+        {
+            TotalCommittedLearnerCosts = -7500M,
+            Estimates = new EstimatesViewModel { LastUpdatedUtc = DateTime.UtcNow, MonthEstimates = [] }
+        };
         _orchestrator
-            .Setup(x => x.GetEstimatesIfUpdated(HashedAccountId, LastUpdated, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(estimates);
+            .Setup(x => x.GetProjectionIfUpdated(HashedAccountId, LastUpdated, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(projection);
 
         var result = await _controller.FinanceEstimates(HashedAccountId, LastUpdated, CancellationToken.None);
 
         var partialView = result.Should().BeOfType<PartialViewResult>().Subject;
-        partialView.ViewName.Should().Be(ViewNames.FinanceDashboardEstimates);
-        partialView.Model.Should().BeSameAs(estimates);
+        partialView.ViewName.Should().Be(ViewNames.FinanceDashboardRefresh);
+        partialView.Model.Should().BeSameAs(projection);
     }
 
     [Test]
@@ -68,6 +72,6 @@ public class WhenIViewFinanceEstimates
         var result = await _controller.FinanceEstimates(HashedAccountId, LastUpdated, CancellationToken.None);
 
         result.Should().BeOfType<NotFoundResult>();
-        _orchestrator.Verify(x => x.GetEstimatesIfUpdated(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _orchestrator.Verify(x => x.GetProjectionIfUpdated(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

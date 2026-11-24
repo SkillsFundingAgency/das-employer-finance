@@ -3,5 +3,5 @@
 public static class ViewNames
 {
     public const string FinanceDashboard = "FinanceDashboard";
-    public const string FinanceDashboardEstimates = "_FinanceDashboardEstimates";
+    public const string FinanceDashboardRefresh = "_FinanceDashboardRefresh";
 }

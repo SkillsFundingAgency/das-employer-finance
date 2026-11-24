@@ -15,8 +15,6 @@
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
     var totalLevySpentLast12Months = Math.Abs(Model.Data.TotalLevySpentLast12Months).ToString("C0", culture);
     var totalLevyExpiredLast12Months = Math.Abs(Model.Data.TotalLevyExpiredLast12Months).ToString("C0", culture);
-    var totalCommittedLearnerCosts = Model.Data.TotalCommittedLearnerCosts.ToString("C0", culture);
-    var totalCommittedTransferOutCosts = Model.Data.TotalCommittedTransfersCosts.ToString("C0", culture);
 }
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
@@ -69,35 +67,8 @@
                 </div>
             </div>
         </div>
-        <div class="govuk-grid-row govuk-!-margin-top-6">
-            <div class="govuk-grid-column-three-quarters">
-                <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
-                <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
-                    Paid from your levy funds in monthly instalments until learners complete their training. These totals reduce over time as payments are made.
-                </p>
-                <div class="app-finance-figure-no-border app-finance-figure--row govuk-!-margin-bottom-2">
-                    <div class="app-finance-figure-commitments__label">
-                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Learner costs</strong>
-                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
-                            Total levy funds committed to spend on your learners.
-                        </p>
-                    </div>
-                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
-                        @totalCommittedLearnerCosts
-                    </span>
-                </div>
-                <div class="app-finance-figure-no-border app-finance-figure--row">
-                    <div class="app-finance-figure-commitments__label">
-                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Transfer costs</strong>
-                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
-                            Total levy funds committed to other employers.
-                        </p>
-                    </div>
-                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
-                        @totalCommittedTransferOutCosts
-                    </span>
-                </div>
-            </div>
+        <div id="finance-commitments">
+            <partial name="_FinanceDashboardCommitments" model="Model.Data" />
         </div>
         <div class="govuk-grid-row govuk-!-margin-top-6">
             <div class="govuk-grid-column-full">
@@ -125,8 +96,9 @@
     <div class="app-statement">
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Estimates</h2>
         <a href="@Url.RouteUrl(RouteNames.FinanceIndex, new { hashedAccountId = Model.Data.HashedAccountId })#finance-estimates"
-           role="button" draggable="false" class="govuk-button govuk-button--secondary app-js-hidden" data-module="govuk-button">Refresh estimates</a>
-        <div id="finance-estimates" aria-live="polite"
+           role="button" draggable="false" class="govuk-button govuk-button--secondary app-js-hidden" data-module="govuk-button">Refresh timeline</a>
+        <div id="finance-estimates-status" class="govuk-visually-hidden" aria-live="polite"></div>
+        <div id="finance-estimates"
              data-estimates-url="@Url.RouteUrl(RouteNames.FinanceEstimates, new { hashedAccountId = Model.Data.HashedAccountId })"
              data-last-updated="@Model.Data.Estimates.LastUpdatedUtc.Ticks">
             <partial name="_FinanceDashboardEstimates" model="Model.Data.Estimates" />

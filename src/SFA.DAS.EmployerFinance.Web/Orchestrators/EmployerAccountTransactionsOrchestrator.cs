@@ -124,7 +124,7 @@ public class EmployerAccountTransactionsOrchestrator(
         };
     }
 
-    public virtual async Task<EstimatesViewModel> GetEstimatesIfUpdated(string hashedAccountId, long lastUpdatedTicks, CancellationToken cancellationToken = default)
+    public virtual async Task<FinanceDashboardV2ViewModel> GetProjectionIfUpdated(string hashedAccountId, long lastUpdatedTicks, CancellationToken cancellationToken = default)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
@@ -136,8 +136,15 @@ public class EmployerAccountTransactionsOrchestrator(
         }
 
         var projections = await outerApiService.GetLevyProjections(accountId, months: Months, triggerRefresh: false, cancellationToken: cancellationToken);
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
 
-        return MapEstimates(projections);
+        return new FinanceDashboardV2ViewModel
+        {
+            HashedAccountId = hashedAccountId,
+            TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+            TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
+            Estimates = MapEstimates(projections)
+        };
     }
 
     private static EstimatesViewModel MapEstimates(GetLevyProjectionsByAccountIdResponse projections)

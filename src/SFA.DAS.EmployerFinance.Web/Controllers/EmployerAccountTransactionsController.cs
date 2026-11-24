@@ -98,14 +98,14 @@ public class EmployerAccountTransactionsController(
             return NotFound();
         }
 
-        var estimates = await accountTransactionsOrchestrator.GetEstimatesIfUpdated(hashedAccountId, lastUpdated, cancellationToken);
+        var projection = await accountTransactionsOrchestrator.GetProjectionIfUpdated(hashedAccountId, lastUpdated, cancellationToken);
 
-        if (estimates is null)
+        if (projection is null)
         {
             return NoContent();
         }
 
-        return PartialView(ViewNames.FinanceDashboardEstimates, estimates);
+        return PartialView(ViewNames.FinanceDashboardRefresh, projection);
     }
 
     [HttpPost]

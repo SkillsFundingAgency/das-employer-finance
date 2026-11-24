@@ -11,7 +11,7 @@ using SFA.DAS.GovUK.Auth.Employer;
 namespace SFA.DAS.EmployerFinance.Web.UnitTests.Orchestrators.EmployerAccountOrchestratorTests;
 
 [TestFixture]
-internal class WhenGettingEstimatesIfUpdated
+internal class WhenGettingProjectionIfUpdated
 {
     private const string HashedAccountId = "ABC123";
     private const long AccountId = 123L;
@@ -38,6 +38,12 @@ internal class WhenGettingEstimatesIfUpdated
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
                 LastRefreshDateTime = NewImportDate,
+                Summary = new GetLevySummaryByAccountIdResponse
+                {
+                    CurrentLevyFunds = 1000M,
+                    TotalCommittedLearnerCosts = 7500M,
+                    TotalCommittedTransfersCosts = 2500M
+                },
                 Projections =
                 [
                     new MonthlyFundingBreakdown
@@ -73,7 +79,7 @@ internal class WhenGettingEstimatesIfUpdated
     {
         SetupStatus(LoadedImportDate);
 
-        var result = await _orchestrator.GetEstimatesIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+        var result = await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
 
         result.Should().BeNull();
         _mockOuterApiService.Verify(x => x.GetLevyProjections(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -84,7 +90,7 @@ internal class WhenGettingEstimatesIfUpdated
     {
         SetupStatus(LoadedImportDate.AddMinutes(-1));
 
-        var result = await _orchestrator.GetEstimatesIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+        var result = await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
 
         result.Should().BeNull();
     }
@@ -94,11 +100,12 @@ internal class WhenGettingEstimatesIfUpdated
     {
         SetupStatus(NewImportDate);
 
-        var result = await _orchestrator.GetEstimatesIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+        var result = await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
 
         result.Should().NotBeNull();
-        result.LastUpdatedUtc.Should().Be(NewImportDate);
-        result.MonthEstimates.Should().BeEquivalentTo(
+        result.HashedAccountId.Should().Be(HashedAccountId);
+        result.Estimates!.LastUpdatedUtc.Should().Be(NewImportDate);
+        result.Estimates.MonthEstimates.Should().BeEquivalentTo(
         [
             new MonthEstimateViewModel { Period = "November 2026", LevyIn = 1001M, ExpiredLevy = -200M, ClosingLevyBalance = 800M }
         ]);
@@ -106,11 +113,47 @@ internal class WhenGettingEstimatesIfUpdated
     }
 
     [Test]
+    public async Task ThenTheLatestCommitmentsAreReturnedAsNegativeWhenTheImportDateHasChanged()
+    {
+        SetupStatus(NewImportDate);
+
+        var result = await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+
+        result.TotalCommittedLearnerCosts.Should().Be(-7500M);
+        result.TotalCommittedTransfersCosts.Should().Be(-2500M);
+    }
+
+    [Test]
+    public async Task ThenTheLevySummaryIsNotRefreshedAsItDoesNotComeFromTheProjection()
+    {
+        SetupStatus(NewImportDate);
+
+        var result = await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+
+        result.CurrentLevyFunds.Should().Be(0);
+    }
+
+    [Test]
+    public async Task ThenTheCommitmentsAreZeroWhenTheProjectionsHaveNoSummary()
+    {
+        SetupStatus(NewImportDate);
+        _mockOuterApiService
+            .Setup(x => x.GetLevyProjections(AccountId, Months, false, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse { LastRefreshDateTime = NewImportDate });
+
+        var result = await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+
+        result.TotalCommittedLearnerCosts.Should().Be(0);
+        result.TotalCommittedTransfersCosts.Should().Be(0);
+        result.Estimates!.MonthEstimates.Should().BeEmpty();
+    }
+
+    [Test]
     public async Task ThenTheProjectionsAreFetchedWithoutTriggeringAnotherRefresh()
     {
         SetupStatus(NewImportDate);
 
-        await _orchestrator.GetEstimatesIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+        await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
 
         _mockOuterApiService.Verify(x => x.GetLevyProjections(AccountId, Months, false, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -120,7 +163,7 @@ internal class WhenGettingEstimatesIfUpdated
     {
         SetupStatus(NewImportDate);
 
-        await _orchestrator.GetEstimatesIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
+        await _orchestrator.GetProjectionIfUpdated(HashedAccountId, LoadedImportDate.Ticks);
 
         _mockAccountApiClient.VerifyNoOtherCalls();
     }
