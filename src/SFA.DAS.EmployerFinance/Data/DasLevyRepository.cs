@@ -553,6 +553,29 @@ public class DasLevyRepository(
 
         return result.ToList();
     }
+
+    public async Task<List<string>> GetAccountCeasedPayeSchemes(long accountId)
+    {
+        var parameters = new DynamicParameters();
+
+        parameters.Add("@accountId", accountId, DbType.Int64);
+        const string sqlQuery = """
+                                    SELECT
+                                	    EmpRef
+                                    FROM [employer_financial].[LevyDeclaration]
+                                    WHERE AccountId = @accountId
+                                    and DateCeased is not null
+                                    GROUP BY EmpRef
+                                """; 
+
+        var result = await db.Value.Database.GetDbConnection().QueryAsync<string>(
+            sql: sqlQuery,
+            param: parameters,
+            commandTimeout: 60,
+            transaction: db.Value.Database.CurrentTransaction?.GetDbTransaction(),
+            commandType: CommandType.Text);
+        return [.. result];
+    }
     
     public async Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsByDateRange(long accountId, DateOnly fromDate, DateOnly toDate, List<string> emprefs)
     {
