@@ -15,6 +15,7 @@
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
     var totalLevySpentLast12Months = Math.Abs(Model.Data.TotalLevySpentLast12Months).ToString("C0", culture);
     var totalLevyExpiredLast12Months = Math.Abs(Model.Data.TotalLevyExpiredLast12Months).ToString("C0", culture);
+    var now = DateTime.UtcNow.ToGmtStandardTime();
 }
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
@@ -124,11 +125,37 @@
                 </div>
             </div>
         }
-        
-
     </div>
+
 }
 else
 {
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
 }
+
+<div class="app-highlight-boxes">
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
+            <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
+                View transactions
+            </a>
+        </h2>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">View payments made into and out of your apprenticeship service account. </p>
+    </div>
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
+            <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
+                Download transactions
+            </a>
+        </h2>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">Download your financial transactions within a specific date range. </p>
+    </div>
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
+            <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
+                Transfers
+            </a>
+        </h2>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">Connect with other employers and @(Model.Data.IsLevyEmployer ? "send or" : "") receive transfer funds. </p>
+    </div>
+</div>
