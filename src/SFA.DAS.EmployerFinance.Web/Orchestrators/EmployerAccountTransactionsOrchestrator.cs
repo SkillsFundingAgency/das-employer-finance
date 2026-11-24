@@ -119,7 +119,7 @@ public class EmployerAccountTransactionsOrchestrator(
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
                 TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
                 TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
-                Estimates = MapEstimates(projections)
+                Estimates = MapEstimates(projections, hashedAccountId)
             }
         };
     }
@@ -143,11 +143,11 @@ public class EmployerAccountTransactionsOrchestrator(
             HashedAccountId = hashedAccountId,
             TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
             TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
-            Estimates = MapEstimates(projections)
+            Estimates = MapEstimates(projections, hashedAccountId)
         };
     }
 
-    private static EstimatesViewModel MapEstimates(GetLevyProjectionsByAccountIdResponse projections)
+    private static EstimatesViewModel MapEstimates(GetLevyProjectionsByAccountIdResponse projections, string hashedAccountId)
     {
         var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
         
@@ -166,6 +166,7 @@ public class EmployerAccountTransactionsOrchestrator(
 
         return new EstimatesViewModel
         {
+            HashedAccountId = hashedAccountId,
             LastUpdatedUtc = projections.LastRefreshDateTime,
             MonthEstimates = monthEstimates
         };

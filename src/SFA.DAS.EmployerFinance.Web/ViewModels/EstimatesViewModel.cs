@@ -4,6 +4,7 @@ namespace SFA.DAS.EmployerFinance.Web.ViewModels;
 
 public class EstimatesViewModel
 {
+    public string HashedAccountId { get; set; }
     public DateTime LastUpdatedUtc { get; set; }
     public string LastUpdatedUtcLabel => $"Last updated at {LastUpdatedUtc.ToGmtStandardTime().ToGdsTimeFormatFull()} on {LastUpdatedUtc.ToGmtStandardTime().ToGdsFormatFull()}";
     public List<MonthEstimateViewModel> MonthEstimates { get; set; }

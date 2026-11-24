@@ -95,8 +95,6 @@
     </div>
     <div class="app-statement">
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Estimates</h2>
-        <a href="@Url.RouteUrl(RouteNames.FinanceIndex, new { hashedAccountId = Model.Data.HashedAccountId })#finance-estimates"
-           role="button" draggable="false" class="govuk-button govuk-button--secondary app-js-hidden" data-module="govuk-button">Refresh timeline</a>
         <div id="finance-estimates-status" class="govuk-visually-hidden" aria-live="polite"></div>
         <div id="finance-estimates"
              data-estimates-url="@Url.RouteUrl(RouteNames.FinanceEstimates, new { hashedAccountId = Model.Data.HashedAccountId })"
