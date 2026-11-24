@@ -5,10 +5,12 @@
     var culture = new CultureInfo("en-GB");
 }
 <div class="govuk-body">
-    <p>This timeline is based on your current funds and commitments. The figures are estimates and are not final.</p>
-    <p class="govuk-!-margin-bottom-8">Levy in is estimated using your declaration for the same month last year. Levy out is estimated on information currently recorded in your account and does not include changes to learner activity or funding.</p>
-    
-    
+    <p>
+        This timeline is based on your current funds and commitments. The figures are estimates and are not final.
+    </p>
+    <p class="govuk-!-margin-bottom-8">
+        Levy in is estimated using your declaration for the same month last year. Levy out is estimated on information currently recorded in your account. This may change if learner or funding details are updated, including breaks in learning or withdrawals.
+    </p>
     @if (Model.MonthEstimates.Any(c => c.ShowCoInvestmentBanner))
     {
         <div class="govuk-inset-text app-finance-figure-no-border govuk-!-margin-bottom-8">
@@ -43,7 +45,7 @@
 
                         </estimates-month-card>
                     </estimates-row>
-                }                                           
+                }
             </div>
         </div>
     }

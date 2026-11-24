@@ -55,7 +55,7 @@
                 <div class="app-highlight-boxes-projection__box">
                     <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
                     <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-in">@totalLevyDeclaredLast12Months</div>
-                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
+                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in past 12 months.</p>
                 </div>
                 <div class="app-highlight-boxes-projection__box">
                     <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
@@ -77,9 +77,9 @@
                 </p>
                 <div class="app-finance-figure-no-border app-finance-figure--row govuk-!-margin-bottom-2">
                     <div class="app-finance-figure-commitments__label">
-                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Committed learner costs</strong>
+                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Learner costs</strong>
                         <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
-                            Total Levy funds committed to spend on your learners.
+                            Total levy funds committed to spend on your learners.
                         </p>
                     </div>
                     <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
@@ -88,9 +88,9 @@
                 </div>
                 <div class="app-finance-figure-no-border app-finance-figure--row">
                     <div class="app-finance-figure-commitments__label">
-                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Committed transfer costs</strong>
+                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Transfer costs</strong>
                         <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
-                            Total Levy funds committed to other employers.
+                            Total levy funds committed to other employers.
                         </p>
                     </div>
                     <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
@@ -99,18 +99,38 @@
                 </div>
             </div>
         </div>
+        <div class="govuk-grid-row govuk-!-margin-top-6">
+            <div class="govuk-grid-column-full">
+                <details id="inform-levy-summary-changes" class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">Why your levy summary changes during the month</span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
+                            The figures in your levy summary can change during the month because payments are made on different dates.
+                        </p>
+                        <ul class="govuk-body">
+                            <li>payments to providers leave your account in the first week of the month</li>
+                            <li>levy funds are added to your account in the middle of the month</li>
+                            <li>expired levy funds leave your account in the last week of the month</li>
+                        </ul>
+                        <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
+                            If you run out of levy funds and do not receive transfers from another employer, you will need to pay co-investment.
+                        </p>
+                    </div>
+                </details>
+            </div>
+        </div>
     </div>
-    
     <div class="app-statement">
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Estimates</h2>
         <partial name="_FinanceDashboardEstimates" model="Model.Data.Estimates" />
     </div>
-
     <div class="app-statement">
-        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Download Estimates</h2>
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Download estimates</h2>
         <p>Download a report showing your monthly commitments, expiring levy funds and potential co-investment payments. The report covers at least the next 12 months or until all current learners complete their training.</p>
         <p>This report contains estimates and costs based on your current learner and funding data. The figures are not final and may change if learner or funding details are updated, including breaks in learning and withdrawals.</p>
-        <form method="post" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
+        <form method="post" class="govuk-!-padding-top-8" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
             <div class="govuk-form-group">
                 <label class="govuk-label" for="download-estimates-format">Select format</label>
                 <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
