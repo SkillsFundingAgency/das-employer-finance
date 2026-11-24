@@ -188,6 +188,25 @@ internal class WhenGettingFinanceDashboardV2
     }
 
     [Test]
+    public async Task ThenTheLevyProjectionsAreNotRetrievedWhenAccountTypeIsNonLevy()
+    {
+        _mockAccountApiClient
+            .Setup(x => x.GetAccount(AccountId))
+            .ReturnsAsync(new AccountDetailViewModel
+            {
+                ApprenticeshipEmployerType = nameof(ApprenticeshipEmployerType.NonLevy)
+            });
+
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.MonthEstimates.Should().BeEmpty();
+        result.Data.Estimates.HasProjection.Should().BeFalse();
+        result.Data.TotalCommittedLearnerCosts.Should().Be(0);
+        result.Data.TotalCommittedTransfersCosts.Should().Be(0);
+        _mockOuterApiService.Verify(x => x.GetLevyProjections(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Test]
     public async Task ThenTheHashedAccountIdIsSetOnTheViewModel()
     {
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);

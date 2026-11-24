@@ -14,7 +14,6 @@ using SFA.DAS.EmployerFinance.Queries.GetAccountFinanceOverview;
 using SFA.DAS.EmployerFinance.Queries.GetEmployerAccountTransactions;
 using SFA.DAS.EmployerFinance.Queries.GetPayeSchemeByRef;
 using SFA.DAS.EmployerFinance.Services.Contracts;
-using SFA.DAS.EmployerFinance.Web.Extensions;
 using SFA.DAS.EmployerFinance.Web.ViewModels;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Employer;
@@ -95,23 +94,22 @@ public class EmployerAccountTransactionsOrchestrator(
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
 
-        var accountDetailTask = accountApiClient.GetAccount(accountId);
-        var levyProjectionsTask = outerApiService.GetLevyProjections(accountId, months: Months, cancellationToken: cancellationToken);
+        var accountDetail = await accountApiClient.GetAccount(accountId);
+        Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
+        var isLevyEmployer = employerType == ApprenticeshipEmployerType.Levy;
 
-        await Task.WhenAll(accountDetailTask, levyProjectionsTask);
-
-        var accountDetail = accountDetailTask.Result;
-        var projections = levyProjectionsTask.Result;
+        var projections = isLevyEmployer
+            ? await outerApiService.GetLevyProjections(accountId, months: Months, cancellationToken: cancellationToken)
+            : new GetLevyProjectionsByAccountIdResponse
+                { Projections = [], Summary = new GetLevySummaryByAccountIdResponse()};
 
         var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
-
-        Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
 
         return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
             Data = new FinanceDashboardV2ViewModel
             {
-                IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
+                IsLevyEmployer = isLevyEmployer,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
