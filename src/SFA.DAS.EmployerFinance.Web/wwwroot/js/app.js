@@ -33,7 +33,10 @@ if (printLinks.length > 0) {
 const financeEstimates = document.getElementById("finance-estimates");
 
 if (financeEstimates) {
-    const estimatesRefreshDelays = [2000, 5000, 10000, 15000, 20000];
+    const estimatesRefreshDelays = [200, 200, 200, 500, 1000, 2000, 5000, 10000, 15000];
+    const estimatesRefreshPollDelay = 15000;
+    const estimatesRefreshTimeout = 120000;
+    const estimatesRefreshStarted = Date.now();
     let estimatesRefreshAttempt = 0;
 
     const checkForUpdatedEstimates = () => {
@@ -56,10 +59,18 @@ if (financeEstimates) {
             });
     };
 
+    // once the initial delays have been used up, keep checking at a steady interval until the estimates change,
+    // giving up after the timeout so the page keeps the estimates it loaded with
     const scheduleEstimatesRefresh = () => {
-        if (estimatesRefreshAttempt < estimatesRefreshDelays.length) {
-            setTimeout(checkForUpdatedEstimates, estimatesRefreshDelays[estimatesRefreshAttempt++]);
+        const delay = estimatesRefreshAttempt < estimatesRefreshDelays.length
+            ? estimatesRefreshDelays[estimatesRefreshAttempt++]
+            : estimatesRefreshPollDelay;
+
+        if (Date.now() - estimatesRefreshStarted + delay > estimatesRefreshTimeout) {
+            return;
         }
+
+        setTimeout(checkForUpdatedEstimates, delay);
     };
 
     scheduleEstimatesRefresh();
