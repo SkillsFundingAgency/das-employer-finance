@@ -47,7 +47,19 @@ if (financeEstimates) {
             .then((response) => {
                 if (response.status === 200) {
                     return response.text().then((html) => {
-                        financeEstimates.innerHTML = html;
+                        const refreshed = new DOMParser().parseFromString(html, "text/html");
+                        ["finance-commitments", "finance-estimates"].forEach((id) => {
+                            const section = document.getElementById(id);
+                            const refreshedSection = refreshed.getElementById(id);
+                            if (section && refreshedSection) {
+                                section.innerHTML = refreshedSection.innerHTML;
+                            }
+                        });
+
+                        const financeEstimatesStatus = document.getElementById("finance-estimates-status");
+                        if (financeEstimatesStatus) {
+                            financeEstimatesStatus.textContent = "Your estimates have been updated";
+                        }
                     });
                 }
 
