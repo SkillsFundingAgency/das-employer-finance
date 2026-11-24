@@ -103,13 +103,29 @@
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Download estimates</h2>
         <p>Download a report showing your monthly commitments, expiring levy funds and potential co-investment payments. The report covers at least the next 12 months or until all current learners complete their training.</p>
         <p>This report contains estimates and costs based on your current learner and funding data. The figures are not final and may change if learner or funding details are updated, including breaks in learning and withdrawals.</p>
-        <form method="post" class="govuk-!-padding-top-8" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="download-estimates-format">Select format</label>
-                <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
+        
+        @if (Model.Data.Estimates.HasProjection)
+        {
+            <form method="post" class="govuk-!-padding-top-8" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="download-estimates-format">Select format</label>
+                    <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
+                </div>
+                <button type="submit" class="govuk-button" data-module="govuk-button">Download estimates</button>
+            </form>
+        }
+        else
+        {
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                    <div class="govuk-inset-text app-finance-figure-no-border govuk-!-margin-top-8 govuk-!-margin-bottom-2">
+                        <p>Your estimates report will be available once you add a timeline.</p>
+                    </div>    
+                </div>
             </div>
-            <button type="submit" class="govuk-button" data-module="govuk-button">Download estimates</button>
-        </form>
+        }
+        
+
     </div>
 }
 else
