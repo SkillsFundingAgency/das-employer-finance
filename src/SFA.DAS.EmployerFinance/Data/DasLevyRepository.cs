@@ -554,19 +554,24 @@ public class DasLevyRepository(
         return result.ToList();
     }
 
-    public async Task<List<string>> GetAccountCeasedPayeSchemes(long accountId)
+    public async Task<List<string>> GetAccountPayeSchemesCurrentlyCeased(long accountId)
     {
         var parameters = new DynamicParameters();
 
         parameters.Add("@accountId", accountId, DbType.Int64);
+        
         const string sqlQuery = """
-                                    SELECT
-                                	    EmpRef
+                                SELECT EmpRef
+                                FROM (
+                                    SELECT EmpRef,
+                                           DateCeased,
+                                           ROW_NUMBER() OVER (PARTITION BY EmpRef ORDER BY SubmissionDate DESC, Id DESC) AS RowNumber
                                     FROM [employer_financial].[LevyDeclaration]
                                     WHERE AccountId = @accountId
-                                    and DateCeased is not null
-                                    GROUP BY EmpRef
-                                """; 
+                                ) latest
+                                WHERE RowNumber = 1
+                                AND DateCeased IS NOT NULL
+                                """;
 
         var result = await db.Value.Database.GetDbConnection().QueryAsync<string>(
             sql: sqlQuery,

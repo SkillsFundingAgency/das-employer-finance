@@ -51,5 +51,5 @@ public interface IDasLevyRepository
 
     Task<bool> PaymentStagingExists(Guid paymentId);
     Task<List<Api.Types.ExistingPeriod12LevyDeclarationResult>> GetExistingPeriod12LevyDeclarations(string empRef, string payrollYear, short payrollMonth);
-    Task<List<string>> GetAccountCeasedPayeSchemes(long accountId);
+    Task<List<string>> GetAccountPayeSchemesCurrentlyCeased(long accountId);
 }

@@ -21,7 +21,7 @@ public class WhenIGetCeasedPayeSchemesByAccountId
     [Test]
     public async Task Then_The_Ceased_Paye_Schemes_For_The_Account_Are_Returned()
     {
-        _dasLevyRepository.Setup(x => x.GetAccountCeasedPayeSchemes(AccountId)).ReturnsAsync(["123/AB12345", "456/CD67890"]);
+        _dasLevyRepository.Setup(x => x.GetAccountPayeSchemesCurrentlyCeased(AccountId)).ReturnsAsync(["123/AB12345", "456/CD67890"]);
 
         var result = await _handler.Handle(new GetCeasedPayeSchemesByAccountIdQuery(AccountId), CancellationToken.None);
 
@@ -31,7 +31,7 @@ public class WhenIGetCeasedPayeSchemesByAccountId
     [Test]
     public async Task Then_An_Empty_List_Is_Returned_When_There_Are_No_Ceased_Paye_Schemes()
     {
-        _dasLevyRepository.Setup(x => x.GetAccountCeasedPayeSchemes(AccountId)).ReturnsAsync([]);
+        _dasLevyRepository.Setup(x => x.GetAccountPayeSchemesCurrentlyCeased(AccountId)).ReturnsAsync([]);
 
         var result = await _handler.Handle(new GetCeasedPayeSchemesByAccountIdQuery(AccountId), CancellationToken.None);
 

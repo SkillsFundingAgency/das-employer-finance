@@ -7,7 +7,7 @@ public class GetCeasedPayeSchemesByAccountIdQueryHandler(IDasLevyRepository dasL
 {
     public async Task<GetCeasedPayeSchemesByAccountIdResponse> Handle(GetCeasedPayeSchemesByAccountIdQuery request, CancellationToken cancellationToken)
     {
-        var payeSchemes = await dasLevyRepository.GetAccountCeasedPayeSchemes(request.AccountId);
+        var payeSchemes = await dasLevyRepository.GetAccountPayeSchemesCurrentlyCeased(request.AccountId);
 
         return new GetCeasedPayeSchemesByAccountIdResponse
         {

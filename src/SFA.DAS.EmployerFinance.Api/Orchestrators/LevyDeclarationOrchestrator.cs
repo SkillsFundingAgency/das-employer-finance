@@ -138,8 +138,7 @@ public class LevyDeclarationOrchestrator(IMediator mediator,
 
         return result.FundsIn.ToCalendarPeriodAmounts();
     }
-    
-    
+
     public async Task<List<string>> GetCeasedPayeSchemes(long accountId)
     {
         logger.LogInformation("Requesting ceased PAYE schemes for accountId {AccountId}", accountId);
