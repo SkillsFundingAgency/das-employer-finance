@@ -12,9 +12,9 @@ public static class ZenDeskLabelExtensions
             .Select(label => $"'{EscapeApostrophes(label)}'"));
 
         // when there are no keywords default to empty string to prevent zen desk matching articles from the url
-        var apiCallString = "<script type=\"text/javascript\">zE('webWidget', 'helpCenter:setSuggestions', { labels: ["
+        var apiCallString = "<script type=\"text/javascript\">zE('messenger:set', 'conversationTags', ["
                             + (!string.IsNullOrEmpty(keywords) ? keywords : "''")
-                            + "] });</script>";
+                            + "]);</script>";
 
         return new HtmlString(apiCallString);
     }
