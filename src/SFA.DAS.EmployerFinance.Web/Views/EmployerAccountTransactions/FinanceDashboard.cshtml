@@ -15,8 +15,6 @@
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
     var totalLevySpentLast12Months = Math.Abs(Model.Data.TotalLevySpentLast12Months).ToString("C0", culture);
     var totalLevyExpiredLast12Months = Math.Abs(Model.Data.TotalLevyExpiredLast12Months).ToString("C0", culture);
-    var totalCommittedLearnerCosts = Model.Data.TotalCommittedLearnerCosts.ToString("C0", culture);
-    var totalCommittedTransferOutCosts = Model.Data.TotalCommittedTransfersCosts.ToString("C0", culture);
 }
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
@@ -66,35 +64,8 @@
 
             </div>
         </div>   
-        <div class="govuk-grid-row govuk-!-margin-top-6">
-            <div class="govuk-grid-column-three-quarters">
-                <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
-                <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
-                    Paid from your levy funds in monthly instalments until learners complete their training. These totals reduce over time as payments are made.
-                </p>
-                <div class="app-finance-figure-no-border app-finance-figure--row govuk-!-margin-bottom-2">
-                    <div class="app-finance-figure-commitments__label">
-                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Learner costs</strong>
-                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
-                            Total levy funds committed to spend on your learners.
-                        </p>
-                    </div>
-                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
-                        @totalCommittedLearnerCosts
-                    </span>
-                </div>
-                <div class="app-finance-figure-no-border app-finance-figure--row">
-                    <div class="app-finance-figure-commitments__label">
-                        <strong class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-font-size-16">Transfer costs</strong>
-                        <p class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-top-0 govuk-!-font-size-16 govuk-hint">
-                            Total levy funds committed to other employers.
-                        </p>
-                    </div>
-                    <span class="govuk-body govuk-!-font-size-19 app-finance-figure__value">
-                        @totalCommittedTransferOutCosts
-                    </span>
-                </div>
-            </div>
+        <div id="finance-commitments">
+            <partial name="_FinanceDashboardCommitments" model="Model.Data" />
         </div>
         <div class="govuk-grid-row govuk-!-margin-top-6">
             <div class="govuk-grid-column-full">
@@ -121,19 +92,40 @@
     </div>
     <div class="app-statement">
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Estimates</h2>
-        <partial name="_FinanceDashboardEstimates" model="Model.Data.Estimates" />
+        <div id="finance-estimates-status" class="govuk-visually-hidden" aria-live="polite"></div>
+        <div id="finance-estimates"
+             data-estimates-url="@Url.RouteUrl(RouteNames.FinanceEstimates, new { hashedAccountId = Model.Data.HashedAccountId })"
+             data-last-updated="@Model.Data.Estimates.LastUpdatedUtc.Ticks">
+            <partial name="_FinanceDashboardEstimates" model="Model.Data.Estimates" />
+        </div>
     </div>
     <div class="app-statement">
         <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Download estimates</h2>
         <p>Download a report showing your monthly commitments, expiring levy funds and potential co-investment payments. The report covers at least the next 12 months or until all current learners complete their training.</p>
         <p>This report contains estimates and costs based on your current learner and funding data. The figures are not final and may change if learner or funding details are updated, including breaks in learning and withdrawals.</p>
-        <form method="post" class="govuk-!-padding-top-8" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="download-estimates-format">Select format</label>
-                <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
+        
+        @if (Model.Data.Estimates.HasProjection)
+        {
+            <form method="post" class="govuk-!-padding-top-8" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.Data.HashedAccountId" novalidate>
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="download-estimates-format">Select format</label>
+                    <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
+                </div>
+                <button type="submit" class="govuk-button" data-module="govuk-button">Download estimates</button>
+            </form>
+        }
+        else
+        {
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                    <div class="govuk-inset-text app-finance-figure-no-border govuk-!-margin-top-8 govuk-!-margin-bottom-2">
+                        <p>Your estimates report will be available once you add a timeline.</p>
+                    </div>    
+                </div>
             </div>
-            <button type="submit" class="govuk-button" data-module="govuk-button">Download estimates</button>
-        </form>
+        }
+        
+
     </div>
 }
 else

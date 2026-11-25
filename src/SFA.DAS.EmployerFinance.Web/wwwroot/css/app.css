@@ -549,3 +549,7 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.js-enabled .app-js-hidden {
+    display: none;
+}

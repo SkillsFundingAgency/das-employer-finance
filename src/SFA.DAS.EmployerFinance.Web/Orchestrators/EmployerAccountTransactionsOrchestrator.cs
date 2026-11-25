@@ -107,6 +107,48 @@ public class EmployerAccountTransactionsOrchestrator(
 
         Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
 
+        return new OrchestratorResponse<FinanceDashboardV2ViewModel>
+        {
+            Data = new FinanceDashboardV2ViewModel
+            {
+                IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
+                HashedAccountId = hashedAccountId,
+                CurrentLevyFunds = summary.CurrentLevyFunds,
+                TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
+                TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
+                TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
+                Estimates = MapEstimates(projections, hashedAccountId)
+            }
+        };
+    }
+
+    public virtual async Task<FinanceDashboardV2ViewModel> GetProjectionIfUpdated(string hashedAccountId, long lastUpdatedTicks, CancellationToken cancellationToken = default)
+    {
+        var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+
+        var status = await outerApiService.GetLevyProjectionsStatus(accountId, cancellationToken);
+
+        if (status.LastSuccessfulImportDate.Ticks <= lastUpdatedTicks)
+        {
+            return null;
+        }
+
+        var projections = await outerApiService.GetLevyProjections(accountId, months: Months, triggerRefresh: false, cancellationToken: cancellationToken);
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
+
+        return new FinanceDashboardV2ViewModel
+        {
+            HashedAccountId = hashedAccountId,
+            TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+            TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
+            Estimates = MapEstimates(projections, hashedAccountId)
+        };
+    }
+
+    private static EstimatesViewModel MapEstimates(GetLevyProjectionsByAccountIdResponse projections, string hashedAccountId)
+    {
         var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
         
         monthEstimates.AddRange(projections.Projections.Select(x => new MonthEstimateViewModel
@@ -122,24 +164,11 @@ public class EmployerAccountTransactionsOrchestrator(
             DfeCoInvestmentCost = Math.Ceiling(x.DfeCoInvestmentCost)
         }));
 
-        return new OrchestratorResponse<FinanceDashboardV2ViewModel>
+        return new EstimatesViewModel
         {
-            Data = new FinanceDashboardV2ViewModel
-            {
-                IsLevyEmployer = employerType == ApprenticeshipEmployerType.Levy,
-                HashedAccountId = hashedAccountId,
-                CurrentLevyFunds = summary.CurrentLevyFunds,
-                TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
-                TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
-                TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
-                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
-                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
-                Estimates = new EstimatesViewModel
-                {
-                    LastUpdatedUtc = projections.LastRefreshDateTime,
-                    MonthEstimates = monthEstimates
-                }
-            }
+            HashedAccountId = hashedAccountId,
+            LastUpdatedUtc = projections.LastRefreshDateTime,
+            MonthEstimates = monthEstimates
         };
     }
 

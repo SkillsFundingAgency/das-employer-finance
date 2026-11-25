@@ -7,6 +7,7 @@ public static class RouteNames
     public const string DownloadTransactionsGet = "download-transactions-get";
     public const string DownloadTransactionsPost = "download-transactions-post";
     public const string DownloadEstimatesPost = "download-estimates-post";
+    public const string FinanceEstimates = "finance-estimates";
     
     public const string TransferConnectionsIndex = "transfer-connections";
 

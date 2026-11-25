@@ -89,6 +89,25 @@ public class EmployerAccountTransactionsController(
         }
     }
 
+    [HttpGet]
+    [Route("finance/estimates", Name = RouteNames.FinanceEstimates)]
+    public async Task<IActionResult> FinanceEstimates([FromRoute] string hashedAccountId, [FromQuery] long lastUpdated, CancellationToken cancellationToken)
+    {
+        if (!feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))
+        {
+            return NotFound();
+        }
+
+        var projection = await accountTransactionsOrchestrator.GetProjectionIfUpdated(hashedAccountId, lastUpdated, cancellationToken);
+
+        if (projection is null)
+        {
+            return NoContent();
+        }
+
+        return PartialView(ViewNames.FinanceDashboardRefresh, projection);
+    }
+
     [HttpPost]
     [Route("finance/downloadestimates", Name = RouteNames.DownloadEstimatesPost)]
     public async Task<IActionResult> EstimatesDownload([FromRoute] string hashedAccountId, [FromForm] DownloadFormatType? downloadFormat, CancellationToken cancellationToken)

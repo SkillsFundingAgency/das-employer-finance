@@ -6,6 +6,10 @@ public interface IOuterApiService
 {
     Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId,
         int months = 6,
+        bool triggerRefresh = true,
+        CancellationToken cancellationToken = default);
+
+    Task<GetLevyProjectionsStatusByAccountIdResponse> GetLevyProjectionsStatus(long accountId,
         CancellationToken cancellationToken = default);
 
     Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjectionsForDownload(long accountId,
