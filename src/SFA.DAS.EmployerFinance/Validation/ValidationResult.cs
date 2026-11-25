@@ -12,12 +12,18 @@ public class ValidationResult
 
     public void AddError(string propertyName)
     {
-        ValidationDictionary.Add(propertyName, $"{propertyName} has not been supplied");
+        AddError(propertyName, $"{propertyName} has not been supplied");
     }
 
     public void AddError(string propertyName, string validationError)
     {
-        ValidationDictionary.Add(propertyName, validationError);
+        if (ValidationDictionary.TryGetValue(propertyName, out var existing))
+        {
+            ValidationDictionary[propertyName] = $"{existing} {validationError}";
+            return;
+        }
+
+        ValidationDictionary[propertyName] = validationError;
     }
 
     public List<string> ErrorList => ValidationDictionary.Select(c => c.Key + "|" + c.Value).ToList();

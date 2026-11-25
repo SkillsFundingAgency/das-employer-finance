@@ -18,7 +18,9 @@ public class PaymentsController(StagingOrchestrator orchestrator)
         var response = await orchestrator.IngestBulkPayments(request);
 
         if (response.HasValidationErrors)
+        {
             return BadRequest(response.ValidationErrors);
+        }
 
         if (response.ConflictingPaymentIds.Count > 0)
             return Conflict(new { paymentIds = response.ConflictingPaymentIds });
