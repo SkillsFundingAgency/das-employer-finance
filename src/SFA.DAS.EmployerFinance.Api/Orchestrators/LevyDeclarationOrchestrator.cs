@@ -10,6 +10,7 @@ using SFA.DAS.EmployerFinance.Queries.GetLevyDeclarationSubmissionIds;
 using SFA.DAS.EmployerFinance.Queries.GetLevyFundsInByAccountId;
 using SFA.DAS.EmployerFinance.Queries.GetLevySummaryByAccountId;
 using System.Threading.Tasks;
+using SFA.DAS.EmployerFinance.Queries.GetCeasedPayeSchemesByAccount;
 
 namespace SFA.DAS.EmployerFinance.Api.Orchestrators;
 
@@ -136,5 +137,14 @@ public class LevyDeclarationOrchestrator(IMediator mediator,
         var result = await mediator.Send(new GetLevyFundsInByAccountIdQuery(accountId));
 
         return result.FundsIn.ToCalendarPeriodAmounts();
+    }
+
+    public async Task<List<string>> GetCeasedPayeSchemes(long accountId)
+    {
+        logger.LogInformation("Requesting ceased PAYE schemes for accountId {AccountId}", accountId);
+
+        var result = await mediator.Send(new GetCeasedPayeSchemesByAccountIdQuery(accountId));
+
+        return result.PayeSchemes;
     }
 }
