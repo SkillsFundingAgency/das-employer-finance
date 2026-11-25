@@ -108,7 +108,16 @@ public class FinanceLevyDeclarationsController(LevyDeclarationOrchestrator orche
         var result = await orchestrator.GetLevyFundsIn(accountId);
         return Ok(result);
     }
-
+    
+    [HttpGet("{accountId:long}/ceased")]
+    [Authorize(Policy = ApiRoles.ReadAllEmployerAccountBalances)]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCeasedPayeSchemes(long accountId)
+    {
+        var result = await orchestrator.GetCeasedPayeSchemes(accountId);
+        return Ok(result);
+    }
+    
     private static string DecodeEmpRef(string empRef) =>
         string.IsNullOrEmpty(empRef) ? empRef : Uri.UnescapeDataString(empRef);
 
