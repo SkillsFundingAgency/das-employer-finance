@@ -9,7 +9,7 @@ public class HtmlHelperExtensionsTests
     public void WhenICallSetZenDeskLabelsWithLabels_ThenTheKeywordsAreCorrect(string[] labels, string keywords)
     {
         // Arrange
-        var expected = $"<script type=\"text/javascript\">zE('webWidget', 'helpCenter:setSuggestions', {{ labels: [{keywords}] }});</script>";
+        var expected = $"<script type=\"text/javascript\">zE('messenger:set', 'conversationTags', [{keywords}]);</script>";
 
         // Act
         var actual = ZenDeskLabelExtensions.SetZenDeskLabels(null, labels).ToString();

@@ -10,7 +10,7 @@ internal class WhenBuildingGetLevyProjectionsByAccountIdRequest
     public void Then_The_Url_Is_Correct(long accountId, int months, bool triggerRefresh)
     {
         //Arrange
-        var expectedUrl = $"finance/levy/{accountId}/projections?months={months}&triggerRefresh={triggerRefresh}";
+        var expectedUrl = $"finance/levy/{accountId}/projections?months={months}&triggerRefresh={triggerRefresh.ToString().ToLower()}";
         //Act
         var actual = new GetLevyProjectionsByAccountIdRequest(accountId, months, triggerRefresh);
         //Assert
