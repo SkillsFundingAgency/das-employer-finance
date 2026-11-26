@@ -446,33 +446,29 @@ internal class WhenGettingFinanceDashboardV2
         estimate.DfeCoInvestmentCost.Should().Be(expected);
     }
 
-    [TestCase(null, false)]
-    [TestCase(-10, false)]
-    [TestCase(0, false)]
-    [TestCase(1, true)]
-    [TestCase(80, true)]
-    public async Task Then_MonthEstimates_Show_CoInvestment_Banner_Only_When_The_CoInvestment_Value_Is_Above_Zero(int? coInvestment, bool expectedShowBanner)
+    [Test]
+    public async Task Then_The_Date_The_Estimate_Enters_CoInvestment_Is_Mapped_From_The_Projections()
     {
+        var dateEntersCoinvestment = new DateTime(2027, 3, 1);
         _mockOuterApiService
             .Setup(x => x.GetLevyProjections(AccountId, Months))
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
-                Projections =
-                [
-                    new MonthlyFundingBreakdown
-                    {
-                        Month = 8,
-                        Year = 2026,
-                        LevyInSummary = new LevyInSummary(),
-                        LevyOutSummary = new LevyOutSummary(),
-                        CoInvestmentCosts = coInvestment
-                    },
-                ]
+                Projections = [],
+                DateEstimateEntersCoinvestment = dateEntersCoinvestment
             });
 
         var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
 
-        result.Data.Estimates!.MonthEstimates.Single().ShowCoInvestmentBanner.Should().Be(expectedShowBanner);
+        result.Data.Estimates!.DateEstimateEntersCoinvestment.Should().Be(dateEntersCoinvestment);
+    }
+
+    [Test]
+    public async Task Then_There_Is_No_Date_The_Estimate_Enters_CoInvestment_When_The_Projections_Have_None()
+    {
+        var result = await _orchestrator.GetFinanceDashboardV2(HashedAccountId);
+
+        result.Data.Estimates!.DateEstimateEntersCoinvestment.Should().BeNull();
     }
 
     [TestCase(null, false)]

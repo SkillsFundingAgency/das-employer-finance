@@ -15,12 +15,12 @@
     }
     else
     {
-        if (Model.MonthEstimates.Any(c => c.ShowCoInvestmentBanner))
+        if (Model.ShowCoInvestmentBanner)
         {
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-three-quarters">
                     <div class="govuk-inset-text app-finance-figure-no-border govuk-!-margin-bottom-8">
-                        <p><strong>You may enter co-investment in @(Model.MonthEstimates.First(c=>c.InCoInvestment).Period).</strong> Depending on when learners started, you will pay up to 25% of learner costs until your levy funds cover them.</p>
+                        <p><strong>You may enter co-investment in @Model.CoInvestmentStartLabel.</strong> Depending on when learners started, you will pay up to 25% of learner costs until your levy funds cover them.</p>
                     </div>
                 </div>
             </div>

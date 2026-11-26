@@ -166,7 +166,8 @@ public class EmployerAccountTransactionsOrchestrator(
         {
             HashedAccountId = hashedAccountId,
             LastUpdatedUtc = projections.LastRefreshDateTime,
-            MonthEstimates = monthEstimates
+            MonthEstimates = monthEstimates,
+            DateEstimateEntersCoinvestment = projections.DateEstimateEntersCoinvestment
         };
     }
 

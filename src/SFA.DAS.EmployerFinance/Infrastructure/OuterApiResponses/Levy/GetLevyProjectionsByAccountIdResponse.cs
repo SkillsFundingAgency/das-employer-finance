@@ -7,6 +7,7 @@ public sealed record GetLevyProjectionsByAccountIdResponse
     public long AccountId { get; init; }
     [JsonProperty("lastSuccessfulImportDate")]
     public DateTime LastRefreshDateTime { get; set; }
+    public DateTime? DateEstimateEntersCoinvestment { get; set; }
     public GetLevySummaryByAccountIdResponse Summary { get; set; }
     public List<MonthlyFundingBreakdown> Projections { get; init; } = [];
 }
