@@ -38,6 +38,7 @@ internal class WhenGettingProjectionIfUpdated
             .ReturnsAsync(new GetLevyProjectionsByAccountIdResponse
             {
                 LastRefreshDateTime = NewImportDate,
+                DateEstimateEntersCoinvestment = new DateTime(2027, 3, 1),
                 Summary = new GetLevySummaryByAccountIdResponse
                 {
                     CurrentLevyFunds = 1000M,
@@ -105,6 +106,7 @@ internal class WhenGettingProjectionIfUpdated
         result.Should().NotBeNull();
         result.HashedAccountId.Should().Be(HashedAccountId);
         result.Estimates!.LastUpdatedUtc.Should().Be(NewImportDate);
+        result.Estimates.DateEstimateEntersCoinvestment.Should().Be(new DateTime(2027, 3, 1));
         result.Estimates.MonthEstimates.Should().BeEquivalentTo(
         [
             new MonthEstimateViewModel { Period = "November 2026", LevyIn = 1001M, ExpiredLevy = -200M, ClosingLevyBalance = 800M }
