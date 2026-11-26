@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using HMRC.ESFA.Levy.Api.Client;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
@@ -26,6 +27,7 @@ using SFA.DAS.EmployerFinance.Data;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.MessageHandlers.CommandHandlers.Payment;
 using SFA.DAS.EmployerFinance.MessageHandlers.Extensions;
+using SFA.DAS.EmployerFinance.MessageHandlers.Http;
 using SFA.DAS.EmployerFinance.MessageHandlers.ServiceRegistrations;
 using SFA.DAS.EmployerFinance.Messages.Commands;
 using SFA.DAS.EmployerFinance.Queries.GetAllEmployerAccounts;
@@ -131,6 +133,22 @@ public class WhenAddingServicesToTheContainer
         services.Should().Contain(descriptor =>
             descriptor.ServiceType == typeof(IUnitOfWork) &&
             descriptor.ImplementationType == typeof(UnitOfWork<EmployerFinanceDbContext>));
+    }
+
+    [Test]
+    public void Then_Hmrc_Rate_Limiter_Is_Registered_As_Singleton_And_Levy_Client_Resolves()
+    {
+        var services = new ServiceCollection();
+        SetupServiceCollection(services);
+        var provider = services.BuildServiceProvider();
+
+        var first = provider.GetService<IHmrcRateLimiter>();
+        var second = provider.GetService<IHmrcRateLimiter>();
+        var levyClient = provider.GetService<IApprenticeshipLevyApiClient>();
+
+        first.Should().NotBeNull();
+        first.Should().BeSameAs(second);
+        levyClient.Should().NotBeNull();
     }
 
     private static void SetupServiceCollection(IServiceCollection services)

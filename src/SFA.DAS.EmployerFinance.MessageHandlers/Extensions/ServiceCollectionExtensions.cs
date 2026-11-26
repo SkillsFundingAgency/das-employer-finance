@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
                     delayed.NumberOfRetries(5);
                     delayed.TimeIncrease(TimeSpan.FromSeconds(5));
                 });
+                recoverability.CustomPolicy(HmrcRecoverabilityPolicy.Evaluate);
 
                 endpointConfiguration.LimitMessageProcessingConcurrencyTo(1);
                 
