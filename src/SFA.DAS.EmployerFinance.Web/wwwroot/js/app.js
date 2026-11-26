@@ -43,18 +43,26 @@ if (financeEstimates) {
         const url = new URL(financeEstimates.dataset.estimatesUrl, window.location.origin);
         url.searchParams.set("lastUpdated", financeEstimates.dataset.lastUpdated);
 
-        fetch(url, { credentials: "same-origin", headers: { "X-Requested-With": "XMLHttpRequest" } })
+        fetch(url, { credentials: "same-origin", cache: "no-store", headers: { "X-Requested-With": "XMLHttpRequest" } })
             .then((response) => {
                 if (response.status === 200) {
                     return response.text().then((html) => {
                         const refreshed = new DOMParser().parseFromString(html, "text/html");
-                        ["finance-commitments", "finance-estimates"].forEach((id) => {
+                        let sectionsUpdated = 0;
+                        ["finance-commitments", "finance-estimates", "finance-download"].forEach((id) => {
                             const section = document.getElementById(id);
                             const refreshedSection = refreshed.getElementById(id);
                             if (section && refreshedSection) {
                                 section.innerHTML = refreshedSection.innerHTML;
+                                sectionsUpdated++;
                             }
                         });
+
+                        // not the refreshed sections, e.g. an error page, so keep checking rather than announcing an update
+                        if (sectionsUpdated === 0) {
+                            scheduleEstimatesRefresh();
+                            return;
+                        }
 
                         const financeEstimatesStatus = document.getElementById("finance-estimates-status");
                         if (financeEstimatesStatus) {

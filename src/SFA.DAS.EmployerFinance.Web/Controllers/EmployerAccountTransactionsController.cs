@@ -91,6 +91,7 @@ public class EmployerAccountTransactionsController(
 
     [HttpGet]
     [Route("finance/estimates", Name = RouteNames.FinanceEstimates)]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> FinanceEstimates([FromRoute] string hashedAccountId, [FromQuery] long lastUpdated, CancellationToken cancellationToken)
     {
         if (!feature.IsFeatureEnabled(FeatureNames.LevyProjectionTransparency))

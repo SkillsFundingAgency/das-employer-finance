@@ -74,4 +74,18 @@ public class WhenIViewFinanceEstimates
         result.Should().BeOfType<NotFoundResult>();
         _orchestrator.Verify(x => x.GetProjectionIfUpdated(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    [Test]
+    public void ThenTheResponseIsNotCachedSoEachCheckSeesTheLatestProjection()
+    {
+        var attribute = typeof(EmployerAccountTransactionsController)
+            .GetMethod(nameof(EmployerAccountTransactionsController.FinanceEstimates))!
+            .GetCustomAttributes(typeof(ResponseCacheAttribute), false)
+            .Cast<ResponseCacheAttribute>()
+            .SingleOrDefault();
+
+        attribute.Should().NotBeNull();
+        attribute!.NoStore.Should().BeTrue();
+        attribute.Location.Should().Be(ResponseCacheLocation.None);
+    }
 }
