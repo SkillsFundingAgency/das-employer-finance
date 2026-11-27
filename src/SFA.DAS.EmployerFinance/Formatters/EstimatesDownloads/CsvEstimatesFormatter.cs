@@ -19,6 +19,7 @@ public class CsvEstimatesFormatter : IEstimatesFormatter
 
         var builder = new StringBuilder();
 
+        builder.AppendLine(ToCsvField(EstimatesDownloadColumns.Disclaimer));
         builder.AppendLine(string.Join(",", EstimatesDownloadColumns.GetHeaders(includeCoInvestment)));
 
         foreach (var estimate in lines)
@@ -28,4 +29,9 @@ public class CsvEstimatesFormatter : IEstimatesFormatter
 
         return System.Text.Encoding.UTF8.GetBytes(builder.ToString());
     }
+
+    private static string ToCsvField(string value) =>
+        value.IndexOfAny([',', '"', '\r', '\n']) >= 0
+            ? $"\"{value.Replace("\"", "\"\"")}\""
+            : value;
 }

@@ -37,4 +37,39 @@ public class WhenCreatingATypedExcelFile
         worksheet.Cell(3, 3).DataType.Should().Be(XLDataType.Number);
         worksheet.Cell(3, 3).GetDouble().Should().Be(0);
     }
+
+    [Test]
+    public void ThenTheTitleIsTheFirstRowAboveTheHeaders()
+    {
+        var fileData = new ExcelService().CreateExcelFile(
+            "Estimates",
+            [new ExcelColumn("Month", "mmm-yy"), new ExcelColumn("Levy in", MoneyFormat)],
+            [[new DateTime(2026, 11, 1), 1500.5m]],
+            "A disclaimer");
+
+        using var workbook = new XLWorkbook(new MemoryStream(fileData));
+        var worksheet = workbook.Worksheet("Estimates");
+
+        worksheet.Cell(1, 1).GetString().Should().Be("A disclaimer");
+        worksheet.Cell(2, 1).GetString().Should().Be("Month");
+        worksheet.Cell(2, 2).GetString().Should().Be("Levy in");
+        worksheet.Cell(3, 1).GetDateTime().Should().Be(new DateTime(2026, 11, 1));
+        worksheet.Cell(3, 2).GetDouble().Should().Be(1500.5);
+    }
+
+    [Test]
+    public void ThenALongTitleDoesNotWidenTheFirstColumn()
+    {
+        ExcelColumn[] columns = [new ExcelColumn("Month", "mmm-yy")];
+        object[][] rows = [[new DateTime(2026, 11, 1)]];
+
+        var withoutTitle = new ExcelService().CreateExcelFile("Estimates", columns, rows);
+        var withTitle = new ExcelService().CreateExcelFile("Estimates", columns, rows, new string('x', 300));
+
+        using var withoutTitleWorkbook = new XLWorkbook(new MemoryStream(withoutTitle));
+        using var withTitleWorkbook = new XLWorkbook(new MemoryStream(withTitle));
+
+        withTitleWorkbook.Worksheet("Estimates").Column(1).Width
+            .Should().Be(withoutTitleWorkbook.Worksheet("Estimates").Column(1).Width);
+    }
 }

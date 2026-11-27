@@ -9,6 +9,8 @@ public static class EstimatesDownloadColumns
 
     private static readonly CultureInfo Culture = new("en-GB");
 
+    public const string Disclaimer = "Important: This report contains estimated payments and costs based on your current learner and funding data. The figures are not final and may change due to learner or funding updates, including breaks in learning and withdrawals.";
+
     // the co-investment columns are only included when at least one month in the download is in co-investment
     public static bool HasCoInvestment(IEnumerable<EstimatesDownloadLine> estimates) =>
         estimates.Any(x => x.CoInvestmentCosts.HasValue);
@@ -28,7 +30,7 @@ public static class EstimatesDownloadColumns
         Format(estimate.LearnerCosts),
         Format(estimate.CompletionPayments),
         Format(estimate.TransferCosts),
-        .. includeCoInvestment ? [FormatOptional(estimate.CoInvestmentCosts), FormatOptional(estimate.DfeCoInvestmentCost)] : Array.Empty<string>(),
+        .. includeCoInvestment ? [Format(estimate.CoInvestmentCosts ?? 0m), Format(estimate.DfeCoInvestmentCost ?? 0m)] : Array.Empty<string>(),
         Format(estimate.LevyIn),
         Format(estimate.ExpiredLevy),
         Format(estimate.LevyBalanceEndOfMonth)
@@ -41,13 +43,11 @@ public static class EstimatesDownloadColumns
         estimate.LearnerCosts,
         estimate.CompletionPayments,
         estimate.TransferCosts,
-        .. includeCoInvestment ? [estimate.CoInvestmentCosts, estimate.DfeCoInvestmentCost] : Array.Empty<object>(),
+        .. includeCoInvestment ? [estimate.CoInvestmentCosts ?? 0m, estimate.DfeCoInvestmentCost ?? 0m] : Array.Empty<object>(),
         estimate.LevyIn,
         estimate.ExpiredLevy,
         estimate.LevyBalanceEndOfMonth
     ];
 
     private static string Format(decimal value) => value.ToString(NumberFormat, Culture);
-
-    private static string FormatOptional(decimal? value) => value?.ToString(NumberFormat, Culture) ?? string.Empty;
 }
