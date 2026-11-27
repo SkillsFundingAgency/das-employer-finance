@@ -42,9 +42,10 @@ public class WhenFormattingEstimates
         var lines = System.Text.Encoding.UTF8.GetString(formatter.GetFileData([Estimate]))
             .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
-        lines.Should().HaveCount(2);
-        lines[0].Should().Be(string.Join(",", ExpectedHeaders));
-        lines[1].Should().Be("Nov-26,10000.00,-400.00,-100.00,-250.25,75.00,675.00,1500.50,-50.00,10700.25");
+        lines.Should().HaveCount(3);
+        lines[0].Should().Be(EstimatesDownloadColumns.Disclaimer);
+        lines[1].Should().Be(string.Join(",", ExpectedHeaders));
+        lines[2].Should().Be("Nov-26,10000.00,-400.00,-100.00,-250.25,75.00,675.00,1500.50,-50.00,10700.25");
         formatter.DownloadFormatType.Should().Be(DownloadFormatType.CSV);
         formatter.FileExtension.Should().Be("csv");
     }
@@ -55,9 +56,10 @@ public class WhenFormattingEstimates
         var excelService = new Mock<IExcelService>();
         IReadOnlyList<ExcelColumn> columns = null;
         List<object[]> rows = null;
+        string title = null;
         excelService
-            .Setup(x => x.CreateExcelFile("Estimates", It.IsAny<IReadOnlyList<ExcelColumn>>(), It.IsAny<IEnumerable<object[]>>()))
-            .Callback<string, IReadOnlyList<ExcelColumn>, IEnumerable<object[]>>((_, c, r) => { columns = c; rows = r.ToList(); })
+            .Setup(x => x.CreateExcelFile("Estimates", It.IsAny<IReadOnlyList<ExcelColumn>>(), It.IsAny<IEnumerable<object[]>>(), It.IsAny<string>()))
+            .Callback<string, IReadOnlyList<ExcelColumn>, IEnumerable<object[]>, string>((_, c, r, t) => { columns = c; rows = r.ToList(); title = t; })
             .Returns([1, 2, 3]);
         var formatter = new ExcelEstimatesFormatter(excelService.Object);
 
@@ -69,6 +71,7 @@ public class WhenFormattingEstimates
         columns.Skip(1).Should().AllSatisfy(x => x.NumberFormat.Should().Be("\"£\"#,##0.00;-\"£\"#,##0.00"));
         rows.Should().ContainSingle();
         rows[0].Should().Equal(new DateTime(2026, 11, 1), 10000m, -400m, -100m, -250.25m, 75m, 675m, 1500.5m, -50m, 10700.25m);
+        title.Should().Be(EstimatesDownloadColumns.Disclaimer);
         formatter.DownloadFormatType.Should().Be(DownloadFormatType.Excel);
         formatter.FileExtension.Should().Be("xlsx");
     }
@@ -87,6 +90,7 @@ public class WhenFormattingEstimates
             .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
         lines.Should().Equal(
+            EstimatesDownloadColumns.Disclaimer,
             string.Join(",", ExpectedHeaders.Except(CoInvestmentHeaders)),
             "Nov-26,100.00,0.00,0.00,0.00,10.00,0.00,110.00",
             "Dec-26,110.00,0.00,0.00,0.00,10.00,0.00,120.00");
@@ -105,6 +109,7 @@ public class WhenFormattingEstimates
             .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
         lines.Should().Equal(
+            EstimatesDownloadColumns.Disclaimer,
             string.Join(",", ExpectedHeaders),
             "Nov-26,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00");
     }
@@ -122,9 +127,11 @@ public class WhenFormattingEstimates
         var lines = System.Text.Encoding.UTF8.GetString(formatter.GetFileData(estimates))
             .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
+        // a month that is not in co-investment shows zero rather than being left blank
         lines.Should().Equal(
+            EstimatesDownloadColumns.Disclaimer,
             string.Join(",", ExpectedHeaders),
-            "Nov-26,0.00,0.00,0.00,0.00,,,0.00,0.00,0.00",
+            "Nov-26,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00",
             "Dec-26,0.00,0.00,0.00,0.00,50.00,450.00,0.00,0.00,0.00");
     }
 
@@ -135,8 +142,8 @@ public class WhenFormattingEstimates
         IReadOnlyList<ExcelColumn> columns = null;
         List<object[]> rows = null;
         excelService
-            .Setup(x => x.CreateExcelFile("Estimates", It.IsAny<IReadOnlyList<ExcelColumn>>(), It.IsAny<IEnumerable<object[]>>()))
-            .Callback<string, IReadOnlyList<ExcelColumn>, IEnumerable<object[]>>((_, c, r) => { columns = c; rows = r.ToList(); })
+            .Setup(x => x.CreateExcelFile("Estimates", It.IsAny<IReadOnlyList<ExcelColumn>>(), It.IsAny<IEnumerable<object[]>>(), It.IsAny<string>()))
+            .Callback<string, IReadOnlyList<ExcelColumn>, IEnumerable<object[]>, string>((_, c, r, _) => { columns = c; rows = r.ToList(); })
             .Returns([1]);
         var formatter = new ExcelEstimatesFormatter(excelService.Object);
         var estimate = new EstimatesDownloadLine
@@ -153,12 +160,12 @@ public class WhenFormattingEstimates
     }
 
     [Test]
-    public void ThenCoInvestmentIsLeftEmptyWhenThereIsNone()
+    public void ThenCoInvestmentIsShownAsZeroWhenThereIsNone()
     {
         var estimate = new EstimatesDownloadLine { Month = new DateOnly(2026, 11, 1), CoInvestmentCosts = null, DfeCoInvestmentCost = null };
 
-        EstimatesDownloadColumns.GetValues(estimate, includeCoInvestment: true)[5..7].Should().AllSatisfy(x => x.Should().BeEmpty());
-        EstimatesDownloadColumns.GetCellValues(estimate, includeCoInvestment: true)[5..7].Should().AllSatisfy(x => x.Should().BeNull());
+        EstimatesDownloadColumns.GetValues(estimate, includeCoInvestment: true)[5..7].Should().Equal("0.00", "0.00");
+        EstimatesDownloadColumns.GetCellValues(estimate, includeCoInvestment: true)[5..7].Should().Equal(0m, 0m);
     }
 
     [Test]

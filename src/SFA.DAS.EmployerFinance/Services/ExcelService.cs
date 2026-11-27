@@ -60,19 +60,26 @@ public class ExcelService : IExcelService
         return stream.ToArray();
     }
 
-    public byte[] CreateExcelFile(string worksheetName, IReadOnlyList<ExcelColumn> columns, IEnumerable<object[]> rows)
+    public byte[] CreateExcelFile(string worksheetName, IReadOnlyList<ExcelColumn> columns, IEnumerable<object[]> rows, string title = null)
     {
         using var stream = new MemoryStream();
         using (var workbook = new XLWorkbook())
         {
             var worksheet = workbook.Worksheets.Add(worksheetName);
 
-            for (var columnIndex = 0; columnIndex < columns.Count; columnIndex++)
+            var headerRowNumber = title is null ? 1 : 2;
+
+            if (title is not null)
             {
-                worksheet.Cell(1, columnIndex + 1).Value = columns[columnIndex].Header;
+                worksheet.Cell(1, 1).Value = title;
             }
 
-            var rowNumber = 2;
+            for (var columnIndex = 0; columnIndex < columns.Count; columnIndex++)
+            {
+                worksheet.Cell(headerRowNumber, columnIndex + 1).Value = columns[columnIndex].Header;
+            }
+
+            var rowNumber = headerRowNumber + 1;
             foreach (var row in rows)
             {
                 for (var columnIndex = 0; columnIndex < row.Length; columnIndex++)
@@ -89,7 +96,7 @@ public class ExcelService : IExcelService
                 rowNumber++;
             }
 
-            worksheet.Columns().AdjustToContents();
+            worksheet.Columns().AdjustToContents(headerRowNumber);
             workbook.SaveAs(stream);
         }
 

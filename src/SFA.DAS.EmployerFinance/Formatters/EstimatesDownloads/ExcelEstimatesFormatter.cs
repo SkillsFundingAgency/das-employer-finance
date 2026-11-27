@@ -24,7 +24,8 @@ public class ExcelEstimatesFormatter(IExcelService excelService) : IEstimatesFor
         return excelService.CreateExcelFile(
             WorksheetName,
             GetColumns(includeCoInvestment),
-            lines.Select(x => EstimatesDownloadColumns.GetCellValues(x, includeCoInvestment)));
+            lines.Select(x => EstimatesDownloadColumns.GetCellValues(x, includeCoInvestment)),
+            EstimatesDownloadColumns.Disclaimer);
     }
 
     private static List<ExcelColumn> GetColumns(bool includeCoInvestment)
