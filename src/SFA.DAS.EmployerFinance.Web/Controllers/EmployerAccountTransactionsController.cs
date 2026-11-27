@@ -127,7 +127,7 @@ public class EmployerAccountTransactionsController(
             encodingService.Decode(hashedAccountId, EncodingType.AccountId),
             downloadFormat.Value), cancellationToken);
 
-        return File(response.FileData, response.MimeType, $"esfaEstimates_{DateTime.Now:yyyyMMddHHmmss}.{response.FileExtension}");
+        return File(response.FileData, response.MimeType, $"estimates-{DateTime.Now:dd-MM-yyyy}.{response.FileExtension}");
     }
 
     [HttpGet]

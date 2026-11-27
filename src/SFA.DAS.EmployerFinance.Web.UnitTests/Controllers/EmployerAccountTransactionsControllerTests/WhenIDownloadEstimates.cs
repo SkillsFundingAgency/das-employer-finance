@@ -50,7 +50,7 @@ public class WhenIDownloadEstimates
         result.Should().NotBeNull();
         result.FileContents.Should().BeEquivalentTo(new byte[] { 1, 2, 3 });
         result.ContentType.Should().Be("text/csv");
-        result.FileDownloadName.Should().StartWith("esfaEstimates_").And.EndWith(".csv");
+        result.FileDownloadName.Should().StartWith("estimates-").And.EndWith(".csv");
         _mediator.Verify(x => x.Send(
             It.Is<GetEstimatesDownloadQuery>(q => q.AccountId == AccountId && q.DownloadFormat == format),
             It.IsAny<CancellationToken>()), Times.Once);
