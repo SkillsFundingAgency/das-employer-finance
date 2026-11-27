@@ -22,7 +22,7 @@ public class BulkPaymentsIngestTests
         _mapper = new Mock<IMapper>();
 
         var orchestrator = new StagingOrchestrator(_mediator.Object, _logger.Object);
-        _stagingController = new PaymentsController(orchestrator);
+        _stagingController = new PaymentsController(orchestrator, new PaymentOrchestrator(_mediator.Object));
     }
 
     [Test]

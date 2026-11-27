@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AutoMapper;
 using SFA.DAS.EmployerFinance.Api.Controllers;
 using SFA.DAS.EmployerFinance.Api.Orchestrators;
 using SFA.DAS.EmployerFinance.Api.Types;
 using SFA.DAS.EmployerFinance.Commands.PersistLevyDeclarations;
+using System.ComponentModel.DataAnnotations;
 
 namespace SFA.DAS.EmployerFinance.Api.UnitTests.Controllers.FinanceLevyDeclarationsControllerTests;
 
@@ -11,13 +12,15 @@ public class WhenIPersistLevyDeclarations
     private FinanceLevyDeclarationsController _controller = null!;
     private Mock<IMediator> _mediator = null!;
     private Mock<ILogger<LevyDeclarationOrchestrator>> _logger = null!;
+    private Mock<IMapper> _mapper;
 
     [SetUp]
     public void Arrange()
     {
         _mediator = new Mock<IMediator>();
         _logger = new Mock<ILogger<LevyDeclarationOrchestrator>>();
-        var orchestrator = new LevyDeclarationOrchestrator(_mediator.Object, _logger.Object);
+        _mapper = new Mock<IMapper>();
+        var orchestrator = new LevyDeclarationOrchestrator(_mediator.Object, _mapper.Object, _logger.Object);
         _controller = new FinanceLevyDeclarationsController(orchestrator);
     }
 

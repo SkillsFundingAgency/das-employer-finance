@@ -36,3 +36,7 @@ GO
 CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_EmpRef_EOYAdjustment]
 ON [employer_financial].[LevyDeclaration] ([empRef],[EndOfYearAdjustment]) INCLUDE ([SubmissionDate],[PayrollYear],[PayrollMonth])
 GO
+
+CREATE NONCLUSTERED INDEX [IX_LevyDeclaration_AccountId_EmpRef_SubmissionDate]
+ON [employer_financial].[LevyDeclaration] (AccountId, EmpRef, SubmissionDate) INCLUDE (DateCeased)
+GO

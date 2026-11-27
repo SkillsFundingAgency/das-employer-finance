@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SFA.DAS.EmployerFinance.Api.Types
+﻿namespace SFA.DAS.EmployerFinance.Api.Types
 {
     public class LevyDeclaration
     {

@@ -34,7 +34,7 @@ public interface IDasLevyRepository
     Task<int> TransferStagedToOperational(long accountId, string periodEndRef);
     Task<string> FindHistoricalProviderName(long ukprn);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclarations(long accountId);
-    Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsForPreviousMonths(long accountId, int months);
+    Task<List<LevyDeclarationItem>> GetAccountLevyDeclarationsByDateRange(long accountId, DateOnly fromDate, DateOnly toDate, List<string> emprefs);
     Task<List<LevyDeclarationItem>> GetAccountLevyDeclaredForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountLevySpentForPreviousMonths(long accountId, int months);
     Task<List<LevyDeclarationItem>> GetAccountExpiredLevyForPreviousMonths(long accountId, int months);
@@ -51,4 +51,5 @@ public interface IDasLevyRepository
 
     Task<bool> PaymentStagingExists(Guid paymentId);
     Task<List<Api.Types.ExistingPeriod12LevyDeclarationResult>> GetExistingPeriod12LevyDeclarations(string empRef, string payrollYear, short payrollMonth);
+    Task<List<string>> GetAccountPayeSchemesCurrentlyCeased(long accountId);
 }

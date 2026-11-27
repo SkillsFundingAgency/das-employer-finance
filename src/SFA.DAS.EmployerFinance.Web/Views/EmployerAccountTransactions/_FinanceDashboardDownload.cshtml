@@ -1,0 +1,23 @@
+@using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
+
+@model FinanceDashboardV2ViewModel
+@if (Model.Estimates.HasProjection)
+{
+    <form method="post" class="govuk-!-padding-top-8" asp-route="@RouteNames.DownloadEstimatesPost" asp-route-hashedAccountId="@Model.HashedAccountId" novalidate>
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="download-estimates-format">Select format</label>
+            <select class="govuk-select" id="download-estimates-format" name="downloadFormat" asp-items="Html.GetEnumSelectList<DownloadFormatType>()"></select>
+        </div>
+        <button type="submit" class="govuk-button" data-module="govuk-button">Download estimates</button>
+    </form>
+}
+else
+{
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <div class="govuk-inset-text app-finance-figure-no-border govuk-!-margin-top-8 govuk-!-margin-bottom-2">
+                <p>Your estimates report will be available once you add a timeline.</p>
+            </div>    
+        </div>
+    </div>
+}

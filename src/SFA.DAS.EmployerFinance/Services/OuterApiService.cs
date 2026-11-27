@@ -1,30 +1,29 @@
-﻿using SFA.DAS.Caches;
-using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Levy;
+﻿using SFA.DAS.EmployerFinance.Infrastructure.OuterApiRequests.Levy;
 using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces.OuterApi;
 using SFA.DAS.EmployerFinance.Services.Contracts;
 
 namespace SFA.DAS.EmployerFinance.Services;
 
-public class OuterApiService(
-    IOuterApiClient outerApiClient,
-    IInProcessCache cache) : IOuterApiService
+public class OuterApiService(IOuterApiClient outerApiClient) : IOuterApiService
 {
-    private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
-    private static string LevySummaryKey(long accountId) => $"LevySummary_{accountId}";
-
-    public async Task<GetLevySummaryByAccountIdResponse> GetLevySummary(long accountId, bool refreshCache = false)
+    public Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjections(long accountId,
+        int months = 6,
+        bool triggerRefresh = true,
+        CancellationToken cancellationToken = default)
     {
-        var key = LevySummaryKey(accountId);
+        return outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(new GetLevyProjectionsByAccountIdRequest(accountId, months, triggerRefresh), cancellationToken);
+    }
 
-        if (!refreshCache && cache.Exists(key))
-            return cache.Get<GetLevySummaryByAccountIdResponse>(key);
+    public Task<GetLevyProjectionsStatusByAccountIdResponse> GetLevyProjectionsStatus(long accountId,
+        CancellationToken cancellationToken = default)
+    {
+        return outerApiClient.Get<GetLevyProjectionsStatusByAccountIdResponse>(new GetLevyProjectionsStatusByAccountIdRequest(accountId), cancellationToken);
+    }
 
-        var response = await outerApiClient.Get<GetLevySummaryByAccountIdResponse>(
-            new GetLevySummaryByAccountIdRequest(accountId));
-
-        cache.Set(key, response, CacheDuration);
-
-        return response;
+    public Task<GetLevyProjectionsByAccountIdResponse> GetLevyProjectionsForDownload(long accountId,
+        CancellationToken cancellationToken = default)
+    {
+        return outerApiClient.Get<GetLevyProjectionsByAccountIdResponse>(new GetLevyProjectionsForDownloadByAccountIdRequest(accountId), cancellationToken);
     }
 }

@@ -1,0 +1,4 @@
+namespace SFA.DAS.EmployerFinance.Queries.GetLatestTransactionTypeTransactionIdsForAccount;
+
+public sealed record GetLatestTransactionTypeTransactionIdsForAccountQuery(long AccountId)
+    : IRequest<GetLatestTransactionTypeTransactionIdsForAccountQueryResult>;

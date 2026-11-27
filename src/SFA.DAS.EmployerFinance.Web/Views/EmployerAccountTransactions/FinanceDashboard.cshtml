@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using SFA.DAS.EmployerFinance.Formatters.TransactionDowloads
 @using SFA.DAS.EmployerFinance.Interfaces
 @inject IUrlActionHelper UrlHelpers;
 @model SFA.DAS.EmployerFinance.Web.Orchestrators.OrchestratorResponse<FinanceDashboardV2ViewModel>
@@ -14,57 +15,7 @@
     var totalLevyDeclaredLast12Months = Model.Data.TotalLevyDeclaredLast12Months.ToString("C0", culture);
     var totalLevySpentLast12Months = Math.Abs(Model.Data.TotalLevySpentLast12Months).ToString("C0", culture);
     var totalLevyExpiredLast12Months = Math.Abs(Model.Data.TotalLevyExpiredLast12Months).ToString("C0", culture);
-}
-@if (Model.Data.IsLevyEmployer)
-{
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <p class="govuk-body">The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers do not own these funds but can use them to cover apprenticeship costs.</p>
-            <p class="govuk-body">From August 2026, employers must use funds within 12 months. Funds added before this date expire after 24 months. Any unused funds are returned to support apprenticeship programmes.</p>
-        </div>
-    </div>
-    <div class="app-statement">
-        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Levy summary</h2>
-        <p class="govuk-body">An overview of your account's financial activity.</p>
-        <div class="govuk-grid-row govuk-!-margin-top-6">
-            <div class="govuk-grid-column-one-third app-highlight-boxes-current-levy">
-                <div class="app-highlight-boxes-projection__box">
-                    <p class="app-finance-figure__title" id="lbl-current-funds">Current levy funds</p>
-                    <div class="govuk-body govuk-!-font-size-21 govuk-!-font-weight-bold app-finance-figure-blue" aria-labelledby="lbl-current-funds">@balance</div>
-                </div>
-            </div>
-        </div>
-        <div class="govuk-grid-row">
-            <div class="app-highlight-boxes">
-                <div class="app-highlight-boxes-projection__box">
-                    <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
-                    <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-in">@totalLevyDeclaredLast12Months</div>
-                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
-                </div>
-                <div class="app-highlight-boxes-projection__box">
-                    <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
-                    <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">@totalLevySpentLast12Months</div>
-                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Payments to providers for learner costs and transfers in past 12 months.</p>
-                </div>
-                <div class="app-highlight-boxes-projection__box">
-                    <p class="app-finance-figure__title" id="lbl-expired-levy">Expired levy</p>
-                    <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-expired-levy">@totalLevyExpiredLast12Months</div>
-                    <p class="govuk-!-margin-bottom-0 govuk-body-s">Funds returned to support Growth and Skills training in the past 12 months.</p>
-                </div>
-            </div>
-        </div>
-        <div class="govuk-grid-row govuk-!-margin-top-6">
-            <div class="govuk-grid-column-full">
-                <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Commitments</h3>
-                <p class="govuk-body govuk-!-margin-top-0">Paid from your levy funds in monthly instalments until learners complete their training.</p>
-            </div>
-        </div>
-    </div>
-}
-else
-{
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+    var now = DateTime.UtcNow.ToGmtStandardTime();
 }
 @section breadcrumb {
     <div class="govuk-breadcrumbs">
@@ -74,3 +25,120 @@ else
         </ol>
     </div>
 }
+@if (Model.Data.IsLevyEmployer)
+{
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Your current and estimated levy funds</h1>
+    <p class="govuk-body">
+        The <b>Growth and Skills Levy</b> is a 0.5% contribution from employers with a £3m+ pay bill. Employers can use these funds to cover the costs of Growth and Skills training. Read more about <a href="https://www.gov.uk/government/publications/apprenticeship-funding/apprenticeship-funding" target="_blank" rel="noopener noreferrer" class="govuk-link">how the levy works (opens in new tab)</a>.
+    </p>
+    <p class="govuk-body">
+        From August 2026, you can use these funds within 12 months. Funds added before this date will expire after 24 months. We return unused funds to support Growth and Skills training.
+    </p>
+
+    <div class="app-statement">
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Summary</h2>
+        <p class="govuk-body">An overview of your account's levy activity.</p>
+
+        <div class="app-highlight-boxes">
+            <div class="app-highlight-boxes-projection__box">
+                <p class="app-finance-figure__title" id="lbl-current-funds">Current levy funds</p>
+                <div class="govuk-body govuk-!-font-size-21 govuk-!-font-weight-bold app-finance-figure-blue" aria-labelledby="lbl-current-funds">@balance</div>
+            </div>
+            <span class="app-highlight-boxes-projection__box"></span>
+            <span class="app-highlight-boxes-projection__box"></span>
+        </div>        
+        <div class="app-highlight-boxes">
+            <div class="app-highlight-boxes-projection__box">
+                <p class="app-finance-figure__title" id="lbl-levy-in">Levy in</p>
+                <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-in">@totalLevyDeclaredLast12Months</div>
+                <p class="govuk-!-margin-bottom-0 govuk-body-s">Levy added to your account in the past 12 months.</p>
+            </div>
+            <div class="app-highlight-boxes-projection__box">
+                <p class="app-finance-figure__title" id="lbl-levy-spent">Levy spent</p>
+                <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-levy-spent">@totalLevySpentLast12Months</div>
+                <p class="govuk-!-margin-bottom-0 govuk-body-s">Payments to providers for learner costs and transfers in past 12 months.</p>
+            </div>
+            <div class="app-highlight-boxes-projection__box">
+                <p class="app-finance-figure__title" id="lbl-expired-levy">Expired levy</p>
+                <div class="govuk-body govuk-!-font-size-21 govuk-!-margin-bottom-1 app-finance-figure-blue" aria-labelledby="lbl-expired-levy">@totalLevyExpiredLast12Months</div>
+                <p class="govuk-!-margin-bottom-0 govuk-body-s">Funds returned to support Growth and Skills training in the past 12 months.</p>
+
+            </div>
+        </div>   
+        <div id="finance-commitments">
+            <partial name="_FinanceDashboardCommitments" model="Model.Data" />
+        </div>
+        <div class="govuk-grid-row govuk-!-margin-top-6">
+            <div class="govuk-grid-column-full">
+                <details id="inform-levy-summary-changes" class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">Why your levy summary changes during the month</span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
+                            The figures in your levy summary can change during the month because payments are made on different dates.
+                        </p>
+                        <ul class="govuk-body">
+                            <li>payments to providers leave your account in the first week of the month</li>
+                            <li>levy funds are added to your account in the middle of the month</li>
+                            <li>expired levy funds leave your account in the last week of the month</li>
+                        </ul>
+                        <p class="govuk-body govuk-!-margin-top-0 govuk-!-margin-bottom-2">
+                            If you run out of levy funds and do not receive transfers from another employer, you will need to pay co-investment.
+                        </p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+    <div class="app-statement">
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Estimates</h2>
+        <div id="finance-estimates-status" class="govuk-visually-hidden" aria-live="polite"></div>
+        <div id="finance-estimates"
+             data-estimates-url="@Url.RouteUrl(RouteNames.FinanceEstimates, new { hashedAccountId = Model.Data.HashedAccountId })"
+             data-last-updated="@Model.Data.Estimates.LastUpdatedUtc.Ticks">
+            <partial name="_FinanceDashboardEstimates" model="Model.Data.Estimates" />
+        </div>
+    </div>
+    <div class="app-statement">
+        <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">Download estimates</h2>
+        <p>Download a report showing your monthly commitments, expiring levy funds and potential co-investment payments. The report covers at least the next 12 months or until all current learners complete their training.</p>
+        <p>This report contains estimates and costs based on your current learner and funding data. The figures are not final and may change if learner or funding details are updated, including breaks in learning and withdrawals.</p>
+        
+        <div id="finance-download">
+            <partial name="_FinanceDashboardDownload" model="Model.Data" />
+        </div>
+    </div>
+
+}
+else
+{
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">Funding and payments</h1>
+}
+
+<div class="app-highlight-boxes">
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
+            <a asp-route="@RouteNames.TransactionsView" asp-route-month="@now.Month" asp-route-year="@now.Year" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
+                View transactions
+            </a>
+        </h2>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">View payments made into and out of your apprenticeship service account. </p>
+    </div>
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
+            <a asp-route="@RouteNames.DownloadTransactionsGet" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
+                Download transactions
+            </a>
+        </h2>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">Download your financial transactions within a specific date range. </p>
+    </div>
+    <div class="app-highlight-boxes__box">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
+            <a asp-route="@RouteNames.TransferConnectionsIndex" asp-route-hashedAccountId="@Model.Data.HashedAccountId" class="govuk-link govuk-link--no-visited-state">
+                Transfers
+            </a>
+        </h2>
+        <p class="govuk-!-margin-bottom-0 govuk-body-s">Connect with other employers and @(Model.Data.IsLevyEmployer ? "send or" : "") receive transfer funds. </p>
+    </div>
+</div>

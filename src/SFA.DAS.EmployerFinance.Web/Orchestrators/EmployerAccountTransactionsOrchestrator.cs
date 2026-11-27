@@ -1,6 +1,7 @@
 using SFA.DAS.Common.Domain.Types;
 using SFA.DAS.EAS.Account.Api.Client;
 using SFA.DAS.EmployerFinance.Configuration;
+using SFA.DAS.EmployerFinance.Infrastructure.OuterApiResponses.Levy;
 using SFA.DAS.EmployerFinance.Interfaces;
 using SFA.DAS.EmployerFinance.Models;
 using SFA.DAS.EmployerFinance.Models.Levy;
@@ -35,6 +36,8 @@ public class EmployerAccountTransactionsOrchestrator(
     EmployerFinanceWebConfiguration configuration)
     : IEmployerAccountTransactionsOrchestrator
 {
+    private const short Months = 6;
+
     public virtual async Task<OrchestratorResponse<FinanceDashboardViewModel>> Index(string hashedAccountId, ClaimsIdentity userClaims)
     {
         //TODO this storing of user details should be removed from this applications database
@@ -87,26 +90,85 @@ public class EmployerAccountTransactionsOrchestrator(
          return viewModel;
     }
 
-    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId)
+    public virtual async Task<OrchestratorResponse<FinanceDashboardV2ViewModel>> GetFinanceDashboardV2(string hashedAccountId, bool refreshCache = false, CancellationToken cancellationToken = default)
     {
         var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
-        var accountDetailViewModel = await accountApiClient.GetAccount(accountId);
-        var summary = await outerApiService.GetLevySummary(accountId);
-        
-        var viewModel = new OrchestratorResponse<FinanceDashboardV2ViewModel>
+
+        var accountDetail = await accountApiClient.GetAccount(accountId);
+        Enum.TryParse<ApprenticeshipEmployerType>(accountDetail.ApprenticeshipEmployerType, ignoreCase: true, out var employerType);
+        var isLevyEmployer = employerType == ApprenticeshipEmployerType.Levy;
+
+        var projections = isLevyEmployer
+            ? await outerApiService.GetLevyProjections(accountId, months: Months, cancellationToken: cancellationToken)
+            : new GetLevyProjectionsByAccountIdResponse
+                { Projections = [], Summary = new GetLevySummaryByAccountIdResponse()};
+
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
+
+        return new OrchestratorResponse<FinanceDashboardV2ViewModel>
         {
             Data = new FinanceDashboardV2ViewModel
             {
-                IsLevyEmployer = (ApprenticeshipEmployerType)Enum.Parse(typeof(ApprenticeshipEmployerType), accountDetailViewModel.ApprenticeshipEmployerType, true) == ApprenticeshipEmployerType.Levy,
+                IsLevyEmployer = isLevyEmployer,
                 HashedAccountId = hashedAccountId,
                 CurrentLevyFunds = summary.CurrentLevyFunds,
                 TotalLevyDeclaredLast12Months = summary.TotalLevyDeclaredLast12Months,
                 TotalLevySpentLast12Months = summary.TotalLevySpentLast12Months,
                 TotalLevyExpiredLast12Months = summary.TotalLevyExpiredLast12Months,
+                TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+                TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
+                Estimates = MapEstimates(projections, hashedAccountId)
             }
         };
+    }
 
-        return viewModel;
+    public virtual async Task<FinanceDashboardV2ViewModel> GetProjectionIfUpdated(string hashedAccountId, long lastUpdatedTicks, CancellationToken cancellationToken = default)
+    {
+        var accountId = encodingService.Decode(hashedAccountId, EncodingType.AccountId);
+
+        var status = await outerApiService.GetLevyProjectionsStatus(accountId, cancellationToken);
+
+        if (status.LastSuccessfulImportDate.Ticks <= lastUpdatedTicks)
+        {
+            return null;
+        }
+
+        var projections = await outerApiService.GetLevyProjections(accountId, months: Months, triggerRefresh: false, cancellationToken: cancellationToken);
+        var summary = projections.Summary ?? new GetLevySummaryByAccountIdResponse();
+
+        return new FinanceDashboardV2ViewModel
+        {
+            HashedAccountId = hashedAccountId,
+            TotalCommittedLearnerCosts = summary.TotalCommittedLearnerCosts * -1,
+            TotalCommittedTransfersCosts = summary.TotalCommittedTransfersCosts * -1,
+            Estimates = MapEstimates(projections, hashedAccountId)
+        };
+    }
+
+    private static EstimatesViewModel MapEstimates(GetLevyProjectionsByAccountIdResponse projections, string hashedAccountId)
+    {
+        var monthEstimates = new List<MonthEstimateViewModel>(projections.Projections.Count);
+        
+        monthEstimates.AddRange(projections.Projections.Select(x => new MonthEstimateViewModel
+        {
+            Period = $"{new DateOnly(x.Year, x.Month, 1):MMMM} {x.Year}",
+            LevyIn = Math.Ceiling(x.LevyInSummary.Total),
+            CommittedLearnerCosts = Math.Ceiling(x.LevyOutSummary.CommittedLearnerCost) * -1,
+            CommittedTransferCosts = Math.Ceiling(x.LevyOutSummary.CommittedTransferOut + x.LevyOutSummary.CommittedTransferOutFinalPaymentCost) * -1,
+            CommittedLearnerFinalPaymentCost = Math.Ceiling(x.LevyOutSummary.CommittedLearnerFinalPaymentCost) * -1,
+            ExpiredLevy = Math.Ceiling(x.LevyOutSummary.ExpiredLevy) * -1,
+            ClosingLevyBalance = Math.Ceiling(x.ClosingBalance),
+            CoInvestmentCosts = x.CoInvestmentCosts.HasValue ? Math.Ceiling(x.CoInvestmentCosts.Value) : null,
+            DfeCoInvestmentCost = Math.Ceiling(x.DfeCoInvestmentCost)
+        }));
+
+        return new EstimatesViewModel
+        {
+            HashedAccountId = hashedAccountId,
+            LastUpdatedUtc = projections.LastRefreshDateTime,
+            MonthEstimates = monthEstimates,
+            DateEstimateEntersCoinvestment = projections.DateEstimateEntersCoinvestment
+        };
     }
 
     public async Task<OrchestratorResponse<PaymentTransactionViewModel>> FindAccountPaymentTransactions(
